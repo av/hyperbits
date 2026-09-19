@@ -1,0 +1,24 @@
+{
+  "name": "hyperbits",
+  "version": "0.0.0",
+  "description": "Animation bits, helpers, CLI and MCP server for HyperFrames video compositions",
+  "type": "module",
+  "license": "MIT",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/av/hyperbits.git"
+  },
+  "keywords": [
+    "hyperframes",
+    "gsap",
+    "video",
+    "html",
+    "animation",
+    "cli",
+    "mcp"
+  ],
+  "engines": {
+    "node": ">=22"
+  }
+}
