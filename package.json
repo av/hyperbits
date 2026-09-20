@@ -74,8 +74,13 @@
     "docs:preview": "node --eval \"console.log('docs:preview: not implemented yet')\"",
     "prepublishOnly": "npm run build"
   },
+  "peerDependencies": {
+    "gsap": "^3.14.2"
+  },
   "devDependencies": {
     "@types/node": "^25.1.0",
+    "@types/prismjs": "^1.26.6",
+    "esbuild": "^0.28.2",
     "jsdom": "^24.0.0",
     "oxfmt": "^0.9.0",
     "oxlint": "^0.15.0",
@@ -83,5 +88,10 @@
     "typescript": "^5.6.3",
     "vite": "^5.4.11",
     "vitest": "^2.1.9"
+  },
+  "dependencies": {
+    "culori": "^4.0.2",
+    "gsap": "^3.14.2",
+    "prismjs": "^1.30.0"
   }
 }
