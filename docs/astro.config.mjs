@@ -77,6 +77,7 @@ function getBitsSidebar() {
 }
 
 export default defineConfig({
+    site: 'https://hyperbits.pages.dev',
     vite: {
         resolve: {
             dedupe: [
