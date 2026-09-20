@@ -9,3 +9,4 @@ export * from "./random";
 export * from "./particles";
 export * from "./viewport";
 export * from "./text";
+export * from "./counter";
