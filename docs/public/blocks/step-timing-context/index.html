@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[]'>
+<html lang="en" data-composition-variables='[{"id":"title","type":"string","label":"Title","default":"Enter"},{"id":"color","type":"color","label":"Text color","default":"#f8fafc"},{"id":"background","type":"color","label":"Background","default":"#0f172a"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -32,13 +32,36 @@
         width: 100%;
         height: 100%;
         position: relative;
-        background-color: #0f172a;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       }
-      #root { background-color: #0f172a; }
-      .slide { color: #f8fafc; width: 900px; }
-      h1 { font-weight: 800; }
-      p { color: #cbd5e1; margin-top: 0.4em; }
+      #scene {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+      }
+      .slide {
+        text-align: center;
+        width: 70vmin;
+      }
+      .slide h1 {
+        font-weight: 800;
+        letter-spacing: -0.05em;
+        line-height: 1.05;
+        font-size: 8vmin;
+        color: #f8fafc;
+      }
+      .slide p {
+        margin-top: 0.35em;
+        color: #cbd5e1;
+        font-size: 3.2vmin;
+        font-weight: 600;
+      }
+      .slide[data-step-active="false"] {
+        opacity: 0;
+      }
+      .slide[data-step-active="true"] {
+        opacity: 1;
+      }
     </style>
   </head>
   <body>
@@ -51,7 +74,8 @@
       data-width="1920"
       data-height="1080"
     >
-
+      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#0f172a"></div>
+      <div id="scene"></div>
     </div>
     <script>
       (function () {
@@ -73,38 +97,65 @@
         }
 
 
-        const view = hyperbits.viewport();
+        const vars = bitVars();
         const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const sceneEl = document.getElementById("scene");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        bg.setAttribute("data-color", vars.color);
+
         function slide(titleText, bodyText) {
           const wrap = document.createElement("div");
           wrap.className = "slide";
+          wrap.style.width = view.vmin * 70 + "px";
           const title = document.createElement("h1");
           title.textContent = titleText;
-          title.style.fontSize = view.vmin * 6 + "px";
+          title.style.fontSize = view.vmin * 8 + "px";
+          title.style.color = vars.color;
           const body = document.createElement("p");
           body.textContent = bodyText;
-          body.style.fontSize = view.vmin * 2.6 + "px";
+          body.style.fontSize = view.vmin * 3.2 + "px";
           wrap.append(title, body);
+          wrap.setAttribute("data-layout-allow-overlap", "");
+          wrap.setAttribute("data-layout-allow-occlusion", "");
           return wrap;
         }
-        const first = slide("Enter", "Copy reveals as the camera settles.");
-        const second = slide("Hold", "Motion waits for the active step.");
-        const third = slide("Leave", "Exit starts before the next camera move.");
-        const scene = hyperbits.createScene3D(root, {
+
+        const first = slide(String(vars.title), "Copy settles.");
+        const second = slide("Hold", "Motion waits.");
+        const third = slide("Leave", "Exit starts.");
+        const fourth = slide("Time", "Steps own the clock.");
+        const depth = view.vmin * 70;
+        const hold = 10 / 4;
+
+        const scene = hyperbits.createScene3D(sceneEl, {
           perspective: 1100,
-          transitionDuration: 0.8,
-          stepDuration: 3.2,
+          transitionDuration: 0.85,
+          easing: "easeInOutCubic",
           steps: [
-            { id: "enter", x: 0, z: 0, element: first },
-            { id: "hold", x: view.vmin * 40, rotateY: -12, element: second },
-            { id: "leave", x: view.vmin * 80, rotateY: 12, element: third },
+            { id: "enter", x: 0, y: 0, z: 0, duration: hold, element: first },
+            { id: "hold", x: 0, y: view.vmin * 4, z: depth, duration: hold, element: second },
+            { id: "leave", x: 0, y: view.vmin * 8, z: depth * 2, duration: hold, element: third },
+            { id: "time", x: 0, y: view.vmin * 12, z: depth * 3, duration: hold, element: fourth },
           ],
         });
+        sceneEl.style.position = "absolute";
+        sceneEl.style.inset = "0";
+        sceneEl.style.zIndex = "1";
+
         const timeline = gsap.timeline({ paused: true });
         scene.bind(timeline);
-        [first, second, third].forEach(function (node, index) {
+        [first, second, third, fourth].forEach(function (node, index) {
           const words = hyperbits.splitText(node.querySelector("h1"), "words");
-          hyperbits.stagger(words, { opacity: [0, 1], y: [16, 0], duration: 0.45, stagger: 0.06, delay: index * 3.2 }, timeline);
+          hyperbits.stagger(words, {
+            opacity: [0, 1],
+            y: [18, 0],
+            duration: 0.4,
+            stagger: 0.05,
+            delay: index * hold,
+            ease: "easeOutCubic",
+          }, timeline);
         });
         timeline.to({}, { duration: 10 }, 0);
         registerTimeline("step-timing-context", timeline);

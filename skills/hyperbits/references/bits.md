@@ -24,6 +24,8 @@ Horizontal bar chart growing in with staggered bars and counting values.
 - Helpers: `stagger`, `counter`, `viewport`
 - Knobs (`data-composition-variables`):
   - `title` (string, default "Weekly commits by language") — Title
+  - `color` (color, default "#38bdf8") — Bar color
+  - `background` (color, default "#0b1220") — Background
 
 ### `basic-code-block`
 
@@ -33,7 +35,9 @@ Syntax highlighted code with line-by-line reveal
 - Title: Basic Code Block
 - Size: 1920x1080, duration 4s
 - Helpers: `code`, `stagger`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Knobs (`data-composition-variables`):
+  - `color` (color, default "#38bdf8") — Accent
+  - `background` (color, default "#0b1220") — Background
 
 ### `basic-counter`
 
@@ -44,8 +48,10 @@ Animated counter interpolating between numbers.
 - Size: 1920x1080, duration 4s
 - Helpers: `counter`, `viewport`
 - Knobs (`data-composition-variables`):
-  - `prefix` (string, default "width:") — Prefix
-  - `postfix` (string, default "px") — Postfix
+  - `prefix` (string, default "") — Prefix
+  - `postfix` (string, default "+") — Postfix
+  - `color` (color, default "#f8fafc") — Text color
+  - `background` (color, default "#0f172a") — Background
 
 ### `basic-typewriter`
 
@@ -57,6 +63,8 @@ Simple typing animation with cursor.
 - Helpers: `text`, `viewport`
 - Knobs (`data-composition-variables`):
   - `text` (string, default "Ah, those sunny days!") — Text
+  - `color` (color, default "#f8fafc") — Text color
+  - `background` (color, default "#0f172a") — Background
 
 ### `blur-slide-word`
 
@@ -68,6 +76,8 @@ Text that fades, unblurs and slides up word by word
 - Helpers: `text`, `stagger`, `viewport`
 - Knobs (`data-composition-variables`):
   - `text` (string, default "Text Transition") — Text
+  - `color` (color, default "#f8fafc") — Text color
+  - `background` (color, default "#0f172a") — Background
 
 ### `char-by-char`
 
@@ -80,6 +90,7 @@ Text that appears character by character with staggered timing
 - Knobs (`data-composition-variables`):
   - `text` (string, default "Character Animation") — Text
   - `color` (color, default "#f8fafc") — Text color
+  - `background` (color, default "#0f172a") — Background
 
 ### `cli-simulation`
 
@@ -91,6 +102,8 @@ Simulates a command-line interface with user typing and system output.
 - Helpers: `text`, `viewport`
 - Knobs (`data-composition-variables`):
   - `command` (string, default "npm install hyperbits") — Command
+  - `color` (color, default "#4ec9b0") — Accent
+  - `background` (color, default "#0b1220") — Background
 
 ### `counter-confetti`
 
@@ -102,6 +115,8 @@ Counter reaching 1000 with confetti particles bursting from the sides.
 - Helpers: `counter`, `particles`, `viewport`
 - Knobs (`data-composition-variables`):
   - `target` (number, default 1000) — Target
+  - `color` (color, default "#f8fafc") — Text color
+  - `background` (color, default "#0b1220") — Background
 
 ### `fade-in`
 
@@ -126,6 +141,8 @@ Cycling text with glitch transition effects between words
 - Helpers: `random`, `viewport`
 - Knobs (`data-composition-variables`):
   - `words` (string, default "INITIALIZING,LOADING ASSETS,SYSTEM ONLINE,WELCOME USER") — Words (comma separated)
+  - `color` (color, default "#4ade80") — Text color
+  - `background` (color, default "#020617") — Background
 
 ### `glitch-in`
 
@@ -138,6 +155,7 @@ Text effect that glitches into existence from random characters
 - Knobs (`data-composition-variables`):
   - `text` (string, default "SYSTEM ONLINE") — Text
   - `color` (color, default "#4ade80") — Text color
+  - `background` (color, default "#020617") — Background
 
 ### `matrix-rain`
 
@@ -149,7 +167,8 @@ Digital rain animation inspired by The Matrix
 - Helpers: `random`, `viewport`
 - Knobs (`data-composition-variables`):
   - `color` (color, default "#00FF41") — Color
-  - `fontSize` (number, default 30) — Font size
+  - `background` (color, default "#000000") — Background
+  - `fontSize` (number, default 36) — Font size
   - `speed` (number, default 1) — Speed
   - `density` (number, default 1) — Density
 
@@ -163,6 +182,8 @@ Typing multiple sentences in sequence with deleting phase.
 - Helpers: `text`, `interpolate`, `viewport`
 - Knobs (`data-composition-variables`):
   - `lines` (string, default "First sentence.|Second longer sentence.|Looping...") — Lines (pipe separated)
+  - `color` (color, default "#f8fafc") — Text color
+  - `background` (color, default "#0f172a") — Background
 
 ### `stat-rings`
 
@@ -172,7 +193,10 @@ Circular progress rings filling up with percentage counters in the center.
 - Title: Stat Rings
 - Size: 1920x1080, duration 4s
 - Helpers: `stagger`, `counter`, `interpolate`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Knobs (`data-composition-variables`):
+  - `title` (string, default "Service health") — Title
+  - `color` (color, default "#38bdf8") — Ring color
+  - `background` (color, default "#0b1220") — Background
 
 ### `typing-code-block`
 
@@ -182,7 +206,9 @@ Syntax highlighted code with typing effect
 - Title: Typing Code Block
 - Size: 1920x1080, duration 6s
 - Helpers: `code`, `text`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Knobs (`data-composition-variables`):
+  - `color` (color, default "#38bdf8") — Accent
+  - `background` (color, default "#0b1220") — Background
 
 ### `variable-speed-typewriter`
 
@@ -194,6 +220,8 @@ Advanced typewriter with variable speed curves and error simulation.
 - Helpers: `text`, `random`, `interpolate`, `viewport`
 - Knobs (`data-composition-variables`):
   - `text` (string, default "Typing with errors and variable speed...") — Text
+  - `color` (color, default "#ff6b6b") — Text color
+  - `background` (color, default "#0f172a") — Background
 
 ### `word-by-word`
 
@@ -205,6 +233,8 @@ Animated text that appears word by word with staggered timing
 - Helpers: `text`, `stagger`, `viewport`
 - Knobs (`data-composition-variables`):
   - `text` (string, default "This appears word by word") — Text
+  - `color` (color, default "#f8fafc") — Text color
+  - `background` (color, default "#0f172a") — Background
 
 ## Staggered Motion
 
@@ -215,8 +245,10 @@ A stack of cards that spreads out in 3D space.
 - Path: `bits/staggered-motion/card-stack/index.html`
 - Title: 3D Card Stack
 - Size: 1080x1080, duration 4s
-- Helpers: `stagger`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Helpers: `viewport`
+- Knobs (`data-composition-variables`):
+  - `color` (color, default "#9a3412") — Card color
+  - `background` (color, default "#1c140d") — Background
 
 ### `chat-conversation`
 
@@ -226,7 +258,10 @@ Messaging-app style conversation with bubbles arriving one after another.
 - Title: Chat Conversation
 - Size: 1920x1080, duration 5s
 - Helpers: `stagger`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Knobs (`data-composition-variables`):
+  - `message` (string, default "Did the render finish?") — First message
+  - `color` (color, default "#2563eb") — My bubble
+  - `background` (color, default "#0b1220") — Background
 
 ### `easings-visualizer`
 
@@ -235,8 +270,10 @@ Visualizes different easing functions with sliding squares.
 - Path: `bits/staggered-motion/easings-visualizer/index.html`
 - Title: Easings Visualizer
 - Size: 1920x1080, duration 3s
-- Helpers: `stagger`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Helpers: `viewport`
+- Knobs (`data-composition-variables`):
+  - `color` (color, default "#38bdf8") — Dot color
+  - `background` (color, default "#09090b") — Background
 
 ### `fracture-reassemble`
 
@@ -245,8 +282,10 @@ Grid of tiles shatters into 3D space and reassembles with abstract symbol accent
 - Path: `bits/staggered-motion/fracture-reassemble/index.html`
 - Title: Fracture Reassemble
 - Size: 1920x1080, duration 6s
-- Helpers: `stagger`, `random`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Helpers: `random`, `viewport`
+- Knobs (`data-composition-variables`):
+  - `color` (color, default "#38bdf8") — Tile color
+  - `background` (color, default "#020617") — Background
 
 ### `grid-stagger`
 
@@ -256,7 +295,9 @@ A grid of elements staggering in from the center using scale and opacity.
 - Title: Grid Stagger
 - Size: 1080x1080, duration 3s
 - Helpers: `stagger`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Knobs (`data-composition-variables`):
+  - `color` (color, default "#3b82f6") — Cell color
+  - `background` (color, default "#09090b") — Background
 
 ### `list-reveal`
 
@@ -266,7 +307,9 @@ A vertical list of items scaling and finding their place.
 - Title: List Reveal
 - Size: 1080x1080, duration 3s
 - Helpers: `stagger`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Knobs (`data-composition-variables`):
+  - `color` (color, default "#38bdf8") — Accent
+  - `background` (color, default "#09090b") — Background
 
 ### `lower-third`
 
@@ -279,6 +322,8 @@ Broadcast-style name and title card that slides in, holds, and slides out.
 - Knobs (`data-composition-variables`):
   - `name` (string, default "Ada Lovelace") — Name
   - `title` (string, default "Analytical Engine Programmer") — Title
+  - `color` (color, default "#38bdf8") — Bar color
+  - `background` (color, default "#0f172a") — Background
 
 ### `mosaic-reframe`
 
@@ -287,8 +332,10 @@ Twelve image tiles transition from a grid to a feature mosaic, then into a diago
 - Path: `bits/staggered-motion/mosaic-reframe/index.html`
 - Title: Mosaic Reframe
 - Size: 1920x1080, duration 9s
-- Helpers: `stagger`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Helpers: `viewport`
+- Knobs (`data-composition-variables`):
+  - `color` (color, default "#0ea5e9") — Feature tile
+  - `background` (color, default "#020617") — Background
 
 ### `slide-from-left`
 
@@ -300,6 +347,8 @@ Text that slides in from the left with fade-in effect
 - Helpers: `viewport`
 - Knobs (`data-composition-variables`):
   - `text` (string, default "Sliding Text") — Text
+  - `color` (color, default "#f8fafc") — Text color
+  - `background` (color, default "#0f172a") — Background
 
 ### `staggered-fade-in`
 
@@ -309,7 +358,9 @@ Elements fading in sequentially
 - Title: Staggered Fade In
 - Size: 1920x1080, duration 3s
 - Helpers: `stagger`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Knobs (`data-composition-variables`):
+  - `color` (color, default "#3b82f6") — Accent
+  - `background` (color, default "#0f172a") — Background
 
 ## Background Effects
 
@@ -321,7 +372,9 @@ Colorful conic gradient rotation
 - Title: Conic Gradient
 - Size: 1920x1080, duration 2s
 - Helpers: `gradient`
-- Knobs (`data-composition-variables`): none
+- Knobs (`data-composition-variables`):
+  - `color1` (color, default "#000000") — Color 1
+  - `color2` (color, default "#009900") — Color 2
 
 ### `linear-gradient`
 
@@ -345,7 +398,11 @@ Smooth transition between radial gradients
 - Title: Radial Gradient
 - Size: 1920x1080, duration 3s
 - Helpers: `gradient`
-- Knobs (`data-composition-variables`): none
+- Knobs (`data-composition-variables`):
+  - `color1Start` (color, default "#FDB813") — Gradient 1 Start
+  - `color1End` (color, default "#78C0E0") — Gradient 1 End
+  - `color2Start` (color, default "#F5576C") — Gradient 2 Start
+  - `color2End` (color, default "#2F2044") — Gradient 2 End
 
 ## Particles
 
@@ -357,7 +414,9 @@ Wandering particles with glow effect simulating fireflies
 - Title: Fireflies
 - Size: 1920x1080, duration 10s
 - Helpers: `particles`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Knobs (`data-composition-variables`):
+  - `color` (color, default "#ccff00") — Firefly color
+  - `background` (color, default "#020617") — Background
 
 ### `particles-fountain`
 
@@ -365,9 +424,11 @@ Bursting fountain particles effect
 
 - Path: `bits/particles/particles-fountain/index.html`
 - Title: Fountain
-- Size: 1920x1080, duration 2s
+- Size: 1920x1080, duration 6s
 - Helpers: `particles`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Knobs (`data-composition-variables`):
+  - `color` (color, default "#ebb03b") — Particle color
+  - `background` (color, default "#140d08") — Background
 
 ### `particles-grid`
 
@@ -377,7 +438,9 @@ Particles snapping to a grid
 - Title: Grid Particles
 - Size: 1920x1080, duration 6.67s
 - Helpers: `particles`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Knobs (`data-composition-variables`):
+  - `color` (color, default "#38bdf8") — Particle color
+  - `background` (color, default "#020617") — Background
 
 ### `particles-snow`
 
@@ -387,7 +450,9 @@ Falling snow particles effect
 - Title: Snow
 - Size: 1920x1080, duration 10s
 - Helpers: `particles`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Knobs (`data-composition-variables`):
+  - `color` (color, default "#e0e7ff") — Flake color
+  - `background` (color, default "#01050e") — Background
 
 ### `scrolling-columns`
 
@@ -397,7 +462,9 @@ Four columns of images scrolling with different speeds in a panning 3D scene
 - Title: Scrolling Columns
 - Size: 1920x1080, duration 10s
 - Helpers: `viewport`, `random`
-- Knobs (`data-composition-variables`): none
+- Knobs (`data-composition-variables`):
+  - `color` (color, default "#38bdf8") — Card color
+  - `background` (color, default "#020617") — Background
 
 ## 3D Scenes
 
@@ -409,7 +476,10 @@ Four columns of images scrolling with different speeds in a panning 3D scene
 - Title: Basic 3D Scene
 - Size: 1920x1080, duration 5s
 - Helpers: `scene3d`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Knobs (`data-composition-variables`):
+  - `text` (string, default "Control") — First word
+  - `color` (color, default "#f8fafc") — Text color
+  - `background` (color, default "#0f172a") — Background
 
 ### `3d-elements`
 
@@ -418,8 +488,10 @@ Four columns of images scrolling with different speeds in a panning 3D scene
 - Path: `bits/scenes-3d/3d-elements/index.html`
 - Title: 3D Elements
 - Size: 1920x1080, duration 6.67s
-- Helpers: `scene3d`, `stagger`, `random`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Helpers: `scene3d`, `random`, `viewport`
+- Knobs (`data-composition-variables`):
+  - `color` (color, default "#38bdf8") — Accent
+  - `background` (color, default "#020617") — Background
 
 ### `carousel`
 
@@ -429,7 +501,9 @@ Rotating carousel of cards in 3D space
 - Title: 3D Carousel
 - Size: 1920x1080, duration 10s
 - Helpers: `scene3d`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Knobs (`data-composition-variables`):
+  - `color` (color, default "#38bdf8") — Accent
+  - `background` (color, default "#0b1220") — Background
 
 ### `cube-navigation`
 
@@ -439,7 +513,9 @@ Navigate through faces of a 3D Cube using Scene3D steps
 - Title: Cube Navigation 3D
 - Size: 1920x1080, duration 16s
 - Helpers: `scene3d`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Knobs (`data-composition-variables`):
+  - `color` (color, default "#38bdf8") — Accent
+  - `background` (color, default "#020617") — Background
 
 ### `cursor-flyover`
 
@@ -449,7 +525,9 @@ Camera flies over an app screenshot while a cursor highlights different areas
 - Title: Cursor Flyover
 - Size: 1920x1080, duration 10s
 - Helpers: `scene3d`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Knobs (`data-composition-variables`):
+  - `color` (color, default "#38bdf8") — Accent
+  - `background` (color, default "#0b1220") — Background
 
 ### `flying-through-words`
 
@@ -458,9 +536,11 @@ Words spawning and flying past the camera
 - Path: `bits/scenes-3d/flying-through-words/index.html`
 - Title: Flying Through Words
 - Size: 1920x1080, duration 10s
-- Helpers: `scene3d`, `random`, `viewport`
+- Helpers: `scene3d`, `viewport`
 - Knobs (`data-composition-variables`):
   - `words` (string, default "SEEK,FRAME,MOTION,SCALE,DEPTH,LIGHT,TIME,SPACE") — Words
+  - `color` (color, default "#e2e8f0") — Text color
+  - `background` (color, default "#000000") — Background
 
 ### `ken-burns`
 
@@ -469,8 +549,10 @@ Slow camera movement over images using Scene3D steps
 - Path: `bits/scenes-3d/ken-burns/index.html`
 - Title: Ken Burns Effect
 - Size: 1920x1080, duration 10s
-- Helpers: `scene3d`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Helpers: `viewport`
+- Knobs (`data-composition-variables`):
+  - `color` (color, default "#38bdf8") — Accent
+  - `background` (color, default "#111827") — Background
 
 ### `step-timing-context`
 
@@ -480,7 +562,10 @@ Demonstrates useMotionTiming context awareness in Scene3D Steps
 - Title: Step-Aware Motion Timing
 - Size: 1920x1080, duration 10s
 - Helpers: `scene3d`, `stagger`, `text`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Knobs (`data-composition-variables`):
+  - `title` (string, default "Enter") — Title
+  - `color` (color, default "#f8fafc") — Text color
+  - `background` (color, default "#0f172a") — Background
 
 ### `terminal-3d`
 
@@ -490,7 +575,10 @@ A 3D scene with multiple terminal windows executing commands.
 - Title: 3D Terminal
 - Size: 1920x1080, duration 10s
 - Helpers: `scene3d`, `text`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Knobs (`data-composition-variables`):
+  - `command` (string, default "git status") — Command
+  - `color` (color, default "#86efac") — Accent
+  - `background` (color, default "#020617") — Background
 
 ### `transform3d-showcase`
 
@@ -500,7 +588,9 @@ Demonstrates chainable Transform3D API with matrix-based interpolation, relative
 - Title: Transform3D Showcase
 - Size: 1920x1080, duration 16.67s
 - Helpers: `scene3d`, `viewport`
-- Knobs (`data-composition-variables`): none
+- Knobs (`data-composition-variables`):
+  - `color` (color, default "#38bdf8") — Accent
+  - `background` (color, default "#020617") — Background
 
 ## Full Compositions
 
@@ -511,6 +601,8 @@ Promotional showcase for the hyperbits catalog of HyperFrames animation bits.
 - Path: `bits/full-compositions/feature-showcase/index.html`
 - Title: Hyperbits
 - Size: 1920x1080, duration 38s
-- Helpers: `text`, `stagger`, `particles`, `scene3d`, `code`, `viewport`
+- Helpers: `text`, `stagger`, `gradient`, `particles`, `scene3d`, `code`, `viewport`
 - Knobs (`data-composition-variables`):
   - `title` (string, default "hyperbits") — Title
+  - `color` (color, default "#f8fafc") — Text color
+  - `background` (color, default "#020617") — Background

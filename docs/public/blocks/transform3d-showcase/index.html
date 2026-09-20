@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Accent","default":"#38bdf8"},{"id":"background","type":"color","label":"Background","default":"#020617"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -32,13 +32,46 @@
         width: 100%;
         height: 100%;
         position: relative;
-        background-color: #020617;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       }
-      #root { background-color: #020617; }
-      .box {
-        width: 220px; height: 220px; border-radius: 28px; display: flex; align-items: center; justify-content: center;
-        color: #f8fafc; font-weight: 800;
+      #scene {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+      }
+      .panel[data-step-active="false"] {
+        opacity: 0;
+      }
+      .panel[data-step-active="true"] {
+        opacity: 1;
+      }
+      .panel {
+        width: 70vmin;
+        min-height: 36vmin;
+        border-radius: 2vmin;
+        padding: 3.2vmin 3.6vmin;
+        background-color: rgba(15, 23, 42, 0.72);
+        border: 0.28vmin solid rgba(248, 250, 252, 0.16);
+        color: #f8fafc;
+        box-sizing: border-box;
+      }
+      .panel h1 {
+        font-weight: 800;
+        letter-spacing: -0.05em;
+        line-height: 1.05;
+        font-size: 8vmin;
+      }
+      .panel p {
+        margin-top: 0.4em;
+        font-size: 3.2vmin;
+        color: #cbd5e1;
+        font-weight: 600;
+      }
+      .cube {
+        width: 12vmin;
+        height: 12vmin;
+        border: 0.45vmin solid #38bdf8;
+        margin-top: 2.4vmin;
       }
     </style>
   </head>
@@ -52,7 +85,8 @@
       data-width="1920"
       data-height="1080"
     >
-
+      <div id="bg" class="clip" data-start="0" data-duration="16.67" style="position:absolute;inset:0;background-color:#020617"></div>
+      <div id="scene"></div>
     </div>
     <script>
       (function () {
@@ -74,42 +108,62 @@
         }
 
 
-        const view = hyperbits.viewport();
+        const vars = bitVars();
         const root = document.getElementById("root");
-        const labels = ["translate", "rotate", "scale", "compose"];
-        const colors = ["#2563eb", "#db2777", "#059669", "#d97706"];
-        const elements = labels.map(function (label, index) {
+        const bg = document.getElementById("bg");
+        const sceneEl = document.getElementById("scene");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        bg.setAttribute("data-color", vars.color);
+
+        function panel(title, body) {
           const node = document.createElement("div");
-          node.className = "box";
+          node.className = "panel";
+          node.style.width = view.vmin * 70 + "px";
+          node.style.borderColor = vars.color;
+          const heading = document.createElement("h1");
+          heading.textContent = title;
+          heading.style.fontSize = view.vmin * 8 + "px";
+          heading.style.color = vars.color;
+          const copy = document.createElement("p");
+          copy.textContent = body;
+          copy.style.fontSize = view.vmin * 3.2 + "px";
+          const cube = document.createElement("div");
+          cube.className = "cube";
+          cube.style.width = view.vmin * 12 + "px";
+          cube.style.height = view.vmin * 12 + "px";
+          cube.style.borderColor = vars.color;
+          node.append(heading, copy, cube);
           node.setAttribute("data-layout-allow-overlap", "");
           node.setAttribute("data-layout-allow-occlusion", "");
-          node.textContent = label;
-          node.style.backgroundColor = colors[index];
-          node.style.fontSize = view.vmin * 2.6 + "px";
-          return {
-            element: node,
-            x: (index - 1.5) * view.vmin * 16,
-            y: 0,
-            z: 0,
-          };
-        });
-        const scene = hyperbits.createScene3D(root, {
-          perspective: 1300,
-          transitionDuration: 1.2,
-          stepDuration: 4,
+          return { node: node, cube: cube };
+        }
+
+        const intro = panel("Transform3D", "Chainable matrix motion");
+        const chain = panel("Translate", "Move in x y z");
+        const orbit = panel("Rotate", "Quaternion slerp");
+        const compose = panel("Compose", "Parent times child");
+        const hold = 16.67 / 4;
+
+        const scene = hyperbits.createScene3D(sceneEl, {
+          perspective: 1200,
+          transitionDuration: 2.2,
           easing: "easeInOutCubic",
           steps: [
-            { id: "line", rotateY: -8, z: 0 },
-            { id: "orbit", rotateY: 35, rotateX: 12, z: view.vmin * 18 },
-            { id: "tumble", rotateY: -40, rotateX: -16, z: view.vmin * 8 },
-            { id: "hero", rotateY: 0, z: view.vmin * 28, scale: 1.15 },
+            { id: "intro", x: 0, y: -view.vmin * 4, z: 0, rotateY: -8, duration: hold, element: intro.node },
+            { id: "chain", x: view.vmin * 70, y: 0, z: view.vmin * 12, rotateY: -16, duration: hold, element: chain.node },
+            { id: "orbit", x: view.vmin * 140, y: view.vmin * 6, z: view.vmin * 8, rotateY: 14, duration: hold, element: orbit.node },
+            { id: "compose", x: view.vmin * 210, y: 0, z: view.vmin * 16, rotateY: -10, duration: hold, element: compose.node },
           ],
-          elements: elements,
         });
+        sceneEl.style.position = "absolute";
+        sceneEl.style.inset = "0";
+        sceneEl.style.zIndex = "1";
+
         const timeline = gsap.timeline({ paused: true });
         scene.bind(timeline);
-        elements.forEach(function (item, index) {
-          timeline.to(item.element, { y: Math.sin((index + 1) * 1.3) * 40, duration: 2, yoyo: true, repeat: 6, ease: "sine.inOut" }, 0);
+        [intro, chain, orbit, compose].forEach(function (item) {
+          timeline.to(item.cube, { rotateY: 180, rotateX: 90, duration: 4.1, ease: "sine.inOut", yoyo: true, repeat: 3 }, 0);
         });
         timeline.to({}, { duration: 16.67 }, 0);
         registerTimeline("transform3d-showcase", timeline);

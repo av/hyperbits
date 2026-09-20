@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Card color","default":"#38bdf8"},{"id":"background","type":"color","label":"Background","default":"#020617"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -32,13 +32,37 @@
         width: 100%;
         height: 100%;
         position: relative;
-        background-color: #020617;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        overflow: hidden;
       }
-      #root { perspective: 1400px; background-color: #020617; overflow: hidden; }
-      #world { position: absolute; inset: 0; transform-style: preserve-3d; }
-      .col { position: absolute; top: -40%; height: 180%; display: flex; flex-direction: column; gap: 18px; }
-      .card { border-radius: 18px; flex: 0 0 auto; }
+      #world {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        overflow: hidden;
+      }
+      .col {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        overflow: hidden;
+      }
+      .track {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+      }
+      .card {
+        width: 100%;
+        flex: 0 0 auto;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #f8fafc;
+        font-weight: 700;
+        font-size: 4vmin;
+      }
     </style>
   </head>
   <body>
@@ -51,6 +75,7 @@
       data-width="1920"
       data-height="1080"
     >
+      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#020617"></div>
       <div id="world" class="clip" data-start="0" data-duration="10"></div>
     </div>
     <script>
@@ -73,26 +98,48 @@
         }
 
 
-        const view = hyperbits.viewport();
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
         const world = document.getElementById("world");
-        const palette = ["#1d4ed8", "#0f766e", "#9a3412", "#6d28d9", "#be123c", "#0369a1"];
-        const speeds = [0.35, 0.55, 0.28, 0.7];
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        bg.style.setProperty("--knob-color", vars.color);
+        world.style.setProperty("--knob-color", vars.color);
+        const columnCount = 4;
+        const palette = ["#1e3a8a", "#1d4ed8", "#0f766e", "#9a3412", "#6d28d9", "#be123c", "#0369a1"];
+        const speeds = [0.42, 0.68, 0.33, 0.55];
         const columns = [];
-        for (let col = 0; col < 4; col += 1) {
+        const cardHeight = view.height / 3;
+        const cardsPerColumn = 18;
+        for (let col = 0; col < columnCount; col += 1) {
+          const left = Math.round((col * view.width) / columnCount);
+          const next = Math.round(((col + 1) * view.width) / columnCount);
           const column = document.createElement("div");
           column.className = "col";
-          column.style.left = 10 + col * 22 + "%";
-          column.style.width = "18%";
-          const depth = col % 2 === 0 ? -120 : 80;
-          for (let cardIndex = 0; cardIndex < 10; cardIndex += 1) {
+          column.style.left = left + "px";
+          column.style.width = next - left + "px";
+          column.style.backgroundColor = vars.background;
+          const track = document.createElement("div");
+          track.className = "track";
+          for (let cardIndex = 0; cardIndex < cardsPerColumn; cardIndex += 1) {
             const card = document.createElement("div");
             card.className = "card";
-            card.style.height = view.vh * 22 + "px";
+            card.setAttribute("data-layout-allow-overlap", "");
+            card.setAttribute("data-layout-allow-occlusion", "");
+            card.setAttribute("data-layout-allow-overflow", "");
+            card.style.height = cardHeight + "px";
+            card.style.fontSize = view.vmin * 4 + "px";
             card.style.backgroundColor = palette[hyperbits.randomInt("c-" + col + "-" + cardIndex, 0, palette.length - 1)];
-            column.append(card);
+            card.style.color = "#f8fafc";
+            card.style.textShadow = "0 2px 10px rgba(0,0,0,0.65)";
+            card.style.boxShadow = "inset 0 0 0 " + Math.max(2, view.vmin * 0.25) + "px " + vars.color;
+            card.textContent = String(hyperbits.randomInt("n-" + col + "-" + cardIndex, 1, 9));
+            track.append(card);
           }
+          column.append(track);
           world.append(column);
-          columns.push({ el: column, speed: speeds[col], depth: depth });
+          columns.push({ track: track, speed: speeds[col] });
         }
         const proxy = { t: 0 };
         const timeline = gsap.timeline({ paused: true });
@@ -101,14 +148,8 @@
           duration: 10,
           ease: "none",
           onUpdate: function () {
-            world.style.transform = "rotateY(" + (proxy.t * 3 - 12) + "deg) translateZ(" + view.vmin * 4 + "px)";
             columns.forEach(function (column) {
-              column.el.style.transform =
-                "translateZ(" +
-                column.depth +
-                "px) translateY(" +
-                -proxy.t * column.speed * view.vh * 8 +
-                "px)";
+              column.track.style.transform = "translateY(" + -proxy.t * column.speed * view.height * 0.55 + "px)";
             });
           },
         }, 0);

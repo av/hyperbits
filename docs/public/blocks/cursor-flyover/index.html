@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Accent","default":"#38bdf8"},{"id":"background","type":"color","label":"Background","default":"#0b1220"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -32,17 +32,61 @@
         width: 100%;
         height: 100%;
         position: relative;
-        background-color: #0b1220;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       }
-      #root { background-color: #0b1220; }
-      #screen {
-        width: 960px; height: 600px; background-color: #111827; border-radius: 28px;
-        border: 1px solid #334155; position: relative; overflow: hidden;
+      #scene {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
       }
-      .widget { position: absolute; border-radius: 16px; background-color: #1e293b; color: #e2e8f0; padding: 18px 22px; font-weight: 600; }
+      #screen {
+        width: 70%;
+        height: 70%;
+        background-color: #111827;
+        border-radius: 2.4vmin;
+        border: 0.18vmin solid #334155;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 2vmin 6vmin rgba(0, 0, 0, 0.55);
+      }
+      #chrome {
+        height: 8%;
+        background-color: #1e293b;
+        display: flex;
+        align-items: center;
+        padding: 0 2%;
+        color: #94a3b8;
+        font-weight: 600;
+        font-size: 2.2vmin;
+        letter-spacing: 0.04em;
+      }
+      .dot {
+        width: 1.2vmin;
+        height: 1.2vmin;
+        border-radius: 50%;
+        margin-right: 0.7vmin;
+      }
+      .widget {
+        position: absolute;
+        border-radius: 1.4vmin;
+        background-color: #1e293b;
+        color: #e2e8f0;
+        padding: 1.6vmin 1.8vmin;
+        font-weight: 700;
+        font-size: 3.2vmin;
+      }
+      .widget span {
+        display: block;
+        margin-top: 0.35em;
+        color: #94a3b8;
+        font-size: 2.4vmin;
+        font-weight: 600;
+      }
       #cursor {
-        position: absolute; width: 28px; height: 28px; z-index: 5;
+        position: absolute;
+        z-index: 5;
+        filter: drop-shadow(0 0.4vmin 0.8vmin rgba(0, 0, 0, 0.5));
+        pointer-events: none;
       }
     </style>
   </head>
@@ -56,7 +100,8 @@
       data-width="1920"
       data-height="1080"
     >
-
+      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#0b1220"></div>
+      <div id="scene"></div>
     </div>
     <script>
       (function () {
@@ -78,49 +123,96 @@
         }
 
 
-        const view = hyperbits.viewport();
+        const vars = bitVars();
         const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const sceneEl = document.getElementById("scene");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        bg.setAttribute("data-color", vars.color);
+
+        const screenW = view.width * 0.7;
+        const screenH = view.height * 0.7;
         const screen = document.createElement("div");
         screen.id = "screen";
+        screen.style.width = screenW + "px";
+        screen.style.height = screenH + "px";
+        screen.style.borderColor = vars.color;
+
+        const chrome = document.createElement("div");
+        chrome.id = "chrome";
+        ["#ff5f56", "#ffbd2e", "#27c93f"].forEach(function (hex) {
+          const dot = document.createElement("div");
+          dot.className = "dot";
+          dot.style.backgroundColor = hex;
+          chrome.append(dot);
+        });
+        const chromeLabel = document.createElement("div");
+        chromeLabel.textContent = "atlas.app / overview";
+        chromeLabel.style.marginLeft = "1.2vmin";
+        chrome.append(chromeLabel);
+        screen.append(chrome);
+
         const widgets = [
-          { label: "Revenue", x: "8%", y: "12%", w: "28%" },
-          { label: "Active users", x: "40%", y: "12%", w: "24%" },
-          { label: "Pipeline", x: "8%", y: "48%", w: "56%" },
-          { label: "Alerts", x: "68%", y: "12%", w: "24%" },
+          { label: "Revenue", sub: "$1.28M", x: 0.06, y: 0.16, w: 0.28, h: 0.28 },
+          { label: "Active users", sub: "12,480", x: 0.38, y: 0.16, w: 0.24, h: 0.28 },
+          { label: "Alerts", sub: "3 open", x: 0.66, y: 0.16, w: 0.28, h: 0.28 },
+          { label: "Pipeline", sub: "North / Atlas / Harbor", x: 0.06, y: 0.5, w: 0.88, h: 0.4 },
         ];
-        widgets.forEach(function (widget) {
+        const widgetNodes = widgets.map(function (widget) {
           const node = document.createElement("div");
           node.className = "widget";
           node.textContent = widget.label;
-          node.style.left = widget.x;
-          node.style.top = widget.y;
-          node.style.width = widget.w;
+          const sub = document.createElement("span");
+          sub.textContent = widget.sub;
+          node.append(sub);
+          node.style.left = widget.x * screenW + "px";
+          node.style.top = widget.y * screenH + "px";
+          node.style.width = widget.w * screenW + "px";
+          node.style.height = widget.h * screenH + "px";
+          node.style.fontSize = view.vmin * 3.2 + "px";
           screen.append(node);
+          return node;
         });
+        widgetNodes[0].style.outline = "0.22vmin solid " + vars.color;
+
         const cursor = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         cursor.setAttribute("id", "cursor");
         cursor.setAttribute("viewBox", "0 0 24 24");
+        const cursorSize = view.vmin * 5;
+        cursor.style.width = cursorSize + "px";
+        cursor.style.height = cursorSize + "px";
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        path.setAttribute("d", "M3 3l8 18 2-7 7-2z");
-        path.setAttribute("fill", "#f8fafc");
+        path.setAttribute("d", "M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z");
+        path.setAttribute("fill", vars.color);
         cursor.append(path);
         screen.append(cursor);
-        const scene = hyperbits.createScene3D(root, {
-          perspective: 1400,
-          transitionDuration: 1.1,
-          stepDuration: 2.5,
+
+        const zoom = view.vmin * 22;
+        const scene = hyperbits.createScene3D(sceneEl, {
+          perspective: 1200,
+          transitionDuration: 1.35,
+          easing: "easeInOutCubic",
           steps: [
-            { id: "wide", z: view.vmin * 8, rotateX: 8, element: screen },
-            { id: "rev", x: -view.vmin * 10, y: -view.vmin * 6, z: view.vmin * 30 },
-            { id: "pipe", y: view.vmin * 8, z: view.vmin * 24, rotateX: 4 },
-            { id: "alerts", x: view.vmin * 14, z: view.vmin * 28 },
+            { id: "overview", x: 0, y: 0, z: view.vmin * 8, rotateX: 8, duration: 2 },
+            { id: "rev", x: -screenW * 0.22, y: -screenH * 0.18, z: zoom, duration: 2 },
+            { id: "users", x: screenW * 0.02, y: -screenH * 0.18, z: zoom, duration: 2 },
+            { id: "pipe", x: 0, y: screenH * 0.16, z: zoom * 0.85, rotateX: 4, duration: 2 },
+            { id: "out", x: 0, y: 0, z: view.vmin * 4, rotateX: 6, duration: 2 },
           ],
+          elements: [{ element: screen, centered: true, x: 0, y: 0, z: 0 }],
         });
+        sceneEl.style.position = "absolute";
+        sceneEl.style.inset = "0";
+        sceneEl.style.zIndex = "1";
+
         const timeline = gsap.timeline({ paused: true });
         scene.bind(timeline);
-        timeline.fromTo(cursor, { x: 40, y: 40 }, { x: 120, y: 70, duration: 2.2, ease: "power2.inOut" }, 0.4);
-        timeline.to(cursor, { x: 220, y: 260, duration: 2.4, ease: "power2.inOut" }, 2.8);
-        timeline.to(cursor, { x: 620, y: 80, duration: 2.2, ease: "power2.inOut" }, 5.4);
+        timeline.fromTo(cursor, { x: screenW * 0.1, y: screenH * 0.22 }, { x: screenW * 0.16, y: screenH * 0.28, duration: 2, ease: "power2.inOut" }, 0);
+        timeline.to(cursor, { x: screenW * 0.46, y: screenH * 0.26, duration: 2, ease: "power2.inOut" }, 2);
+        timeline.to(cursor, { x: screenW * 0.18, y: screenH * 0.62, duration: 2, ease: "power2.inOut" }, 4);
+        timeline.to(cursor, { x: screenW * 0.72, y: screenH * 0.24, duration: 2, ease: "power2.inOut" }, 6);
+        timeline.to(cursor, { x: screenW * 0.48, y: screenH * 0.42, duration: 2, ease: "power2.inOut" }, 8);
         timeline.to({}, { duration: 10 }, 0);
         registerTimeline("cursor-flyover", timeline);
 

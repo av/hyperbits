@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Accent","default":"#38bdf8"},{"id":"background","type":"color","label":"Background","default":"#020617"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -32,13 +32,27 @@
         width: 100%;
         height: 100%;
         position: relative;
-        background-color: #020617;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       }
-      #root { background-color: #020617; }
+      #scene {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+      }
       .face {
-        width: 320px; height: 320px; display: flex; align-items: center; justify-content: center;
-        color: #f8fafc; font-weight: 800; border: 2px solid rgba(248,250,252,0.2);
+        width: 40vmin;
+        height: 40vmin;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #f8fafc;
+        font-weight: 800;
+        overflow: hidden;
+        box-sizing: border-box;
+        padding: 4vmin;
+        letter-spacing: -0.04em;
+        font-size: 8vmin;
+        box-shadow: inset 0 0 4vmin rgba(0, 0, 0, 0.35);
       }
     </style>
   </head>
@@ -52,7 +66,8 @@
       data-width="1920"
       data-height="1080"
     >
-
+      <div id="bg" class="clip" data-start="0" data-duration="16" style="position:absolute;inset:0;background-color:#020617"></div>
+      <div id="scene"></div>
     </div>
     <script>
       (function () {
@@ -74,44 +89,71 @@
         }
 
 
-        const view = hyperbits.viewport();
+        const vars = bitVars();
         const root = document.getElementById("root");
-        const size = view.vmin * 28;
+        const bg = document.getElementById("bg");
+        const sceneEl = document.getElementById("scene");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        bg.setAttribute("data-color", vars.color);
+
+        const size = view.vmin * 40;
         const half = size / 2;
         const faces = [
-          { name: "Front", color: "#1d4ed8", x: 0, y: 0, z: half, rotateY: 0 },
-          { name: "Right", color: "#0f766e", x: half, y: 0, z: 0, rotateY: 90 },
-          { name: "Back", color: "#9a3412", x: 0, y: 0, z: -half, rotateY: 180 },
-          { name: "Left", color: "#6d28d9", x: -half, y: 0, z: 0, rotateY: -90 },
-          { name: "Top", color: "#be123c", x: 0, y: -half, z: 0, rotateX: 90 },
-          { name: "Bottom", color: "#0369a1", x: 0, y: half, z: 0, rotateX: -90 },
+          { id: "front", name: "TEXT", color: "#1e293b", x: 0, y: 0, z: half, rotateX: 0, rotateY: 0, rotateZ: 0 },
+          { id: "right", name: "MOTION", color: "#0f766e", x: half, y: 0, z: 0, rotateX: 0, rotateY: 90, rotateZ: 0 },
+          { id: "back", name: "PARTICLES", color: "#9a3412", x: 0, y: 0, z: -half, rotateX: 0, rotateY: 180, rotateZ: 0 },
+          { id: "left", name: "GRADIENTS", color: "#6d28d9", x: -half, y: 0, z: 0, rotateX: 0, rotateY: -90, rotateZ: 0 },
+          { id: "top", name: "3D", color: vars.color, x: 0, y: -half, z: 0, rotateX: 90, rotateY: 0, rotateZ: 0 },
+          { id: "bottom", name: "BITS", color: vars.color, x: 0, y: half, z: 0, rotateX: -90, rotateY: 0, rotateZ: 0 },
         ];
+
         const elements = faces.map(function (face) {
           const node = document.createElement("div");
           node.className = "face";
-          node.setAttribute("data-layout-allow-overlap", "");
-          node.setAttribute("data-layout-allow-occlusion", "");
           node.textContent = face.name;
           node.style.width = size + "px";
           node.style.height = size + "px";
           node.style.backgroundColor = face.color;
-          node.style.fontSize = view.vmin * 4 + "px";
-          return { element: node, x: face.x, y: face.y, z: face.z, rotateX: face.rotateX || 0, rotateY: face.rotateY || 0 };
+          node.style.color = "#f8fafc";
+          node.style.fontSize = view.vmin * 5 + "px";
+          node.setAttribute("data-layout-allow-overlap", "");
+          node.setAttribute("data-layout-allow-occlusion", "");
+          node.style.border = size * 0.02 + "px solid " + vars.color;
+          node.setAttribute("data-layout-allow-overlap", "");
+          node.setAttribute("data-layout-allow-occlusion", "");
+          return {
+            element: node,
+            centered: true,
+            x: face.x,
+            y: face.y,
+            z: face.z,
+            rotateX: face.rotateX,
+            rotateY: face.rotateY,
+            rotateZ: face.rotateZ,
+          };
         });
-        const scene = hyperbits.createScene3D(root, {
-          perspective: 1600,
-          transitionDuration: 0.9,
-          stepDuration: 16 / 6,
-          steps: [
-            { id: "front", rotateY: 0, z: view.vmin * 10 },
-            { id: "right", rotateY: -90, z: view.vmin * 10 },
-            { id: "back", rotateY: -180, z: view.vmin * 10 },
-            { id: "left", rotateY: -270, z: view.vmin * 10 },
-            { id: "top", rotateX: -90, z: view.vmin * 10 },
-            { id: "bottom", rotateX: 90, z: view.vmin * 10 },
-          ],
+
+        const steps = [
+          { id: "front", rotateY: 0, z: view.vmin * 8, duration: 16 / 6 },
+          { id: "right", rotateY: -90, z: view.vmin * 8, duration: 16 / 6 },
+          { id: "back", rotateY: -180, z: view.vmin * 8, duration: 16 / 6 },
+          { id: "left", rotateY: -270, z: view.vmin * 8, duration: 16 / 6 },
+          { id: "top", rotateX: -90, z: view.vmin * 8, duration: 16 / 6 },
+          { id: "bottom", rotateX: 90, z: view.vmin * 8, duration: 16 / 6 },
+        ];
+
+        const scene = hyperbits.createScene3D(sceneEl, {
+          perspective: 2000,
+          transitionDuration: 2.2,
+          easing: "easeInOutCubic",
+          steps: steps,
           elements: elements,
         });
+        sceneEl.style.position = "absolute";
+        sceneEl.style.inset = "0";
+        sceneEl.style.zIndex = "1";
+
         const timeline = gsap.timeline({ paused: true });
         scene.bind(timeline);
         timeline.to({}, { duration: 16 }, 0);

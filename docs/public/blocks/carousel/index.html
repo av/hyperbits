@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Accent","default":"#38bdf8"},{"id":"background","type":"color","label":"Background","default":"#0b1220"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -32,13 +32,27 @@
         width: 100%;
         height: 100%;
         position: relative;
-        background-color: #0b1220;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       }
-      #root { background-color: #0b1220; }
+      #scene {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+      }
       .card {
-        width: 280px; height: 380px; border-radius: 22px; display: flex; align-items: flex-end;
-        color: #f8fafc; font-weight: 800; padding: 24px; box-sizing: border-box;
+        width: 32vmin;
+        height: 42vmin;
+        border-radius: 2.2vmin;
+        display: flex;
+        align-items: flex-end;
+        color: #f8fafc;
+        font-weight: 800;
+        padding: 2.2vmin;
+        box-sizing: border-box;
+        letter-spacing: -0.04em;
+        font-size: 6vmin;
+        border: 0.28vmin solid rgba(248, 250, 252, 0.16);
+        box-shadow: 0 1.6vmin 4vmin rgba(0, 0, 0, 0.45);
       }
     </style>
   </head>
@@ -52,7 +66,8 @@
       data-width="1920"
       data-height="1080"
     >
-
+      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#0b1220"></div>
+      <div id="scene"></div>
     </div>
     <script>
       (function () {
@@ -74,36 +89,62 @@
         }
 
 
-        const view = hyperbits.viewport();
+        const vars = bitVars();
         const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const sceneEl = document.getElementById("scene");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        bg.setAttribute("data-color", vars.color);
+
         const labels = ["North", "Atlas", "Signal", "Harbor", "Nova", "Prism"];
-        const colors = ["#1d4ed8", "#0f766e", "#9a3412", "#6d28d9", "#be123c", "#0369a1"];
-        const radius = view.vmin * 28;
+        const colors = [vars.color, "#0f766e", "#9a3412", "#6d28d9", "#be123c", "#0369a1"];
+        const radius = view.vmin * 48;
+        const cardW = view.vmin * 32;
+        const cardH = view.vmin * 42;
+
         const elements = labels.map(function (label, index) {
           const card = document.createElement("div");
           card.className = "card";
+          card.textContent = label;
+          card.style.width = cardW + "px";
+          card.style.height = cardH + "px";
+          card.style.backgroundColor = colors[index];
+          card.style.fontSize = view.vmin * 6 + "px";
+          card.style.borderColor = vars.color;
           card.setAttribute("data-layout-allow-overlap", "");
           card.setAttribute("data-layout-allow-occlusion", "");
-          card.textContent = label;
-          card.style.backgroundColor = colors[index];
-          card.style.fontSize = view.vmin * 3.4 + "px";
           const angle = (index / labels.length) * Math.PI * 2;
           return {
             element: card,
+            centered: true,
             x: Math.sin(angle) * radius,
             z: Math.cos(angle) * radius,
             rotateY: (index / labels.length) * 360,
           };
         });
+
         const steps = labels.map(function (_label, index) {
-          return { id: "c" + index, rotateY: -(index / labels.length) * 360, z: view.vmin * 8, duration: 10 / labels.length };
+          return {
+            id: "c" + index,
+            rotateY: -(index / labels.length) * 360,
+            rotateX: 8,
+            z: view.vmin * 8,
+            duration: 10 / labels.length,
+          };
         });
-        const scene = hyperbits.createScene3D(root, {
+
+        const scene = hyperbits.createScene3D(sceneEl, {
           perspective: 1400,
-          transitionDuration: 0.8,
+          transitionDuration: 1.45,
+          easing: "easeInOutCubic",
           steps: steps,
           elements: elements,
         });
+        sceneEl.style.position = "absolute";
+        sceneEl.style.inset = "0";
+        sceneEl.style.zIndex = "1";
+
         const timeline = gsap.timeline({ paused: true });
         scene.bind(timeline);
         timeline.to({}, { duration: 10 }, 0);

@@ -96,6 +96,7 @@ export const docsBits: DocsBit[] = [
     "helpers": [
       "text",
       "stagger",
+      "gradient",
       "particles",
       "scene3d",
       "code",
@@ -137,7 +138,7 @@ export const docsBits: DocsBit[] = [
       "burst",
       "fountain"
     ],
-    "duration": 2,
+    "duration": 6,
     "width": 1920,
     "height": 1080,
     "helpers": [
@@ -250,7 +251,6 @@ export const docsBits: DocsBit[] = [
     "height": 1080,
     "helpers": [
       "scene3d",
-      "stagger",
       "random",
       "viewport"
     ],
@@ -342,7 +342,6 @@ export const docsBits: DocsBit[] = [
     "height": 1080,
     "helpers": [
       "scene3d",
-      "random",
       "viewport"
     ],
     "htmlPath": "/bits/flying-through-words.html"
@@ -364,7 +363,6 @@ export const docsBits: DocsBit[] = [
     "width": 1920,
     "height": 1080,
     "helpers": [
-      "scene3d",
       "viewport"
     ],
     "htmlPath": "/bits/ken-burns.html"
@@ -456,7 +454,6 @@ export const docsBits: DocsBit[] = [
     "width": 1080,
     "height": 1080,
     "helpers": [
-      "stagger",
       "viewport"
     ],
     "htmlPath": "/bits/card-stack.html"
@@ -500,7 +497,6 @@ export const docsBits: DocsBit[] = [
     "width": 1920,
     "height": 1080,
     "helpers": [
-      "stagger",
       "viewport"
     ],
     "htmlPath": "/bits/easings-visualizer.html"
@@ -523,7 +519,6 @@ export const docsBits: DocsBit[] = [
     "width": 1920,
     "height": 1080,
     "helpers": [
-      "stagger",
       "random",
       "viewport"
     ],
@@ -614,7 +609,6 @@ export const docsBits: DocsBit[] = [
     "width": 1920,
     "height": 1080,
     "helpers": [
-      "stagger",
       "viewport"
     ],
     "htmlPath": "/bits/mosaic-reframe.html"

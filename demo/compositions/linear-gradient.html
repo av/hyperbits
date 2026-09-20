@@ -32,10 +32,8 @@
         width: 100%;
         height: 100%;
         position: relative;
-        background-color: #051226;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       }
-      #root { background-color: #051226; }
     </style>
   </head>
   <body>
@@ -48,7 +46,7 @@
       data-width="1920"
       data-height="1080"
     >
-
+      <div id="bg" class="clip" data-start="0" data-duration="3" style="position:absolute;inset:0;background-color:#051226"></div>
     </div>
     <script>
       (function () {
@@ -71,13 +69,20 @@
 
 
         const vars = bitVars();
-        const root = document.getElementById("root");
-        const from = "linear-gradient(0deg, " + vars.color1Start + " 0%, " + vars.color1End + " 100%)";
-        const to = "linear-gradient(180deg, " + vars.color2Start + " 0%, " + vars.color2End + " 100%)";
-        const proxy = hyperbits.gradientProxy(root, [from, to]);
+        const bg = document.getElementById("bg");
+        const from = "linear-gradient(0deg, " + vars.color1Start + ", " + vars.color1End + ")";
+        const to = "linear-gradient(180deg, " + vars.color2Start + ", " + vars.color2End + ")";
+        const proxy = hyperbits.gradientProxy(bg, [from, to]);
+        const apply = function () {
+          proxy.apply();
+          bg.style.backgroundColor = vars.color1Start;
+          bg.style.setProperty("--knob-color", vars.color1Start);
+        };
         const timeline = gsap.timeline({ paused: true });
-        timeline.fromTo(proxy.proxy, { progress: 0 }, { progress: 1, duration: 3, ease: "none", onUpdate: proxy.apply }, 0);
+        timeline.fromTo(proxy.proxy, { progress: 0 }, { progress: 1, duration: 3, ease: "none", onUpdate: apply }, 0);
+        timeline.fromTo(bg, { x: 0 }, { x: 0.5, duration: 3, ease: "none" }, 0);
         registerTimeline("linear-gradient", timeline);
+        apply();
 
       })();
     </script>

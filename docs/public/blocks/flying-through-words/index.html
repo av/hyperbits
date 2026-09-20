@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"words","type":"string","label":"Words","default":"SEEK,FRAME,MOTION,SCALE,DEPTH,LIGHT,TIME,SPACE"}]'>
+<html lang="en" data-composition-variables='[{"id":"words","type":"string","label":"Words","default":"SEEK,FRAME,MOTION,SCALE,DEPTH,LIGHT,TIME,SPACE"},{"id":"color","type":"color","label":"Text color","default":"#e2e8f0"},{"id":"background","type":"color","label":"Background","default":"#000000"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -32,11 +32,21 @@
         width: 100%;
         height: 100%;
         position: relative;
-        background-color: #000000;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       }
-      #root { background-color: #000000; }
-      .word { color: #e2e8f0; font-weight: 800; letter-spacing: 0.08em; white-space: nowrap; }
+      #scene {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+      }
+      .word {
+        color: #e2e8f0;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        white-space: nowrap;
+        line-height: 1;
+        font-size: 8vmin;
+      }
     </style>
   </head>
   <body>
@@ -49,7 +59,8 @@
       data-width="1920"
       data-height="1080"
     >
-
+      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#000000"></div>
+      <div id="scene"></div>
     </div>
     <script>
       (function () {
@@ -72,33 +83,67 @@
 
 
         const vars = bitVars();
-        const view = hyperbits.viewport();
         const root = document.getElementById("root");
-        const words = String(vars.words).split(",").map(function (part) { return part.trim(); });
+        const bg = document.getElementById("bg");
+        const sceneEl = document.getElementById("scene");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        bg.setAttribute("data-color", vars.color);
+
+        const list = String(vars.words).split(",").map(function (part) { return part.trim(); }).filter(Boolean);
+        const slots = [
+          { x: -22, y: -10 },
+          { x: 24, y: 12 },
+          { x: -18, y: 16 },
+          { x: 20, y: -14 },
+          { x: -26, y: 8 },
+          { x: 14, y: 18 },
+          { x: -12, y: -18 },
+          { x: 22, y: 4 },
+        ];
+        const depth = view.vmin * 40;
+        const count = Math.max(list.length, slots.length);
         const elements = [];
-        for (let index = 0; index < 24; index += 1) {
+        for (let index = 0; index < Math.min(count, slots.length); index += 1) {
           const node = document.createElement("div");
           node.className = "word";
+          node.textContent = list[index % list.length];
+          node.style.fontSize = view.vmin * 8 + "px";
+          node.style.color = vars.color;
           node.setAttribute("data-layout-allow-overlap", "");
           node.setAttribute("data-layout-allow-occlusion", "");
-          node.textContent = words[index % words.length];
-          node.style.fontSize = view.vmin * hyperbits.randomFloat("fs-" + index, 3, 8) + "px";
           elements.push({
             element: node,
-            x: hyperbits.randomFloat("x-" + index, -view.vmin * 40, view.vmin * 40),
-            y: hyperbits.randomFloat("y-" + index, -view.vmin * 24, view.vmin * 24),
-            z: hyperbits.randomFloat("z-" + index, -view.vmin * 10, view.vmin * 220),
+            centered: true,
+            x: slots[index].x * view.vmin,
+            y: slots[index].y * view.vmin,
+            z: (index + 1) * depth,
           });
         }
-        const scene = hyperbits.createScene3D(root, {
+
+        const stepCount = 7;
+        const steps = [];
+        for (let index = 0; index < stepCount; index += 1) {
+          steps.push({
+            id: "z" + index,
+            x: 0,
+            y: 0,
+            z: index * depth + view.vmin * 8,
+            duration: 10 / stepCount,
+          });
+        }
+
+        const scene = hyperbits.createScene3D(sceneEl, {
           perspective: 900,
-          transitionDuration: 2,
-          steps: [
-            { id: "start", z: 0, duration: 1 },
-            { id: "fly", z: view.vmin * 180, duration: 9 },
-          ],
+          transitionDuration: 1.28,
+          easing: "easeInOutCubic",
+          steps: steps,
           elements: elements,
         });
+        sceneEl.style.position = "absolute";
+        sceneEl.style.inset = "0";
+        sceneEl.style.zIndex = "1";
+
         const timeline = gsap.timeline({ paused: true });
         scene.bind(timeline);
         timeline.to({}, { duration: 10 }, 0);

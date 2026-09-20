@@ -211,7 +211,7 @@ type StaggerTargets = string | Element | Element[] | NodeListOf<Element> | HTMLC
 ### `StaggerSpec`
 
 ```ts
-type StaggerSpec = { x?: StaggerProperty; y?: StaggerProperty; rotate?: StaggerProperty; rotation?: StaggerProperty; scale?: StaggerProperty; opacity?: StaggerProperty; duration?: number; delay?: number; stagger?: number; staggerDirection?: StaggerDirection; hold?: number; ease?: string | EasingFunction; from?: gsap.TweenVars; to?: gsap.TweenVars; };
+type StaggerSpec = { x?: StaggerProperty; y?: StaggerProperty; rotate?: StaggerProperty; rotation?: StaggerProperty; scale?: StaggerProperty; opacity?: StaggerProperty; duration?: number; delay?: number; stagger?: number; staggerDirection?: StaggerDirection; hold?: number; ease?: string | EasingFunction; at?: number; from?: gsap.TweenVars; to?: gsap.TweenVars; };
 ```
 
 ### `resolveTargets`
@@ -450,7 +450,7 @@ interface Particle { id: string; index: number; seed: number; birthFrame: number
 ### `SpawnerConfig`
 
 ```ts
-interface SpawnerConfig { id: string; rate?: number; burst?: number; startFrame?: number; max?: number; position?: Partial<ParticleVector>; area?: { width: number; height: number; depth?: number }; velocity?: { x: number; y: number; z?: number; varianceX?: number; varianceY?: number; varianceZ?: number; }; lifespan?: number; lifespanVariance?: number; }
+interface SpawnerConfig { id: string; rate?: number; burst?: number; startFrame?: number; delayFrame?: number; max?: number; position?: Partial<ParticleVector>; area?: { width: number; height: number; depth?: number }; velocity?: { x: number; y: number; z?: number; varianceX?: number; varianceY?: number; varianceZ?: number; }; lifespan?: number; lifespanVariance?: number; }
 ```
 
 ### `ParticleBehaviorHandler`
@@ -531,10 +531,28 @@ type ParticleSystem = TimeStateBinding<Particle[]> & { fps: number; bind: ( time
 createParticles(config: CreateParticlesOptions): ParticleSystem
 ```
 
+### `ParticleColor`
+
+```ts
+type ParticleColor = string | ((particle: Particle) => string);
+```
+
+### `ParticleSize`
+
+```ts
+type ParticleSize = number | ((particle: Particle) => number);
+```
+
+### `ParticleShape`
+
+```ts
+type ParticleShape = "circle" | "rect";
+```
+
 ### `ParticleRenderOptions`
 
 ```ts
-type ParticleRenderOptions = { color?: string; size?: number; clear?: boolean; };
+type ParticleRenderOptions = { color?: ParticleColor; size?: ParticleSize; glow?: number; shape?: ParticleShape; clear?: boolean; };
 ```
 
 ### `renderParticles`

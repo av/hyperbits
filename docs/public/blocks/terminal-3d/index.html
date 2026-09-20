@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[]'>
+<html lang="en" data-composition-variables='[{"id":"command","type":"string","label":"Command","default":"git status"},{"id":"color","type":"color","label":"Accent","default":"#86efac"},{"id":"background","type":"color","label":"Background","default":"#020617"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -32,14 +32,65 @@
         width: 100%;
         height: 100%;
         position: relative;
-        background-color: #020617;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       }
-      #root { background-color: #020617; }
+      #scene {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+      }
+      .term[data-step-active="false"] {
+        opacity: 0.12;
+      }
+      .term[data-step-active="true"] {
+        opacity: 1;
+      }
       .term {
-        width: 520px; height: 320px; background-color: #0b1220; border: 1px solid #1e293b;
-        border-radius: 16px; color: #86efac; font-family: ui-monospace, monospace;
-        padding: 18px 20px; white-space: pre-wrap;
+        width: 40%;
+        height: 50%;
+        background-color: #0b1220;
+        border: 1px solid #1e293b;
+        border-radius: 1.4vmin;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 1.6vmin 4vmin rgba(0, 0, 0, 0.45);
+      }
+      .term-bar {
+        height: 12%;
+        background-color: #1e293b;
+        display: flex;
+        align-items: center;
+        padding: 0 3%;
+        gap: 0.8vmin;
+      }
+      .term-dot {
+        width: 1.2vmin;
+        height: 1.2vmin;
+        border-radius: 50%;
+      }
+      .term-title {
+        flex: 1;
+        text-align: center;
+        color: #94a3b8;
+        font-size: 2vmin;
+        font-weight: 600;
+      }
+      .term-body {
+        flex: 1;
+        padding: 4%;
+        color: #86efac;
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 3vmin;
+        line-height: 1.45;
+        white-space: pre;
+        overflow: hidden;
+      }
+      .cursor {
+        display: inline-block;
+        width: 0.55em;
+        background-color: #86efac;
+        margin-left: 0.06em;
       }
     </style>
   </head>
@@ -53,7 +104,8 @@
       data-width="1920"
       data-height="1080"
     >
-
+      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#020617"></div>
+      <div id="scene"></div>
     </div>
     <script>
       (function () {
@@ -75,37 +127,76 @@
         }
 
 
-        const view = hyperbits.viewport();
+        const vars = bitVars();
         const root = document.getElementById("root");
-        function term(text) {
+        const bg = document.getElementById("bg");
+        const sceneEl = document.getElementById("scene");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        bg.setAttribute("data-color", vars.color);
+
+        const termW = view.width * 0.4;
+        const termH = view.height * 0.5;
+
+        function terminal(title, text) {
           const node = document.createElement("div");
           node.className = "term";
-          node.style.fontSize = view.vmin * 2 + "px";
-          node.textContent = text;
-          return node;
+          node.style.width = termW + "px";
+          node.style.height = termH + "px";
+          node.style.borderColor = vars.color;
+          const bar = document.createElement("div");
+          bar.className = "term-bar";
+          ["#ff5f56", "#ffbd2e", "#27c93f"].forEach(function (hex) {
+            const dot = document.createElement("div");
+            dot.className = "term-dot";
+            dot.style.backgroundColor = hex;
+            bar.append(dot);
+          });
+          const label = document.createElement("div");
+          label.className = "term-title";
+          label.textContent = title;
+          bar.append(label);
+          const body = document.createElement("pre");
+          body.className = "term-body";
+          body.style.whiteSpace = "pre";
+          body.style.color = vars.color;
+          body.style.fontSize = view.vmin * 3 + "px";
+          const typed = document.createElement("span");
+          typed.textContent = text;
+          const cursor = document.createElement("span");
+          cursor.className = "cursor";
+          cursor.textContent = " ";
+          cursor.style.backgroundColor = vars.color;
+          body.append(typed, cursor);
+          node.append(bar, body);
+          node.setAttribute("data-layout-allow-overlap", "");
+          node.setAttribute("data-layout-allow-occlusion", "");
+          return { node: node, typed: typed, cursor: cursor };
         }
-        const one = term("$ hyperframes lint\nok 0 errors");
-        const two = term("$ hyperbits add fade-in\nwrote compositions/fade-in.html");
-        const three = term("$ hyperframes render\nexported out.mp4");
-        const scene = hyperbits.createScene3D(root, {
-          perspective: 1400,
-          transitionDuration: 0.9,
-          stepDuration: 3.2,
+
+        const command = String(vars.command);
+        const one = terminal("user@dev:~/project", "$ " + command + "\nOn branch main\nworking tree clean");
+        const two = terminal("server-logs", "[INFO] Server started on port 3000\n[INFO] Connected to database\n[WARN] High memory usage");
+        const three = terminal("build-process", "> build project\n> transpile modules\n> optimize assets\nBuild successful");
+
+        const scene = hyperbits.createScene3D(sceneEl, {
+          perspective: 1000,
+          transitionDuration: 1.15,
+          easing: "easeInOutCubic",
           steps: [
-            { id: "a", rotateY: -18, z: view.vmin * 6 },
-            { id: "b", rotateY: 12, x: view.vmin * 10, z: view.vmin * 16 },
-            { id: "c", rotateX: 8, z: view.vmin * 22 },
-          ],
-          elements: [
-            { element: one, x: -view.vmin * 18, y: -view.vmin * 4, z: 0 },
-            { element: two, x: view.vmin * 16, y: view.vmin * 2, z: -view.vmin * 8 },
-            { element: three, x: 0, y: view.vmin * 14, z: view.vmin * 6 },
+            { id: "main", x: 0, y: 0, z: 0, rotateY: -6, duration: 3.4, element: one.node },
+            { id: "side", x: view.vmin * 58, y: 0, z: view.vmin * 18, rotateY: -22, duration: 3.3, element: two.node },
+            { id: "top", x: view.vmin * 58, y: -view.vmin * 42, z: view.vmin * 18, rotateX: 8, duration: 3.3, element: three.node },
           ],
         });
+        sceneEl.style.position = "absolute";
+        sceneEl.style.inset = "0";
+        sceneEl.style.zIndex = "1";
+
         const writers = [
-          hyperbits.typewriter(one, { duration: 2.2, delay: 0.2 }),
-          hyperbits.typewriter(two, { duration: 2.2, delay: 2.4 }),
-          hyperbits.typewriter(three, { duration: 2.2, delay: 5.2 }),
+          hyperbits.typewriter(one.typed, { duration: 2.4, delay: 0.2 }),
+          hyperbits.typewriter(two.typed, { duration: 2.4, delay: 3.5 }),
+          hyperbits.typewriter(three.typed, { duration: 2.4, delay: 6.8 }),
         ];
         const proxy = { time: 0 };
         const timeline = gsap.timeline({ paused: true });
@@ -118,6 +209,7 @@
             writers.forEach(function (writer) { writer.apply(proxy.time); });
           },
         }, 0);
+        timeline.fromTo([one.cursor, two.cursor, three.cursor], { opacity: 1 }, { opacity: 0.15, duration: 0.45, repeat: 21, yoyo: true, ease: "none" }, 0);
         registerTimeline("terminal-3d", timeline);
 
       })();

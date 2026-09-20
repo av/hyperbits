@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Particle color","default":"#ebb03b"},{"id":"background","type":"color","label":"Background","default":"#140d08"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -32,11 +32,16 @@
         width: 100%;
         height: 100%;
         position: relative;
-        background-color: #140d08;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        overflow: hidden;
       }
-      #root { background-color: #140d08; }
-      #stage { position: absolute; inset: 0; width: 100%; height: 100%; }
+      #stage {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
     </style>
   </head>
   <body>
@@ -45,11 +50,12 @@
       class="clip"
       data-composition-id="particles-fountain"
       data-start="0"
-      data-duration="2"
+      data-duration="6"
       data-width="1920"
       data-height="1080"
     >
-      <canvas id="stage" class="clip" data-start="0" data-duration="2"></canvas>
+      <div id="bg" class="clip" data-start="0" data-duration="6" style="position:absolute;inset:0;background-color:#140d08"></div>
+      <canvas id="stage" class="clip" data-start="0" data-duration="6" style="position:absolute;inset:0;width:100%;height:100%;z-index:1"></canvas>
     </div>
     <script>
       (function () {
@@ -71,8 +77,12 @@
         }
 
 
-        const view = hyperbits.viewport();
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
         const canvas = document.getElementById("stage");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
         canvas.width = view.width;
         canvas.height = view.height;
         const simulator = hyperbits.createParticles({
@@ -80,23 +90,33 @@
           spawners: [{
             id: "jet",
             rate: 10,
-            burst: 20,
-            startFrame: 0,
-            max: 200,
-            position: { x: view.width / 2, y: view.height * 1.05 },
-            area: { width: view.width * 0.1, height: 0 },
-            velocity: { x: 0, y: -view.height * 0.05, varianceX: view.width * 0.1, varianceY: view.height * 0.01 },
-            lifespan: 100,
-            lifespanVariance: 10,
+            burst: 24,
+            startFrame: 40,
+            max: 220,
+            position: { x: view.width / 2, y: view.height * 0.92 },
+            area: { width: view.width * 0.02, height: 0 },
+            velocity: {
+              x: 0,
+              y: -view.height * 0.018,
+              varianceX: view.width * 0.012,
+              varianceY: view.height * 0.004,
+            },
+            lifespan: 110,
+            lifespanVariance: 16,
           }],
           behaviors: [
-            { id: "gravity", handler: hyperbits.createGravity({ y: 0.2 }) },
-            { id: "fade", handler: hyperbits.createOpacityOverLife([1, 0]) },
+            { id: "gravity", handler: hyperbits.createGravity({ y: 0.22 }) },
+            { id: "fade", handler: hyperbits.createOpacityOverLife([1, 1, 0]) },
           ],
         });
         const timeline = gsap.timeline({ paused: true });
-        hyperbits.bind(timeline, canvas, simulator, { color: "#ebb03b", size: view.vmax * 1.2 });
-        timeline.to({}, { duration: 2 }, 0);
+        hyperbits.bind(timeline, canvas, simulator, {
+          color: vars.color,
+          size: view.vmin * 1.6,
+          glow: 1.8,
+          shape: "circle",
+        });
+        timeline.to({}, { duration: 6 }, 0);
         registerTimeline("particles-fountain", timeline);
 
       })();
