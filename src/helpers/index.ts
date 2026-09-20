@@ -3,3 +3,5 @@ export const HYPERBITS_GSAP_CDN =
 
 export * from "./interpolate";
 export * from "./stagger";
+export * from "./color";
+export * from "./gradient";
