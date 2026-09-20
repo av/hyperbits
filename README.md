@@ -1,5 +1,10 @@
 # hyperbits
 
+![Gallery](./docs/public/gallery.gif)
+
+[![NPM Version](https://img.shields.io/npm/v/hyperbits?style=flat-square&color=%23ec8b49)](https://www.npmjs.com/package/hyperbits)
+[![License](https://img.shields.io/npm/l/hyperbits?style=flat-square&color=%23ec8b49)](https://github.com/av/hyperbits/blob/master/LICENSE)
+
 Ready-made animation bits for [HyperFrames](https://github.com/heygen-com/hyperframes) video compositions, with a discoverable catalog, a CLI, and an MCP server. The sibling of [remotion-bits](https://github.com/av/remotion-bits), rebuilt for HTML + GSAP compositions instead of React.
 
 > [!NOTE]
@@ -7,7 +12,214 @@ Ready-made animation bits for [HyperFrames](https://github.com/heygen-com/hyperf
 
 ## Status
 
-Skeleton is in place. Toolchain, package layout, and the phase 1 decisions below exist; helpers, bits, CLI, MCP, and docs do not.
+0.1.0 is ready to publish. Helpers, 46 bits, CLI, MCP, docs, demo, and skill ship in this package. Publish itself is a manual step (`npm publish`).
+
+## Single-step usage
+
+All published entry points use the same package name: `hyperbits`. Once published, the packed CLI is `npx hyperbits ...`. Locally, after `npm pack`:
+
+```bash
+npm exec --package ./hyperbits-*.tgz -- hyperbits find "fade in"
+```
+
+### CLI
+
+```bash
+npx hyperbits find 3d cards
+npx hyperbits fetch fade-in --json
+npx hyperbits add fade-in --into compositions/
+```
+
+Or install the bin globally:
+
+```bash
+npm i -g hyperbits
+hyperbits find 3d cards
+hyperbits add fade-in --into compositions/
+```
+
+`add` writes the bit HTML into a HyperFrames project (default `compositions/`) and prints a `data-composition-src` snippet.
+
+### MCP
+
+```bash
+npx hyperbits mcp
+```
+
+Minimal MCP client config:
+
+```json
+{
+  "command": "npx",
+  "args": ["-y", "hyperbits", "mcp"]
+}
+```
+
+If you installed the package globally:
+
+```json
+{
+  "command": "hyperbits",
+  "args": ["mcp"]
+}
+```
+
+The server exposes two tools:
+
+- `find_hyperbits`
+- `fetch_hyperbit`
+
+### Add into a HyperFrames project
+
+From a HyperFrames project directory:
+
+```bash
+npx hyperbits add fade-in --into compositions/
+```
+
+Embed the written file:
+
+```html
+<div data-composition-src="compositions/fade-in.html"></div>
+```
+
+`npx hyperframes add <bit>` works when the project's `hyperframes.json` sets `registry` to the docs site origin. Per-item files live under `docs/public/blocks/`:
+
+```json
+{
+  "registry": "https://hyperbits.pages.dev"
+}
+```
+
+```bash
+npx hyperframes add fade-in
+```
+
+`hyperbits add` is the guaranteed install path. `npx hyperframes add` does not take a registry URL.
+
+### Skill
+
+This repository ships a skill file at `skills/hyperbits/SKILL.md`. Point an agent setup that supports custom skills at the published CLI or MCP entry points above. The skill does not install anything by itself.
+
+### Package
+
+Install when you want to import helpers as ESM:
+
+```bash
+npm install hyperbits
+```
+
+```js
+import { interpolate, stagger, viewport } from "hyperbits/helpers";
+```
+
+HTML compositions load the IIFE instead:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js"></script>
+```
+
+## Gallery
+
+The [demo project](./demo) sequences one bit per catalog category into a 31-second reel. The rendered file lives at `demo/out/gallery.mp4` and is gitignored. `docs/public/gallery.gif` is the README still; generate it from the reel when you have an FFmpeg with libx264.
+
+Regenerate the reel:
+
+```bash
+npm run build
+npm run demo:render
+```
+
+`demo:render` needs an FFmpeg with libx264. See [demo/README.md](./demo/README.md) for the Docker / PNG-sequence fallback.
+
+Then convert the mp4 into the committed gif, for example:
+
+```bash
+ffmpeg -i demo/out/gallery.mp4 docs/public/gallery.gif
+```
+
+## Helpers
+
+Each helper is deterministic given a time value so HyperFrames frame-by-frame rendering stays exact. ESM import from `hyperbits/helpers` or `hyperbits/helpers/<name>`. Bits load the IIFE global `hyperbits`.
+
+- `interpolate`: easing map, non-monotonic ranges, GSAP ease-name compatibility
+- `stagger`: GSAP timeline from a keyframe spec (`x`/`y`/`rotate`/`scale`/`opacity`, `duration`, `delay`, `stagger`, `hold`)
+- `color` / `gradient`: Oklch interpolation via culori, applied through a GSAP proxy
+- `random`: seeded generator (`random`, `randomFloat`, `pick`); renders stay reproducible
+- `particles`: deterministic simulator with spawners and behaviors, bound to a canvas
+- `viewport`: composition-relative `vw`/`vh`/`vmin`/`vmax`/`px()` from `data-width`/`data-height`
+- `text`: split into chars, words, and lines; typewriter driver
+- `counter`: numeric tween with formatting, prefix, and postfix
+- `code`: Prism-highlighted code with line reveal and focus
+- `scene3d`: CSS 3D scene with steps, camera moves, and `Transform3D`
+
+Reference pages live on the [docs site](https://hyperbits.pages.dev/docs/getting-started).
+
+## Bits
+
+46 bits in 6 categories. Each is a self-contained HTML composition with `bit.json` metadata.
+
+| Category | Count | Bits |
+| --- | ---: | --- |
+| Text Animations | 17 | `bar-chart`, `basic-code-block`, `basic-counter`, `basic-typewriter`, `blur-slide-word`, `char-by-char`, `cli-simulation`, `counter-confetti`, `fade-in`, `glitch-cycle`, `glitch-in`, `matrix-rain`, `multi-text-typewriter`, `stat-rings`, `typing-code-block`, `variable-speed-typewriter`, `word-by-word` |
+| Staggered Motion | 10 | `card-stack`, `chat-conversation`, `easings-visualizer`, `fracture-reassemble`, `grid-stagger`, `list-reveal`, `lower-third`, `mosaic-reframe`, `slide-from-left`, `staggered-fade-in` |
+| Background Effects | 3 | `conic-gradient`, `linear-gradient`, `radial-gradient` |
+| Particles | 5 | `fireflies`, `particles-fountain`, `particles-grid`, `particles-snow`, `scrolling-columns` |
+| 3D Scenes | 10 | `3d-basic`, `3d-elements`, `carousel`, `cube-navigation`, `cursor-flyover`, `flying-through-words`, `ken-burns`, `step-timing-context`, `terminal-3d`, `transform3d-showcase` |
+| Full Compositions | 1 | `feature-showcase` |
+
+Browse them in the [catalog](https://hyperbits.pages.dev/docs/bits-catalog).
+
+## Docs
+
+Documentation, playground, and the HyperFrames registry:
+
+https://hyperbits.pages.dev
+
+## Development
+
+Prerequisites: Git, Node.js 22 or newer, npm.
+
+```bash
+git clone https://github.com/av/hyperbits.git
+cd hyperbits
+npm install
+```
+
+| Script | What it does |
+| --- | --- |
+| `npm run build` | Inventory, skill refs, compile `src/` to `dist/`, IIFE bundle |
+| `npm run inventory` | Catalog JSON plus `skills/hyperbits/references/{bits,helpers}.md` |
+| `npm run skill:refs` | Skill helper and bit references only |
+| `npm run registry` | `registry.json` and `docs/public/blocks/` |
+| `npm run typecheck` | Inventory plus `tsc --noEmit` |
+| `npm run lint` | oxlint, then `lint:bits` |
+| `npm run lint:bits` | `npx hyperframes lint` on every bit |
+| `npm test` | vitest (excludes the packed-package gate) |
+| `npm run test:package` | Packs the tarball and runs the published CLI through it |
+| `npm run docs:dev` / `docs:build` | Docs site |
+| `npm run demo:preview` / `demo:render` | Demo gallery reel |
+| `scripts/release.sh` | Full check set. Optional version bump. Does not publish. |
+
+Repo-local CLI after `npm run build`:
+
+```bash
+node dist/cli/index.js find "hero intro" --tag text --json
+node dist/cli/index.js fetch fade-in --json
+node dist/cli/index.js add fade-in --into compositions/
+node dist/cli/index.js mcp
+```
+
+Release (manual publish):
+
+```bash
+scripts/release.sh            # checks only
+scripts/release.sh 0.1.1      # checks, then bump package.json and src/version.ts
+npm publish --access public   # you run this
+```
+
+`npm version` also works: keep `src/version.ts` in sync with `package.json`, then publish. `prepublishOnly` runs the helpers build, inventory, registry, skill refs, and the test suite.
 
 ## What a bit is here
 
@@ -18,78 +230,6 @@ In remotion-bits a bit is a self-contained React component rendered by the Remot
 - **A composition variable** contract (`data-composition-variables`) makes bits parametric the HyperFrames way, replacing Remotion's props.
 
 HyperFrames already ships a registry of installable "blocks" via `npx hyperframes add`. hyperbits is positioned as a third-party catalog in the same spirit: motion-first, smaller, agent-searchable, and installable through the same registry-item format where the CLI allows external sources.
-
-## Rebuild outline
-
-Everything remotion-bits has, mapped onto HyperFrames. Ordered by dependency, each phase is shippable on its own.
-
-### 1. Repository skeleton
-
-- `package.json` for the `hyperbits` npm package: ESM, `bin: hyperbits`, `exports` for helpers, Node >= 22 to match HyperFrames.
-- TypeScript, vitest with jsdom, oxlint and oxfmt, same toolchain as remotion-bits.
-- `AGENTS.md` with the rules for adding bits, kept in sync with a skill file.
-- Directory layout:
-  - `src/helpers/` runtime helpers (the "components" tier)
-  - `src/catalog/` shared catalog contracts, inventory generator output, runtime search
-  - `src/cli/` and `src/mcp/` the two agent-facing surfaces
-  - `bits/<category>/<name>/` one folder per bit: `index.html`, `bit.json` metadata, optional `preview.png`
-  - `docs/` Astro site
-  - `scripts/` inventory generation, registry build, docs deploy
-  - `skills/hyperbits/` skill file plus references
-
-### 2. Helpers (port of `src/utils`, `src/hooks`, `src/components`)
-
-Each helper is dependency-light, works as an ES module and inside the IIFE bundle, and is deterministic given a time value so HyperFrames frame-by-frame rendering stays exact.
-
-- `interpolate` with easing map and non-monotonic ranges, plus GSAP-ease-name compatibility.
-- `stagger` the StaggeredMotion equivalent: builds a GSAP timeline for a list of elements from a keyframe spec (`x/y/rotate/scale/opacity`, `duration`, `delay`, `stagger`, `hold`) so bits do not hand-write per-element tweens.
-- `color` and `gradient` Oklch interpolation via culori, gradient parsing, applied through a GSAP proxy object onto `style.background`.
-- `random` seeded generator, mandatory since renders must be reproducible across frames and machines.
-- `particles` deterministic simulator with spawners and behaviors (gravity, drag, wiggle, scale, opacity), rendering into a Canvas 2D element driven by the timeline.
-- `viewport` the `useViewportRect` equivalent: reads `data-width`/`data-height` from the composition root and exposes `vw`, `vh`, `vmin`, `vmax` so bits size fractionally.
-- `text` splitting into chars, words, and lines with span wrapping, the base for AnimatedText and TypeWriter bits.
-- `counter` numeric tween with formatting, prefix, and postfix.
-- `code` syntax-highlighted code block with line reveal and focus, using Prism.
-- `scene3d` CSS 3D scene with steps, camera moves, and elements, ported from Scene3D and transform3d. Larger and last in this phase.
-
-### 3. Bits (port of `docs/src/bits/examples`, 46 bits)
-
-Same categories, same names where they still make sense: Text Animations, Staggered Motion, Background Effects, Particles, 3D Scenes, Full Compositions. Each bit has:
-
-- `index.html` self-contained, 1920x1080 default, `data-composition-variables` for the knobs a user is expected to change, theme colors as literal values in a top-level `:root` block.
-- `bit.json` with `name`, `title`, `description`, `tags`, `duration`, `width`, `height`, `helpers` (which helpers it uses), and a `registryItem` block in HyperFrames' registry-item schema.
-- A rule that every bit passes `npx hyperframes lint` and the layout, motion, and contrast audits in CI.
-
-Shader-transition and canvas bits follow HyperFrames' shader-compatible CSS rules from the start.
-
-### 4. Catalog, CLI, and MCP (port of `src/catalog`, `src/cli`, `src/mcp`)
-
-- Inventory generator walks `bits/**/bit.json` and emits `src/catalog/inventory.generated.json` with the full HTML source inlined, same shape as remotion-bits so the search and resolution code ports almost verbatim.
-- CLI: `hyperbits find`, `hyperbits fetch`, `hyperbits add <bit> [--into compositions/]`, `hyperbits mcp`. `add` writes the HTML file into a HyperFrames project and prints the `data-composition-src` snippet.
-- MCP server with `find_hyperbits` and `fetch_hyperbit`, stdio transport.
-- Registry output: `registry.json` in HyperFrames registry-item format hosted from the docs site. `npx hyperframes add` does not take a URL; a project can set `hyperframes.json` `registry` to that base and then `npx hyperframes add <bit>`. `hyperbits add` is the guaranteed path.
-- Published-package integration test that runs the packed tarball through `npx` like remotion-bits does.
-
-### 5. Docs site (port of `docs/`)
-
-- Astro Starlight with the same theme setup, Tailwind, and dynamic sidebar built from bit frontmatter.
-- Bit playground: iframe running the bit's HTML through the HyperFrames player global, CodeMirror in HTML mode, live re-render on edit, variable controls generated from `data-composition-variables`. Replaces the Remotion player plus sucrase pipeline.
-- Catalog page with tag filtering and gallery previews, reference pages per helper, getting started, CLI and MCP pages.
-- Deployed to Cloudflare Pages by `scripts/deploy-docs.sh`.
-
-### 6. Demo project
-
-A HyperFrames project created with `npx hyperframes init` that embeds several bits and serves as the manual test bed and the source of the README gallery video.
-
-### 7. Skill file
-
-`skills/hyperbits/SKILL.md` plus `references/helpers.md`, `references/bits.md`, `references/patterns.md`. Default workflow for agents: MCP first, CLI second, direct file inspection last. Includes HyperFrames-specific rules (paused timelines, `window.__timelines`, seek-safe motion, shader CSS constraints).
-
-### 8. Release
-
-- `prepublishOnly` builds helpers, inventory, and registry.
-- Changelog, versioning, npm publish of `hyperbits`.
-- README gallery, badges, and the single-step usage section mirroring remotion-bits.
 
 ## Decisions
 

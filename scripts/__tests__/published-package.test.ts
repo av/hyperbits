@@ -130,6 +130,42 @@ describe("published package integration", () => {
         .filter(Boolean);
 
       expect(tarEntries).toContain("package/dist/cli/index.js");
+      expect(tarEntries).toContain("package/dist/hyperbits.iife.js");
+      expect(tarEntries).toContain("package/dist/helpers/index.js");
+      expect(tarEntries).toContain("package/registry.json");
+      expect(tarEntries).toContain("package/README.md");
+      expect(tarEntries).toContain("package/LICENSE");
+      expect(tarEntries).toContain("package/CHANGELOG.md");
+      expect(tarEntries).toContain("package/skills/hyperbits/SKILL.md");
+      expect(tarEntries).toContain(
+        "package/skills/hyperbits/references/bits.md",
+      );
+      expect(tarEntries).toContain(
+        "package/skills/hyperbits/references/helpers.md",
+      );
+
+      const packedPaths = tarEntries.map((entry) =>
+        entry.replace(/^package\//, ""),
+      );
+      const hasUnwanted = packedPaths.filter(
+        (entry) =>
+          entry.startsWith("docs/") ||
+          entry.startsWith("demo/") ||
+          entry.startsWith("src/") ||
+          entry.startsWith("scripts/") ||
+          entry.startsWith("node_modules/") ||
+          entry.includes("__tests__/") ||
+          entry.endsWith(".test.ts") ||
+          entry.endsWith(".test.js"),
+      );
+
+      expect(hasUnwanted).toEqual([]);
+      expect(
+        packedPaths.filter(
+          (entry) =>
+            entry.startsWith("bits/") && entry.endsWith("/hyperbits.iife.js"),
+        ),
+      ).toEqual([]);
 
       const packagedSourcePaths = tarEntries
         .filter(

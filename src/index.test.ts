@@ -1,9 +1,15 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { catalogName, HYPERBITS_GSAP_CDN, interpolate, version } from "./index";
 
 describe("hyperbits skeleton", () => {
-  it("exports a version string", () => {
-    expect(version).toBe("0.0.0");
+  it("exports a version string matching package.json", () => {
+    const packageJson = JSON.parse(
+      readFileSync(path.join(process.cwd(), "package.json"), "utf8"),
+    ) as { version: string };
+
+    expect(version).toBe(packageJson.version);
   });
 
   it("pins the HyperFrames template GSAP CDN URL", () => {

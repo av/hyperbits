@@ -1,6 +1,6 @@
 {
   "name": "hyperbits",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Animation bits, helpers, CLI and MCP server for HyperFrames video compositions",
   "type": "module",
   "license": "MIT",
@@ -108,11 +108,14 @@
     "dist/**/*.d.ts",
     "dist/**/*.d.ts.map",
     "dist/**/*.js.map",
-    "bits",
-    "src",
+    "bits/**/*.html",
+    "bits/**/*.json",
+    "bits/**/*.png",
     "skills",
     "registry.json",
-    "README.md"
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "clean": "rm -rf dist",
@@ -137,8 +140,9 @@
     "demo:sync": "npm --prefix demo run sync",
     "demo:preview": "npm run demo:sync && npm --prefix demo run preview",
     "demo:render": "npm run demo:sync && npm --prefix demo run render",
-    "prepublishOnly": "npm run build && npm run registry",
-    "prepack": "npm run build && npm run registry"
+    "prepublishOnly": "npm run build && npm run registry && npm test",
+    "prepack": "npm run build && npm run registry",
+    "release": "bash scripts/release.sh"
   },
   "peerDependencies": {
     "gsap": "^3.14.2"
