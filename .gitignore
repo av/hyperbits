@@ -5,6 +5,7 @@ npm-debug.log*
 .vscode/
 .idea/
 dist/
+bits/**/hyperbits.iife.js
 coverage/
 *.tsbuildinfo
 *.tgz
