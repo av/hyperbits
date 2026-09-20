@@ -1,0 +1,44 @@
+{
+  "name": "particles-fountain",
+  "title": "Fountain",
+  "description": "Bursting fountain particles effect",
+  "tags": [
+    "particles",
+    "burst",
+    "fountain"
+  ],
+  "duration": 2,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "particles",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "particles-fountain",
+    "type": "hyperframes:block",
+    "title": "Fountain",
+    "description": "Bursting fountain particles effect",
+    "tags": [
+      "particles",
+      "burst",
+      "fountain"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 2,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/particles-fountain.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

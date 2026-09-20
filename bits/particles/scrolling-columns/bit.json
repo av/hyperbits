@@ -1,0 +1,46 @@
+{
+  "name": "scrolling-columns",
+  "title": "Scrolling Columns",
+  "description": "Four columns of images scrolling with different speeds in a panning 3D scene",
+  "tags": [
+    "particles",
+    "3d",
+    "scrolling",
+    "columns"
+  ],
+  "duration": 10,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "viewport",
+    "random"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "scrolling-columns",
+    "type": "hyperframes:block",
+    "title": "Scrolling Columns",
+    "description": "Four columns of images scrolling with different speeds in a panning 3D scene",
+    "tags": [
+      "particles",
+      "3d",
+      "scrolling",
+      "columns"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 10,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/scrolling-columns.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

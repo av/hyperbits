@@ -1,0 +1,44 @@
+{
+  "name": "particles-snow",
+  "title": "Snow",
+  "description": "Falling snow particles effect",
+  "tags": [
+    "particles",
+    "snow",
+    "weather"
+  ],
+  "duration": 10,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "particles",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "particles-snow",
+    "type": "hyperframes:block",
+    "title": "Snow",
+    "description": "Falling snow particles effect",
+    "tags": [
+      "particles",
+      "snow",
+      "weather"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 10,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/particles-snow.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}
