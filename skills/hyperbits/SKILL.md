@@ -105,9 +105,9 @@ These match `references/patterns.md` and `AGENTS.md`. Do not invent a parallel s
 - `splitText` / `typewriter`: text reveal. Use these instead of rebuilding character spans.
 - `createCounter`: numeric tween with prefix, postfix, and separators.
 - `createCodeBlock` / `applyLineReveal` / `applyLineFocus`: syntax-highlighted code with line reveal and focus.
-- `colorProxy` / `gradientProxy`: Oklch color and CSS-gradient interpolation driven by a GSAP proxy.
-- `createParticles` / `bind`: deterministic particle simulation onto a canvas.
-- `createScene3D` / `Transform3D`: camera steps and 3D placement. Use when the request is a flythrough, multi-step walkthrough, or camera-driven showcase.
+- `colorProxy` / `gradientProxy` / `createCounter`: GSAP proxy bindings `{ proxy, apply }`. Tween `proxy`, call `apply` on update.
+- `createParticles` / `bind`: time-state simulation onto a canvas (`stateAt(time)`, `sim.bind(timeline, canvas, options)`).
+- `createScene3D` / `Transform3D`: camera steps and 3D placement (`stateAt` + `scene.bind(timeline)`). Use when the request is a flythrough, multi-step walkthrough, or camera-driven showcase.
 - `random` / `randomFloat` / `pick`: seeded values only.
 
 ## Common decision rules

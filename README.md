@@ -145,14 +145,14 @@ Each helper is deterministic given a time value so HyperFrames frame-by-frame re
 
 - `interpolate`: easing map, non-monotonic ranges, GSAP ease-name compatibility
 - `stagger`: GSAP timeline from a keyframe spec (`x`/`y`/`rotate`/`scale`/`opacity`, `duration`, `delay`, `stagger`, `hold`)
-- `color` / `gradient`: Oklch interpolation via culori, applied through a GSAP proxy
+- `color` / `gradient`: Oklch interpolation via culori, applied through a GSAP `{ proxy, apply }` binding
 - `random`: seeded generator (`random`, `randomFloat`, `pick`); renders stay reproducible
-- `particles`: deterministic simulator with spawners and behaviors, bound to a canvas
+- `particles`: deterministic simulator (`stateAt` + `bind`) with spawners and behaviors, bound to a canvas
 - `viewport`: composition-relative `vw`/`vh`/`vmin`/`vmax`/`px()` from `data-width`/`data-height`
 - `text`: split into chars, words, and lines; typewriter driver
-- `counter`: numeric tween with formatting, prefix, and postfix
+- `counter`: numeric tween (`{ proxy, apply }`) with formatting, prefix, and postfix
 - `code`: Prism-highlighted code with line reveal and focus
-- `scene3d`: CSS 3D scene with steps, camera moves, and `Transform3D`
+- `scene3d`: CSS 3D scene (`stateAt` + `bind`) with steps, camera moves, and `Transform3D`
 
 Reference pages live on the [docs site](https://hyperbits.pages.dev/docs/getting-started).
 
@@ -193,6 +193,7 @@ npm install
 | `npm run inventory` | Catalog JSON plus `skills/hyperbits/references/{bits,helpers}.md` |
 | `npm run skill:refs` | Skill helper and bit references only |
 | `npm run registry` | `registry.json` and `docs/public/blocks/` |
+| `npm run check:generated` | Fail if inventory, skill refs, registry, or docs bit pages are stale |
 | `npm run typecheck` | Inventory plus `tsc --noEmit` |
 | `npm run lint` | oxlint, then `lint:bits` |
 | `npm run lint:bits` | `npx hyperframes lint` on every bit |

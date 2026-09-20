@@ -47,6 +47,7 @@ These rules match `skills/hyperbits/references/patterns.md`. Do not add a parall
 - Size elements fractionally from the composition dimensions via `hyperbits.viewport()` (`vmin`, `vmax`, `vw`, `vh`, `px()`), not with hardcoded pixel values.
 - Expose user-facing knobs through `data-composition-variables`. Read them with `window.__hyperframes.getVariables()`.
 - For staged in and out motion, prefer `hyperbits.stagger(...)` over hand-written per-element tweens.
+- Color, gradient, and counter helpers return `{ proxy, apply }`. Particles and scene3d use `stateAt(time)` plus `bind`.
 - Theme colors are literal values in a top-level `:root` block.
 - Every bit must pass `npx hyperframes lint` before it is considered done (`npm run lint:bits`).
 - No emoji as visual elements. Use inline SVG.

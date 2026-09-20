@@ -18,8 +18,7 @@ const glyph = pick("glyph-1", ["A", "B", "C"]);
 | --- | --- |
 | `random(seed)` | `0–1` |
 | `randomFloat(seed, min, max)` | float in `[min, max)` |
-| `randomRange` | alias of `randomFloat` |
 | `randomInt(seed, min, max)` | inclusive integer |
-| `pick(seed, array)` / `anyElement` | one item |
+| `pick(seed, array)` | one item; throws if the array is empty |
 
 `seed` is a number or string. The same seed always yields the same value.

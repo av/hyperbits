@@ -27,7 +27,7 @@ scene.bind(timeline);
 
 Creates canvas/world nodes inside `root`. Returns `{ canvas, world, stateAt, apply, bind }`.
 
-`stateAt(time)` yields `activeStepIndex`, `activeStepId`, `transitionProgress`, `camera`, `cameraTransform`, and resolved `steps`. `bind(timeline)` applies state on `onUpdate`.
+`stateAt(time)` is the time-state binding (seek-safe, same idea as `createParticles().stateAt`). It yields `activeStepIndex`, `activeStepId`, `transitionProgress`, `camera`, `cameraTransform`, and resolved `steps`. `bind(timeline)` applies state on `onUpdate`. Scene3D owns its DOM, so `bind` only takes the timeline; particles pass the canvas because they do not own it.
 
 Step and element fields: `x y z`, `rotateX/Y/Z`, `rotateOrder`, `scale` / `scaleX/Y/Z`. Elements also accept `fixed` and `centered`.
 

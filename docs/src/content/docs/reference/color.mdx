@@ -20,4 +20,4 @@ timeline.to(proxy, { progress: 1, duration: 2, onUpdate: apply }, 0);
 
 ## `colorProxy(element, colors, property?)`
 
-`property` is `"backgroundColor"` (default), `"background"`, or `"color"`. Returns `{ proxy, apply }`. Drive `proxy.progress` on a GSAP tween and call `apply` on update.
+`property` is `"backgroundColor"` (default), `"background"`, or `"color"`. Returns a GSAP proxy binding `{ proxy, apply }`. Drive `proxy.progress` on a GSAP tween and call `apply` on update. Same shape as `gradientProxy` and `createCounter`.

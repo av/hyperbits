@@ -22,7 +22,7 @@ timeline.to(proxy, { progress: 1, duration: 3, ease: "none", onUpdate: apply }, 
 | `parseGradient(css)` | Parse a CSS gradient string |
 | `interpolateGradients(from, to, progress, easingFn?, shortestAngle?)` | Mix two parsed gradients |
 | `interpolateGradientKeyframes(gradients, progress, easingFn?, shortestAngle?)` | Mix a list of CSS strings |
-| `gradientProxy(element, gradients, options?)` | `{ proxy, apply }` for GSAP |
+| `gradientProxy(element, gradients, options?)` | GSAP proxy binding `{ proxy, apply }` |
 | `gradientToCSS(parsed)` | Serialize back to CSS |
 
 `options.shortestAngle` defaults to `true` for hue/angle wrapping.

@@ -145,6 +145,30 @@ npx hyperbits add fade-in --into compositions/
 
 `fetch_hyperbit` and `hyperbits add --json` include this snippet. The host composition still needs its own paused root timeline; nested bits register theirs under their own `data-composition-id`.
 
+## Helper binding conventions
+
+Two patterns. Do not mix them on the same helper.
+
+**GSAP proxy `{ proxy, apply }`** — `colorProxy`, `gradientProxy`, `createCounter`. Tween a dummy object, write to the DOM in `onUpdate`:
+
+```js
+const { proxy, apply } = hyperbits.createCounter(stat, { postfix: "%" });
+timeline.to(proxy, { value: 100, duration: 2, onUpdate: apply }, 0);
+```
+
+**Time state `{ stateAt, bind }`** — `createParticles`, `createScene3D`. Sample from `timeline.time()` so any seek is exact:
+
+```js
+const sim = hyperbits.createParticles({ spawners: [{ id: "burst", burst: 12 }] });
+sim.bind(timeline, canvas, { color: "#fff", size: 4 });
+// particles also keep the free function: hyperbits.bind(timeline, canvas, sim, options)
+
+const scene = hyperbits.createScene3D(root, { steps: [{ id: "intro" }] });
+scene.bind(timeline);
+```
+
+`stagger` is neither: it returns a GSAP timeline. `typewriter` / `applyTypewriter` take `time` directly.
+
 ## Combining bits with stagger and helpers
 
 Adapt a fetched bit, then layer helpers instead of rewriting motion from scratch.

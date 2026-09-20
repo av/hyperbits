@@ -7,36 +7,26 @@ Simulate particles from spawners and behaviors, then draw them on a canvas drive
 
 ```js
 import {
-  simulateParticles,
+  createParticles,
   createGravity,
-  createDrag,
-  createWiggle,
-  createOpacityOverLife,
-  createScaleOverLife,
-  movement,
   bind,
 } from "hyperbits/helpers";
 
-const simulator = {
-  stateAt(time) {
-    return simulateParticles({
-      frame: time * 30,
-      fps: 30,
-      spawners: [{ id: "fountain", rate: 4, burst: 12, lifespan: 45 }],
-      behaviors: [
-        { id: "move", handler: movement },
-        { id: "gravity", handler: createGravity({ y: 0.15 }) },
-      ],
-    });
-  },
-};
+const simulator = createParticles({
+  fps: 30,
+  spawners: [{ id: "fountain", rate: 4, burst: 12, lifespan: 45 }],
+  behaviors: [{ id: "gravity", handler: createGravity({ y: 0.15 }) }],
+});
 
-bind(timeline, canvas, simulator, { color: "#f8fafc", size: 6 });
+simulator.bind(timeline, canvas, { color: "#f8fafc", size: 6 });
+// equivalent: bind(timeline, canvas, simulator, { color: "#f8fafc", size: 6 });
 ```
 
 ## Simulation
 
-`simulateParticles({ frame, fps, spawners, behaviors })` returns the active `Particle[]` at that frame. Spawner fields: `id`, `rate`, `burst`, `startFrame`, `max`, `position`, `area`, `velocity`, `lifespan`, `lifespanVariance`.
+`createParticles({ spawners, behaviors?, fps? })` returns `{ fps, stateAt, bind }`. `stateAt(time)` is seek-safe. `simulateParticles({ frame, fps, spawners, behaviors })` is the frame-level engine behind it.
+
+Spawner fields: `id`, `rate`, `burst`, `startFrame`, `max`, `position`, `area`, `velocity`, `lifespan`, `lifespanVariance`.
 
 ## Behaviors
 
@@ -44,4 +34,4 @@ bind(timeline, canvas, simulator, { color: "#f8fafc", size: 6 });
 
 ## Canvas
 
-`renderParticles(canvas, particles, { color, size, clear })` draws dots. `bind(timeline, canvas, simulator, options)` redraws on `onUpdate` using `timeline.time()`.
+`renderParticles(canvas, particles, { color, size, clear })` draws dots. `bind(timeline, canvas, simulator, options)` (also `simulator.bind(timeline, canvas, options)`) redraws on `onUpdate` using `timeline.time()`.

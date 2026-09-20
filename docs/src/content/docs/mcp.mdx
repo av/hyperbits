@@ -59,4 +59,4 @@ Fetch one bit by id (or exact display name).
 
 Returns `{ bit }` with `sourceCode`, `embedSnippet`, `helperScriptTag`, helpers, tags, and duration.
 
-Agents should search first, then fetch, then write the HTML into the HyperFrames project (or tell the user to run `hyperbits add`).
+Unknown ids return an error that includes close matches. Agents should search first, then fetch, then write the HTML into the HyperFrames project (or tell the user to run `hyperbits add`).

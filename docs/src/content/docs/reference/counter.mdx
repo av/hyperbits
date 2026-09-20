@@ -27,4 +27,4 @@ timeline.to(proxy, { value: 1280, duration: 2, onUpdate: apply }, 0);
 
 ## `createCounter(element, options?)`
 
-Returns `{ proxy, apply }`. `proxy.value` is the live number. `apply()` writes `formatNumber(proxy.value)` into `element.textContent`.
+Returns a GSAP proxy binding `{ proxy, apply }`. `proxy.value` is the live number. `apply()` writes `formatNumber(proxy.value)` into `element.textContent`. Same shape as `colorProxy` and `gradientProxy`.
