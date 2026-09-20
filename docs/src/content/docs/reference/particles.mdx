@@ -26,7 +26,7 @@ simulator.bind(timeline, canvas, { color: "#f8fafc", size: 6 });
 
 `createParticles({ spawners, behaviors?, fps? })` returns `{ fps, stateAt, bind }`. `stateAt(time)` is seek-safe. `simulateParticles({ frame, fps, spawners, behaviors })` is the frame-level engine behind it.
 
-Spawner fields: `id`, `rate`, `burst`, `startFrame`, `max`, `position`, `area`, `velocity`, `lifespan`, `lifespanVariance`.
+Spawner fields: `id`, `rate`, `burst`, `startFrame` (lookback, as if the spawner had already been running), `delayFrame` (wait this many frames before spawning), `max`, `position`, `area`, `velocity`, `lifespan`, `lifespanVariance`.
 
 ## Behaviors
 
@@ -34,4 +34,4 @@ Spawner fields: `id`, `rate`, `burst`, `startFrame`, `max`, `position`, `area`, 
 
 ## Canvas
 
-`renderParticles(canvas, particles, { color, size, clear })` draws dots. `bind(timeline, canvas, simulator, options)` (also `simulator.bind(timeline, canvas, options)`) redraws on `onUpdate` using `timeline.time()`.
+`renderParticles(canvas, particles, { color, size, glow, shape, clear })` draws dots or rects. `color` and `size` may be constants or `(particle) => value`. `glow` paints a radial falloff around each particle; `shape: "rect"` is for confetti. `bind(timeline, canvas, simulator, options)` (also `simulator.bind(timeline, canvas, options)`) redraws on `onUpdate` using `timeline.time()`.

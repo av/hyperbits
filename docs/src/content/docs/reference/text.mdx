@@ -19,12 +19,12 @@ timeline.to({}, {
 
 ## Split
 
-`splitUnits(text, mode)` returns strings. `splitText(element, mode)` wraps them in spans (`display: inline-block`, `white-space: pre`). Modes: `"chars"` (default), `"words"`, `"lines"`. Character spans get `data-char`.
+`splitUnits(text, mode)` returns strings. `splitText(element, mode)` wraps them in spans (`white-space: pre`). Modes: `"chars"` (default), `"words"`, `"lines"`. Character spans get `data-char`. Newline units use `display: block` so wrapped typewriter text stays on separate lines; other units use `inline-block`.
 
 ## Typewriter
 
 `charsVisibleAt(time, { total, duration, delay? })` returns how many units should show.
 
-`applyTypewriter(element, time, { duration, delay? })` splits if needed and toggles `visibility`.
+`applyTypewriter(element, time, { duration, delay? })` splits if needed and hides unrevealed spans with `display: none` so a caret placed after the typed element sits against the last visible character.
 
 `typewriter(element, options)` splits once and returns `{ apply, spans }`.

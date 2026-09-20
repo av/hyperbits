@@ -3,8 +3,11 @@ import { spawnSync } from "node:child_process";
 import { copyFileSync } from "node:fs";
 import path from "node:path";
 
+import { readFileSync } from "node:fs";
+
 import {
   fileExistsSync,
+  inspectBitHtml,
   listBitDirs,
   projectRoot as root,
 } from "./lib/bits.mjs";
@@ -50,6 +53,26 @@ if (!fileExistsSync(iifeSrc)) {
 
 let failed = 0;
 for (const bitDir of bitDirs) {
+  const htmlPath = path.join(bitDir, "index.html");
+  const manifestPath = path.join(bitDir, "bit.json");
+  try {
+    const html = readFileSync(htmlPath, "utf8");
+    const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+    const structural = inspectBitHtml(html, manifest);
+    if (structural.length > 0) {
+      failed += 1;
+      console.error(`${path.relative(root, bitDir)}: scaffold FAIL`);
+      for (const issue of structural) {
+        console.error(`  ${issue}`);
+      }
+    }
+  } catch (error) {
+    failed += 1;
+    console.error(
+      `${path.relative(root, bitDir)}: scaffold FAIL (${String(error)})`,
+    );
+  }
+
   copyFileSync(iifeSrc, path.join(bitDir, "hyperbits.iife.js"));
   const lint = runHyperframes("lint", bitDir);
   let payload = null;

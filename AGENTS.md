@@ -42,9 +42,10 @@ These rules match `skills/hyperbits/references/patterns.md`. Do not add a parall
 
 - Create `bits/<category>/<name>/` with `index.html`, `bit.json`, and optional `preview.png`.
 - Every bit is a self-contained HTML composition with a `data-composition-id` root, `data-width` and `data-height`, timed elements using `data-start` and `data-duration`, and `class="clip"` on timed visuals.
+- Never paint on the composition root. Use a full-bleed `#bg` layer as the first child (`data-start="0"`, `data-duration` equal to the bit, literal `background-color`). Keep `html, body` backgrounds for Studio preview. Animate gradients on `#bg`, not `#root`. `#root` must not declare `background` or `background-color`.
 - Timelines are created with `{ paused: true }` and registered on `window.__timelines` under the composition id. Child timelines added to that root must not be paused. Motion must be seek-safe: any frame can be rendered from any time. Drive canvas, typewriter, counter, particle, and 3D helpers from `timeline.time()`.
 - Use seeded randomness only (`hyperbits.random`, `randomFloat`, `pick`). Renders must be reproducible. No `Math.random()` or `Date.now()`.
-- Size elements fractionally from the composition dimensions via `hyperbits.viewport()` (`vmin`, `vmax`, `vw`, `vh`, `px()`), not with hardcoded pixel values.
+- Size elements fractionally from the composition dimensions via `hyperbits.viewport(root)` (`vmin`, `vmax`, `vw`, `vh`, `px()`), not with hardcoded pixel values. Hero text is 8–12 vmin, body text 3–4 vmin, UI mocks at least 60% of the frame.
 - Expose user-facing knobs through `data-composition-variables`. Read them with `window.__hyperframes.getVariables()`.
 - For staged in and out motion, prefer `hyperbits.stagger(...)` over hand-written per-element tweens.
 - Color, gradient, and counter helpers return `{ proxy, apply }`. Particles and scene3d use `stateAt(time)` plus `bind`.

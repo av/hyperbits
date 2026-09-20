@@ -88,7 +88,8 @@ node dist/cli/index.js mcp
 
 These match `references/patterns.md` and `AGENTS.md`. Do not invent a parallel set.
 
-- Keep `viewport()` sizing. Prefer `view.vmin`, `view.vmax`, `view.vw`, `view.vh`, and `view.px()` over hardcoded pixels.
+- Keep `viewport(root)` sizing. Prefer `view.vmin`, `view.vmax`, `view.vw`, `view.vh`, and `view.px()` over hardcoded pixels. Hero text 8–12 vmin, body 3–4 vmin, UI mocks ≥ 60% of the frame.
+- Never paint on the composition root. First child is a full-bleed `#bg` layer with a literal background colour. Animate gradients on that layer.
 - Keep theme colors as literal values in a top-level `:root` block. Do not swap in an arbitrary palette unless the user asked for one.
 - Expose user-facing knobs through `data-composition-variables`. Read them with `window.__hyperframes.getVariables()`.
 - Create the root timeline with `{ paused: true }` and register it on `window.__timelines[compositionId]`. Motion must be seek-safe.

@@ -11,6 +11,7 @@ Every bit is a self-contained HTML composition:
 - Default size is 1920x1080 unless the bit is intentionally square.
 - Load GSAP from `HYPERBITS_GSAP_CDN` (`https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js`). HyperFrames does not inject it.
 - Load helpers from the IIFE (`hyperbits.iife.js`) after GSAP.
+- Never paint on the composition root. The HyperFrames renderer drops `background` on `#root`. Put a full-bleed `#bg` layer as the first child of the root (`data-start="0"`, `data-duration` equal to the bit duration, literal `background-color` on the element). Keep `html, body` backgrounds for Studio preview. Animate gradients on `#bg`, not on `#root`.
 
 ```html
 <div
@@ -21,7 +22,15 @@ Every bit is a self-contained HTML composition:
   data-duration="3"
   data-width="1920"
   data-height="1080"
-></div>
+>
+  <div
+    id="bg"
+    class="clip"
+    data-start="0"
+    data-duration="3"
+    style="position:absolute;inset:0;background-color:#0f172a"
+  ></div>
+</div>
 ```
 
 ## Paused timelines on `window.__timelines`
@@ -71,15 +80,16 @@ const x = hyperbits.randomFloat(`card-x-${index}`, -view.width, view.width);
 Size from the composition dimensions, not hardcoded pixels.
 
 ```js
-const view = hyperbits.viewport();
-title.style.fontSize = `${view.vmin * 8}px`;
-card.style.width = `${view.px(0.3)}px`;
+const view = hyperbits.viewport(root);
+title.style.fontSize = `${view.vmin * 10}px`;
+card.style.width = `${view.px(0.6)}px`;
 card.style.height = `${view.px(0.2, "y")}px`;
 ```
 
-- `view.width` / `view.height` come from `data-width` / `data-height` on the composition root.
+- `view.width` / `view.height` come from `data-width` / `data-height` on the composition root. Pass the root into `viewport(root)` so nested hosts cannot steal the first `data-composition-id`.
 - `vw`, `vh`, `vmin`, `vmax` are CSS-like units (dimension / 100).
 - `view.px(fraction, axis?)` scales a 0–1 fraction by width (`x`, default), height (`y`), min, or max.
+- Hero text is about 8–12 vmin, body text about 3–4 vmin. UI mocks fill at least 60% of the frame. Also set CSS `vmin`/`vw` fallbacks so layout survives if JS sizing is late.
 
 ## `data-composition-variables`
 
@@ -124,7 +134,7 @@ Bits that may be captured for shader transitions follow html2canvas limits:
 - No gradient opacity below 0.15.
 - Mark uncapturable overlays with `data-no-capture`.
 
-Theme tokens in `:root` are fine for authoring, but captured elements need the resolved literal on the element itself. Existing bits already put literal `background-color` on `html`, `body`, and `#root`.
+Theme tokens in `:root` are fine for authoring, but captured elements need the resolved literal on the element itself. Put literal `background-color` on `html`, `body`, and the `#bg` layer. Never put `background` or `background-color` on `#root`.
 
 ## Embedding via `data-composition-src`
 
@@ -205,7 +215,8 @@ hyperbits.bind(timeline, canvas, sim, { color: "#f59e0b", size: view.vmin * 0.5 
 **Gradient under staggered content**
 
 ```js
-const { proxy, apply } = hyperbits.gradientProxy(root, [
+const bg = document.getElementById("bg");
+const { proxy, apply } = hyperbits.gradientProxy(bg, [
   "linear-gradient(0deg, #051226, #1e0541)",
   "linear-gradient(180deg, #a5d4dd, #5674b1)",
 ]);

@@ -9,6 +9,7 @@ import {
 import {
   CATEGORY_ORDER,
   HYPERBITS_UNPKG_IIFE as SCRIPT_UNPKG_IIFE,
+  inspectBitHtml,
   listBitJsonFilesSync,
   projectRoot as repoRoot,
 } from "../../scripts/lib/bits.mjs";
@@ -64,6 +65,14 @@ describe("bit manifests", () => {
         failures.push(
           `${relative}: index.html missing window.__timelines registration`,
         );
+      }
+
+      const parsedRecord = parsed as { duration?: number };
+      const scaffoldIssues = inspectBitHtml(html, {
+        duration: parsedRecord.duration,
+      });
+      for (const issue of scaffoldIssues) {
+        failures.push(`${relative}: ${issue}`);
       }
     }
 
