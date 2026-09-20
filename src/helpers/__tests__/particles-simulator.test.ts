@@ -345,6 +345,39 @@ describe("simulateParticles", () => {
       expect(cParticles.length).toBe(50);
     });
 
+    it("delays spawning until delayFrame", () => {
+      const spawner: SpawnerConfig = {
+        id: "delayed-burst",
+        burst: 12,
+        position: { x: 0, y: 0 },
+        lifespan: 40,
+        delayFrame: 20,
+      };
+
+      const before = simulateParticles({
+        frame: 10,
+        fps: 30,
+        spawners: [spawner],
+        behaviors: [],
+      });
+      const atStart = simulateParticles({
+        frame: 20,
+        fps: 30,
+        spawners: [spawner],
+        behaviors: [],
+      });
+      const after = simulateParticles({
+        frame: 25,
+        fps: 30,
+        spawners: [spawner],
+        behaviors: [],
+      });
+
+      expect(before.length).toBe(0);
+      expect(atStart.length).toBe(12);
+      expect(after.length).toBe(12);
+    });
+
     it("should default to 0 when startFrame is undefined", () => {
       const spawner: SpawnerConfig = {
         id: "spawner-no-offset",

@@ -42,8 +42,12 @@ export function createCodeBlock(
 
   const pre = document.createElement("pre");
   pre.className = `language-${language} hyperbits-code`;
+  pre.style.whiteSpace = "pre";
+  pre.style.margin = "0";
   const codeElement = document.createElement("code");
   codeElement.className = `language-${language}`;
+  codeElement.style.whiteSpace = "pre";
+  codeElement.style.display = "block";
 
   for (let index = 0; index < highlightedLines.length; index++) {
     const line = document.createElement("span");

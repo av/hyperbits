@@ -30,7 +30,7 @@ export function splitText(
     span.textContent = unit;
     span.setAttribute("aria-hidden", "true");
     span.style.whiteSpace = "pre";
-    if (mode === "lines") {
+    if (mode === "lines" || unit === "\n") {
       span.style.display = "block";
     } else {
       span.style.display = "inline-block";
@@ -82,7 +82,12 @@ export function applyTypewriter(
   });
 
   for (let index = 0; index < spans.length; index++) {
-    spans[index].style.visibility = index < visible ? "visible" : "hidden";
+    const shown = index < visible;
+    spans[index].style.display = shown
+      ? spans[index].textContent === "\n"
+        ? "block"
+        : "inline-block"
+      : "none";
   }
 
   return visible;

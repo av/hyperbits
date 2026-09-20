@@ -24,6 +24,7 @@ export interface SpawnerConfig {
   rate?: number;
   burst?: number;
   startFrame?: number;
+  delayFrame?: number;
   max?: number;
   position?: Partial<ParticleVector>;
   area?: { width: number; height: number; depth?: number };

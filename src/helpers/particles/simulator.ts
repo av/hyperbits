@@ -20,7 +20,8 @@ export function simulateParticles({
 
   for (const spawner of spawners) {
     const spawnerStartFrame = spawner.startFrame || 0;
-    const spawnerFrame = frame + spawnerStartFrame;
+    const delayFrame = spawner.delayFrame || 0;
+    const spawnerFrame = frame - delayFrame + spawnerStartFrame;
 
     const burst = spawner.burst || 0;
     const rate = spawner.rate || 0;

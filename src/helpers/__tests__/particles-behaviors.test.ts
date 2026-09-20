@@ -220,6 +220,18 @@ describe("Behavior Variance", () => {
       expect(particle1.opacity).toBe(0.0);
       expect(particle2.opacity).toBe(0.0);
     });
+
+    it("interpolates more than two opacity keyframes", () => {
+      const behavior = createOpacityOverLife([0, 1, 0]);
+      const particle = createTestParticle("p-kf", 0.2);
+      particle.lifespan = 100;
+      behavior(particle, 0, { frame: 0, fps: 30 });
+      expect(particle.opacity).toBeCloseTo(0, 5);
+      behavior(particle, 50, { frame: 50, fps: 30 });
+      expect(particle.opacity).toBeCloseTo(1, 5);
+      behavior(particle, 100, { frame: 100, fps: 30 });
+      expect(particle.opacity).toBeCloseTo(0, 5);
+    });
   });
 
   describe("createScaleOverLife with variance", () => {

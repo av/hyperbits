@@ -35,6 +35,12 @@ describe("createCodeBlock", () => {
     );
     expect(container.querySelector("code")?.className).toContain("javascript");
     expect(container.textContent).toContain("answer");
+    const pre = container.querySelector("pre") as HTMLElement;
+    expect(pre.style.whiteSpace).toBe("pre");
+    expect((container.querySelector("code") as HTMLElement).style.whiteSpace).toBe(
+      "pre",
+    );
+    expect(lines.every((line) => line.style.display === "block")).toBe(true);
   });
 
   it("highlights typescript", () => {

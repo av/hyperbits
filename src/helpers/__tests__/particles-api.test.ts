@@ -9,6 +9,14 @@ function fakeContext() {
     beginPath: vi.fn(),
     arc: vi.fn(),
     fill: vi.fn(),
+    fillRect: vi.fn(),
+    save: vi.fn(),
+    restore: vi.fn(),
+    translate: vi.fn(),
+    rotate: vi.fn(),
+    createRadialGradient: vi.fn(() => ({
+      addColorStop: vi.fn(),
+    })),
     globalAlpha: 1,
     fillStyle: "",
   };
@@ -104,6 +112,68 @@ describe("renderParticles", () => {
     expect(context.clearRect).toHaveBeenCalled();
     expect(context.arc).toHaveBeenCalledTimes(1);
     expect(context.fill).toHaveBeenCalledTimes(1);
+  });
+
+  it("draws a glow radial when glow is set", () => {
+    const canvas = document.createElement("canvas");
+    const context = fakeContext();
+    canvas.getContext = vi.fn(
+      () => context,
+    ) as unknown as typeof canvas.getContext;
+    const particles: Particle[] = [
+      {
+        id: "p-0",
+        index: 0,
+        seed: 0.1,
+        birthFrame: 0,
+        lifespan: 10,
+        position: { x: 5, y: 6, z: 0 },
+        velocity: { x: 0, y: 0, z: 0 },
+        acceleration: { x: 0, y: 0, z: 0 },
+        scale: 1,
+        rotation: 0,
+        opacity: 1,
+        spawnerId: "s",
+      },
+    ];
+    renderParticles(canvas, particles, {
+      size: 8,
+      color: "#ccff00",
+      glow: 2,
+    });
+    expect(context.createRadialGradient).toHaveBeenCalled();
+    expect(context.arc).toHaveBeenCalledTimes(2);
+  });
+
+  it("draws rotated rects for confetti", () => {
+    const canvas = document.createElement("canvas");
+    const context = fakeContext();
+    canvas.getContext = vi.fn(
+      () => context,
+    ) as unknown as typeof canvas.getContext;
+    const particles: Particle[] = [
+      {
+        id: "p-0",
+        index: 0,
+        seed: 0.1,
+        birthFrame: 0,
+        lifespan: 10,
+        position: { x: 5, y: 6, z: 0 },
+        velocity: { x: 0, y: 0, z: 0 },
+        acceleration: { x: 0, y: 0, z: 0 },
+        scale: 1,
+        rotation: 0.4,
+        opacity: 1,
+        spawnerId: "s",
+      },
+    ];
+    renderParticles(canvas, particles, {
+      size: 12,
+      shape: "rect",
+      color: (particle) => (particle.index === 0 ? "#FF6B6B" : "#fff"),
+    });
+    expect(context.fillRect).toHaveBeenCalled();
+    expect(context.rotate).toHaveBeenCalled();
   });
 });
 

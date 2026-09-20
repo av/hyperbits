@@ -1,4 +1,4 @@
-import { clamp, lerp } from "../math";
+import { clamp, keyframeSegment, lerp } from "../math";
 import { random } from "../random";
 import type { ParticleBehaviorHandler } from "./types";
 
@@ -123,6 +123,21 @@ export const createWiggle = (
   };
 };
 
+function opacityAt(keyframes: number[], lifeProgress: number): number {
+  if (keyframes.length === 0) return 1;
+  if (keyframes.length === 1) return keyframes[0];
+  if (keyframes.length === 2) {
+    return lerp(keyframes[0], keyframes[1], lifeProgress);
+  }
+  const segment = keyframeSegment(lifeProgress, keyframes.length);
+  if (!segment) return keyframes[0];
+  return lerp(
+    keyframes[segment.index],
+    keyframes[segment.index + 1],
+    segment.local,
+  );
+}
+
 export const createOpacityOverLife = (
   keyframes: number[],
   startVariance?: number,
@@ -130,10 +145,8 @@ export const createOpacityOverLife = (
 ): ParticleBehaviorHandler => {
   if (!startVariance && !endVariance) {
     return (particle, age) => {
-      const lifeProgress = age / particle.lifespan;
-      if (keyframes.length === 2) {
-        particle.opacity = lerp(keyframes[0], keyframes[1], lifeProgress);
-      }
+      const lifeProgress = particle.lifespan <= 0 ? 1 : age / particle.lifespan;
+      particle.opacity = opacityAt(keyframes, lifeProgress);
     };
   }
 

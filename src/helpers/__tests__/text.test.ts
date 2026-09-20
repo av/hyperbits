@@ -51,16 +51,24 @@ describe("typewriter", () => {
     expect(charsVisibleAt(0.1, { total: 10, duration: 1, delay: 0.5 })).toBe(0);
   });
 
-  it("hides unrevealed character spans", () => {
+  it("hides unrevealed character spans without leaving them in layout", () => {
     const element = document.createElement("p");
     element.textContent = "ABCD";
     const visible = applyTypewriter(element, 0.5, { duration: 1 });
     expect(visible).toBe(2);
     const spans = Array.from(element.querySelectorAll("span"));
-    expect(spans[0].style.visibility).toBe("visible");
-    expect(spans[1].style.visibility).toBe("visible");
-    expect(spans[2].style.visibility).toBe("hidden");
-    expect(spans[3].style.visibility).toBe("hidden");
+    expect(spans[0].style.display).toBe("inline-block");
+    expect(spans[1].style.display).toBe("inline-block");
+    expect(spans[2].style.display).toBe("none");
+    expect(spans[3].style.display).toBe("none");
+  });
+
+  it("keeps newline characters as block breaks", () => {
+    const element = document.createElement("p");
+    element.textContent = "ab\ncd";
+    const spans = splitText(element, "chars");
+    expect(spans[2].textContent).toBe("\n");
+    expect(spans[2].style.display).toBe("block");
   });
 
   it("typewriter() splits once and applies over time", () => {
