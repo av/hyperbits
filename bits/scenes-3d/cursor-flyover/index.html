@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #0b1220;
+        --fg: #f8fafc;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --accent-2: #f59e0b;
+        --danger: #f43f5e;
+        --ok: #34d399;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #0b1220;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        background-color: #0b1220;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+      #root { background-color: #0b1220; }
+      #screen {
+        width: 960px; height: 600px; background-color: #111827; border-radius: 28px;
+        border: 1px solid #334155; position: relative; overflow: hidden;
+      }
+      .widget { position: absolute; border-radius: 16px; background-color: #1e293b; color: #e2e8f0; padding: 18px 22px; font-weight: 600; }
+      #cursor {
+        position: absolute; width: 28px; height: 28px; z-index: 5;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="cursor-flyover"
+      data-start="0"
+      data-duration="10"
+      data-width="1920"
+      data-height="1080"
+    >
+
+    </div>
+    <script>
+      (function () {
+
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+
+
+        const view = hyperbits.viewport();
+        const root = document.getElementById("root");
+        const screen = document.createElement("div");
+        screen.id = "screen";
+        const widgets = [
+          { label: "Revenue", x: "8%", y: "12%", w: "28%" },
+          { label: "Active users", x: "40%", y: "12%", w: "24%" },
+          { label: "Pipeline", x: "8%", y: "48%", w: "56%" },
+          { label: "Alerts", x: "68%", y: "12%", w: "24%" },
+        ];
+        widgets.forEach(function (widget) {
+          const node = document.createElement("div");
+          node.className = "widget";
+          node.textContent = widget.label;
+          node.style.left = widget.x;
+          node.style.top = widget.y;
+          node.style.width = widget.w;
+          screen.append(node);
+        });
+        const cursor = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        cursor.setAttribute("id", "cursor");
+        cursor.setAttribute("viewBox", "0 0 24 24");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", "M3 3l8 18 2-7 7-2z");
+        path.setAttribute("fill", "#f8fafc");
+        cursor.append(path);
+        screen.append(cursor);
+        const scene = hyperbits.createScene3D(root, {
+          perspective: 1400,
+          transitionDuration: 1.1,
+          stepDuration: 2.5,
+          steps: [
+            { id: "wide", z: view.vmin * 8, rotateX: 8, element: screen },
+            { id: "rev", x: -view.vmin * 10, y: -view.vmin * 6, z: view.vmin * 30 },
+            { id: "pipe", y: view.vmin * 8, z: view.vmin * 24, rotateX: 4 },
+            { id: "alerts", x: view.vmin * 14, z: view.vmin * 28 },
+          ],
+        });
+        const timeline = gsap.timeline({ paused: true });
+        scene.bind(timeline);
+        timeline.fromTo(cursor, { x: 40, y: 40 }, { x: 120, y: 70, duration: 2.2, ease: "power2.inOut" }, 0.4);
+        timeline.to(cursor, { x: 220, y: 260, duration: 2.4, ease: "power2.inOut" }, 2.8);
+        timeline.to(cursor, { x: 620, y: 80, duration: 2.2, ease: "power2.inOut" }, 5.4);
+        timeline.to({}, { duration: 10 }, 0);
+        registerTimeline("cursor-flyover", timeline);
+
+      })();
+    </script>
+  </body>
+</html>

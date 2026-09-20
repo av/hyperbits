@@ -1,0 +1,46 @@
+{
+  "name": "3d-basic",
+  "title": "Basic 3D Scene",
+  "description": "3D camera transitions between positioned steps, impress.js style",
+  "tags": [
+    "3d",
+    "camera",
+    "presentation",
+    "transition"
+  ],
+  "duration": 5,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "scene3d",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "3d-basic",
+    "type": "hyperframes:block",
+    "title": "Basic 3D Scene",
+    "description": "3D camera transitions between positioned steps, impress.js style",
+    "tags": [
+      "3d",
+      "camera",
+      "presentation",
+      "transition"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 5,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/3d-basic.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

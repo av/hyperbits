@@ -1,0 +1,48 @@
+{
+  "name": "transform3d-showcase",
+  "title": "Transform3D Showcase",
+  "description": "Demonstrates chainable Transform3D API with matrix-based interpolation, relative transforms, and smooth quaternion rotations",
+  "tags": [
+    "3d",
+    "transform",
+    "matrix",
+    "quaternion",
+    "chainable"
+  ],
+  "duration": 16.67,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "scene3d",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "transform3d-showcase",
+    "type": "hyperframes:block",
+    "title": "Transform3D Showcase",
+    "description": "Demonstrates chainable Transform3D API with matrix-based interpolation, relative transforms, and smooth quaternion rotations",
+    "tags": [
+      "3d",
+      "transform",
+      "matrix",
+      "quaternion",
+      "chainable"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 16.67,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/transform3d-showcase.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

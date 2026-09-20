@@ -1,0 +1,48 @@
+{
+  "name": "cursor-flyover",
+  "title": "Cursor Flyover",
+  "description": "Camera flies over an app screenshot while a cursor highlights different areas",
+  "tags": [
+    "3d",
+    "camera",
+    "cursor",
+    "screenshot",
+    "presentation"
+  ],
+  "duration": 10,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "scene3d",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "cursor-flyover",
+    "type": "hyperframes:block",
+    "title": "Cursor Flyover",
+    "description": "Camera flies over an app screenshot while a cursor highlights different areas",
+    "tags": [
+      "3d",
+      "camera",
+      "cursor",
+      "screenshot",
+      "presentation"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 10,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/cursor-flyover.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

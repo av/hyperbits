@@ -1,0 +1,48 @@
+{
+  "name": "step-timing-context",
+  "title": "Step-Aware Motion Timing",
+  "description": "Demonstrates useMotionTiming context awareness in Scene3D Steps",
+  "tags": [
+    "3d",
+    "timing",
+    "animation",
+    "context"
+  ],
+  "duration": 10,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "scene3d",
+    "stagger",
+    "text",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "step-timing-context",
+    "type": "hyperframes:block",
+    "title": "Step-Aware Motion Timing",
+    "description": "Demonstrates useMotionTiming context awareness in Scene3D Steps",
+    "tags": [
+      "3d",
+      "timing",
+      "animation",
+      "context"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 10,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/step-timing-context.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

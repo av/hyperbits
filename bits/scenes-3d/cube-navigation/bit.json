@@ -1,0 +1,48 @@
+{
+  "name": "cube-navigation",
+  "title": "Cube Navigation 3D",
+  "description": "Navigate through faces of a 3D Cube using Scene3D steps",
+  "tags": [
+    "3d",
+    "cube",
+    "navigation",
+    "camera",
+    "isometric"
+  ],
+  "duration": 16,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "scene3d",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "cube-navigation",
+    "type": "hyperframes:block",
+    "title": "Cube Navigation 3D",
+    "description": "Navigate through faces of a 3D Cube using Scene3D steps",
+    "tags": [
+      "3d",
+      "cube",
+      "navigation",
+      "camera",
+      "isometric"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 16,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/cube-navigation.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}
