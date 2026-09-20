@@ -1,0 +1,25 @@
+---
+title: random
+description: Seeded random values for reproducible renders
+---
+
+Renders must be identical across frames and machines. Use these instead of `Math.random()`.
+
+```js
+import { random, randomFloat, randomInt, pick } from "hyperbits/helpers";
+
+const n = random("spark-0");
+const x = randomFloat("pos-x-3", 0, 1920);
+const count = randomInt("burst", 4, 12);
+const glyph = pick("glyph-1", ["A", "B", "C"]);
+```
+
+| Function | Returns |
+| --- | --- |
+| `random(seed)` | `0–1` |
+| `randomFloat(seed, min, max)` | float in `[min, max)` |
+| `randomRange` | alias of `randomFloat` |
+| `randomInt(seed, min, max)` | inclusive integer |
+| `pick(seed, array)` / `anyElement` | one item |
+
+`seed` is a number or string. The same seed always yields the same value.

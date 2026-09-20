@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #020617;
+        --fg: #f8fafc;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --accent-2: #f59e0b;
+        --danger: #f43f5e;
+        --ok: #34d399;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #020617;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        background-color: #020617;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+      #root { display: flex; align-items: center; justify-content: center; perspective: 1400px; background-color: #020617; }
+      #mosaic { display: grid; transform-style: preserve-3d; }
+      .tile { border-radius: 10px; }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="fracture-reassemble"
+      data-start="0"
+      data-duration="6"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="mosaic" class="clip" data-start="0" data-duration="6"></div>
+    </div>
+    <script>
+      (function () {
+
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+
+
+        const view = hyperbits.viewport();
+        const mosaic = document.getElementById("mosaic");
+        const cols = 8;
+        const rows = 5;
+        const gap = view.vmin * 0.7;
+        const tileW = view.vw * 8;
+        const tileH = view.vh * 12;
+        mosaic.style.gridTemplateColumns = "repeat(" + cols + ", " + tileW + "px)";
+        mosaic.style.gridTemplateRows = "repeat(" + rows + ", " + tileH + "px)";
+        mosaic.style.gap = gap + "px";
+        const colors = ["#38bdf8", "#818cf8", "#f472b6", "#f59e0b", "#34d399", "#f8fafc"];
+        const tiles = [];
+        for (let index = 0; index < cols * rows; index += 1) {
+          const tile = document.createElement("div");
+          tile.className = "tile";
+          tile.style.backgroundColor = colors[hyperbits.randomInt("tile-c-" + index, 0, colors.length - 1)];
+          mosaic.append(tile);
+          tiles.push(tile);
+        }
+        const timeline = gsap.timeline({ paused: true });
+        tiles.forEach(function (tile, index) {
+          const xBurst = hyperbits.randomFloat("x-" + index, -220, 220);
+          const yBurst = hyperbits.randomFloat("y-" + index, -160, 160);
+          const rot = hyperbits.randomFloat("r-" + index, -40, 40);
+          timeline.fromTo(tile, { opacity: 0, scale: 0.2 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power2.out" }, index * 0.015);
+          timeline.to(tile, { x: xBurst, y: yBurst, rotation: rot, duration: 0.7, ease: "power2.inOut" }, 1.4);
+          timeline.to(tile, { x: 0, y: 0, rotation: 0, duration: 0.9, ease: "power3.inOut" }, 3.1);
+        });
+        registerTimeline("fracture-reassemble", timeline);
+
+      })();
+    </script>
+  </body>
+</html>

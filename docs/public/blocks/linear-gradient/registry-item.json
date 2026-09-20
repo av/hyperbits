@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "linear-gradient",
+  "type": "hyperframes:block",
+  "title": "Linear Gradient",
+  "description": "Smooth transition between linear gradients",
+  "tags": [
+    "background",
+    "gradient",
+    "linear"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 3,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/linear-gradient.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

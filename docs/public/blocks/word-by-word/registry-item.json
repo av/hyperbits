@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "word-by-word",
+  "type": "hyperframes:block",
+  "title": "Word by Word",
+  "description": "Animated text that appears word by word with staggered timing",
+  "tags": [
+    "text",
+    "word",
+    "stagger"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 4,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/word-by-word.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

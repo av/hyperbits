@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "particles-grid",
+  "type": "hyperframes:block",
+  "title": "Grid Particles",
+  "description": "Particles snapping to a grid",
+  "tags": [
+    "particles",
+    "grid",
+    "snap"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 6.67,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/particles-grid.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

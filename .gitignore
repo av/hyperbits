@@ -14,3 +14,8 @@ coverage/
 .env.local
 .env.*.local
 .env.*
+docs/node_modules/
+docs/dist/
+docs/.astro/
+docs/public/vendor/hyperbits.iife.js
+docs/public/bits/

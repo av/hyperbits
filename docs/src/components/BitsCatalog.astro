@@ -1,0 +1,187 @@
+---
+import { Badge } from '@astrojs/starlight/components';
+import { docsBits } from '../lib/bits.generated';
+
+const tags = Array.from(new Set(docsBits.flatMap((bit) => bit.tags))).sort((left, right) =>
+  left.localeCompare(right),
+);
+const total = docsBits.length;
+---
+
+<div class="not-content space-y-6" data-bits-catalog>
+  <div class="flex flex-wrap items-center gap-2">
+    <button type="button" class="catalog-tag-button" data-tag="" aria-pressed="true">
+      <Badge text="All" size="medium" />
+    </button>
+    {tags.map((tag) => (
+      <button type="button" class="catalog-tag-button" data-tag={tag} aria-pressed="false">
+        <Badge text={tag} size="medium" />
+      </button>
+    ))}
+  </div>
+
+  <div class="text-xs text-white/50" data-bit-count>
+    {total} bit{total === 1 ? '' : 's'}
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    {docsBits.map((bit) => (
+      <a
+        href={`/docs/bits/${bit.id}`}
+        class="rounded-xl border border-white/10 bg-[#0C0C0C] p-4 block no-underline hover:border-white/30 transition-colors"
+        data-bit-card
+        data-tags={bit.tags.join('|')}
+        data-preview-src={bit.htmlPath}
+        data-preview-width={String(bit.width)}
+        data-preview-height={String(bit.height)}
+      >
+        <div
+          class="catalog-preview mb-3 overflow-hidden rounded-lg border border-white/10 aspect-video bg-black"
+          data-preview-host
+        >
+        </div>
+        <div class="text-base font-semibold text-white">
+          {bit.name}
+        </div>
+        <p class="mt-2 text-sm text-white/70">
+          {bit.description}
+        </p>
+        <div class="mt-3 flex flex-wrap gap-2">
+          {bit.tags.map((tag) => (
+            <button type="button" class="catalog-tag-button" data-tag={tag} aria-pressed="false">
+              <Badge text={tag} size="small" />
+            </button>
+          ))}
+        </div>
+      </a>
+    ))}
+  </div>
+</div>
+
+<style>
+  .catalog-tag-button {
+    all: unset;
+    cursor: pointer;
+    border-radius: 0.25rem;
+  }
+
+  .catalog-tag-button:focus-visible {
+    outline: 2px solid var(--sl-color-accent);
+    outline-offset: 2px;
+  }
+
+  .catalog-tag-button[aria-pressed="true"] :global(.sl-badge) {
+    --sl-color-bg-badge: var(--sl-color-orange-low);
+    --sl-color-border-badge: var(--sl-color-orange);
+    --sl-color-text-badge: var(--sl-color-white);
+  }
+
+  .catalog-tag-button[aria-pressed="false"]:hover :global(.sl-badge) {
+    --sl-color-border-badge: var(--sl-color-gray-3);
+  }
+</style>
+
+<script>
+  const root = document.querySelector('[data-bits-catalog]');
+  if (root) {
+    const buttons = Array.from(root.querySelectorAll('[data-tag]'));
+    const cards = Array.from(root.querySelectorAll('[data-bit-card]'));
+    const countEl = root.querySelector('[data-bit-count]');
+    const params = new URLSearchParams(window.location.search);
+    let activeTag = params.get('tag') || null;
+
+    const setButtonState = (button: Element, isActive: boolean) => {
+      button.setAttribute('aria-pressed', String(isActive));
+    };
+
+    const updateUrl = () => {
+      const url = new URL(window.location.href);
+      if (activeTag) {
+        url.searchParams.set('tag', activeTag);
+      } else {
+        url.searchParams.delete('tag');
+      }
+      history.replaceState(null, '', url.toString());
+    };
+
+    const apply = () => {
+      updateUrl();
+      let visible = 0;
+      for (const card of cards) {
+        const cardTags = (card.getAttribute('data-tags') || '').split('|').filter(Boolean);
+        const match = !activeTag || cardTags.includes(activeTag);
+        if (card instanceof HTMLElement) {
+          card.style.display = match ? '' : 'none';
+        }
+        if (match) {
+          visible += 1;
+        }
+      }
+
+      if (countEl) {
+        countEl.textContent = `${visible} bit${visible === 1 ? '' : 's'}${
+          activeTag ? ` tagged with “${activeTag}”` : ''
+        }`;
+      }
+
+      for (const button of buttons) {
+        const tag = button.getAttribute('data-tag');
+        const tagValue = tag && tag.length > 0 ? tag : null;
+        setButtonState(button, tagValue === activeTag);
+      }
+    };
+
+    for (const button of buttons) {
+      button.addEventListener('click', (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        const tag = button.getAttribute('data-tag');
+        const tagValue = tag && tag.length > 0 ? tag : null;
+        activeTag = activeTag === tagValue ? null : tagValue;
+        apply();
+      });
+    }
+
+    apply();
+
+    const mountPreview = (card: Element) => {
+      const host = card.querySelector('[data-preview-host]');
+      if (!(host instanceof HTMLElement) || host.dataset.mounted === 'true') {
+        return;
+      }
+      const src = card.getAttribute('data-preview-src');
+      if (!src) return;
+      const player = document.createElement('hyperframes-player');
+      player.setAttribute('src', src);
+      player.setAttribute('width', card.getAttribute('data-preview-width') || '1920');
+      player.setAttribute('height', card.getAttribute('data-preview-height') || '1080');
+      player.setAttribute('autoplay', '');
+      player.setAttribute('loop', '');
+      player.setAttribute('muted', '');
+      player.setAttribute('style', 'width:100%;height:100%;display:block;pointer-events:none;');
+      host.replaceChildren(player);
+      host.dataset.mounted = 'true';
+    };
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              mountPreview(entry.target);
+              observer.unobserve(entry.target);
+            }
+          }
+        },
+        { rootMargin: '200px' },
+      );
+      for (const card of cards) {
+        observer.observe(card);
+      }
+    } else {
+      for (const card of cards) {
+        mountPreview(card);
+      }
+    }
+  }
+</script>

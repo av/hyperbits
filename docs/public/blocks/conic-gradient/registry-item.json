@@ -1,0 +1,26 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "conic-gradient",
+  "type": "hyperframes:block",
+  "title": "Conic Gradient",
+  "description": "Colorful conic gradient rotation",
+  "tags": [
+    "background",
+    "gradient",
+    "conic",
+    "rainbow"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 2,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/conic-gradient.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

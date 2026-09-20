@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "glitch-cycle",
+  "type": "hyperframes:block",
+  "title": "Glitch Cycle",
+  "description": "Cycling text with glitch transition effects between words",
+  "tags": [
+    "text",
+    "glitch",
+    "cycle"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 8,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/glitch-cycle.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

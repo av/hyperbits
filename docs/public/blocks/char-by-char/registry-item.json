@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "char-by-char",
+  "type": "hyperframes:block",
+  "title": "Staggered Char Animation",
+  "description": "Text that appears character by character with staggered timing",
+  "tags": [
+    "text",
+    "character",
+    "stagger"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 4,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/char-by-char.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

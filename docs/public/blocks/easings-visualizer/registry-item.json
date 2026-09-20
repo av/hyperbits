@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "easings-visualizer",
+  "type": "hyperframes:block",
+  "title": "Easings Visualizer",
+  "description": "Visualizes different easing functions with sliding squares.",
+  "tags": [
+    "easing",
+    "motion",
+    "staggered-motion"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 3,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/easings-visualizer.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

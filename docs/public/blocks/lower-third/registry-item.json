@@ -1,0 +1,28 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "lower-third",
+  "type": "hyperframes:block",
+  "title": "Lower Third",
+  "description": "Broadcast-style name and title card that slides in, holds, and slides out.",
+  "tags": [
+    "lower-third",
+    "title",
+    "broadcast",
+    "text",
+    "staggered-motion",
+    "ui"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 5,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/lower-third.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

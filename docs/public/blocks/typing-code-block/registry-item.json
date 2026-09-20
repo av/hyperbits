@@ -1,0 +1,26 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "typing-code-block",
+  "type": "hyperframes:block",
+  "title": "Typing Code Block",
+  "description": "Syntax highlighted code with typing effect",
+  "tags": [
+    "text",
+    "code",
+    "animation",
+    "typing"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 6,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/typing-code-block.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

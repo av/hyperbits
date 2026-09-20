@@ -6,6 +6,8 @@
     "dist/**",
     "coverage/**",
     "**/*.tgz",
-    "src/catalog/inventory.generated.*"
+    "src/catalog/inventory.generated.*",
+    "docs",
+    "docs/**/*"
   ]
 }

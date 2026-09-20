@@ -1,0 +1,257 @@
+---
+import "../styles/custom.css";
+import { HeroShowcase } from "@/components/showcases/HeroShowcase";
+import { Code } from "@astrojs/starlight/components";
+import BentoCard from "@/components/BentoCard.astro";
+import Logo from "@/components/Logo.astro";
+---
+
+<!doctype html>
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Hyperbits - Animation bits for HyperFrames</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <meta
+      name="description"
+      content="Ready-made HTML + GSAP animation bits for HyperFrames video compositions."
+    />
+    <script src="/vendor/hyperframes-player.global.js" defer></script>
+  </head>
+  <body
+    class="bg-background-dark text-slate-200 font-sans antialiased selection:bg-primary selection:text-white overflow-x-hidden"
+  >
+    <div class="relative w-full min-h-screen">
+      <div
+        class="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-primary/10 blur-[120px] rounded-full pointer-events-none z-0"
+      >
+      </div>
+      <nav
+        class="fixed top-0 w-full z-50 border-b border-white/5 bg-background-dark/80 backdrop-blur-md"
+      >
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between h-16 items-center">
+            <div class="flex items-center gap-2">
+              <Logo size="md" class="text-primary" />
+              <span class="font-bold text-xl tracking-tight text-white">Hyperbits</span>
+            </div>
+            <div class="hidden md:flex space-x-8 text-sm font-medium text-gray-400">
+              <a class="hover:text-primary transition-colors" href="/docs/getting-started"
+                >Documentation</a
+              >
+              <a class="hover:text-primary transition-colors" href="/docs/bits-catalog">Catalog</a>
+            </div>
+            <div class="flex items-center gap-4">
+              <a
+                class="group flex items-center gap-2 bg-white/5 hover:bg-white/10 text-white px-3 py-1.5 rounded-md squircle text-xs font-medium border border-white/10 transition-all"
+                href="https://github.com/av/hyperbits"
+                target="_blank"
+              >
+                <span>Star on GitHub</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+      <section class="relative pt-32 pb-20 lg:pt-40 lg:pb-24 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
+          <button
+            id="hero-npm-install"
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-mono text-primary mb-8 animate-fade-in-up cursor-pointer hover:bg-primary/20 transition-colors"
+          >
+            <span class="material-symbols-outlined text-sm">terminal</span>
+            npx hyperbits add fade-in
+          </button>
+          <h1
+            class="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tight text-white mb-8 leading-[1.1] md:leading-[1.1]"
+          >
+            Building blocks <br />
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-400 to-gray-600"
+              >for HyperFrames</span
+            >
+          </h1>
+          <p class="mt-2 max-w-2xl mx-auto text-lg md:text-xl text-gray-400 mb-10 leading-relaxed">
+            Ready-made HTML + GSAP animation bits. Copy them into a composition or install them through the catalog.
+          </p>
+          <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-20 w-full sm:w-auto">
+            <a
+              class="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-lg squircle bg-white px-8 font-medium text-black transition-all duration-300 hover:bg-gray-200 hover:scale-[1.02] w-full sm:w-auto"
+              href="https://github.com/av/hyperbits"
+              target="_blank"
+            >
+              Star on GitHub
+            </a>
+            <a
+              class="group inline-flex h-12 items-center justify-center rounded-lg squircle border border-white/20 bg-white/5 px-8 font-medium text-white transition-all duration-300 hover:bg-white/10 hover:border-white/30 w-full sm:w-auto"
+              href="/docs/getting-started"
+            >
+              Get Started
+            </a>
+          </div>
+          <HeroShowcase
+            client:only="react"
+            bitNames={[
+              "particles-fountain",
+              "blur-slide-word",
+              "linear-gradient",
+              "flying-through-words",
+              "particles-grid",
+              "3d-elements",
+            ]}
+          />
+        </div>
+      </section>
+      <section class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="mb-16">
+            <h2 class="text-3xl md:text-5xl font-bold text-white mb-6">Designed for compositions.</h2>
+            <p class="text-gray-400 text-lg max-w-2xl">
+              Each bit is a paused GSAP timeline in an HTML file. Embed it with
+              <code>data-composition-src</code> or start from the source.
+            </p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-6 gap-4 md:gap-6 auto-rows-[250px] md:auto-rows-[280px]">
+            <BentoCard class="md:col-span-6 lg:col-span-4">
+              <div class="relative z-10 h-full flex flex-col md:flex-row gap-8 items-center">
+                <div class="flex-1 min-w-0">
+                  <h3 class="text-2xl font-semibold text-white mb-2">Text effects</h3>
+                  <p class="text-gray-400 text-sm max-w-md">
+                    Fade, typewriter, glitch, and staggered word reveals. Variables on the composition root replace props.
+                  </p>
+                </div>
+                <div class="flex-1 w-full hidden md:block">
+                  <div class="rounded-lg overflow-hidden border border-white/10 shadow-xl bg-[#0d1117] text-xs">
+                    <Code
+                      code={`<div data-composition-src="compositions/fade-in.html"></div>`}
+                      lang="html"
+                    />
+                  </div>
+                </div>
+              </div>
+            </BentoCard>
+            <BentoCard class="md:col-span-3 lg:col-span-2">
+              <div class="relative z-10 h-full flex flex-col">
+                <h3 class="text-xl font-semibold text-white mb-2">Particle system</h3>
+                <p class="text-gray-400 text-sm mb-4">
+                  Seeded spawners and behaviors, drawn on Canvas 2D from the timeline clock.
+                </p>
+              </div>
+            </BentoCard>
+            <BentoCard class="md:col-span-3 lg:col-span-2">
+              <div class="relative z-10">
+                <h3 class="text-xl font-semibold text-white mb-2">Motion helpers</h3>
+                <p class="text-gray-400 text-sm">
+                  stagger, interpolate, color, and gradient proxies. Same API as ES modules and the IIFE.
+                </p>
+              </div>
+            </BentoCard>
+            <BentoCard class="md:col-span-3 lg:col-span-2">
+              <div class="relative z-10 h-full">
+                <h3 class="text-xl font-semibold text-white mb-2">CLI and MCP</h3>
+                <p class="text-gray-400 text-sm mb-4">
+                  <code>hyperbits find</code>, <code>fetch</code>, <code>add</code>, and an MCP server for agents.
+                </p>
+              </div>
+            </BentoCard>
+            <BentoCard class="md:col-span-3 lg:col-span-2 flex flex-col">
+              <div class="relative z-10 flex-1">
+                <h3 class="text-xl font-semibold text-white mb-2">HyperFrames registry</h3>
+                <p class="text-gray-400 text-sm">
+                  Set <code>registry</code> in <code>hyperframes.json</code> and run
+                  <code>npx hyperframes add fade-in</code>.
+                </p>
+              </div>
+            </BentoCard>
+          </div>
+        </div>
+      </section>
+      <section class="py-24 bg-gradient-to-b from-background-dark to-black border-t border-white/5">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+          <h2 class="text-3xl md:text-5xl font-bold text-white mb-8">Start from a bit.</h2>
+          <div
+            class="bg-surface-dark border border-white/10 rounded-xl squircle p-4 md:p-8 max-w-2xl mx-auto shadow-2xl"
+          >
+            <div class="flex items-center justify-between gap-4 font-mono text-sm md:text-lg">
+              <div class="flex items-center gap-3">
+                <span class="text-primary font-bold">➜</span>
+                <span class="text-gray-300">npx hyperbits add</span>
+                <span class="text-white font-bold">fade-in</span>
+              </div>
+              <button id="copy-npm-install" aria-label="Copy" class="text-gray-500 hover:text-white transition-colors">
+                <span class="material-symbols-outlined">content_copy</span>
+              </button>
+            </div>
+          </div>
+          <p class="text-gray-500 mt-8 text-sm">
+            Requires HyperFrames and GSAP 3.14.2.
+            <a class="text-primary hover:underline" href="/docs/getting-started">Read the setup guide</a>
+          </p>
+        </div>
+      </section>
+      <footer class="bg-black border-t border-white/5 pt-16 pb-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-12">
+            <div class="col-span-2 lg:col-span-2">
+              <div class="flex items-center gap-2 mb-4">
+                <Logo size="md" class="text-primary" />
+                <span class="font-semibold text-white">Hyperbits</span>
+              </div>
+              <p class="text-gray-500 text-sm mb-6 max-w-xs">
+                Animation bits for HyperFrames. Not affiliated with HeyGen.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-white font-semibold mb-4 text-sm">Library</h3>
+              <ul class="space-y-2 text-sm text-gray-500">
+                <li>
+                  <a class="hover:text-primary transition-colors" href="/docs/reference/stagger">Helpers</a>
+                </li>
+                <li>
+                  <a class="hover:text-primary transition-colors" href="/docs/bits-catalog">Bits</a>
+                </li>
+                <li>
+                  <a class="hover:text-primary transition-colors" href="/docs/cli">CLI</a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="text-white font-semibold mb-4 text-sm">Community</h3>
+              <ul class="space-y-2 text-sm text-gray-500">
+                <li>
+                  <a class="hover:text-primary transition-colors" href="https://github.com/av/hyperbits">GitHub</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-gray-600 text-xs">
+              © <span id="year"></span> Hyperbits. Open source software.
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <script>
+      const yearElement = document.getElementById("year");
+      if (yearElement) {
+        yearElement.textContent = new Date().getFullYear().toString();
+      }
+
+      const copyText = "npx hyperbits add fade-in";
+      const wireCopy = (id: string) => {
+        const button = document.getElementById(id);
+        if (!button) return;
+        button.addEventListener("click", async () => {
+          await navigator.clipboard.writeText(copyText);
+        });
+      };
+      wireCopy("copy-npm-install");
+      wireCopy("hero-npm-install");
+    </script>
+  </body>
+</html>

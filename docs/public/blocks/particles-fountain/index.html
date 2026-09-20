@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #140d08;
+        --fg: #f8fafc;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --accent-2: #f59e0b;
+        --danger: #f43f5e;
+        --ok: #34d399;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #140d08;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        background-color: #140d08;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+      #root { background-color: #140d08; }
+      #stage { position: absolute; inset: 0; width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="particles-fountain"
+      data-start="0"
+      data-duration="2"
+      data-width="1920"
+      data-height="1080"
+    >
+      <canvas id="stage" class="clip" data-start="0" data-duration="2"></canvas>
+    </div>
+    <script>
+      (function () {
+
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+
+
+        const view = hyperbits.viewport();
+        const canvas = document.getElementById("stage");
+        canvas.width = view.width;
+        canvas.height = view.height;
+        const simulator = hyperbits.createParticles({
+          fps: 30,
+          spawners: [{
+            id: "jet",
+            rate: 10,
+            burst: 20,
+            startFrame: 0,
+            max: 200,
+            position: { x: view.width / 2, y: view.height * 1.05 },
+            area: { width: view.width * 0.1, height: 0 },
+            velocity: { x: 0, y: -view.height * 0.05, varianceX: view.width * 0.1, varianceY: view.height * 0.01 },
+            lifespan: 100,
+            lifespanVariance: 10,
+          }],
+          behaviors: [
+            { id: "gravity", handler: hyperbits.createGravity({ y: 0.2 }) },
+            { id: "fade", handler: hyperbits.createOpacityOverLife([1, 0]) },
+          ],
+        });
+        const timeline = gsap.timeline({ paused: true });
+        hyperbits.bind(timeline, canvas, simulator, { color: "#ebb03b", size: view.vmax * 1.2 });
+        timeline.to({}, { duration: 2 }, 0);
+        registerTimeline("particles-fountain", timeline);
+
+      })();
+    </script>
+  </body>
+</html>

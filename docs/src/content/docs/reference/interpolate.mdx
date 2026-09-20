@@ -1,0 +1,36 @@
+---
+title: interpolate
+description: Time-value interpolation with easing and GSAP ease names
+---
+
+`interpolate` maps an input along a range of numbers. Ranges may be non-monotonic (holds, reverse segments). Easing accepts the built-in map or GSAP ease names such as `power2.out`.
+
+```js
+import { interpolate, Easing, gsapEase, hold, steps } from "hyperbits/helpers";
+
+const scale = interpolate(time, [0, 1.5], [0.5, 1.5], {
+  easing: "easeOutCubic",
+  extrapolateLeft: "clamp",
+  extrapolateRight: "clamp",
+});
+```
+
+IIFE: `hyperbits.interpolate`, `hyperbits.Easing`, `hyperbits.gsapEase`.
+
+## `interpolate(input, inputRange, outputRange, options?)`
+
+| Option | Type | Default |
+| --- | --- | --- |
+| `easing` | function, `Easing` name, or GSAP ease string | linear |
+| `extrapolateLeft` | `"clamp"` \| `"extend"` \| `"identity"` | `"extend"` |
+| `extrapolateRight` | `"clamp"` \| `"extend"` \| `"identity"` | `"extend"` |
+
+`inputRange` and `outputRange` must be the same length and at least 2.
+
+## `interpolateKeyframes(value, progress, easingFn?, duration?)`
+
+Interpolates an array of values (or `hold(frames)` entries) by progress 0–1.
+
+## Easing
+
+`Easing` includes `linear`, `easeIn` / `easeOut` / `easeInOut`, quad/cubic/sine/quart variants, and `spring`. `gsapEase("power2.out")` uses `gsap.parseEase` when GSAP is loaded, otherwise a built-in map. `resolveEase` accepts a function, `Easing` name, or GSAP string. `steps(count)` and `hold(frames)` are available for stepped and paused keyframes.

@@ -1,0 +1,37 @@
+---
+title: code
+description: Prism-highlighted code with line reveal and focus
+---
+
+```js
+import {
+  createCodeBlock,
+  applyLineReveal,
+  applyLineFocus,
+} from "hyperbits/helpers";
+
+createCodeBlock(container, {
+  code: "const n = 1;\nconsole.log(n);",
+  language: "javascript",
+  showLineNumbers: true,
+});
+
+timeline.to({}, {
+  duration: 2,
+  onUpdate() {
+    applyLineReveal(container, timeline.time(), { duration: 0.4, stagger: 0.12 });
+  },
+});
+```
+
+## `createCodeBlock(container, { code, language?, showLineNumbers? })`
+
+Highlights with Prism (`markup`, `css`, `javascript`, `typescript`, `json`, `bash`, `python`). Each line is `.hyperbits-code-line`.
+
+## Reveal and focus
+
+`applyLineReveal(root, time, { duration, stagger?, delay? })` fades lines in.
+
+`applyLineFocus(root, range, { dimOpacity?, dimBlur? })` keeps `range` (a line number or `[start, end]`) sharp and dims the rest.
+
+`codeLines(root)` and `isLineInRange(index, range)` are exported for custom drivers.

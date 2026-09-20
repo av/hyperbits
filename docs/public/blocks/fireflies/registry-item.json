@@ -1,0 +1,26 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "fireflies",
+  "type": "hyperframes:block",
+  "title": "Fireflies",
+  "description": "Wandering particles with glow effect simulating fireflies",
+  "tags": [
+    "particles",
+    "nature",
+    "ambient",
+    "animation"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 10,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/fireflies.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

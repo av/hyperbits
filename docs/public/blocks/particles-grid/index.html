@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #020617;
+        --fg: #f8fafc;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --accent-2: #f59e0b;
+        --danger: #f43f5e;
+        --ok: #34d399;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #020617;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        background-color: #020617;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+      #root { background-color: #020617; }
+      #stage { position: absolute; inset: 0; }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="particles-grid"
+      data-start="0"
+      data-duration="6.67"
+      data-width="1920"
+      data-height="1080"
+    >
+      <canvas id="stage" class="clip" data-start="0" data-duration="6.67"></canvas>
+    </div>
+    <script>
+      (function () {
+
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+
+
+        const view = hyperbits.viewport();
+        const canvas = document.getElementById("stage");
+        canvas.width = view.width;
+        canvas.height = view.height;
+        const cols = 16;
+        const rows = 9;
+        const cellW = view.width / cols;
+        const cellH = view.height / rows;
+        const simulator = hyperbits.createParticles({
+          fps: 30,
+          spawners: [{
+            id: "scatter",
+            burst: cols * rows,
+            position: { x: view.width / 2, y: view.height / 2 },
+            area: { width: view.width, height: view.height },
+            velocity: { x: 0, y: 0, varianceX: 8, varianceY: 8 },
+            lifespan: 200,
+          }],
+          behaviors: [{
+            id: "snap",
+            handler: function (particle) {
+              const col = particle.index % cols;
+              const row = Math.floor(particle.index / cols);
+              const targetX = cellW * (col + 0.5);
+              const targetY = cellH * (row + 0.5);
+              particle.velocity.x += (targetX - particle.position.x) * 0.04;
+              particle.velocity.y += (targetY - particle.position.y) * 0.04;
+              particle.velocity.x *= 0.86;
+              particle.velocity.y *= 0.86;
+            },
+          }],
+        });
+        const timeline = gsap.timeline({ paused: true });
+        hyperbits.bind(timeline, canvas, simulator, { color: "#38bdf8", size: view.vmin * 1.6 });
+        timeline.to({}, { duration: 6.67 }, 0);
+        registerTimeline("particles-grid", timeline);
+
+      })();
+    </script>
+  </body>
+</html>

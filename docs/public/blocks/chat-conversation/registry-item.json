@@ -1,0 +1,27 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "chat-conversation",
+  "type": "hyperframes:block",
+  "title": "Chat Conversation",
+  "description": "Messaging-app style conversation with bubbles arriving one after another.",
+  "tags": [
+    "chat",
+    "messages",
+    "ui",
+    "staggered-motion",
+    "product-demo"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 5,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/chat-conversation.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

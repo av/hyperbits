@@ -1,0 +1,23 @@
+---
+title: color
+description: Oklch color interpolation and GSAP color proxies
+---
+
+Color interpolation uses culori in Oklch so mixes stay perceptually even.
+
+```js
+import { interpolateColorKeyframes, colorProxy } from "hyperbits/helpers";
+
+const fill = interpolateColorKeyframes(["#0f172a", "#38bdf8"], progress);
+
+const { proxy, apply } = colorProxy(element, ["#111", "#f43f5e"], "backgroundColor");
+timeline.to(proxy, { progress: 1, duration: 2, onUpdate: apply }, 0);
+```
+
+## `interpolateColorKeyframes(colors, progress, easingFn?)`
+
+`progress` is 0–1 across the stop list. Returns an `rgb(...)` string.
+
+## `colorProxy(element, colors, property?)`
+
+`property` is `"backgroundColor"` (default), `"background"`, or `"color"`. Returns `{ proxy, apply }`. Drive `proxy.progress` on a GSAP tween and call `apply` on update.

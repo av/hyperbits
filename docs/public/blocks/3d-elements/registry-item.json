@@ -1,0 +1,26 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "3d-elements",
+  "type": "hyperframes:block",
+  "title": "3D Elements",
+  "description": "3D Scene allows placing arbitrary elements in 3D space",
+  "tags": [
+    "3d",
+    "camera",
+    "presentation",
+    "transition"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 6.67,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/3d-elements.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

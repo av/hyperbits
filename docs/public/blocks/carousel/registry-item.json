@@ -1,0 +1,26 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "carousel",
+  "type": "hyperframes:block",
+  "title": "3D Carousel",
+  "description": "Rotating carousel of cards in 3D space",
+  "tags": [
+    "3d",
+    "carousel",
+    "gallery",
+    "animation"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 10,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/carousel.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

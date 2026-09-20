@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "fade-in",
+  "type": "hyperframes:block",
+  "title": "Fade In",
+  "description": "Simple fade-in text animation from transparent to opaque",
+  "tags": [
+    "text",
+    "fade",
+    "basic"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 3,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/fade-in.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

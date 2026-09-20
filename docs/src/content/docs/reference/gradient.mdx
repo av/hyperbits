@@ -1,0 +1,28 @@
+---
+title: gradient
+description: Parse and interpolate CSS gradients onto background
+---
+
+Linear, radial, and conic gradients interpolate stop colors (Oklch) and geometry. Apply the result through a GSAP proxy onto `style.background`.
+
+```js
+import { gradientProxy, interpolateGradientKeyframes } from "hyperbits/helpers";
+
+const { proxy, apply } = gradientProxy(root, [
+  "linear-gradient(90deg, #000, #38bdf8)",
+  "linear-gradient(180deg, #000, #f59e0b)",
+]);
+timeline.to(proxy, { progress: 1, duration: 3, ease: "none", onUpdate: apply }, 0);
+```
+
+## API
+
+| Function | Role |
+| --- | --- |
+| `parseGradient(css)` | Parse a CSS gradient string |
+| `interpolateGradients(from, to, progress, easingFn?, shortestAngle?)` | Mix two parsed gradients |
+| `interpolateGradientKeyframes(gradients, progress, easingFn?, shortestAngle?)` | Mix a list of CSS strings |
+| `gradientProxy(element, gradients, options?)` | `{ proxy, apply }` for GSAP |
+| `gradientToCSS(parsed)` | Serialize back to CSS |
+
+`options.shortestAngle` defaults to `true` for hue/angle wrapping.

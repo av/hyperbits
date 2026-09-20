@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "basic-counter",
+  "type": "hyperframes:block",
+  "title": "Basic Counter",
+  "description": "Animated counter interpolating between numbers.",
+  "tags": [
+    "text",
+    "counter",
+    "numbers"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 4,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/basic-counter.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

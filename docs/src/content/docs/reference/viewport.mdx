@@ -1,0 +1,29 @@
+---
+title: viewport
+description: Fractional sizing from composition data-width and data-height
+---
+
+Read the composition root's `data-width` / `data-height` and size elements as fractions of the frame. Do not hardcode pixel layout.
+
+```js
+import { viewport, compositionRoot } from "hyperbits/helpers";
+
+const view = viewport(root);
+title.style.fontSize = `${view.vmin * 8}px`;
+card.style.width = `${view.px(0.4)}px`;
+card.style.height = `${view.px(0.2, "y")}px`;
+```
+
+## `viewport(from?)`
+
+Walks to `[data-composition-id]`. Defaults to 1920×1080 when attributes are missing.
+
+| Field | Meaning |
+| --- | --- |
+| `width` `height` | composition pixels |
+| `vw` `vh` | 1% of width / height |
+| `vmin` `vmax` | min/max of `vw` and `vh` |
+| `root` | composition element |
+| `px(fraction, axis?)` | fraction of width (`"x"`), height (`"y"`), min, or max |
+
+`compositionRoot(from?)` returns the nearest `[data-composition-id]`.

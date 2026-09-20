@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"text","type":"string","label":"Text","default":"Typing with errors and variable speed..."}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #0f172a;
+        --fg: #f8fafc;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --accent-2: #f59e0b;
+        --danger: #f43f5e;
+        --ok: #34d399;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #0f172a;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        background-color: #0f172a;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+      #root {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #line {
+        color: #ff6b6b;
+        font-family: ui-monospace, monospace;
+        font-weight: 700;
+        display: flex;
+        max-width: 86%;
+      }
+      #cursor { width: 0.08em; background-color: #ff6b6b; margin-left: 0.06em; }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="variable-speed-typewriter"
+      data-start="0"
+      data-duration="13.33"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="line" class="clip" data-start="0" data-duration="13.33">
+        <span id="typed"></span><span id="cursor">&nbsp;</span>
+      </div>
+    </div>
+    <script>
+      (function () {
+
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+
+
+        const vars = bitVars();
+        const view = hyperbits.viewport();
+        const typed = document.getElementById("typed");
+        const line = document.getElementById("line");
+        const cursor = document.getElementById("cursor");
+        line.style.fontSize = view.vmin * 6 + "px";
+        cursor.style.height = view.vmin * 6 + "px";
+        const target = String(vars.text);
+        const events = [];
+        let output = "";
+        let timeCursor = 0.3;
+        const wrongGlyphs = "abcdefghijklmnopqrstuvwxyz";
+        for (let index = 0; index < target.length; index += 1) {
+          const progress = index / Math.max(1, target.length - 1);
+          const speed = hyperbits.interpolate(progress, [0, 0.5, 1], [2, 10, 2]) / 30;
+          const willErr = hyperbits.random("err-" + index) < 0.1 && target[index] !== " ";
+          if (willErr) {
+            const wrong = wrongGlyphs[hyperbits.randomInt("w-" + index, 0, wrongGlyphs.length - 1)];
+            output += wrong;
+            events.push({ time: timeCursor, text: output });
+            timeCursor += 10 / 30;
+            output = output.slice(0, -1);
+            events.push({ time: timeCursor, text: output });
+            timeCursor += speed;
+          }
+          output += target[index];
+          events.push({ time: timeCursor, text: output });
+          timeCursor += speed;
+        }
+        function textAt(time) {
+          let current = "";
+          for (const event of events) {
+            if (event.time <= time) current = event.text;
+          }
+          return current;
+        }
+        const proxy = { time: 0 };
+        const timeline = gsap.timeline({ paused: true });
+        timeline.to(proxy, {
+          time: 13.33,
+          duration: 13.33,
+          ease: "none",
+          onUpdate: function () { typed.textContent = textAt(proxy.time); },
+        }, 0);
+        timeline.fromTo(cursor, { opacity: 1 }, { opacity: 0, duration: 20 / 30, repeat: 20, yoyo: true, ease: "none" }, 0);
+        registerTimeline("variable-speed-typewriter", timeline);
+
+      })();
+    </script>
+  </body>
+</html>

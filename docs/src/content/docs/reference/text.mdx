@@ -1,0 +1,30 @@
+---
+title: text
+description: Split text into spans and drive typewriter reveals
+---
+
+Split an element's text into character, word, or line spans, then reveal them over time.
+
+```js
+import { splitText, typewriter, applyTypewriter } from "hyperbits/helpers";
+
+const spans = splitText(title, "chars");
+timeline.to({}, {
+  duration: 2,
+  onUpdate() {
+    applyTypewriter(title, timeline.time(), { duration: 2 });
+  },
+});
+```
+
+## Split
+
+`splitUnits(text, mode)` returns strings. `splitText(element, mode)` wraps them in spans (`display: inline-block`, `white-space: pre`). Modes: `"chars"` (default), `"words"`, `"lines"`. Character spans get `data-char`.
+
+## Typewriter
+
+`charsVisibleAt(time, { total, duration, delay? })` returns how many units should show.
+
+`applyTypewriter(element, time, { duration, delay? })` splits if needed and toggles `visibility`.
+
+`typewriter(element, options)` splits once and returns `{ apply, spans }`.

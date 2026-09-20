@@ -1,0 +1,26 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "matrix-rain",
+  "type": "hyperframes:block",
+  "title": "Matrix Rain",
+  "description": "Digital rain animation inspired by The Matrix",
+  "tags": [
+    "text",
+    "matrix",
+    "code",
+    "background"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 10,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/matrix-rain.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

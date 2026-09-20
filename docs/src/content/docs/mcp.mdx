@@ -1,0 +1,62 @@
+---
+title: MCP
+description: Use hyperbits from an MCP-compatible agent
+---
+
+The package exposes an MCP server on stdio with two tools: `find_hyperbits` and `fetch_hyperbit`.
+
+## Connect
+
+```json title="mcp.json"
+{
+  "mcpServers": {
+    "hyperbits": {
+      "command": "npx",
+      "args": ["-y", "hyperbits", "mcp"]
+    }
+  }
+}
+```
+
+Global install:
+
+```bash
+npm i -g hyperbits
+```
+
+```json title="mcp.json"
+{
+  "mcpServers": {
+    "hyperbits": {
+      "command": "hyperbits",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+## Tools
+
+### find_hyperbits
+
+Search the catalog.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `query` | string | Visual goal or style query |
+| `tags` | string[] | AND tag filter |
+| `limit` | integer | Maximum number of results |
+
+Returns `{ results: BitCatalogSummary[] }`.
+
+### fetch_hyperbit
+
+Fetch one bit by id (or exact display name).
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | string | Bit id or exact name |
+
+Returns `{ bit }` with `sourceCode`, `embedSnippet`, `helperScriptTag`, helpers, tags, and duration.
+
+Agents should search first, then fetch, then write the HTML into the HyperFrames project (or tell the user to run `hyperbits add`).

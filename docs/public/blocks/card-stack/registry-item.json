@@ -1,0 +1,26 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "card-stack",
+  "type": "hyperframes:block",
+  "title": "3D Card Stack",
+  "description": "A stack of cards that spreads out in 3D space.",
+  "tags": [
+    "3d",
+    "motion",
+    "staggered-motion",
+    "cards"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1080,
+    "height": 1080
+  },
+  "duration": 4,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/card-stack.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

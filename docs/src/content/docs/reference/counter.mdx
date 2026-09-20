@@ -1,0 +1,30 @@
+---
+title: counter
+description: Numeric tween with formatting, prefix, and postfix
+---
+
+```js
+import { createCounter, formatNumber } from "hyperbits/helpers";
+
+const { proxy, apply } = createCounter(valueEl, {
+  from: 0,
+  decimals: 0,
+  separator: ",",
+  prefix: "$",
+});
+timeline.to(proxy, { value: 1280, duration: 2, onUpdate: apply }, 0);
+```
+
+## `formatNumber(value, options?)`
+
+| Option | Default |
+| --- | --- |
+| `decimals` | `0` |
+| `separator` | `""` |
+| `decimal` | `"."` |
+| `prefix` | `""` |
+| `postfix` | `""` |
+
+## `createCounter(element, options?)`
+
+Returns `{ proxy, apply }`. `proxy.value` is the live number. `apply()` writes `formatNumber(proxy.value)` into `element.textContent`.

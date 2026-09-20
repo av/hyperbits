@@ -1,0 +1,27 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "blur-slide-word",
+  "type": "hyperframes:block",
+  "title": "Blur In",
+  "description": "Text that fades, unblurs and slides up word by word",
+  "tags": [
+    "text",
+    "word",
+    "blur",
+    "slide",
+    "stagger"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 3,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/blur-slide-word.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

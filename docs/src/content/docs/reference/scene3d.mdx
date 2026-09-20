@@ -1,0 +1,38 @@
+---
+title: scene3d
+description: CSS 3D scene with camera steps and element transforms
+---
+
+Build a CSS 3D world, step the camera along a path, and bind it to a GSAP timeline.
+
+```js
+import { createScene3D, Transform3D, Vec3 } from "hyperbits/helpers";
+
+const scene = createScene3D(root, {
+  perspective: 1200,
+  stepDuration: 2,
+  transitionDuration: 1,
+  easing: "power2.inOut",
+  steps: [
+    { x: 0, y: 0, z: 0, rotateY: 0, duration: 2 },
+    { x: 200, y: -40, z: -400, rotateY: 25, duration: 2 },
+  ],
+  elements: [{ element: card, z: -200, rotateY: -15 }],
+});
+
+scene.bind(timeline);
+```
+
+## `createScene3D(root, config)`
+
+Creates canvas/world nodes inside `root`. Returns `{ canvas, world, stateAt, apply, bind }`.
+
+`stateAt(time)` yields `activeStepIndex`, `activeStepId`, `transitionProgress`, `camera`, `cameraTransform`, and resolved `steps`. `bind(timeline)` applies state on `onUpdate`.
+
+Step and element fields: `x y z`, `rotateX/Y/Z`, `rotateOrder`, `scale` / `scaleX/Y/Z`. Elements also accept `fixed` and `centered`.
+
+## Transforms
+
+`Transform3D` stores position, quaternion rotation, and scale. `Transform3D.fromEuler(x, y, z, position?, scale?, order?)`, `identity()`, `interpolateTransform(from, to, progress)`, `transformToCSS(transform)`.
+
+`Vec3`, `Quat`, and `Mat4` (aliases `Vector3`, `Quaternion`, `Matrix4`) cover the linear algebra.

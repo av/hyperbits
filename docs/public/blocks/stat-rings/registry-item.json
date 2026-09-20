@@ -1,0 +1,29 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "stat-rings",
+  "type": "hyperframes:block",
+  "title": "Stat Rings",
+  "description": "Circular progress rings filling up with percentage counters in the center.",
+  "tags": [
+    "chart",
+    "data",
+    "stats",
+    "counter",
+    "progress",
+    "svg",
+    "ui"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 4,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/stat-rings.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "variable-speed-typewriter",
+  "type": "hyperframes:block",
+  "title": "Variable Speed & Typos",
+  "description": "Advanced typewriter with variable speed curves and error simulation.",
+  "tags": [
+    "text",
+    "typewriter",
+    "speed",
+    "errors"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 13.33,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/variable-speed-typewriter.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

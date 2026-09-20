@@ -1,0 +1,43 @@
+---
+title: stagger
+description: Build a paused GSAP timeline for a list of elements
+---
+
+`stagger` is the StaggeredMotion equivalent: it builds a GSAP timeline from a keyframe spec so bits do not hand-write per-element tweens.
+
+```js
+import { stagger } from "hyperbits/helpers";
+
+const timeline = stagger("#list li", {
+  y: [40, 0],
+  opacity: [0, 1],
+  duration: 0.6,
+  stagger: 0.08,
+  ease: "power2.out",
+});
+```
+
+Times are seconds. The returned timeline is paused unless you pass an existing timeline.
+
+## `stagger(targets, spec, existingTimeline?)`
+
+`targets` may be a selector, element, array, NodeList, or HTMLCollection.
+
+### Spec
+
+| Field | Type |
+| --- | --- |
+| `x` `y` `rotate` `rotation` `scale` `opacity` | number or number[] |
+| `duration` | seconds, default `0.5` |
+| `delay` | seconds |
+| `stagger` | seconds between items |
+| `staggerDirection` | `"forward"` \| `"reverse"` \| `"center"` \| `"random"` |
+| `hold` | extra seconds after each tween |
+| `ease` | GSAP ease name or function |
+| `from` / `to` | extra GSAP vars |
+
+Two-value arrays become `fromTo`. Longer arrays become keyframe tweens.
+
+## Helpers
+
+`resolveTargets(targets, root?)` and `calculateStaggerIndex(index, total, direction)` are exported for custom sequencing.

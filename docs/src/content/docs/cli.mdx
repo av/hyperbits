@@ -1,0 +1,67 @@
+---
+title: CLI
+description: Search, fetch, and add hyperbits from the terminal
+---
+
+The `hyperbits` binary ships with the npm package.
+
+```bash
+npx hyperbits find [query] [--tag <tag>] [--limit <n>] [--json]
+npx hyperbits fetch <id-or-name> [--json]
+npx hyperbits add <name> [--into compositions/] [--json]
+npx hyperbits mcp
+```
+
+## find
+
+Search the published catalog by visual goal and tags.
+
+```bash
+npx hyperbits find "gradient background"
+npx hyperbits find "text reveal" --tag text --limit 5
+npx hyperbits find --tag particles --json
+```
+
+`--tag` is repeatable. Comma-separated values are accepted. `--json` prints a stable object with a `results` array.
+
+## fetch
+
+Print one bit record, including HTML source, helper script tag, and the embed snippet.
+
+```bash
+npx hyperbits fetch fade-in
+npx hyperbits fetch fade-in --json
+```
+
+The identifier can be the bit id (`fade-in`) or the exact display name (`Fade In`).
+
+## add
+
+Write the bit HTML into a HyperFrames project and print the snippet to embed it.
+
+```bash
+npx hyperbits add fade-in
+npx hyperbits add fade-in --into compositions/
+```
+
+`add` rewrites the local `hyperbits.iife.js` script src to the published IIFE URL so the file runs outside this repo.
+
+Default destination is `compositions/<id>.html`. Embed with:
+
+```html
+<div data-composition-src="compositions/fade-in.html"></div>
+```
+
+## mcp
+
+Start the hyperbits MCP server on stdio. See the [MCP page](/docs/mcp).
+
+## hyperframes add
+
+`npx hyperframes add` does not take a registry URL. Point a project at this catalog by setting `registry` in `hyperframes.json` to the docs site origin (the host of `/registry.json` and `/blocks/<name>/registry-item.json`), then:
+
+```bash
+npx hyperframes add fade-in
+```
+
+`hyperbits add` is the guaranteed install path. The HyperFrames registry is an extra path, not a substitute.

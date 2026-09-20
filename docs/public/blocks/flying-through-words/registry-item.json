@@ -1,0 +1,26 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "flying-through-words",
+  "type": "hyperframes:block",
+  "title": "Flying Through Words",
+  "description": "Words spawning and flying past the camera",
+  "tags": [
+    "particles",
+    "text",
+    "3d",
+    "flythrough"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 10,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/flying-through-words.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

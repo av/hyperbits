@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "basic-code-block",
+  "type": "hyperframes:block",
+  "title": "Basic Code Block",
+  "description": "Syntax highlighted code with line-by-line reveal",
+  "tags": [
+    "text",
+    "code",
+    "animation"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 4,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/basic-code-block.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "counter-confetti",
+  "type": "hyperframes:block",
+  "title": "Counter Confetti",
+  "description": "Counter reaching 1000 with confetti particles bursting from the sides.",
+  "tags": [
+    "counter",
+    "particles",
+    "confetti",
+    "celebration"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 6,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/counter-confetti.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

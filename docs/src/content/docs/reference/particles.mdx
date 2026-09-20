@@ -1,0 +1,47 @@
+---
+title: particles
+description: Deterministic particle simulation onto Canvas 2D
+---
+
+Simulate particles from spawners and behaviors, then draw them on a canvas driven by the GSAP timeline.
+
+```js
+import {
+  simulateParticles,
+  createGravity,
+  createDrag,
+  createWiggle,
+  createOpacityOverLife,
+  createScaleOverLife,
+  movement,
+  bind,
+} from "hyperbits/helpers";
+
+const simulator = {
+  stateAt(time) {
+    return simulateParticles({
+      frame: time * 30,
+      fps: 30,
+      spawners: [{ id: "fountain", rate: 4, burst: 12, lifespan: 45 }],
+      behaviors: [
+        { id: "move", handler: movement },
+        { id: "gravity", handler: createGravity({ y: 0.15 }) },
+      ],
+    });
+  },
+};
+
+bind(timeline, canvas, simulator, { color: "#f8fafc", size: 6 });
+```
+
+## Simulation
+
+`simulateParticles({ frame, fps, spawners, behaviors })` returns the active `Particle[]` at that frame. Spawner fields: `id`, `rate`, `burst`, `startFrame`, `max`, `position`, `area`, `velocity`, `lifespan`, `lifespanVariance`.
+
+## Behaviors
+
+`movement` integrates acceleration into position. Factories: `createGravity`, `createDrag`, `createWiggle`, `createOpacityOverLife`, `createScaleOverLife`.
+
+## Canvas
+
+`renderParticles(canvas, particles, { color, size, clear })` draws dots. `bind(timeline, canvas, simulator, options)` redraws on `onUpdate` using `timeline.time()`.

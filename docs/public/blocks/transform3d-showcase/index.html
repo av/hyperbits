@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #020617;
+        --fg: #f8fafc;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --accent-2: #f59e0b;
+        --danger: #f43f5e;
+        --ok: #34d399;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #020617;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        background-color: #020617;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+      #root { background-color: #020617; }
+      .box {
+        width: 220px; height: 220px; border-radius: 28px; display: flex; align-items: center; justify-content: center;
+        color: #f8fafc; font-weight: 800;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="transform3d-showcase"
+      data-start="0"
+      data-duration="16.67"
+      data-width="1920"
+      data-height="1080"
+    >
+
+    </div>
+    <script>
+      (function () {
+
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+
+
+        const view = hyperbits.viewport();
+        const root = document.getElementById("root");
+        const labels = ["translate", "rotate", "scale", "compose"];
+        const colors = ["#2563eb", "#db2777", "#059669", "#d97706"];
+        const elements = labels.map(function (label, index) {
+          const node = document.createElement("div");
+          node.className = "box";
+          node.setAttribute("data-layout-allow-overlap", "");
+          node.setAttribute("data-layout-allow-occlusion", "");
+          node.textContent = label;
+          node.style.backgroundColor = colors[index];
+          node.style.fontSize = view.vmin * 2.6 + "px";
+          return {
+            element: node,
+            x: (index - 1.5) * view.vmin * 16,
+            y: 0,
+            z: 0,
+          };
+        });
+        const scene = hyperbits.createScene3D(root, {
+          perspective: 1300,
+          transitionDuration: 1.2,
+          stepDuration: 4,
+          easing: "easeInOutCubic",
+          steps: [
+            { id: "line", rotateY: -8, z: 0 },
+            { id: "orbit", rotateY: 35, rotateX: 12, z: view.vmin * 18 },
+            { id: "tumble", rotateY: -40, rotateX: -16, z: view.vmin * 8 },
+            { id: "hero", rotateY: 0, z: view.vmin * 28, scale: 1.15 },
+          ],
+          elements: elements,
+        });
+        const timeline = gsap.timeline({ paused: true });
+        scene.bind(timeline);
+        elements.forEach(function (item, index) {
+          timeline.to(item.element, { y: Math.sin((index + 1) * 1.3) * 40, duration: 2, yoyo: true, repeat: 6, ease: "sine.inOut" }, 0);
+        });
+        timeline.to({}, { duration: 16.67 }, 0);
+        registerTimeline("transform3d-showcase", timeline);
+
+      })();
+    </script>
+  </body>
+</html>

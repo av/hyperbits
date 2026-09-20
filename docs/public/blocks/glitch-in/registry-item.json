@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "glitch-in",
+  "type": "hyperframes:block",
+  "title": "Glitch In",
+  "description": "Text effect that glitches into existence from random characters",
+  "tags": [
+    "text",
+    "glitch",
+    "transition"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 3,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/glitch-in.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

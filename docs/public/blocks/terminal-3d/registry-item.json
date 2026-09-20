@@ -1,0 +1,26 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "terminal-3d",
+  "type": "hyperframes:block",
+  "title": "3D Terminal",
+  "description": "A 3D scene with multiple terminal windows executing commands.",
+  "tags": [
+    "3d",
+    "terminal",
+    "typewriter",
+    "code"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 10,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/terminal-3d.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}
