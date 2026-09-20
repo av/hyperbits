@@ -80,6 +80,10 @@ After `hyperbits add fade-in`:
 
 Override knobs declared in `data-composition-variables` with `data-variable-values` on the host, or `--variables` on `hyperframes render`.
 
+## Background layer
+
+Never paint on the composition root. The HyperFrames renderer drops `background` on the `data-composition-id` element, so standalone frames go transparent. Put a full-bleed `#bg` layer as the first child (`data-start="0"`, `data-duration` equal to the bit, literal `background-color`). Keep `html, body` backgrounds for Studio preview. Animate gradients on `#bg`, not on `#root`.
+
 ## Helpers
 
 The same helpers bits use are available as ES modules:

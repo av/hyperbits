@@ -40,20 +40,20 @@ export function createCodeBlock(
   const highlighted = Prism.highlight(options.code ?? "", grammar, language);
   const highlightedLines = highlighted.split("\n");
 
-  const pre = document.createElement("pre");
-  pre.className = `language-${language} hyperbits-code`;
-  pre.style.whiteSpace = "pre";
-  pre.style.margin = "0";
-  const codeElement = document.createElement("code");
-  codeElement.className = `language-${language}`;
-  codeElement.style.whiteSpace = "pre";
-  codeElement.style.display = "block";
+  const root = document.createElement("div");
+  root.className = `language-${language} hyperbits-code`;
+  root.style.whiteSpace = "pre";
+  root.style.margin = "0";
+  root.style.display = "block";
+  root.style.fontFamily = '"JetBrains Mono", ui-monospace, monospace';
 
   for (let index = 0; index < highlightedLines.length; index++) {
-    const line = document.createElement("span");
-    line.className = "hyperbits-code-line";
+    const line = document.createElement("div");
+    line.className = `language-${language} hyperbits-code-line`;
     line.dataset.line = String(index + 1);
     line.style.display = "block";
+    line.style.whiteSpace = "pre";
+    line.style.width = "100%";
     line.style.opacity = "1";
 
     if (options.showLineNumbers) {
@@ -61,19 +61,20 @@ export function createCodeBlock(
       gutter.className = "hyperbits-code-gutter";
       gutter.textContent = String(index + 1);
       gutter.setAttribute("aria-hidden", "true");
+      gutter.style.display = "inline-block";
       line.append(gutter);
     }
 
     const content = document.createElement("span");
     content.className = "hyperbits-code-content";
+    content.style.whiteSpace = "pre";
     content.innerHTML = highlightedLines[index] || " ";
     line.append(content);
-    codeElement.append(line);
+    root.append(line);
   }
 
-  pre.append(codeElement);
-  container.append(pre);
-  return pre;
+  container.append(root);
+  return root;
 }
 
 export function codeLines(root: Element): HTMLElement[] {

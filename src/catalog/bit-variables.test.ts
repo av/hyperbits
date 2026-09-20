@@ -61,8 +61,27 @@ describe("bit variables", () => {
     const issues = inspectBitHtml(
       `<html data-composition-variables='[{"id":"color","type":"color","default":"#000"}]'>
         <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script src="hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
         <style>#root { background-color: #000; }</style>
-        <div id="root" data-duration="3"></div>
+        <div id="root" data-duration="3"><p>no bg</p></div>
+        <script>
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+        vars.color;
+        </script>
       </html>`,
       { duration: 3 },
     );
@@ -80,6 +99,24 @@ describe("bit variables", () => {
     };
     gsapWindow.gsap = gsap;
     gsapWindow.hyperbits = hyperbits;
+    HTMLCanvasElement.prototype.getContext = function () {
+      return {
+        clearRect() {},
+        beginPath() {},
+        arc() {},
+        fill() {},
+        fillRect() {},
+        save() {},
+        restore() {},
+        translate() {},
+        rotate() {},
+        createRadialGradient() {
+          return { addColorStop() {} };
+        },
+        globalAlpha: 1,
+        fillStyle: "",
+      } as unknown as CanvasRenderingContext2D;
+    };
 
     for (const bitFile of bitFiles) {
       const relative = path.relative(repoRoot, bitFile);
@@ -128,9 +165,20 @@ describe("bit variables", () => {
       }
 
       const markup = `${document.documentElement.innerHTML} ${document.body.textContent ?? ""}`;
-      if (colorDecl && !markup.toLowerCase().includes("ff00aa")) {
+      const colorApplied =
+        /#ff00aa/i.test(markup) ||
+        /rgb\(\s*255\s*,\s*0\s*,\s*170\s*\)/.test(markup) ||
+        /rgba\(\s*255\s*,\s*0\s*,\s*170\s*/.test(markup);
+      if (colorDecl && !colorApplied) {
         const canvas = document.querySelector("canvas");
-        if (!canvas) {
+        const styled = Array.from(document.querySelectorAll("[style]")).some(
+          (node) => {
+            const style = (node as HTMLElement).style;
+            const blob = `${style.color} ${style.backgroundColor} ${style.background} ${style.borderColor}`;
+            return /255,\s*0,\s*170|#ff00aa/i.test(blob);
+          },
+        );
+        if (!canvas && !styled) {
           failures.push(
             `${relative}: color knob ${colorDecl.id} did not appear in the DOM`,
           );

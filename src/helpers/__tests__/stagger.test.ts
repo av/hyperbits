@@ -58,6 +58,20 @@ describe("stagger", () => {
     expect(timeline.paused()).toBe(true);
   });
 
+  it("can start at an absolute time on an existing timeline", () => {
+    const existing = gsap.timeline({ paused: true });
+    existing.to({}, { duration: 2 });
+    stagger(
+      children,
+      { opacity: [0, 1], duration: 0.4, at: 0 },
+      existing,
+    );
+    existing.seek(0);
+    expect(opacityAt(children[0])).toBeCloseTo(0, 2);
+    existing.seek(0.4);
+    expect(opacityAt(children[0])).toBeCloseTo(1, 2);
+  });
+
   it("appends to an existing timeline", () => {
     const existing = gsap.timeline({ paused: true });
     existing.to({}, { duration: 1 });

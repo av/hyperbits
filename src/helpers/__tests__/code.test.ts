@@ -33,14 +33,15 @@ describe("createCodeBlock", () => {
     expect(container.querySelector(".hyperbits-code-gutter")?.textContent).toBe(
       "1",
     );
-    expect(container.querySelector("code")?.className).toContain("javascript");
-    expect(container.textContent).toContain("answer");
-    const pre = container.querySelector("pre") as HTMLElement;
-    expect(pre.style.whiteSpace).toBe("pre");
-    expect((container.querySelector("code") as HTMLElement).style.whiteSpace).toBe(
-      "pre",
+    expect(container.querySelector(".hyperbits-code")?.className).toContain(
+      "javascript",
     );
+    expect(container.textContent).toContain("answer");
+    const block = container.querySelector(".hyperbits-code") as HTMLElement;
+    expect(block.style.whiteSpace).toBe("pre");
+    expect(block.tagName).toBe("DIV");
     expect(lines.every((line) => line.style.display === "block")).toBe(true);
+    expect(lines.every((line) => line.tagName === "DIV")).toBe(true);
   });
 
   it("highlights typescript", () => {
@@ -49,9 +50,9 @@ describe("createCodeBlock", () => {
       code: "const value: number = 1;",
       language: "typescript",
     });
-    expect(container.querySelector("code")?.innerHTML.length).toBeGreaterThan(
-      0,
-    );
+    expect(
+      container.querySelector(".hyperbits-code")?.innerHTML.length,
+    ).toBeGreaterThan(0);
   });
 });
 

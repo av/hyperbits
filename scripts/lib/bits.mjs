@@ -121,8 +121,8 @@ export const GSAP_SCRIPT_TAG =
 export const IIFE_SCRIPT_TAG =
   '<script src="hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>';
 
-const ROOT_OPEN = /<div\s+id="root"\b([^>]*)>/;
-const BG_OPEN = /<div\s+id="bg"\b([^>]*)>/;
+const ROOT_OPEN = /<div\b([^>]*\sid="root"[^>]*)>/;
+const BG_OPEN = /<div\b([^>]*\sid="bg"[^>]*)>/;
 
 function attribute(attrs, name) {
   const match = attrs.match(new RegExp(`\\b${name}="([^"]*)"`));
@@ -171,7 +171,7 @@ export function inspectBitHtml(html, manifest) {
   if (/background(?:-color)?\s*:/.test(rootMatch[1])) {
     issues.push("#root inline style must not set background");
   }
-  if (rootCssHasBackground(css)) {
+  if (rootRuleHasBackground(css)) {
     issues.push("#root CSS must not declare background; paint #bg instead");
   }
 

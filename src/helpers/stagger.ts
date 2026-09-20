@@ -26,6 +26,7 @@ export type StaggerSpec = {
   staggerDirection?: StaggerDirection;
   hold?: number;
   ease?: string | EasingFunction;
+  at?: number;
   from?: gsap.TweenVars;
   to?: gsap.TweenVars;
 };
@@ -140,7 +141,12 @@ export function stagger(
   const timeline = existingTimeline ?? gsap.timeline({ paused: true });
   const elements = resolveTargets(targets);
   const duration = spec.duration ?? 0.5;
-  const appendAt = existingTimeline ? existingTimeline.duration() : 0;
+  const appendAt =
+    spec.at !== undefined
+      ? spec.at
+      : existingTimeline
+        ? existingTimeline.duration()
+        : 0;
   const delay = (spec.delay ?? 0) + appendAt;
   const staggerEach = spec.stagger ?? 0;
   const direction = spec.staggerDirection ?? "forward";
