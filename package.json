@@ -110,6 +110,7 @@
     "dist/**/*.js.map",
     "bits",
     "src",
+    "skills",
     "registry.json",
     "README.md"
   ],
@@ -127,7 +128,8 @@
     "test": "npm run inventory && vitest run --exclude scripts/__tests__/published-package.test.ts",
     "test:watch": "vitest",
     "test:package": "vitest run scripts/__tests__/published-package.test.ts",
-    "inventory": "node scripts/generate-inventory.mjs",
+    "inventory": "node scripts/generate-inventory.mjs && node scripts/generate-skill-refs.mjs",
+    "skill:refs": "node scripts/generate-skill-refs.mjs",
     "registry": "node scripts/build-registry.mjs",
     "docs:dev": "npm run inventory && npm run registry && node scripts/generate-docs.mjs && npm --prefix docs install && npm --prefix docs run dev",
     "docs:build": "npm run build && npm run registry && node scripts/generate-docs.mjs && npm --prefix docs install && npm --prefix docs run build",

@@ -6,6 +6,8 @@
     "coverage/**",
     "**/*.tgz",
     "src/catalog/inventory.generated.*",
+    "skills/hyperbits/references/bits.md",
+    "skills/hyperbits/references/helpers.md",
     "docs/**",
     "demo/node_modules/**",
     "demo/out/**",
