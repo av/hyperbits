@@ -10,3 +10,4 @@ export * from "./particles";
 export * from "./viewport";
 export * from "./text";
 export * from "./counter";
+export * from "./code";
