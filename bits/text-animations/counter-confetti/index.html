@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"target","type":"number","label":"Target","default":1000}]'>
+<html lang="en" data-composition-variables='[{"id":"target","type":"number","label":"Target","default":1000},{"id":"color","type":"color","label":"Text color","default":"#f8fafc"},{"id":"background","type":"color","label":"Background","default":"#0b1220"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -32,14 +32,28 @@
         width: 100%;
         height: 100%;
         position: relative;
-        background-color: #0b1220;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      #root { background-color: #0b1220; }
-      #stage { position: absolute; inset: 0; }
+      #stage {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
       #value {
-        position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-        color: #f8fafc; font-weight: 800; font-variant-numeric: tabular-nums; z-index: 2;
+        color: #f8fafc;
+        font-weight: 900;
+        font-variant-numeric: tabular-nums;
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        letter-spacing: 0.04em;
+        line-height: 1;
+        font-size: 14vmin;
+        position: relative;
+        z-index: 2;
       }
     </style>
   </head>
@@ -53,6 +67,7 @@
       data-width="1920"
       data-height="1080"
     >
+      <div id="bg" class="clip" data-start="0" data-duration="6" style="position:absolute;inset:0;background-color:#0b1220"></div>
       <canvas id="stage" class="clip" data-start="0" data-duration="6"></canvas>
       <div id="value" class="clip" data-start="0" data-duration="6">0</div>
     </div>
@@ -77,51 +92,87 @@
 
 
         const vars = bitVars();
-        const view = hyperbits.viewport();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
         const canvas = document.getElementById("stage");
         const valueEl = document.getElementById("value");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        valueEl.style.color = vars.color;
+        valueEl.setAttribute("data-color", vars.color);
+        valueEl.style.fontSize = view.vmin * 14 + "px";
+        valueEl.style.textShadow = "0 0 " + view.vmin * 4 + "px " + vars.color;
         canvas.width = view.width;
         canvas.height = view.height;
-        valueEl.style.fontSize = view.vmin * 14 + "px";
         const counter = hyperbits.createCounter(valueEl, { separator: "," });
+        const confettiColors = ["#FF6B6B", "#FFD93D", "#6BCB77", "#4D96FF", "#C084FC", "#FF8FA3", "#36D399", "#FBBD23"];
         const simulator = hyperbits.createParticles({
           fps: 30,
           spawners: [
             {
               id: "left",
-              burst: 80,
-              startFrame: 70,
-              position: { x: view.width * 0.15, y: view.height * 0.5 },
-              velocity: { x: 18, y: -8, varianceX: 10, varianceY: 16 },
-              lifespan: 50,
-              lifespanVariance: 10,
+              burst: 40,
+              delayFrame: 90,
+              position: { x: view.width * -0.02, y: view.height * 0.5 },
+              area: { width: 0, height: view.height * 0.3 },
+              velocity: { x: view.width * 0.018, y: -view.height * 0.012, varianceX: view.width * 0.008, varianceY: view.height * 0.02 },
+              lifespan: 90,
+              lifespanVariance: 12,
+              max: 40,
             },
             {
               id: "right",
-              burst: 80,
-              startFrame: 70,
-              position: { x: view.width * 0.85, y: view.height * 0.5 },
-              velocity: { x: -18, y: -8, varianceX: 10, varianceY: 16 },
-              lifespan: 50,
-              lifespanVariance: 10,
+              burst: 40,
+              delayFrame: 90,
+              position: { x: view.width * 1.02, y: view.height * 0.5 },
+              area: { width: 0, height: view.height * 0.3 },
+              velocity: { x: -view.width * 0.018, y: -view.height * 0.012, varianceX: view.width * 0.008, varianceY: view.height * 0.02 },
+              lifespan: 90,
+              lifespanVariance: 12,
+              max: 40,
+            },
+            {
+              id: "bottom",
+              burst: 40,
+              delayFrame: 90,
+              position: { x: view.width * 0.5, y: view.height * 1.05 },
+              area: { width: view.width * 0.6, height: 0 },
+              velocity: { x: 0, y: -view.height * 0.032, varianceX: view.width * 0.012, varianceY: view.height * 0.01 },
+              lifespan: 90,
+              lifespanVariance: 12,
+              max: 40,
             },
           ],
           behaviors: [
             { id: "gravity", handler: hyperbits.createGravity({ y: 0.35 }) },
-            { id: "drag", handler: hyperbits.createDrag(0.985) },
+            { id: "drag", handler: hyperbits.createDrag(0.98) },
             { id: "fade", handler: hyperbits.createOpacityOverLife([1, 0]) },
-            { id: "scale", handler: hyperbits.createScaleOverLife(1, 0.4) },
+            {
+              id: "spin",
+              handler: function (p) {
+                p.rotation += p.velocity.x * 0.08;
+              },
+            },
           ],
         });
         const timeline = gsap.timeline({ paused: true });
         timeline.fromTo(
           counter.proxy,
           { value: 0 },
-          { value: Number(vars.target) || 1000, duration: 3.2, ease: "power2.out", onUpdate: counter.apply },
-          0.2,
+          { value: Number(vars.target) || 1000, duration: 3, ease: "power2.out", onUpdate: counter.apply },
+          0,
         );
-        hyperbits.bind(timeline, canvas, simulator, { color: "#f59e0b", size: view.vmin * 1.2 });
-        timeline.to(valueEl, { scale: 1.06, duration: 0.45, yoyo: true, repeat: 5, ease: "sine.inOut" }, 3.4);
+        timeline.fromTo(valueEl, { scale: 0.85, opacity: 0.2 }, { scale: 1, opacity: 1, duration: 0.6, ease: "power3.out" }, 0);
+        try {
+          hyperbits.bind(timeline, canvas, simulator, {
+            shape: "rect",
+            size: view.vmin * 2.5,
+            glow: 0,
+            color: function (particle) {
+              return confettiColors[particle.index % confettiColors.length];
+            },
+          });
+        } catch (err) {}
         timeline.to({}, { duration: 6 }, 0);
         registerTimeline("counter-confetti", timeline);
 

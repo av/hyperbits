@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"lines","type":"string","label":"Lines (pipe separated)","default":"First sentence.|Second longer sentence.|Looping..."}]'>
+<html lang="en" data-composition-variables='[{"id":"lines","type":"string","label":"Lines (pipe separated)","default":"First sentence.|Second longer sentence.|Looping..."},{"id":"color","type":"color","label":"Text color","default":"#f8fafc"},{"id":"background","type":"color","label":"Background","default":"#0f172a"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -32,25 +32,27 @@
         width: 100%;
         height: 100%;
         position: relative;
-        background-color: #0f172a;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-      }
-      #root {
         display: flex;
         align-items: center;
         justify-content: center;
       }
       #line {
         color: #f8fafc;
-        font-family: ui-monospace, monospace;
+        font-family: "JetBrains Mono", ui-monospace, monospace;
         font-weight: 700;
-        display: flex;
-        align-items: baseline;
+        font-size: 10vmin;
+        position: relative;
+        z-index: 1;
+        white-space: nowrap;
       }
       #cursor {
+        display: inline-block;
         width: 0.08em;
-        background-color: #f8fafc;
+        height: 0.9em;
         margin-left: 0.06em;
+        background-color: #f8fafc;
+        vertical-align: -0.05em;
       }
     </style>
   </head>
@@ -64,8 +66,9 @@
       data-width="1920"
       data-height="1080"
     >
+      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#0f172a"></div>
       <div id="line" class="clip" data-start="0" data-duration="10">
-        <span id="typed"></span><span id="cursor">&nbsp;</span>
+        <span id="typed"></span><span id="cursor"></span>
       </div>
     </div>
     <script>
@@ -89,12 +92,18 @@
 
 
         const vars = bitVars();
-        const view = hyperbits.viewport();
-        const typed = document.getElementById("typed");
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
         const line = document.getElementById("line");
+        const typed = document.getElementById("typed");
         const cursor = document.getElementById("cursor");
-        line.style.fontSize = view.vmin * 7 + "px";
-        cursor.style.height = view.vmin * 7 + "px";
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        line.style.color = vars.color;
+        line.setAttribute("data-color", vars.color);
+        cursor.style.backgroundColor = vars.color;
+        line.style.fontSize = view.vmin * 10 + "px";
+        line.setAttribute("aria-label", vars.lines);
         const sentences = String(vars.lines).split("|");
         const typeSpeed = 3 / 30;
         const deleteSpeed = 1 / 30;

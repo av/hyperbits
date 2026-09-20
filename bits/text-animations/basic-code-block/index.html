@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Accent","default":"#38bdf8"},{"id":"background","type":"color","label":"Background","default":"#0b1220"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -32,17 +32,39 @@
         width: 100%;
         height: 100%;
         position: relative;
-        background-color: #0b1220;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      #root { display: flex; align-items: center; justify-content: center; background-color: #0b1220; }
       #panel {
-        background-color: #111827; border: 1px solid #1f2937; border-radius: 24px; overflow: hidden;
+        width: 70%;
+        background-color: #111827;
+        border: 2px solid #38bdf8;
+        border-radius: 24px;
+        overflow: hidden;
         box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+        position: relative;
+        z-index: 1;
       }
-      .hyperbits-code { margin: 0; background: #111827; color: #e5e7eb; }
-      .hyperbits-code-line { display: block; }
-      .hyperbits-code-gutter { display: inline-block; width: 3em; color: #64748b; }
+      .hyperbits-code {
+        margin: 0;
+        background: #111827;
+        color: #e5e7eb;
+        white-space: pre;
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 2.5vw;
+        line-height: 1.55;
+      }
+      .hyperbits-code-line {
+        display: block;
+      }
+      .hyperbits-code-gutter {
+        display: inline-block;
+        width: 3em;
+        color: #64748b;
+        user-select: none;
+      }
       .token.keyword { color: #c084fc; }
       .token.function { color: #38bdf8; }
       .token.string { color: #86efac; }
@@ -59,6 +81,7 @@
       data-width="1920"
       data-height="1080"
     >
+      <div id="bg" class="clip" data-start="0" data-duration="4" style="position:absolute;inset:0;background-color:#0b1220"></div>
       <div id="panel" class="clip" data-start="0" data-duration="4"></div>
     </div>
     <script>
@@ -81,28 +104,32 @@
         }
 
 
-        const view = hyperbits.viewport();
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
         const panel = document.getElementById("panel");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        panel.style.borderColor = vars.color;
+        panel.setAttribute("data-color", vars.color);
         panel.style.padding = view.vmin * 4 + "px " + view.vmin * 5 + "px";
-        panel.style.width = view.vw * 62 + "px";
+        panel.style.width = view.vw * 70 + "px";
         const code = "function hello() {\n  console.log(\"Hello World\");\n  return true;\n}";
         const block = hyperbits.createCodeBlock(panel, { code: code, language: "javascript", showLineNumbers: true });
-        block.style.fontSize = view.width * 0.025 + "px";
+        block.style.fontSize = view.vw * 2.5 + "px";
         block.style.lineHeight = "1.55";
+        block.style.whiteSpace = "pre";
+        const functions = panel.querySelectorAll(".token.function");
+        for (let index = 0; index < functions.length; index += 1) {
+          functions[index].style.color = vars.color;
+        }
         const lines = hyperbits.codeLines(block);
-        const caret = document.createElement("span");
-        caret.id = "caret";
-        caret.textContent = " ";
-        caret.style.display = "inline-block";
-        caret.style.width = "0.08em";
-        caret.style.height = "1em";
-        caret.style.backgroundColor = "#e5e7eb";
-        caret.style.marginLeft = "0.12em";
-        const lastLine = lines[lines.length - 1];
-        if (lastLine) lastLine.append(caret);
         const timeline = gsap.timeline({ paused: true });
-        hyperbits.stagger(lines, { opacity: [0, 1], y: [16, 0], duration: 0.9, stagger: 0.55, ease: "power2.out" }, timeline);
-        timeline.to(panel, { y: 10, duration: 4, ease: "sine.inOut" }, 0);
+        hyperbits.stagger(
+          lines,
+          { opacity: [0, 1], y: [16, 0], duration: 0.7, stagger: 0.35, ease: "power2.out" },
+          timeline,
+        );
         registerTimeline("basic-code-block", timeline);
 
       })();

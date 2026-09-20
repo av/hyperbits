@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Accent","default":"#38bdf8"},{"id":"background","type":"color","label":"Background","default":"#0b1220"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -32,19 +32,48 @@
         width: 100%;
         height: 100%;
         position: relative;
-        background-color: #0b1220;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      #root { display: flex; align-items: center; justify-content: center; background-color: #0b1220; }
       #panel {
-        background-color: #111827; border: 1px solid #1f2937; border-radius: 24px;
-        min-height: 54%; width: 70%;
+        width: 78%;
+        min-height: 54%;
+        background-color: #111827;
+        border: 2px solid #38bdf8;
+        border-radius: 24px;
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
       }
-      .hyperbits-code { margin: 0; color: #e5e7eb; white-space: pre-wrap; }
+      .hyperbits-code {
+        margin: 0;
+        color: #e5e7eb;
+        white-space: pre;
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 2.2vw;
+        line-height: 1.5;
+      }
+      .hyperbits-code-line {
+        display: block;
+      }
+      .hyperbits-code-gutter {
+        display: inline-block;
+        width: 3em;
+        color: #64748b;
+      }
       .token.keyword { color: #c084fc; }
       .token.function { color: #38bdf8; }
       .token.string { color: #86efac; }
-      #caret { display: inline-block; width: 0.08em; background-color: #e5e7eb; }
+      #caret {
+        display: inline-block;
+        width: 0.08em;
+        height: 1em;
+        margin-left: 0.08em;
+        background-color: #38bdf8;
+        vertical-align: -0.1em;
+      }
     </style>
   </head>
   <body>
@@ -57,6 +86,7 @@
       data-width="1920"
       data-height="1080"
     >
+      <div id="bg" class="clip" data-start="0" data-duration="6" style="position:absolute;inset:0;background-color:#0b1220"></div>
       <div id="panel" class="clip" data-start="0" data-duration="6"></div>
     </div>
     <script>
@@ -79,21 +109,55 @@
         }
 
 
-        const view = hyperbits.viewport();
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
         const panel = document.getElementById("panel");
-        panel.style.padding = view.vmin * 4 + "px";
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        panel.style.borderColor = vars.color;
+        panel.setAttribute("data-color", vars.color);
+        panel.style.padding = view.vmin * 4 + "px " + view.vmin * 5 + "px";
+        panel.style.width = view.vw * 78 + "px";
         const fullCode = "const App = () => {\n    const [count, setCount] = useState(0);\n    useEffect(() => {\n        document.title = `Count: ${count}`;\n    }, [count]);\n    return (\n        <button onClick={() => setCount(c => c + 1)}>\n             Clicked {count} times\n        </button>\n    );\n};";
         const proxy = { chars: 0 };
         const timeline = gsap.timeline({ paused: true });
         function render() {
           const slice = fullCode.slice(0, Math.floor(proxy.chars));
           panel.innerHTML = "";
-          hyperbits.createCodeBlock(panel, { code: slice, language: "javascript", showLineNumbers: false });
-          const pre = panel.querySelector("pre");
-          if (pre) pre.style.fontSize = view.width * 0.022 + "px";
+          const block = hyperbits.createCodeBlock(panel, {
+            code: slice,
+            language: "javascript",
+            showLineNumbers: true,
+          });
+          block.style.fontSize = view.vw * 1.8 + "px";
+          block.style.whiteSpace = "pre";
+          block.style.lineHeight = "1.5";
+          const functions = panel.querySelectorAll(".token.function");
+          for (let index = 0; index < functions.length; index += 1) {
+            functions[index].style.color = vars.color;
+          }
+          const lines = hyperbits.codeLines(block);
+          const lastLine = lines[lines.length - 1];
+          if (lastLine) {
+            const caret = document.createElement("span");
+            caret.id = "caret";
+            caret.style.display = "inline-block";
+            caret.style.width = "0.08em";
+            caret.style.height = "1em";
+            caret.style.backgroundColor = vars.color;
+            caret.style.marginLeft = "0.08em";
+            caret.style.opacity = Math.floor(timeline.time() * 2.5) % 2 === 0 ? "1" : "0";
+            lastLine.append(caret);
+          }
         }
-        timeline.fromTo(proxy, { chars: 0 }, { chars: fullCode.length, duration: 5.2, ease: "none", onUpdate: render }, 0.2);
-        timeline.fromTo("#caret", { opacity: 1 }, { opacity: 0, duration: 0.4, repeat: 14, yoyo: true }, 0);
+        timeline.fromTo(
+          proxy,
+          { chars: 0 },
+          { chars: fullCode.length, duration: 5.2, ease: "none", onUpdate: render },
+          0.2,
+        );
+        timeline.to({}, { duration: 6 }, 0);
         registerTimeline("typing-code-block", timeline);
 
       })();
