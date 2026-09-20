@@ -13,7 +13,6 @@
   "width": 1920,
   "height": 1080,
   "helpers": [
-    "stagger",
     "random",
     "viewport"
   ],

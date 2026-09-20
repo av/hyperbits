@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Tile color","default":"#38bdf8"},{"id":"background","type":"color","label":"Background","default":"#020617"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -32,12 +32,21 @@
         width: 100%;
         height: 100%;
         position: relative;
-        background-color: #020617;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        perspective: 1400px;
       }
-      #root { display: flex; align-items: center; justify-content: center; perspective: 1400px; background-color: #020617; }
-      #mosaic { display: grid; transform-style: preserve-3d; }
-      .tile { border-radius: 10px; }
+      #mosaic {
+        display: grid;
+        transform-style: preserve-3d;
+        position: relative;
+        z-index: 1;
+      }
+      .tile {
+        border-radius: 1vmin;
+      }
     </style>
   </head>
   <body>
@@ -50,6 +59,7 @@
       data-width="1920"
       data-height="1080"
     >
+      <div id="bg" class="clip" data-start="0" data-duration="6" style="position:absolute;inset:0;background-color:#020617"></div>
       <div id="mosaic" class="clip" data-start="0" data-duration="6"></div>
     </div>
     <script>
@@ -72,29 +82,34 @@
         }
 
 
-        const view = hyperbits.viewport();
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
         const mosaic = document.getElementById("mosaic");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
         const cols = 8;
         const rows = 5;
-        const gap = view.vmin * 0.7;
-        const tileW = view.vw * 8;
-        const tileH = view.vh * 12;
+        const gap = view.vmin * 1;
+        const tileW = view.vw * 8.5;
+        const tileH = view.vh * 13;
         mosaic.style.gridTemplateColumns = "repeat(" + cols + ", " + tileW + "px)";
         mosaic.style.gridTemplateRows = "repeat(" + rows + ", " + tileH + "px)";
         mosaic.style.gap = gap + "px";
-        const colors = ["#38bdf8", "#818cf8", "#f472b6", "#f59e0b", "#34d399", "#f8fafc"];
+        const colors = [vars.color, "#818cf8", "#f472b6", "#f59e0b", "#34d399", "#f8fafc"];
         const tiles = [];
         for (let index = 0; index < cols * rows; index += 1) {
           const tile = document.createElement("div");
           tile.className = "tile";
-          tile.style.backgroundColor = colors[hyperbits.randomInt("tile-c-" + index, 0, colors.length - 1)];
+          tile.style.backgroundColor = index === 0 ? vars.color : colors[hyperbits.randomInt("tile-c-" + index, 0, colors.length - 1)];
+          tile.style.borderRadius = view.vmin * 1 + "px";
           mosaic.append(tile);
           tiles.push(tile);
         }
         const timeline = gsap.timeline({ paused: true });
         tiles.forEach(function (tile, index) {
-          const xBurst = hyperbits.randomFloat("x-" + index, -220, 220);
-          const yBurst = hyperbits.randomFloat("y-" + index, -160, 160);
+          const xBurst = hyperbits.randomFloat("x-" + index, -view.vmin * 22, view.vmin * 22);
+          const yBurst = hyperbits.randomFloat("y-" + index, -view.vmin * 16, view.vmin * 16);
           const rot = hyperbits.randomFloat("r-" + index, -40, 40);
           timeline.fromTo(tile, { opacity: 0, scale: 0.2 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power2.out" }, index * 0.015);
           timeline.to(tile, { x: xBurst, y: yBurst, rotation: rot, duration: 0.7, ease: "power2.inOut" }, 1.4);

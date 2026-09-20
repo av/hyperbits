@@ -11,7 +11,6 @@
   "width": 1920,
   "height": 1080,
   "helpers": [
-    "stagger",
     "viewport"
   ],
   "iifeLocal": "../../../dist/hyperbits.iife.js",

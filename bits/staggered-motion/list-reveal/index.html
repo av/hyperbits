@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Accent","default":"#38bdf8"},{"id":"background","type":"color","label":"Background","default":"#09090b"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1080, height=1080" />
@@ -32,16 +32,44 @@
         width: 100%;
         height: 100%;
         position: relative;
-        background-color: #09090b;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      #root { display: flex; align-items: center; justify-content: center; background-color: #09090b; }
-      #list { display: flex; flex-direction: column; }
+      #list {
+        display: flex;
+        flex-direction: column;
+        width: 72%;
+        gap: 2.4vmin;
+        position: relative;
+        z-index: 1;
+      }
       .item {
-        background-color: #27272a; border-radius: 12px; display: flex; align-items: center;
-        color: #f4f4f5; font-weight: 500;
+        background-color: #27272a;
+        border-radius: 1.4vmin;
+        display: flex;
+        align-items: center;
+        color: #f4f4f5;
+        font-weight: 500;
+        font-size: 3.2vmin;
+        height: 10vmin;
+        padding: 0 3vmin;
+        gap: 2vmin;
       }
-      .dot { border-radius: 50%; background-color: #52525b; margin-left: auto; }
+      .accent {
+        width: 0.8vmin;
+        height: 46%;
+        border-radius: 99px;
+        background-color: #38bdf8;
+        flex-shrink: 0;
+      }
+      .dot {
+        border-radius: 50%;
+        background-color: #38bdf8;
+        margin-left: auto;
+        flex-shrink: 0;
+      }
     </style>
   </head>
   <body>
@@ -54,6 +82,7 @@
       data-width="1080"
       data-height="1080"
     >
+      <div id="bg" class="clip" data-start="0" data-duration="3" style="position:absolute;inset:0;background-color:#09090b"></div>
       <div id="list" class="clip" data-start="0" data-duration="3"></div>
     </div>
     <script>
@@ -76,31 +105,42 @@
         }
 
 
-        const view = hyperbits.viewport();
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
         const list = document.getElementById("list");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
         const items = [
           { title: "Dashboard", path: "M3 13h8V3H3v10zm10 8h8V3h-8v18zM3 21h8v-6H3v6z" },
           { title: "Analytics", path: "M3 17l6-6 4 4 8-8" },
-          { title: "Settings", path: "M12 8a4 4 0 100 8 4 4 0 000-8zm8.66 2l-1.2-2.08 1.2-2.08-2.08-1.2L17.5 3H14.5L13.3 4.64 11.22 3.44 10 5.52 11.2 7.6 10 9.68l2.08 1.2 1.22 1.64h3l1.2-1.64 2.08-1.2z" },
+          { title: "Settings", path: "M12 8a4 4 0 100 8 4 4 0 000-8z" },
           { title: "Profile", path: "M12 12a4 4 0 100-8 4 4 0 000 8zm0 2c-4 0-8 2-8 6v2h16v-2c0-4-4-6-8-6z" },
           { title: "Messages", path: "M4 4h16v12H7l-3 3V4z" },
           { title: "Notifications", path: "M12 22a2 2 0 002-2H10a2 2 0 002 2zm6-6V11a6 6 0 10-12 0v5L4 18v1h16v-1l-2-2z" },
         ];
-        const itemWidth = Math.min(view.width * 0.8, 600);
+        const itemWidth = view.width * 0.72;
+        const itemHeight = view.vmin * 10;
+        const iconSize = view.vmin * 3.6;
         list.style.width = itemWidth + "px";
-        list.style.gap = "16px";
+        list.style.gap = view.vmin * 2.4 + "px";
         for (const item of items) {
           const row = document.createElement("div");
           row.className = "item";
-          row.style.height = "80px";
-          row.style.padding = "0 24px";
-          row.style.gap = "16px";
-          row.style.fontSize = "20px";
+          row.style.height = itemHeight + "px";
+          row.style.padding = "0 " + view.vmin * 3 + "px";
+          row.style.gap = view.vmin * 2 + "px";
+          row.style.fontSize = view.vmin * 3.2 + "px";
+          row.style.borderRadius = view.vmin * 1.4 + "px";
+          const accent = document.createElement("div");
+          accent.className = "accent";
+          accent.style.width = view.vmin * 0.8 + "px";
+          accent.style.backgroundColor = vars.color;
           const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          svg.setAttribute("width", "24");
-          svg.setAttribute("height", "24");
+          svg.setAttribute("width", String(iconSize));
+          svg.setAttribute("height", String(iconSize));
           svg.setAttribute("viewBox", "0 0 24 24");
-          svg.setAttribute("fill", "#f4f4f5");
+          svg.setAttribute("fill", vars.color);
           const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
           path.setAttribute("d", item.path);
           svg.append(path);
@@ -109,13 +149,14 @@
           title.style.flex = "1";
           const dot = document.createElement("div");
           dot.className = "dot";
-          dot.style.width = "8px";
-          dot.style.height = "8px";
-          row.append(svg, title, dot);
+          dot.style.width = view.vmin * 1.2 + "px";
+          dot.style.height = view.vmin * 1.2 + "px";
+          dot.style.backgroundColor = vars.color;
+          row.append(accent, svg, title, dot);
           list.append(row);
         }
         const timeline = gsap.timeline({ paused: true });
-        hyperbits.stagger(list.children, { y: [50, 0], opacity: [0, 1], scale: [0.9, 1], duration: 40 / 30, stagger: 3 / 30, ease: "easeOutCubic" }, timeline);
+        hyperbits.stagger(list.children, { y: [view.vmin * 5, 0], opacity: [0, 1], scale: [0.9, 1], duration: 40 / 30, stagger: 3 / 30, ease: "easeOutCubic" }, timeline);
         registerTimeline("list-reveal", timeline);
 
       })();
