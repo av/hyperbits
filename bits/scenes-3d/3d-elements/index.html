@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Accent","default":"#38bdf8"},{"id":"background","type":"color","label":"Background","default":"#020617"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -32,12 +32,34 @@
         width: 100%;
         height: 100%;
         position: relative;
-        background-color: #020617;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       }
-      #root { background-color: #020617; }
-      .orb { border-radius: 50%; }
-      .label { color: #f8fafc; font-weight: 700; }
+      #scene {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+      }
+      .word {
+        color: #f8fafc;
+        font-weight: 800;
+        letter-spacing: -0.05em;
+        white-space: nowrap;
+        line-height: 1;
+        font-size: 10vmin;
+        text-align: center;
+      }
+      .word[data-step-active="false"] {
+        opacity: 0;
+      }
+      .word[data-step-active="true"] {
+        opacity: 1;
+      }
+      .plane {
+        width: 18vmin;
+        height: 18vmin;
+        border-radius: 1.4vmin;
+        border: 0.28vmin solid rgba(248, 250, 252, 0.18);
+      }
     </style>
   </head>
   <body>
@@ -50,7 +72,8 @@
       data-width="1920"
       data-height="1080"
     >
-
+      <div id="bg" class="clip" data-start="0" data-duration="6.67" style="position:absolute;inset:0;background-color:#020617"></div>
+      <div id="scene"></div>
     </div>
     <script>
       (function () {
@@ -72,39 +95,68 @@
         }
 
 
-        const view = hyperbits.viewport();
+        const vars = bitVars();
         const root = document.getElementById("root");
-        const label = document.createElement("div");
-        label.className = "label";
-        label.textContent = "Elements in space";
-        label.style.fontSize = view.vmin * 5 + "px";
+        const bg = document.getElementById("bg");
+        const sceneEl = document.getElementById("scene");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        bg.setAttribute("data-color", vars.color);
+
+        const words = ["Fly", "Your", "Camera", "Through", "Space"];
+        const steps = words.map(function (word, index) {
+          const node = document.createElement("h1");
+          node.className = "word";
+          node.textContent = word;
+          node.style.fontSize = view.vmin * 10 + "px";
+          node.style.color = vars.color;
+          node.setAttribute("data-layout-allow-overlap", "");
+          node.setAttribute("data-layout-allow-occlusion", "");
+          return {
+            id: "step-" + index,
+            x: (index - 2) * view.vmin * 36,
+            y: (index % 2 === 0 ? -1 : 1) * view.vmin * 6,
+            z: index * view.vmin * 18,
+            rotateY: (index - 2) * 10,
+            duration: 6.67 / words.length,
+            element: node,
+          };
+        });
+
+        const palette = [vars.color, "#f472b6", "#f59e0b", "#34d399", "#a78bfa", "#fb7185"];
+        const planeSize = view.vmin * 18;
         const elements = [];
-        const colors = ["#38bdf8", "#f472b6", "#f59e0b", "#34d399", "#a78bfa"];
         for (let index = 0; index < 8; index += 1) {
-          const orb = document.createElement("div");
-          orb.className = "orb";
-          const size = view.vmin * hyperbits.randomFloat("s-" + index, 4, 10);
-          orb.style.width = size + "px";
-          orb.style.height = size + "px";
-          orb.style.backgroundColor = colors[index % colors.length];
+          const plane = document.createElement("div");
+          plane.className = "plane";
+          plane.style.width = planeSize + "px";
+          plane.style.height = planeSize + "px";
+          plane.style.backgroundColor = palette[index % palette.length];
+          plane.style.opacity = "0.55";
+          plane.setAttribute("data-layout-allow-overlap", "");
+          plane.setAttribute("data-layout-allow-occlusion", "");
           elements.push({
-            element: orb,
-            x: hyperbits.randomFloat("x-" + index, -view.vmin * 40, view.vmin * 40),
-            y: hyperbits.randomFloat("y-" + index, -view.vmin * 20, view.vmin * 20),
-            z: hyperbits.randomFloat("z-" + index, -view.vmin * 30, view.vmin * 30),
+            element: plane,
+            centered: true,
+            x: hyperbits.randomFloat("el-x-" + index, -view.vmin * 48, view.vmin * 48),
+            y: hyperbits.randomFloat("el-y-" + index, -view.vmin * 28, view.vmin * 28),
+            z: hyperbits.randomFloat("el-z-" + index, -view.vmin * 20, view.vmin * 90),
+            rotateY: hyperbits.randomFloat("el-ry-" + index, -24, 24),
+            rotateX: hyperbits.randomFloat("el-rx-" + index, -16, 16),
           });
         }
-        const scene = hyperbits.createScene3D(root, {
-          perspective: 1200,
-          transitionDuration: 0.8,
-          stepDuration: 2.2,
-          steps: [
-            { id: "wide", x: 0, y: 0, z: 0, rotateY: -12, element: label },
-            { id: "close", x: view.vmin * 8, y: view.vmin * 4, z: view.vmin * 40, rotateY: 18 },
-            { id: "top", x: 0, y: -view.vmin * 10, z: view.vmin * 20, rotateX: 18 },
-          ],
+
+        const scene = hyperbits.createScene3D(sceneEl, {
+          perspective: 1000,
+          transitionDuration: 1.05,
+          easing: "easeInOutCubic",
+          steps: steps,
           elements: elements,
         });
+        sceneEl.style.position = "absolute";
+        sceneEl.style.inset = "0";
+        sceneEl.style.zIndex = "1";
+
         const timeline = gsap.timeline({ paused: true });
         scene.bind(timeline);
         timeline.to({}, { duration: 6.67 }, 0);
