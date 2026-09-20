@@ -4,14 +4,13 @@ import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const HYPERBITS_UNPKG_IIFE =
-  "https://unpkg.com/hyperbits/dist/hyperbits.iife.js";
-
-const projectRoot = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "..",
-);
-const bitsRoot = path.join(projectRoot, "bits");
+import {
+  HYPERBITS_UNPKG_IIFE,
+  listBitJsonFiles,
+  normalizePath,
+  projectRoot,
+  readBitManifest,
+} from "./lib/bits.mjs";
 const rootRegistryPath = path.join(projectRoot, "registry.json");
 const docsPublicRoot = path.join(projectRoot, "docs", "public");
 const docsRegistryPath = path.join(docsPublicRoot, "registry.json");
@@ -24,27 +23,8 @@ export const ITEM_TYPE_DIRS = {
 
 const TYPE_DIR_NAMES = Object.values(ITEM_TYPE_DIRS);
 
-const normalizePath = (value) => value.split(path.sep).join("/");
-
 const prepareInstalledHtml = (html) =>
   html.replaceAll('src="hyperbits.iife.js"', `src="${HYPERBITS_UNPKG_IIFE}"`);
-
-const listBitJsonFiles = async (dirPath) => {
-  const entries = await readdir(dirPath, { withFileTypes: true });
-  const files = await Promise.all(
-    entries.map(async (entry) => {
-      const fullPath = path.join(dirPath, entry.name);
-      if (entry.isDirectory()) {
-        return listBitJsonFiles(fullPath);
-      }
-      if (entry.isFile() && entry.name === "bit.json") {
-        return [fullPath];
-      }
-      return [];
-    }),
-  );
-  return files.flat().sort((left, right) => left.localeCompare(right));
-};
 
 const assertSafeRelative = (value, label) => {
   const normalized = normalizePath(value);
@@ -131,13 +111,13 @@ const pruneStaleItemDirs = async (keep) => {
 };
 
 export const buildRegistry = async () => {
-  const bitFiles = await listBitJsonFiles(bitsRoot);
+  const bitFiles = await listBitJsonFiles();
   const items = [];
   const keep = new Set();
 
   for (const bitJsonPath of bitFiles) {
     const relativePath = normalizePath(path.relative(projectRoot, bitJsonPath));
-    const manifest = JSON.parse(await readFile(bitJsonPath, "utf8"));
+    const manifest = await readBitManifest(bitJsonPath);
     const registryItem = manifest.registryItem;
 
     if (!registryItem || typeof registryItem !== "object") {

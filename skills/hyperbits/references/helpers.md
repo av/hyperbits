@@ -35,6 +35,30 @@ ESM: `import { ... } from "hyperbits/helpers"`. IIFE: `hyperbits.<name>(...)`.
 const HYPERBITS_GSAP_CDN = "https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"
 ```
 
+### `GsapProxyBinding`
+
+```ts
+type GsapProxyBinding<Proxy> = { proxy: Proxy; apply: () => void; };
+```
+
+### `TimeStateBinding`
+
+```ts
+type TimeStateBinding<State> = { stateAt: (time: number) => State; };
+```
+
+### `TimelineBind`
+
+```ts
+type TimelineBind = (timeline: gsap.core.Timeline) => () => void;
+```
+
+### `chainTimelineUpdate`
+
+```ts
+chainTimelineUpdate(timeline: gsap.core.Timeline, update: () => void): () => void
+```
+
 Example:
 
 ```js
@@ -187,7 +211,7 @@ type StaggerTargets = string | Element | Element[] | NodeListOf<Element> | HTMLC
 ### `StaggerSpec`
 
 ```ts
-type StaggerSpec = { x?: StaggerProperty; y?: StaggerProperty; rotate?: StaggerProperty; rotation?: StaggerProperty; scale?: StaggerProperty; opacity?: StaggerProperty; duration?: number; delay?: number; stagger?: number; staggerDirection?: StaggerDirection; hold?: number; ease?: string | EasingFunction; from?: Record<string, number | string>; to?: Record<string, number | string>; };
+type StaggerSpec = { x?: StaggerProperty; y?: StaggerProperty; rotate?: StaggerProperty; rotation?: StaggerProperty; scale?: StaggerProperty; opacity?: StaggerProperty; duration?: number; delay?: number; stagger?: number; staggerDirection?: StaggerDirection; hold?: number; ease?: string | EasingFunction; from?: gsap.TweenVars; to?: gsap.TweenVars; };
 ```
 
 ### `resolveTargets`
@@ -226,6 +250,12 @@ hyperbits.stagger(".item", {
 
 ESM: `import { ... } from "hyperbits/helpers/color"`. IIFE: `hyperbits.<name>(...)`.
 
+### `mixOklch`
+
+```ts
+mixOklch(fromColor: string, toColor: string, progress: number, fallback = "transparent"): string
+```
+
 ### `interpolateColorKeyframes`
 
 ```ts
@@ -244,10 +274,16 @@ type ColorProxyProperty = "background" | "backgroundColor" | "color";
 type ColorProxy = { progress: number; };
 ```
 
+### `ColorProxyOptions`
+
+```ts
+type ColorProxyOptions = { property?: ColorProxyProperty; };
+```
+
 ### `colorProxy`
 
 ```ts
-colorProxy(element: HTMLElement, colors: string[], property: ColorProxyProperty = "backgroundColor"): { proxy: ColorProxy; apply: () => void }
+colorProxy(element: HTMLElement, colors: string[], property: ColorProxyProperty = "backgroundColor"): GsapProxyBinding<ColorProxy>
 ```
 
 Example:
@@ -331,10 +367,16 @@ interpolateGradientKeyframes(gradients: string[], progress: number, easingFn?: E
 type GradientProxy = { progress: number; };
 ```
 
+### `GradientProxyOptions`
+
+```ts
+type GradientProxyOptions = { shortestAngle?: boolean; easingFn?: EasingFunction; };
+```
+
 ### `gradientProxy`
 
 ```ts
-gradientProxy(element: HTMLElement, gradients: string[], options?: { shortestAngle?: boolean; easingFn?: EasingFunction }): { proxy: GradientProxy; apply: () => void }
+gradientProxy(element: HTMLElement, gradients: string[], options?: GradientProxyOptions): GsapProxyBinding<GradientProxy>
 ```
 
 Example:
@@ -369,12 +411,6 @@ random(seed: RandomSeed): number
 randomFloat = (seed: RandomSeed, min: number, max: number): number
 ```
 
-### `randomRange`
-
-```ts
-const randomRange = randomFloat
-```
-
 ### `randomInt`
 
 ```ts
@@ -385,12 +421,6 @@ randomInt = (seed: RandomSeed, min: number, max: number): number
 
 ```ts
 pick = <Item>(seed: RandomSeed, array: Item[]): Item
-```
-
-### `anyElement`
-
-```ts
-const anyElement = pick
 ```
 
 Example:
@@ -415,12 +445,6 @@ interface ParticleVector { x: number; y: number; z: number; }
 
 ```ts
 interface Particle { id: string; index: number; seed: number; birthFrame: number; lifespan: number; position: ParticleVector; velocity: ParticleVector; acceleration: ParticleVector; scale: number; rotation: number; opacity: number; spawnerId: string; }
-```
-
-### `SpawnerShape`
-
-```ts
-type SpawnerShape = "point" | "rect" | "circle";
 ```
 
 ### `SpawnerConfig`
@@ -489,10 +513,22 @@ createScaleOverLife = (start: number, end: number, startVariance?: number, endVa
 simulateParticles({ frame, fps, spawners, behaviors, }: SimulationConfig): Particle[]
 ```
 
+### `CreateParticlesOptions`
+
+```ts
+type CreateParticlesOptions = { spawners: SpawnerConfig[]; behaviors?: BehaviorConfig[]; fps?: number; };
+```
+
+### `ParticleSystem`
+
+```ts
+type ParticleSystem = TimeStateBinding<Particle[]> & { fps: number; bind: ( timeline: gsap.core.Timeline, canvas: HTMLCanvasElement, options?: ParticleRenderOptions, ) => () => void; };
+```
+
 ### `createParticles`
 
 ```ts
-createParticles(config: { spawners: SpawnerConfig[]; behaviors?: BehaviorConfig[]; fps?: number; }): { fps: number; stateAt: (time: number) => Particle[]; }
+createParticles(config: CreateParticlesOptions): ParticleSystem
 ```
 
 ### `ParticleRenderOptions`
@@ -507,10 +543,16 @@ type ParticleRenderOptions = { color?: string; size?: number; clear?: boolean; }
 renderParticles(canvas: HTMLCanvasElement, particles: Particle[], options: ParticleRenderOptions = {}): void
 ```
 
+### `ParticleSimulator`
+
+```ts
+type ParticleSimulator = { stateAt: (time: number) => Particle[]; };
+```
+
 ### `bind`
 
 ```ts
-bind(timeline: gsap.core.Timeline, canvas: HTMLCanvasElement, simulator: { stateAt: (time: number) => Particle[] }, options?: ParticleRenderOptions): () => void
+bind(timeline: gsap.core.Timeline, canvas: HTMLCanvasElement, simulator: ParticleSimulator, options?: ParticleRenderOptions): () => void
 ```
 
 Example:
@@ -611,10 +653,16 @@ type TypewriterOptions = { duration: number; delay?: number; };
 applyTypewriter(element: Element, time: number, options: TypewriterOptions): number
 ```
 
+### `TypewriterDriver`
+
+```ts
+type TypewriterDriver = { apply: (time: number) => number; spans: HTMLSpanElement[]; };
+```
+
 ### `typewriter`
 
 ```ts
-typewriter(element: Element, options: TypewriterOptions): { apply: (time: number) => number; spans: HTMLSpanElement[] }
+typewriter(element: Element, options: TypewriterOptions): TypewriterDriver
 ```
 
 Example:
@@ -649,10 +697,16 @@ formatNumber(value: number, options: CounterFormatOptions = {}): string
 type CounterProxy = { value: number; };
 ```
 
+### `CounterOptions`
+
+```ts
+type CounterOptions = CounterFormatOptions & { from?: number; };
+```
+
 ### `createCounter`
 
 ```ts
-createCounter(element: Element, options: CounterFormatOptions & { from?: number } = {}): { proxy: CounterProxy; apply: () => void }
+createCounter(element: Element, options: CounterOptions = {}): GsapProxyBinding<CounterProxy>
 ```
 
 Example:
@@ -918,10 +972,16 @@ sceneStateAt(time: number, config: Scene3DConfig): Scene3DState
 applyScene3D(root: HTMLElement, state: Scene3DState, config: Scene3DConfig): void
 ```
 
+### `Scene3DHandle`
+
+```ts
+type Scene3DHandle = TimeStateBinding<Scene3DState> & { canvas: HTMLElement; world: HTMLElement; apply: (state: Scene3DState) => void; bind: TimelineBind; };
+```
+
 ### `createScene3D`
 
 ```ts
-createScene3D(root: HTMLElement, config: Scene3DConfig): { canvas: HTMLElement; world: HTMLElement; stateAt: (time: number) => Scene3DState; apply: (state: Scene3DState) => void; bind: (timeline: gsap.core.Timeline) => () => void; }
+createScene3D(root: HTMLElement, config: Scene3DConfig): Scene3DHandle
 ```
 
 Example:

@@ -19,9 +19,9 @@ run_checks() {
   npm run build
   npm run typecheck
   npm run lint
-  npm run lint:bits
   npm test
   npm run test:package
+  npm run check:generated
   npm run docs:build
   npm pack --dry-run
 }

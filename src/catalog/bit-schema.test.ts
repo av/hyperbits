@@ -1,35 +1,24 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { readFileSync, statSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { BIT_CATEGORIES, validateBitManifest } from "./bit-schema";
-
-const repoRoot = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "../..",
-);
-const bitsRoot = path.join(repoRoot, "bits");
-
-function listBitJsonFiles(dir: string): string[] {
-  const entries = readdirSync(dir);
-  const files: string[] = [];
-  for (const entry of entries) {
-    const full = path.join(dir, entry);
-    const stats = statSync(full);
-    if (stats.isDirectory()) {
-      files.push(...listBitJsonFiles(full));
-    } else if (entry === "bit.json") {
-      files.push(full);
-    }
-  }
-  return files.sort();
-}
+import {
+  BIT_CATEGORIES,
+  HYPERBITS_UNPKG_IIFE,
+  validateBitManifest,
+} from "./bit-schema";
+import {
+  CATEGORY_ORDER,
+  HYPERBITS_UNPKG_IIFE as SCRIPT_UNPKG_IIFE,
+  listBitJsonFilesSync,
+  projectRoot as repoRoot,
+} from "../../scripts/lib/bits.mjs";
 
 describe("bit manifests", () => {
-  const bitFiles = listBitJsonFiles(bitsRoot);
+  const bitFiles = listBitJsonFilesSync();
 
   it("finds one bit.json per remotion-bits example category folder", () => {
-    expect(BIT_CATEGORIES.length).toBe(6);
+    expect(BIT_CATEGORIES).toEqual(CATEGORY_ORDER);
+    expect(HYPERBITS_UNPKG_IIFE).toBe(SCRIPT_UNPKG_IIFE);
     expect(bitFiles.length).toBeGreaterThan(0);
   });
 

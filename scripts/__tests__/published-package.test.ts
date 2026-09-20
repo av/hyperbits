@@ -4,7 +4,8 @@ import { execFileSync } from "node:child_process";
 import { mkdtempSync, readFileSync, readdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+
+import { bitHtmlPath, listBitJsonFilesSync, normalizePath, projectRoot } from "../lib/bits.mjs";
 
 import { describe, expect, it } from "vitest";
 
@@ -28,29 +29,12 @@ type FetchResult = {
   };
 };
 
-const repositoryRoot = fileURLToPath(new URL("../..", import.meta.url));
-const bitsRoot = path.join(repositoryRoot, "bits");
+const repositoryRoot = projectRoot;
 
-const normalizePath = (value: string): string =>
-  value.split(path.sep).join("/");
-
-const listBitSourcePaths = (dirPath: string): string[] => {
-  return readdirSync(dirPath, { withFileTypes: true })
-    .flatMap((entry) => {
-      const fullPath = path.join(dirPath, entry.name);
-
-      if (entry.isDirectory()) {
-        return listBitSourcePaths(fullPath);
-      }
-
-      if (entry.isFile() && entry.name === "index.html") {
-        return [normalizePath(path.relative(repositoryRoot, fullPath))];
-      }
-
-      return [] as string[];
-    })
-    .sort((left, right) => left.localeCompare(right));
-};
+const listBitSourcePaths = (): string[] =>
+  listBitJsonFilesSync().map((bitJsonPath) =>
+    normalizePath(path.relative(repositoryRoot, bitHtmlPath(bitJsonPath))),
+  );
 
 const parseJsonOutput = (output: string): unknown => {
   const trimmedOutput = output.trim();
@@ -96,7 +80,7 @@ const runTarballBackedCliJson = (
 
 describe("published package integration", () => {
   it("uses the packed CLI as the authoritative single-source-of-truth gate", () => {
-    const expectedSourcePaths = listBitSourcePaths(bitsRoot);
+    const expectedSourcePaths = listBitSourcePaths();
     const packDir = mkdtempSync(path.join(tmpdir(), "hyperbits-pack-"));
 
     try {

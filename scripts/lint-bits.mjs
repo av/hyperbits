@@ -1,29 +1,16 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
-import { copyFileSync, readdirSync, statSync } from "node:fs";
+import { copyFileSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const bitsRoot = path.join(root, "bits");
+import {
+  fileExistsSync,
+  listBitDirs,
+  projectRoot as root,
+} from "./lib/bits.mjs";
+
 const runCheck =
   process.argv.includes("--check") || process.argv.includes("--audit");
-
-function listBitDirs(dir) {
-  const out = [];
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      const indexHtml = path.join(full, "index.html");
-      if (statSync(indexHtml, { throwIfNoEntry: false })?.isFile()) {
-        out.push(full);
-      } else {
-        out.push(...listBitDirs(full));
-      }
-    }
-  }
-  return out.sort();
-}
 
 function runHyperframes(command, bitDir) {
   const args = ["hyperframes", command, "--json", bitDir];
@@ -49,14 +36,14 @@ function summarizeLint(payload, bitDir) {
   };
 }
 
-const bitDirs = listBitDirs(bitsRoot);
+const bitDirs = listBitDirs();
 if (bitDirs.length === 0) {
   console.error("No bits found under bits/**/index.html");
   process.exit(1);
 }
 
 const iifeSrc = path.join(root, "dist", "hyperbits.iife.js");
-if (!statSync(iifeSrc, { throwIfNoEntry: false })?.isFile()) {
+if (!fileExistsSync(iifeSrc)) {
   console.error("dist/hyperbits.iife.js is missing. Run npm run build first.");
   process.exit(1);
 }

@@ -4,11 +4,17 @@ import { copyFile, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promi
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const projectRoot = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "..",
-);
-const bitsRoot = path.join(projectRoot, "bits");
+import {
+  CATEGORY_LABELS,
+  GSAP_CDN,
+  bitHtmlPath,
+  listBitJsonFiles,
+  projectRoot,
+  readBitManifest,
+} from "./lib/bits.mjs";
+
+export { CATEGORY_LABELS };
+
 const docsRoot = path.join(projectRoot, "docs");
 const bitsMdxDir = path.join(docsRoot, "src", "content", "docs", "bits");
 const publicBitsDir = path.join(docsRoot, "public", "bits");
@@ -20,37 +26,10 @@ const generatedCatalogPath = path.join(
   "bits.generated.ts",
 );
 
-export const CATEGORY_LABELS = {
-  "full-compositions": "Full Compositions",
-  "staggered-motion": "Staggered Motion",
-  "text-animations": "Text Animations",
-  "background-effects": "Background Effects",
-  particles: "Particles",
-  "scenes-3d": "3D Scenes",
-};
-
 const IIFE_PUBLIC_PATH = "/vendor/hyperbits.iife.js";
-const GSAP_CDN = "https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js";
 
 const escapeMdx = (value) =>
   value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-
-const listBitJsonFiles = async (dirPath) => {
-  const entries = await readdir(dirPath, { withFileTypes: true });
-  const files = await Promise.all(
-    entries.map(async (entry) => {
-      const fullPath = path.join(dirPath, entry.name);
-      if (entry.isDirectory()) {
-        return listBitJsonFiles(fullPath);
-      }
-      if (entry.isFile() && entry.name === "bit.json") {
-        return [fullPath];
-      }
-      return [];
-    }),
-  );
-  return files.flat().sort((left, right) => left.localeCompare(right));
-};
 
 const preparePlaygroundHtml = (html) => {
   let prepared = html.replaceAll(
@@ -185,7 +164,7 @@ export const docsBitsById: Record<string, DocsBit> = Object.fromEntries(
 };
 
 export const generateDocs = async () => {
-  const bitFiles = await listBitJsonFiles(bitsRoot);
+  const bitFiles = await listBitJsonFiles();
   const bits = [];
 
   await mkdir(bitsMdxDir, { recursive: true });
@@ -193,12 +172,11 @@ export const generateDocs = async () => {
   await mkdir(path.dirname(generatedCatalogPath), { recursive: true });
 
   for (const bitJsonPath of bitFiles) {
-    const manifest = JSON.parse(await readFile(bitJsonPath, "utf8"));
+    const manifest = await readBitManifest(bitJsonPath);
     const bitDir = path.dirname(bitJsonPath);
     const category = path.basename(path.dirname(bitDir));
     const categoryLabel = CATEGORY_LABELS[category] ?? category;
-    const htmlPath = path.join(bitDir, "index.html");
-    const html = await readFile(htmlPath, "utf8");
+    const html = await readFile(bitHtmlPath(bitJsonPath), "utf8");
 
     const bit = {
       id: manifest.name,

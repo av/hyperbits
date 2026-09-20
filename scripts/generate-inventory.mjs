@@ -1,14 +1,17 @@
 #!/usr/bin/env node
 
-import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const projectRoot = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  "..",
-);
-const bitsRoot = path.join(projectRoot, "bits");
+import {
+  bitHtmlPath,
+  kebabToPascal,
+  listBitJsonFiles,
+  normalizePath,
+  projectRoot,
+} from "./lib/bits.mjs";
+
 const generatedJsonPath = path.join(
   projectRoot,
   "src",
@@ -28,31 +31,6 @@ const GENERATED_BANNER = [
   "// Do not edit it manually.",
   "",
 ].join("\n");
-
-const normalizePath = (value) => value.split(path.sep).join("/");
-
-const kebabToPascal = (value) =>
-  value
-    .split("-")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join("");
-
-const listBitJsonFiles = async (dirPath) => {
-  const entries = await readdir(dirPath, { withFileTypes: true });
-  const files = await Promise.all(
-    entries.map(async (entry) => {
-      const fullPath = path.join(dirPath, entry.name);
-      if (entry.isDirectory()) {
-        return listBitJsonFiles(fullPath);
-      }
-      if (entry.isFile() && entry.name === "bit.json") {
-        return [fullPath];
-      }
-      return [];
-    }),
-  );
-  return files.flat().sort((left, right) => left.localeCompare(right));
-};
 
 const assertManifest = (manifest, relativePath) => {
   if (!manifest || typeof manifest !== "object" || Array.isArray(manifest)) {
@@ -170,7 +148,7 @@ const renderInventoryModule = (entries) =>
   ].join("\n");
 
 export const generateBitInventory = async () => {
-  const bitFiles = await listBitJsonFiles(bitsRoot);
+  const bitFiles = await listBitJsonFiles();
   const entries = [];
 
   for (const bitJsonPath of bitFiles) {
@@ -178,7 +156,7 @@ export const generateBitInventory = async () => {
     const manifest = JSON.parse(await readFile(bitJsonPath, "utf8"));
     assertManifest(manifest, relativePath);
 
-    const htmlPath = path.join(path.dirname(bitJsonPath), "index.html");
+    const htmlPath = bitHtmlPath(bitJsonPath);
     const sourceCode = await readFile(htmlPath, "utf8");
     if (!sourceCode.includes("data-composition-id")) {
       throw new Error(
