@@ -1,0 +1,51 @@
+{
+  "name": "bar-chart",
+  "title": "Bar Chart",
+  "description": "Horizontal bar chart growing in with staggered bars and counting values.",
+  "tags": [
+    "chart",
+    "data",
+    "stats",
+    "counter",
+    "staggered-motion",
+    "ui"
+  ],
+  "duration": 4,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "stagger",
+    "counter",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "bar-chart",
+    "type": "hyperframes:block",
+    "title": "Bar Chart",
+    "description": "Horizontal bar chart growing in with staggered bars and counting values.",
+    "tags": [
+      "chart",
+      "data",
+      "stats",
+      "counter",
+      "staggered-motion",
+      "ui"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 4,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/bar-chart.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

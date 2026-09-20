@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"text","type":"string","label":"Text","default":"This appears word by word"}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #0f172a;
+        --fg: #f8fafc;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --accent-2: #f59e0b;
+        --danger: #f43f5e;
+        --ok: #34d399;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #0f172a;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        background-color: #0f172a;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+      #root {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #title {
+        color: #f8fafc;
+        font-weight: 600;
+        max-width: 80%;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="word-by-word"
+      data-start="0"
+      data-duration="4"
+      data-width="1920"
+      data-height="1080"
+    >
+      <h1 id="title" class="clip" data-start="0" data-duration="4">This appears word by word</h1>
+    </div>
+    <script>
+      (function () {
+
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+
+
+        const vars = bitVars();
+        const view = hyperbits.viewport();
+        const title = document.getElementById("title");
+        title.textContent = vars.text;
+        title.style.fontSize = view.vmin * 6 + "px";
+        const words = hyperbits.splitText(title, "words");
+        const timeline = gsap.timeline({ paused: true });
+        hyperbits.stagger(
+          words,
+          {
+            opacity: [0, 1],
+            y: [view.vmin * 1.8, 0],
+            duration: 0.45,
+            stagger: 3 / 30,
+            ease: "easeOutQuad",
+          },
+          timeline,
+        );
+        registerTimeline("word-by-word", timeline);
+
+      })();
+    </script>
+  </body>
+</html>

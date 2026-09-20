@@ -1,0 +1,46 @@
+{
+  "name": "cli-simulation",
+  "title": "CLI Simulation",
+  "description": "Simulates a command-line interface with user typing and system output.",
+  "tags": [
+    "text",
+    "typewriter",
+    "cli",
+    "terminal"
+  ],
+  "duration": 15,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "text",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "cli-simulation",
+    "type": "hyperframes:block",
+    "title": "CLI Simulation",
+    "description": "Simulates a command-line interface with user typing and system output.",
+    "tags": [
+      "text",
+      "typewriter",
+      "cli",
+      "terminal"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 15,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/cli-simulation.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "name": "variable-speed-typewriter",
+  "title": "Variable Speed & Typos",
+  "description": "Advanced typewriter with variable speed curves and error simulation.",
+  "tags": [
+    "text",
+    "typewriter",
+    "speed",
+    "errors"
+  ],
+  "duration": 13.33,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "text",
+    "random",
+    "interpolate",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "variable-speed-typewriter",
+    "type": "hyperframes:block",
+    "title": "Variable Speed & Typos",
+    "description": "Advanced typewriter with variable speed curves and error simulation.",
+    "tags": [
+      "text",
+      "typewriter",
+      "speed",
+      "errors"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 13.33,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/variable-speed-typewriter.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

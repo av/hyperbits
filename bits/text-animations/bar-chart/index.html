@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"title","type":"string","label":"Title","default":"Weekly commits by language"}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #0b1220;
+        --fg: #f8fafc;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --accent-2: #f59e0b;
+        --danger: #f43f5e;
+        --ok: #34d399;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #0b1220;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        background-color: #0b1220;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+      #root {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #f8fafc;
+        background-color: #0b1220;
+      }
+      #heading { font-weight: 700; margin-bottom: 0.08em; align-self: flex-start; }
+      #chart { display: flex; flex-direction: column; }
+      .row { display: flex; align-items: center; }
+      .label { color: #cbd5e1; font-weight: 600; }
+      .track { background-color: #1e293b; border-radius: 999px; overflow: hidden; }
+      .bar { height: 100%; background-color: #38bdf8; border-radius: 999px; transform-origin: left center; }
+      .count { font-variant-numeric: tabular-nums; color: #e2e8f0; }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="bar-chart"
+      data-start="0"
+      data-duration="4"
+      data-width="1920"
+      data-height="1080"
+    >
+      <h1 id="heading">Weekly commits by language</h1>
+      <div id="chart"></div>
+    </div>
+    <script>
+      (function () {
+
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+
+
+        const vars = bitVars();
+        const view = hyperbits.viewport();
+        const heading = document.getElementById("heading");
+        const chart = document.getElementById("chart");
+        heading.textContent = vars.title;
+        heading.style.fontSize = view.vmin * 4.5 + "px";
+        heading.style.marginLeft = view.vw * 14 + "px";
+        heading.style.marginBottom = view.vmin * 4.5 + "px";
+        const rows = [
+          { label: "TypeScript", value: 84 },
+          { label: "Rust", value: 67 },
+          { label: "Python", value: 58 },
+          { label: "Go", value: 41 },
+          { label: "Zig", value: 23 },
+        ];
+        const maxValue = 84;
+        const chartWidth = view.vw * 60;
+        const labelWidth = view.vw * 14;
+        const barHeight = view.vmin * 7;
+        const gap = view.vmin * 3;
+        chart.style.gap = gap + "px";
+        const bars = [];
+        const counters = [];
+        for (const row of rows) {
+          const line = document.createElement("div");
+          line.className = "row";
+          line.style.gap = view.vmin * 2 + "px";
+          const label = document.createElement("div");
+          label.className = "label";
+          label.textContent = row.label;
+          label.style.width = labelWidth + "px";
+          label.style.fontSize = view.vmin * 2.6 + "px";
+          const track = document.createElement("div");
+          track.className = "track";
+          track.style.width = chartWidth + "px";
+          track.style.height = barHeight + "px";
+          const bar = document.createElement("div");
+          bar.className = "bar";
+          bar.style.width = (row.value / maxValue) * 100 + "%";
+          track.append(bar);
+          const count = document.createElement("div");
+          count.className = "count";
+          count.style.width = view.vw * 6 + "px";
+          count.style.fontSize = view.vmin * 2.6 + "px";
+          const counter = hyperbits.createCounter(count, {});
+          line.append(label, track, count);
+          chart.append(line);
+          bars.push(bar);
+          counters.push({ counter: counter, value: row.value });
+        }
+        const timeline = gsap.timeline({ paused: true });
+        timeline.fromTo(heading, { opacity: 0, y: view.vmin * 2 }, { opacity: 1, y: 0, duration: 1, ease: "power3.out" }, 0);
+        hyperbits.stagger(bars, { scaleX: [0, 1], duration: 45 / 30, stagger: 8 / 30, ease: "easeOutCubic" }, timeline);
+        counters.forEach(function (item, index) {
+          timeline.fromTo(
+            item.counter.proxy,
+            { value: 0 },
+            { value: item.value, duration: 45 / 30, ease: "power2.out", onUpdate: item.counter.apply },
+            8 / 30 * index,
+          );
+        });
+        registerTimeline("bar-chart", timeline);
+
+      })();
+    </script>
+  </body>
+</html>

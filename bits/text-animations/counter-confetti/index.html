@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"target","type":"number","label":"Target","default":1000}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #0b1220;
+        --fg: #f8fafc;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --accent-2: #f59e0b;
+        --danger: #f43f5e;
+        --ok: #34d399;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #0b1220;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        background-color: #0b1220;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+      #root { background-color: #0b1220; }
+      #stage { position: absolute; inset: 0; }
+      #value {
+        position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+        color: #f8fafc; font-weight: 800; font-variant-numeric: tabular-nums; z-index: 2;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="counter-confetti"
+      data-start="0"
+      data-duration="6"
+      data-width="1920"
+      data-height="1080"
+    >
+      <canvas id="stage" class="clip" data-start="0" data-duration="6"></canvas>
+      <div id="value" class="clip" data-start="0" data-duration="6">0</div>
+    </div>
+    <script>
+      (function () {
+
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+
+
+        const vars = bitVars();
+        const view = hyperbits.viewport();
+        const canvas = document.getElementById("stage");
+        const valueEl = document.getElementById("value");
+        canvas.width = view.width;
+        canvas.height = view.height;
+        valueEl.style.fontSize = view.vmin * 14 + "px";
+        const counter = hyperbits.createCounter(valueEl, { separator: "," });
+        const simulator = hyperbits.createParticles({
+          fps: 30,
+          spawners: [
+            {
+              id: "left",
+              burst: 80,
+              startFrame: 70,
+              position: { x: view.width * 0.15, y: view.height * 0.5 },
+              velocity: { x: 18, y: -8, varianceX: 10, varianceY: 16 },
+              lifespan: 50,
+              lifespanVariance: 10,
+            },
+            {
+              id: "right",
+              burst: 80,
+              startFrame: 70,
+              position: { x: view.width * 0.85, y: view.height * 0.5 },
+              velocity: { x: -18, y: -8, varianceX: 10, varianceY: 16 },
+              lifespan: 50,
+              lifespanVariance: 10,
+            },
+          ],
+          behaviors: [
+            { id: "gravity", handler: hyperbits.createGravity({ y: 0.35 }) },
+            { id: "drag", handler: hyperbits.createDrag(0.985) },
+            { id: "fade", handler: hyperbits.createOpacityOverLife([1, 0]) },
+            { id: "scale", handler: hyperbits.createScaleOverLife(1, 0.4) },
+          ],
+        });
+        const timeline = gsap.timeline({ paused: true });
+        timeline.fromTo(
+          counter.proxy,
+          { value: 0 },
+          { value: Number(vars.target) || 1000, duration: 3.2, ease: "power2.out", onUpdate: counter.apply },
+          0.2,
+        );
+        hyperbits.bind(timeline, canvas, simulator, { color: "#f59e0b", size: view.vmin * 1.2 });
+        timeline.to(valueEl, { scale: 1.06, duration: 0.45, yoyo: true, repeat: 5, ease: "sine.inOut" }, 3.4);
+        timeline.to({}, { duration: 6 }, 0);
+        registerTimeline("counter-confetti", timeline);
+
+      })();
+    </script>
+  </body>
+</html>

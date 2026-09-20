@@ -1,0 +1,47 @@
+{
+  "name": "typing-code-block",
+  "title": "Typing Code Block",
+  "description": "Syntax highlighted code with typing effect",
+  "tags": [
+    "text",
+    "code",
+    "animation",
+    "typing"
+  ],
+  "duration": 6,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "code",
+    "text",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "typing-code-block",
+    "type": "hyperframes:block",
+    "title": "Typing Code Block",
+    "description": "Syntax highlighted code with typing effect",
+    "tags": [
+      "text",
+      "code",
+      "animation",
+      "typing"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 6,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/typing-code-block.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

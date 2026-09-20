@@ -1,0 +1,44 @@
+{
+  "name": "basic-typewriter",
+  "title": "Basic Typewriter",
+  "description": "Simple typing animation with cursor.",
+  "tags": [
+    "text",
+    "typewriter",
+    "basic"
+  ],
+  "duration": 5,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "text",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "basic-typewriter",
+    "type": "hyperframes:block",
+    "title": "Basic Typewriter",
+    "description": "Simple typing animation with cursor.",
+    "tags": [
+      "text",
+      "typewriter",
+      "basic"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 5,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/basic-typewriter.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

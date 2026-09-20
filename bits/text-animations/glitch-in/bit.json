@@ -1,0 +1,45 @@
+{
+  "name": "glitch-in",
+  "title": "Glitch In",
+  "description": "Text effect that glitches into existence from random characters",
+  "tags": [
+    "text",
+    "glitch",
+    "transition"
+  ],
+  "duration": 3,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "text",
+    "random",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "glitch-in",
+    "type": "hyperframes:block",
+    "title": "Glitch In",
+    "description": "Text effect that glitches into existence from random characters",
+    "tags": [
+      "text",
+      "glitch",
+      "transition"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 3,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/glitch-in.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

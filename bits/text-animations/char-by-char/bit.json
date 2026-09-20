@@ -1,0 +1,45 @@
+{
+  "name": "char-by-char",
+  "title": "Staggered Char Animation",
+  "description": "Text that appears character by character with staggered timing",
+  "tags": [
+    "text",
+    "character",
+    "stagger"
+  ],
+  "duration": 4,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "text",
+    "stagger",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "char-by-char",
+    "type": "hyperframes:block",
+    "title": "Staggered Char Animation",
+    "description": "Text that appears character by character with staggered timing",
+    "tags": [
+      "text",
+      "character",
+      "stagger"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 4,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/char-by-char.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "name": "multi-text-typewriter",
+  "title": "Multi-Text Typewriter",
+  "description": "Typing multiple sentences in sequence with deleting phase.",
+  "tags": [
+    "text",
+    "typewriter",
+    "sequence",
+    "loop"
+  ],
+  "duration": 10,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "text",
+    "interpolate",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "multi-text-typewriter",
+    "type": "hyperframes:block",
+    "title": "Multi-Text Typewriter",
+    "description": "Typing multiple sentences in sequence with deleting phase.",
+    "tags": [
+      "text",
+      "typewriter",
+      "sequence",
+      "loop"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 10,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/multi-text-typewriter.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}
