@@ -99,7 +99,7 @@
     "./package.json": "./package.json"
   },
   "bin": {
-    "hyperbits": "./dist/cli/hyperbits.js"
+    "hyperbits": "./dist/cli/index.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -110,12 +110,13 @@
     "dist/**/*.js.map",
     "bits",
     "src",
+    "registry.json",
     "README.md"
   ],
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "npm run clean && tsc -p tsconfig.json && node scripts/build-iife.mjs",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "npm run clean && npm run inventory && tsc -p tsconfig.json && node scripts/add-extensions.mjs && node scripts/build-iife.mjs",
+    "typecheck": "npm run inventory && tsc -p tsconfig.json --noEmit",
     "lint": "oxlint -c .oxlintrc.json . && npm run lint:bits",
     "lint:fix": "oxlint -c .oxlintrc.json . --fix",
     "lint:bits": "node scripts/lint-bits.mjs",
@@ -123,14 +124,16 @@
     "ci": "npm run typecheck && npm run lint && npm test",
     "format": "oxfmt -c .oxfmtrc.json .",
     "format:check": "oxfmt -c .oxfmtrc.json . --check",
-    "test": "vitest run",
+    "test": "npm run inventory && vitest run --exclude scripts/__tests__/published-package.test.ts",
     "test:watch": "vitest",
-    "inventory": "node --eval \"console.log('inventory: not implemented yet')\"",
-    "registry": "node --eval \"console.log('registry: not implemented yet')\"",
+    "test:package": "vitest run scripts/__tests__/published-package.test.ts",
+    "inventory": "node scripts/generate-inventory.mjs",
+    "registry": "node scripts/build-registry.mjs",
     "docs:dev": "node --eval \"console.log('docs:dev: not implemented yet')\"",
     "docs:build": "node --eval \"console.log('docs:build: not implemented yet')\"",
     "docs:preview": "node --eval \"console.log('docs:preview: not implemented yet')\"",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build && npm run registry",
+    "prepack": "npm run build && npm run registry"
   },
   "peerDependencies": {
     "gsap": "^3.14.2"
@@ -148,6 +151,7 @@
     "vitest": "^2.1.9"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "culori": "^4.0.2",
     "gsap": "^3.14.2",
     "prismjs": "^1.30.0"

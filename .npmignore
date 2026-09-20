@@ -1,0 +1,5 @@
+bits/**/hyperbits.iife.js
+**/*.test.ts
+**/__tests__/
+coverage/
+*.tgz

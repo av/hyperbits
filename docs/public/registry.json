@@ -1,0 +1,191 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry.json",
+  "name": "hyperbits",
+  "homepage": "https://github.com/av/hyperbits",
+  "items": [
+    {
+      "name": "conic-gradient",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "linear-gradient",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "radial-gradient",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "feature-showcase",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "fireflies",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "particles-fountain",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "particles-grid",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "particles-snow",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "scrolling-columns",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "3d-basic",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "3d-elements",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "carousel",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "cube-navigation",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "cursor-flyover",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "flying-through-words",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "ken-burns",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "step-timing-context",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "terminal-3d",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "transform3d-showcase",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "card-stack",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "chat-conversation",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "easings-visualizer",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "fracture-reassemble",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "grid-stagger",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "list-reveal",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "lower-third",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "mosaic-reframe",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "slide-from-left",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "staggered-fade-in",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "bar-chart",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "basic-code-block",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "basic-counter",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "basic-typewriter",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "blur-slide-word",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "char-by-char",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "cli-simulation",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "counter-confetti",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "fade-in",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "glitch-cycle",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "glitch-in",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "matrix-rain",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "multi-text-typewriter",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "stat-rings",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "typing-code-block",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "variable-speed-typewriter",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "word-by-word",
+      "type": "hyperframes:block"
+    }
+  ]
+}
