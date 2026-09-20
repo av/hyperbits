@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { catalogName, HYPERBITS_GSAP_CDN, version } from "./index";
+import { catalogName, HYPERBITS_GSAP_CDN, interpolate, version } from "./index";
 
 describe("hyperbits skeleton", () => {
   it("exports a version string", () => {
@@ -14,5 +14,9 @@ describe("hyperbits skeleton", () => {
 
   it("names the catalog", () => {
     expect(catalogName).toBe("hyperbits");
+  });
+
+  it("re-exports helpers", () => {
+    expect(interpolate(5, [0, 10], [0, 100])).toBe(50);
   });
 });

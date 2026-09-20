@@ -31,6 +31,61 @@
       "import": "./dist/helpers/index.js",
       "default": "./dist/helpers/index.js"
     },
+    "./helpers/interpolate": {
+      "types": "./dist/helpers/interpolate.d.ts",
+      "import": "./dist/helpers/interpolate.js",
+      "default": "./dist/helpers/interpolate.js"
+    },
+    "./helpers/stagger": {
+      "types": "./dist/helpers/stagger.d.ts",
+      "import": "./dist/helpers/stagger.js",
+      "default": "./dist/helpers/stagger.js"
+    },
+    "./helpers/color": {
+      "types": "./dist/helpers/color.d.ts",
+      "import": "./dist/helpers/color.js",
+      "default": "./dist/helpers/color.js"
+    },
+    "./helpers/gradient": {
+      "types": "./dist/helpers/gradient.d.ts",
+      "import": "./dist/helpers/gradient.js",
+      "default": "./dist/helpers/gradient.js"
+    },
+    "./helpers/random": {
+      "types": "./dist/helpers/random.d.ts",
+      "import": "./dist/helpers/random.js",
+      "default": "./dist/helpers/random.js"
+    },
+    "./helpers/particles": {
+      "types": "./dist/helpers/particles.d.ts",
+      "import": "./dist/helpers/particles.js",
+      "default": "./dist/helpers/particles.js"
+    },
+    "./helpers/viewport": {
+      "types": "./dist/helpers/viewport.d.ts",
+      "import": "./dist/helpers/viewport.js",
+      "default": "./dist/helpers/viewport.js"
+    },
+    "./helpers/text": {
+      "types": "./dist/helpers/text.d.ts",
+      "import": "./dist/helpers/text.js",
+      "default": "./dist/helpers/text.js"
+    },
+    "./helpers/counter": {
+      "types": "./dist/helpers/counter.d.ts",
+      "import": "./dist/helpers/counter.js",
+      "default": "./dist/helpers/counter.js"
+    },
+    "./helpers/code": {
+      "types": "./dist/helpers/code.d.ts",
+      "import": "./dist/helpers/code.js",
+      "default": "./dist/helpers/code.js"
+    },
+    "./helpers/scene3d": {
+      "types": "./dist/helpers/scene3d.d.ts",
+      "import": "./dist/helpers/scene3d.js",
+      "default": "./dist/helpers/scene3d.js"
+    },
     "./helpers/*": {
       "types": "./dist/helpers/*.d.ts",
       "import": "./dist/helpers/*.js",
@@ -59,7 +114,7 @@
   ],
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "npm run clean && tsc -p tsconfig.json",
+    "build": "npm run clean && tsc -p tsconfig.json && node scripts/build-iife.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "oxlint -c .oxlintrc.json .",
     "lint:fix": "oxlint -c .oxlintrc.json . --fix",
