@@ -1,0 +1,48 @@
+{
+  "name": "feature-showcase",
+  "title": "Hyperbits",
+  "description": "Promotional showcase for the hyperbits catalog of HyperFrames animation bits.",
+  "tags": [
+    "showcase",
+    "promo",
+    "library"
+  ],
+  "duration": 38,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "text",
+    "stagger",
+    "particles",
+    "scene3d",
+    "code",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "feature-showcase",
+    "type": "hyperframes:block",
+    "title": "Hyperbits",
+    "description": "Promotional showcase for the hyperbits catalog of HyperFrames animation bits.",
+    "tags": [
+      "showcase",
+      "promo",
+      "library"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 38,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/feature-showcase.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}
