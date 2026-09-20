@@ -1,4 +1,4 @@
-export interface Vector3 {
+export interface ParticleVector {
   x: number;
   y: number;
   z: number;
@@ -10,9 +10,9 @@ export interface Particle {
   seed: number;
   birthFrame: number;
   lifespan: number;
-  position: Vector3;
-  velocity: Vector3;
-  acceleration: Vector3;
+  position: ParticleVector;
+  velocity: ParticleVector;
+  acceleration: ParticleVector;
   scale: number;
   rotation: number;
   opacity: number;
@@ -27,7 +27,7 @@ export interface SpawnerConfig {
   burst?: number;
   startFrame?: number;
   max?: number;
-  position?: Partial<Vector3>;
+  position?: Partial<ParticleVector>;
   area?: { width: number; height: number; depth?: number };
   velocity?: {
     x: number;
