@@ -7,7 +7,7 @@ Ready-made animation bits for [HyperFrames](https://github.com/heygen-com/hyperf
 
 ## Status
 
-Outline stage. Nothing below exists yet; this document is the build plan.
+Skeleton is in place. Toolchain, package layout, and the phase 1 decisions below exist; helpers, bits, CLI, MCP, and docs do not.
 
 ## What a bit is here
 
@@ -67,7 +67,7 @@ Shader-transition and canvas bits follow HyperFrames' shader-compatible CSS rule
 - Inventory generator walks `bits/**/bit.json` and emits `src/catalog/inventory.generated.json` with the full HTML source inlined, same shape as remotion-bits so the search and resolution code ports almost verbatim.
 - CLI: `hyperbits find`, `hyperbits fetch`, `hyperbits add <bit> [--into compositions/]`, `hyperbits mcp`. `add` writes the HTML file into a HyperFrames project and prints the `data-composition-src` snippet.
 - MCP server with `find_hyperbits` and `fetch_hyperbit`, stdio transport.
-- Registry output: `registry.json` in HyperFrames registry-item format hosted from the docs site so `npx hyperframes add` can consume it if external registries are supported, with `hyperbits add` as the guaranteed path.
+- Registry output: `registry.json` in HyperFrames registry-item format hosted from the docs site. `npx hyperframes add` does not take a URL; a project can set `hyperframes.json` `registry` to that base and then `npx hyperframes add <bit>`. `hyperbits add` is the guaranteed path.
 - Published-package integration test that runs the packed tarball through `npx` like remotion-bits does.
 
 ### 5. Docs site (port of `docs/`)
@@ -91,8 +91,40 @@ A HyperFrames project created with `npx hyperframes init` that embeds several bi
 - Changelog, versioning, npm publish of `hyperbits`.
 - README gallery, badges, and the single-step usage section mirroring remotion-bits.
 
-## Open questions to settle during phase 1
+## Decisions
 
-- Whether `npx hyperframes add` accepts third-party registry URLs, which decides how much `hyperbits add` must do itself.
-- Whether helpers should also be published as `@hyperbits/*` scoped packages or stay in one package with subpath exports.
-- Minimum GSAP version to pin, and whether bits load it from CDN or expect the host project to provide it.
+Settled during phase 1 from HyperFrames 0.8.50 (`/tmp/hf/package`) and remotion-bits. Not guesses.
+
+### `npx hyperframes add` and third-party registries
+
+`hyperframes add` does **not** take a registry URL. `npx hyperframes add --help` (v0.8.50) accepts one positional `NAME` (registry item name or tag) plus `--dir`, `--clipboard` / `--no-clipboard`, `--json`, `--vars`, `--force`. There is no `--registry` flag and no URL argument.
+
+The name is looked up in a single registry base URL (`/tmp/hf/package/dist/cli.js` `runAdd` → `resolveItemWithDependencies(opts.name, { baseUrl: config.registry })`). Names must match `^[a-z0-9]([a-z0-9-]*[a-z0-9])?$` (`validRegistryName`); a URL cannot be an item name.
+
+The default registry is `https://raw.githubusercontent.com/heygen-com/hyperframes/main/registry` (`DEFAULT_REGISTRY_URL` in `cli.js`). A project can point at a different **registry base** by setting `registry` in `hyperframes.json` (`DEFAULT_PROJECT_CONFIG` in `cli.js`). That base must serve `registry.json` plus `<type-dir>/<name>/registry-item.json` (`fetchRegistryManifest` / `fetchItemManifest`). Item types live under `examples/`, `blocks/`, `components/` (`ITEM_TYPE_DIRS`). Custom bases are already handled in error text ("set by this project's hyperframes.json, not the public registry").
+
+What `hyperbits add` must do itself:
+
+- Copy the bit HTML (and any helper files) into the HyperFrames project and print the `data-composition-src` snippet. This is the guaranteed install path; `hyperframes add <url>` is not a thing.
+- Optionally also publish a HyperFrames-format registry (`registry.json` + per-item `registry-item.json` using schema `$id` `https://hyperframes.heygen.com/schema/registry-item.json` in `cli.js`) so a user can set `"registry"` in `hyperframes.json` and then run `npx hyperframes add <bit>`. That is an extra path, not a substitute.
+
+### GSAP pin and who loads it
+
+HyperFrames does not inject GSAP. Templates load it themselves:
+
+- Pinned URL used by every bundled template (`dist/templates/blank/index.html`, `from-file/index.html`, `warm-grain/*.html`): `https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js`
+- Docs (`dist/docs/gsap.md`) and the lint hint (`dist/renderSetupWorker.js`) use the unpinned major `https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js`
+- The runtime (`dist/hyperframe-runtime.js`) reads `typeof gsap === "undefined" ? window.gsap : gsap`; it does not fetch a script
+- Studio separately pins MotionPathPlugin at `gsap@3.12.5` (`dist/studio/index.js`); that is not the composition GSAP pin
+
+**Decision:** bits load GSAP themselves from the template pin:
+
+`https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js`
+
+Exported as `HYPERBITS_GSAP_CDN`. Do not rely on the host or the HyperFrames player to inject it.
+
+### Single package vs `@hyperbits/*`
+
+**Decision:** one npm package `hyperbits` with subpath exports (`.`, `./helpers`, `./helpers/*`, `./catalog`). remotion-bits is a single published package (no `"private": true`, no scoped helper packages). Helpers are HTML-script and ESM consumers of one catalog; splitting `@hyperbits/*` would add publish and versioning cost without a consumer that needs it.
+
+`hyperbits` is publishable the same way: `"private"` is omitted, `prepublishOnly` runs `build`.

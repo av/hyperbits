@@ -6,6 +6,21 @@ hyperbits is a catalog of animation bits and helpers for HyperFrames (HTML + GSA
 
 Keep going until the query is completely resolved before yielding. Do not guess or make up an answer.
 
+### Development
+
+- `npm run typecheck` — `tsc -p tsconfig.json --noEmit`
+- `npm run lint` / `npm run lint:fix` — oxlint (config: `.oxlintrc.json`)
+- `npm run format` / `npm run format:check` — oxfmt (config: `.oxfmtrc.json`)
+- `npm test` — vitest + jsdom
+- `npm run build` — compile `src/` to `dist/`
+- `npm run inventory`, `npm run registry`, `npm run docs:*` — placeholders until those phases land
+
+Generated output lives in `dist/`. Do not commit `dist/`, `node_modules/`, `coverage/`, or `*.tgz`. Inventory and registry generators (later phases) will write under `src/catalog/` and the repo root; those files are committed when they exist.
+
+Bits live in `bits/<category>/<name>/` (`index.html`, `bit.json`, optional `preview.png`). Categories: `text-animations`, `staggered-motion`, `background-effects`, `particles`, `scenes-3d`, `full-compositions`.
+
+Bits load GSAP themselves from `https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js` (`HYPERBITS_GSAP_CDN`). HyperFrames does not inject it.
+
 ### Coding guidelines
 
 - Fix problems at the root cause rather than applying surface-level patches.
@@ -13,7 +28,7 @@ Keep going until the query is completely resolved before yielding. Do not guess 
 - Do not add comments within code unless explicitly requested.
 - Do not use one-letter variable names.
 - Do not add copyright or license headers.
-- Do not commit or create branches unless explicitly requested.
+- Commit on the current branch with conventional messages (`feat:`, `chore:`, `test:`, `docs:`). Do not create branches.
 - Do not create markdown files that describe the work you did.
 
 ### HyperFrames rules
