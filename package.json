@@ -4,7 +4,6 @@
   "description": "Animation bits, helpers, CLI and MCP server for HyperFrames video compositions",
   "type": "module",
   "license": "MIT",
-  "private": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/av/hyperbits.git"
@@ -20,5 +19,69 @@
   ],
   "engines": {
     "node": ">=22"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./helpers": {
+      "types": "./dist/helpers/index.d.ts",
+      "import": "./dist/helpers/index.js",
+      "default": "./dist/helpers/index.js"
+    },
+    "./helpers/*": {
+      "types": "./dist/helpers/*.d.ts",
+      "import": "./dist/helpers/*.js",
+      "default": "./dist/helpers/*.js"
+    },
+    "./catalog": {
+      "types": "./dist/catalog/index.d.ts",
+      "import": "./dist/catalog/index.js",
+      "default": "./dist/catalog/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "hyperbits": "./dist/cli/hyperbits.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "dist/**/*.d.ts.map",
+    "dist/**/*.js.map",
+    "bits",
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "npm run clean && tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "oxlint -c .oxlintrc.json .",
+    "lint:fix": "oxlint -c .oxlintrc.json . --fix",
+    "format": "oxfmt -c .oxfmtrc.json .",
+    "format:check": "oxfmt -c .oxfmtrc.json . --check",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "inventory": "node --eval \"console.log('inventory: not implemented yet')\"",
+    "registry": "node --eval \"console.log('registry: not implemented yet')\"",
+    "docs:dev": "node --eval \"console.log('docs:dev: not implemented yet')\"",
+    "docs:build": "node --eval \"console.log('docs:build: not implemented yet')\"",
+    "docs:preview": "node --eval \"console.log('docs:preview: not implemented yet')\"",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^25.1.0",
+    "jsdom": "^24.0.0",
+    "oxfmt": "^0.9.0",
+    "oxlint": "^0.15.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.9"
   }
 }
