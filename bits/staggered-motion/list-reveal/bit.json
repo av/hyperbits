@@ -1,0 +1,46 @@
+{
+  "name": "list-reveal",
+  "title": "List Reveal",
+  "description": "A vertical list of items scaling and finding their place.",
+  "tags": [
+    "list",
+    "motion",
+    "staggered-motion",
+    "ui"
+  ],
+  "duration": 3,
+  "width": 1080,
+  "height": 1080,
+  "helpers": [
+    "stagger",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "list-reveal",
+    "type": "hyperframes:block",
+    "title": "List Reveal",
+    "description": "A vertical list of items scaling and finding their place.",
+    "tags": [
+      "list",
+      "motion",
+      "staggered-motion",
+      "ui"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1080,
+      "height": 1080
+    },
+    "duration": 3,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/list-reveal.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

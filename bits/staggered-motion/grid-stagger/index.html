@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #09090b;
+        --fg: #f8fafc;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --accent-2: #f59e0b;
+        --danger: #f43f5e;
+        --ok: #34d399;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #09090b;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        background-color: #09090b;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+      #root { display: flex; align-items: center; justify-content: center; background-color: #09090b; color: #e4e4e7; }
+      #grid { display: grid; }
+      .cell {
+        background-color: #3b82f6; display: flex; align-items: center; justify-content: center;
+        font-weight: 700; color: rgba(255,255,255,0.85);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="grid-stagger"
+      data-start="0"
+      data-duration="3"
+      data-width="1080"
+      data-height="1080"
+    >
+      <div id="grid" class="clip" data-start="0" data-duration="3"></div>
+    </div>
+    <script>
+      (function () {
+
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+
+
+        const view = hyperbits.viewport();
+        const grid = document.getElementById("grid");
+        const cols = 4;
+        const gap = 20;
+        const padding = 60;
+        const available = Math.min(view.width, view.height) - padding * 2 - gap * (cols - 1);
+        const itemSize = available / cols;
+        grid.style.gridTemplateColumns = "repeat(4, " + itemSize + "px)";
+        grid.style.gridTemplateRows = "repeat(4, " + itemSize + "px)";
+        grid.style.gap = gap + "px";
+        for (let index = 0; index < 16; index += 1) {
+          const cell = document.createElement("div");
+          cell.className = "cell";
+          cell.textContent = String(index + 1);
+          cell.style.borderRadius = itemSize * 0.22 + "px";
+          cell.style.fontSize = itemSize * 0.3 + "px";
+          grid.append(cell);
+        }
+        const timeline = gsap.timeline({ paused: true });
+        hyperbits.stagger(grid.children, { scale: [0, 1], opacity: [0, 1], duration: 1.5, stagger: 3 / 30, staggerDirection: "center", ease: "spring" }, timeline);
+        registerTimeline("grid-stagger", timeline);
+
+      })();
+    </script>
+  </body>
+</html>

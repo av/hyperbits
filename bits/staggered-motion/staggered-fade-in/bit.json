@@ -1,0 +1,44 @@
+{
+  "name": "staggered-fade-in",
+  "title": "Staggered Fade In",
+  "description": "Elements fading in sequentially",
+  "tags": [
+    "motion",
+    "stagger",
+    "fade"
+  ],
+  "duration": 3,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "stagger",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "staggered-fade-in",
+    "type": "hyperframes:block",
+    "title": "Staggered Fade In",
+    "description": "Elements fading in sequentially",
+    "tags": [
+      "motion",
+      "stagger",
+      "fade"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 3,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/staggered-fade-in.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "name": "mosaic-reframe",
+  "title": "Mosaic Reframe",
+  "description": "Twelve image tiles transition from a grid to a feature mosaic, then into a diagonal cascade",
+  "tags": [
+    "motion",
+    "staggered-motion",
+    "mosaic",
+    "grid",
+    "layout"
+  ],
+  "duration": 9,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "stagger",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "mosaic-reframe",
+    "type": "hyperframes:block",
+    "title": "Mosaic Reframe",
+    "description": "Twelve image tiles transition from a grid to a feature mosaic, then into a diagonal cascade",
+    "tags": [
+      "motion",
+      "staggered-motion",
+      "mosaic",
+      "grid",
+      "layout"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 9,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/mosaic-reframe.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

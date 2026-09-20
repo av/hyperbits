@@ -1,0 +1,46 @@
+{
+  "name": "grid-stagger",
+  "title": "Grid Stagger",
+  "description": "A grid of elements staggering in from the center using scale and opacity.",
+  "tags": [
+    "grid",
+    "motion",
+    "staggered-motion",
+    "scale"
+  ],
+  "duration": 3,
+  "width": 1080,
+  "height": 1080,
+  "helpers": [
+    "stagger",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "grid-stagger",
+    "type": "hyperframes:block",
+    "title": "Grid Stagger",
+    "description": "A grid of elements staggering in from the center using scale and opacity.",
+    "tags": [
+      "grid",
+      "motion",
+      "staggered-motion",
+      "scale"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1080,
+      "height": 1080
+    },
+    "duration": 3,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/grid-stagger.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}
