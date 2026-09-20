@@ -1,3 +1,3 @@
 export { version } from "./version";
-export { catalogName } from "./catalog/index";
+export { catalogName } from "./catalog/name";
 export * from "./helpers/index";
