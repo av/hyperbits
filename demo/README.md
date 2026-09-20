@@ -27,7 +27,7 @@ npm run preview
 npm run render
 ```
 
-Render writes `out/gallery.mp4` (gitignored). Preview opens HyperFrames Studio.
+Render writes `out/gallery.mp4` (gitignored). Preview opens HyperFrames Studio. `npx hyperframes render` encodes with libx264; if the host FFmpeg lacks it, use `--docker` or encode a `--format png-sequence` with another H.264 encoder.
 
 ## Adding bits
 
