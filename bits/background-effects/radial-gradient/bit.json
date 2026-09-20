@@ -1,0 +1,43 @@
+{
+  "name": "radial-gradient",
+  "title": "Radial Gradient",
+  "description": "Smooth transition between radial gradients",
+  "tags": [
+    "background",
+    "gradient",
+    "radial"
+  ],
+  "duration": 3,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "gradient"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "radial-gradient",
+    "type": "hyperframes:block",
+    "title": "Radial Gradient",
+    "description": "Smooth transition between radial gradients",
+    "tags": [
+      "background",
+      "gradient",
+      "radial"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 3,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/radial-gradient.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

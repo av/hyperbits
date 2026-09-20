@@ -1,0 +1,43 @@
+{
+  "name": "linear-gradient",
+  "title": "Linear Gradient",
+  "description": "Smooth transition between linear gradients",
+  "tags": [
+    "background",
+    "gradient",
+    "linear"
+  ],
+  "duration": 3,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "gradient"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "linear-gradient",
+    "type": "hyperframes:block",
+    "title": "Linear Gradient",
+    "description": "Smooth transition between linear gradients",
+    "tags": [
+      "background",
+      "gradient",
+      "linear"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 3,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/linear-gradient.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

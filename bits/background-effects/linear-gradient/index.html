@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"color1Start","type":"color","label":"Gradient 1 Start","default":"#051226"},{"id":"color1End","type":"color","label":"Gradient 1 End","default":"#1e0541"},{"id":"color2Start","type":"color","label":"Gradient 2 Start","default":"#a5d4dd"},{"id":"color2End","type":"color","label":"Gradient 2 End","default":"#5674b1"}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #051226;
+        --fg: #f8fafc;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --accent-2: #f59e0b;
+        --danger: #f43f5e;
+        --ok: #34d399;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #051226;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        background-color: #051226;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+      #root { background-color: #051226; }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="linear-gradient"
+      data-start="0"
+      data-duration="3"
+      data-width="1920"
+      data-height="1080"
+    >
+
+    </div>
+    <script>
+      (function () {
+
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+
+
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const from = "linear-gradient(0deg, " + vars.color1Start + " 0%, " + vars.color1End + " 100%)";
+        const to = "linear-gradient(180deg, " + vars.color2Start + " 0%, " + vars.color2End + " 100%)";
+        const proxy = hyperbits.gradientProxy(root, [from, to]);
+        const timeline = gsap.timeline({ paused: true });
+        timeline.fromTo(proxy.proxy, { progress: 0 }, { progress: 1, duration: 3, ease: "none", onUpdate: proxy.apply }, 0);
+        registerTimeline("linear-gradient", timeline);
+
+      })();
+    </script>
+  </body>
+</html>
