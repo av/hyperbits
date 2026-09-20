@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Particle color","default":"#38bdf8"},{"id":"background","type":"color","label":"Background","default":"#020617"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -32,11 +32,16 @@
         width: 100%;
         height: 100%;
         position: relative;
-        background-color: #020617;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        overflow: hidden;
       }
-      #root { background-color: #020617; }
-      #stage { position: absolute; inset: 0; }
+      #stage {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
     </style>
   </head>
   <body>
@@ -49,7 +54,8 @@
       data-width="1920"
       data-height="1080"
     >
-      <canvas id="stage" class="clip" data-start="0" data-duration="6.67"></canvas>
+      <div id="bg" class="clip" data-start="0" data-duration="6.67" style="position:absolute;inset:0;background-color:#020617"></div>
+      <canvas id="stage" class="clip" data-start="0" data-duration="6.67" style="position:absolute;inset:0;width:100%;height:100%;z-index:1"></canvas>
     </div>
     <script>
       (function () {
@@ -71,41 +77,49 @@
         }
 
 
-        const view = hyperbits.viewport();
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
         const canvas = document.getElementById("stage");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
         canvas.width = view.width;
         canvas.height = view.height;
-        const cols = 16;
-        const rows = 9;
+        const cols = 20;
+        const rows = 12;
         const cellW = view.width / cols;
         const cellH = view.height / rows;
         const simulator = hyperbits.createParticles({
           fps: 30,
           spawners: [{
-            id: "scatter",
+            id: "grid",
             burst: cols * rows,
+            startFrame: 1,
             position: { x: view.width / 2, y: view.height / 2 },
-            area: { width: view.width, height: view.height },
-            velocity: { x: 0, y: 0, varianceX: 8, varianceY: 8 },
-            lifespan: 200,
+            area: { width: 0, height: 0 },
+            velocity: { x: 0, y: 0 },
+            lifespan: 220,
+            max: cols * rows,
           }],
           behaviors: [{
-            id: "snap",
-            handler: function (particle) {
+            id: "lattice",
+            handler: function (particle, age) {
               const col = particle.index % cols;
               const row = Math.floor(particle.index / cols);
-              const targetX = cellW * (col + 0.5);
-              const targetY = cellH * (row + 0.5);
-              particle.velocity.x += (targetX - particle.position.x) * 0.04;
-              particle.velocity.y += (targetY - particle.position.y) * 0.04;
-              particle.velocity.x *= 0.86;
-              particle.velocity.y *= 0.86;
+              particle.position.x = cellW * (col + 0.5);
+              particle.position.y = cellH * (row + 0.5);
+              particle.opacity = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(age * 0.12 + col * 0.45 + row * 0.35));
             },
           }],
         });
         const timeline = gsap.timeline({ paused: true });
-        hyperbits.bind(timeline, canvas, simulator, { color: "#38bdf8", size: view.vmin * 1.6 });
-        timeline.to({}, { duration: 6.67 }, 0);
+        hyperbits.bind(timeline, canvas, simulator, {
+          color: vars.color,
+          size: view.vmin * 1.4,
+          glow: 1.2,
+          shape: "circle",
+        });
+        timeline.fromTo(canvas, { x: 0 }, { x: 0.5, duration: 6.67, ease: "none" }, 0);
         registerTimeline("particles-grid", timeline);
 
       })();

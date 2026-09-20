@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[]'>
+<html lang="en" data-composition-variables='[{"id":"color1","type":"color","label":"Color 1","default":"#000000"},{"id":"color2","type":"color","label":"Color 2","default":"#009900"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -32,10 +32,8 @@
         width: 100%;
         height: 100%;
         position: relative;
-        background-color: #000000;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       }
-      #root { background-color: #000000; }
     </style>
   </head>
   <body>
@@ -48,7 +46,7 @@
       data-width="1920"
       data-height="1080"
     >
-
+      <div id="bg" class="clip" data-start="0" data-duration="2" style="position:absolute;inset:0;background-color:#000000"></div>
     </div>
     <script>
       (function () {
@@ -70,15 +68,20 @@
         }
 
 
-        const root = document.getElementById("root");
-        const proxy = hyperbits.gradientProxy(
-          root,
-          ["conic-gradient(from 0deg, #000000, #009900)", "conic-gradient(from 359deg, #000000, #009900)"],
-          { shortestAngle: false },
-        );
+        const vars = bitVars();
+        const bg = document.getElementById("bg");
+        const from = "conic-gradient(from 0deg, " + vars.color1 + ", " + vars.color2 + ")";
+        const to = "conic-gradient(from 359deg, " + vars.color1 + ", " + vars.color2 + ")";
+        const proxy = hyperbits.gradientProxy(bg, [from, to], { shortestAngle: false });
+        const apply = function () {
+          proxy.apply();
+          bg.style.backgroundColor = vars.color1;
+          bg.style.setProperty("--knob-color", vars.color1);
+        };
         const timeline = gsap.timeline({ paused: true });
-        timeline.fromTo(proxy.proxy, { progress: 0 }, { progress: 1, duration: 2, ease: "none", onUpdate: proxy.apply }, 0);
+        timeline.fromTo(proxy.proxy, { progress: 0 }, { progress: 1, duration: 2, ease: "none", onUpdate: apply }, 0);
         registerTimeline("conic-gradient", timeline);
+        apply();
 
       })();
     </script>
