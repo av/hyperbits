@@ -5,3 +5,4 @@ export * from "./interpolate";
 export * from "./stagger";
 export * from "./color";
 export * from "./gradient";
+export * from "./random";
