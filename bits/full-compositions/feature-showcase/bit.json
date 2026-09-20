@@ -13,6 +13,7 @@
   "helpers": [
     "text",
     "stagger",
+    "gradient",
     "particles",
     "scene3d",
     "code",
