@@ -1,5 +1,6 @@
 import gsap from "gsap";
 import { Easing, resolveEase, type EasingFunction } from "./interpolate";
+import { hashCode } from "./math";
 
 export type StaggerDirection = "forward" | "reverse" | "center" | "random";
 
@@ -25,8 +26,8 @@ export type StaggerSpec = {
   staggerDirection?: StaggerDirection;
   hold?: number;
   ease?: string | EasingFunction;
-  from?: Record<string, number | string>;
-  to?: Record<string, number | string>;
+  from?: gsap.TweenVars;
+  to?: gsap.TweenVars;
 };
 
 const PROPERTY_KEYS = [
@@ -81,12 +82,7 @@ export function calculateStaggerIndex(
 }
 
 function staggerSeed(seed: string): number {
-  let hash = 0;
-  for (let index = 0; index < seed.length; index++) {
-    hash = (hash << 5) - hash + seed.charCodeAt(index);
-    hash |= 0;
-  }
-  return Math.abs(hash % 1000) / 1000;
+  return Math.abs(hashCode(seed) % 1000) / 1000;
 }
 
 function gsapEaseValue(
@@ -106,12 +102,12 @@ function gsapPropertyName(key: PropertyKey): string {
 }
 
 function collectProperties(spec: StaggerSpec): {
-  fromVars: Record<string, number | string>;
-  toVars: Record<string, number | string>;
+  fromVars: gsap.TweenVars;
+  toVars: gsap.TweenVars;
   keyframeProps: Record<string, number[]>;
 } {
-  const fromVars: Record<string, number | string> = { ...spec.from };
-  const toVars: Record<string, number | string> = { ...spec.to };
+  const fromVars: gsap.TweenVars = { ...spec.from };
+  const toVars: gsap.TweenVars = { ...spec.to };
   const keyframeProps: Record<string, number[]> = {};
 
   for (const key of PROPERTY_KEYS) {

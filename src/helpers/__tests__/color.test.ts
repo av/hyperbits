@@ -219,6 +219,18 @@ describe("colorProxy", () => {
     expect(element.style.backgroundColor).toMatch(/rgb/);
   });
 
+  it("can target style.color", () => {
+    const element = document.createElement("div");
+    const { proxy, apply } = colorProxy(
+      element,
+      ["#ff0000", "#00ff00"],
+      "color",
+    );
+    proxy.progress = 0.5;
+    apply();
+    expect(element.style.color).toMatch(/rgb/);
+  });
+
   it("can target style.background", () => {
     const element = document.createElement("div");
     const { proxy, apply } = colorProxy(

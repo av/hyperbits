@@ -78,4 +78,16 @@ describe("pick", () => {
     const items = ["a", "b", "c", "d"];
     expect(pick("same", items)).toBe(pick("same", items));
   });
+
+  test("throws on an empty array", () => {
+    expect(() => pick("seed", [])).toThrow("non-empty array");
+  });
+});
+
+describe("random invalid input", () => {
+  test("throws when the seed is neither a number nor a string", () => {
+    expect(() => random(null as unknown as string)).toThrow(
+      "must be a number or a string",
+    );
+  });
 });

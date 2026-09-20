@@ -15,6 +15,19 @@ function fakeContext() {
 }
 
 describe("createParticles stateAt", () => {
+  it("returns no particles for empty spawners", () => {
+    const simulator = createParticles({ spawners: [] });
+    expect(simulator.stateAt(1)).toEqual([]);
+  });
+
+  it("exposes bind on the simulator", () => {
+    const simulator = createParticles({
+      fps: 30,
+      spawners: [{ id: "burst", burst: 1, lifespan: 10, position: { x: 0, y: 0 } }],
+    });
+    expect(typeof simulator.bind).toBe("function");
+  });
+
   it("is deterministic for the same time", () => {
     const simulator = createParticles({
       fps: 30,

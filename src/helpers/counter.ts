@@ -1,3 +1,5 @@
+import type { GsapProxyBinding } from "./binding";
+
 export type CounterFormatOptions = {
   decimals?: number;
   separator?: string;
@@ -34,10 +36,14 @@ export type CounterProxy = {
   value: number;
 };
 
+export type CounterOptions = CounterFormatOptions & {
+  from?: number;
+};
+
 export function createCounter(
   element: Element,
-  options: CounterFormatOptions & { from?: number } = {},
-): { proxy: CounterProxy; apply: () => void } {
+  options: CounterOptions = {},
+): GsapProxyBinding<CounterProxy> {
   const proxy: CounterProxy = { value: options.from ?? 0 };
   const apply = () => {
     element.textContent = formatNumber(proxy.value, options);

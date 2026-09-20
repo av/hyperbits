@@ -1,4 +1,5 @@
 import Prism from "prismjs";
+import { unitProgress } from "./math";
 import "prismjs/components/prism-markup";
 import "prismjs/components/prism-css";
 import "prismjs/components/prism-clike";
@@ -95,7 +96,7 @@ export function applyLineReveal(
     const start = delay + index * stagger;
     let progress = 1;
     if (duration > 0) {
-      progress = Math.min(1, Math.max(0, (time - start) / duration));
+      progress = unitProgress((time - start) / duration);
     } else if (time < start) {
       progress = 0;
     }

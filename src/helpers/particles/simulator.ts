@@ -1,3 +1,5 @@
+import type gsap from "gsap";
+import type { TimeStateBinding } from "../binding";
 import { random } from "../random";
 import {
   type Particle,
@@ -6,6 +8,7 @@ import {
   type SimulationConfig,
 } from "./types";
 import { movement } from "./behaviors";
+import { bind as bindParticles, type ParticleRenderOptions } from "./canvas";
 
 export function simulateParticles({
   frame,
@@ -125,26 +128,40 @@ export function simulateParticles({
   );
 }
 
-export function createParticles(config: {
+export type CreateParticlesOptions = {
   spawners: SpawnerConfig[];
   behaviors?: BehaviorConfig[];
   fps?: number;
-}): {
+};
+
+export type ParticleSystem = TimeStateBinding<Particle[]> & {
   fps: number;
-  stateAt: (time: number) => Particle[];
-} {
+  bind: (
+    timeline: gsap.core.Timeline,
+    canvas: HTMLCanvasElement,
+    options?: ParticleRenderOptions,
+  ) => () => void;
+};
+
+export function createParticles(
+  config: CreateParticlesOptions,
+): ParticleSystem {
   const fps = config.fps ?? 30;
   const behaviors = config.behaviors ?? [];
 
+  const stateAt = (time: number) =>
+    simulateParticles({
+      frame: time * fps,
+      fps,
+      spawners: config.spawners,
+      behaviors,
+    });
+
   return {
     fps,
-    stateAt(time: number) {
-      return simulateParticles({
-        frame: time * fps,
-        fps,
-        spawners: config.spawners,
-        behaviors,
-      });
+    stateAt,
+    bind(timeline, canvas, options) {
+      return bindParticles(timeline, canvas, { stateAt }, options);
     },
   };
 }

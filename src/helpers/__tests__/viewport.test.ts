@@ -50,4 +50,16 @@ describe("viewport", () => {
     expect(view.px(0.5, "min")).toBe(500);
     expect(view.px(0.5, "max")).toBe(1000);
   });
+
+  it("falls back to 1920x1080 for invalid dimensions", () => {
+    const root = document.createElement("div");
+    root.setAttribute("data-composition-id", "bad");
+    root.setAttribute("data-width", "0");
+    root.setAttribute("data-height", "NaN");
+    document.body.append(root);
+
+    const view = viewport(root);
+    expect(view.width).toBe(1920);
+    expect(view.height).toBe(1080);
+  });
 });

@@ -1,10 +1,14 @@
 import { describe, it, expect } from "vitest";
 import {
   interpolate,
+  interpolateKeyframes,
   Easing,
   resolveInterpolateValue,
   gsapEase,
   resolveEase,
+  hold,
+  steps,
+  spring,
 } from "../interpolate";
 
 describe("interpolate", () => {
@@ -150,6 +154,53 @@ describe("resolveEase", () => {
   it("returns the function as-is", () => {
     const custom = (progress: number) => progress * 2;
     expect(resolveEase(custom)).toBe(custom);
+  });
+});
+
+describe("interpolateKeyframes", () => {
+  it("returns a scalar unchanged", () => {
+    expect(interpolateKeyframes(12, 0.5)).toBe(12);
+  });
+
+  it("returns 0 for an empty array", () => {
+    expect(interpolateKeyframes([], 0.5)).toBe(0);
+  });
+
+  it("returns the single keyframe", () => {
+    expect(interpolateKeyframes([40], 0.3)).toBe(40);
+  });
+
+  it("interpolates evenly spaced keyframes at seeked times", () => {
+    expect(interpolateKeyframes([0, 100], 0)).toBe(0);
+    expect(interpolateKeyframes([0, 100], 0.5)).toBe(50);
+    expect(interpolateKeyframes([0, 100], 1)).toBe(100);
+  });
+
+  it("holds a value when duration is missing", () => {
+    expect(interpolateKeyframes([0, hold(10), 100], 0.5)).toBe(0);
+  });
+
+  it("accounts for hold frames when duration is given", () => {
+    const value = interpolateKeyframes([0, hold(10), 100], 0.5, undefined, 20);
+    expect(value).toBeGreaterThanOrEqual(0);
+    expect(value).toBeLessThanOrEqual(100);
+  });
+});
+
+describe("steps and spring", () => {
+  it("steps(n) quantizes progress", () => {
+    const ease = steps(4);
+    expect(ease(0)).toBe(0);
+    expect(ease(0.24)).toBe(0);
+    expect(ease(0.25)).toBe(0.25);
+    expect(ease(0.99)).toBe(0.75);
+  });
+
+  it("spring() is 0 at start and 1 at end", () => {
+    const ease = spring();
+    expect(ease(0)).toBe(0);
+    expect(ease(1)).toBe(1);
+    expect(ease(0.5)).toBeGreaterThan(0);
   });
 });
 

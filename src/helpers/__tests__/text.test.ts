@@ -71,4 +71,20 @@ describe("typewriter", () => {
     expect(driver.apply(0)).toBe(0);
     expect(driver.apply(1)).toBe(3);
   });
+
+  it("reveals everything immediately when duration is 0", () => {
+    expect(charsVisibleAt(0.1, { total: 8, duration: 0 })).toBe(8);
+  });
+
+  it("returns 0 for empty input", () => {
+    expect(charsVisibleAt(1, { total: 0, duration: 1 })).toBe(0);
+    const element = document.createElement("p");
+    element.textContent = "";
+    expect(applyTypewriter(element, 1, { duration: 1 })).toBe(0);
+  });
+
+  it("clamps times past the duration", () => {
+    expect(charsVisibleAt(9, { total: 4, duration: 1 })).toBe(4);
+    expect(charsVisibleAt(-1, { total: 4, duration: 1 })).toBe(0);
+  });
 });

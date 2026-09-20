@@ -41,7 +41,7 @@ const HELPER_SECTIONS = [
   {
     id: "package",
     title: "Package constants",
-    files: ["index.ts"],
+    files: ["index.ts", "binding.ts"],
   },
   {
     id: "interpolate",

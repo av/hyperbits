@@ -60,6 +60,12 @@ describe("createCounter", () => {
     expect(element.textContent).toBe("100%");
   });
 
+  it("defaults from to 0", () => {
+    const element = document.createElement("span");
+    createCounter(element);
+    expect(element.textContent).toBe("0");
+  });
+
   it("formats with separators while tweening", () => {
     const element = document.createElement("span");
     const { proxy, apply } = createCounter(element, {

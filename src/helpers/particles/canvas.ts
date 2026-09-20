@@ -1,4 +1,5 @@
 import gsap from "gsap";
+import { chainTimelineUpdate } from "../binding";
 import type { Particle } from "./types";
 
 export type ParticleRenderOptions = {
@@ -40,23 +41,17 @@ export function renderParticles(
   context.globalAlpha = 1;
 }
 
+export type ParticleSimulator = {
+  stateAt: (time: number) => Particle[];
+};
+
 export function bind(
   timeline: gsap.core.Timeline,
   canvas: HTMLCanvasElement,
-  simulator: { stateAt: (time: number) => Particle[] },
+  simulator: ParticleSimulator,
   options?: ParticleRenderOptions,
 ): () => void {
-  const redraw = () => {
+  return chainTimelineUpdate(timeline, () => {
     renderParticles(canvas, simulator.stateAt(timeline.time()), options);
-  };
-  const previous = timeline.eventCallback("onUpdate");
-  const onUpdate = () => {
-    if (typeof previous === "function") previous.call(timeline);
-    redraw();
-  };
-  timeline.eventCallback("onUpdate", onUpdate);
-  redraw();
-  return () => {
-    timeline.eventCallback("onUpdate", previous);
-  };
+  });
 }

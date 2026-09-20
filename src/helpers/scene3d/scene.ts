@@ -1,5 +1,7 @@
-import gsap from "gsap";
+import type { TimeStateBinding, TimelineBind } from "../binding";
+import { chainTimelineUpdate } from "../binding";
 import { resolveEase, type EasingFunction } from "../interpolate";
+import { lerp } from "../math";
 import { Vec3 } from "./math";
 import { Transform3D, transformToCSS } from "./transform";
 
@@ -118,18 +120,17 @@ function lerpCamera(
   to: CameraState,
   progress: number,
 ): CameraState {
-  const mix = (start: number, end: number) => start + (end - start) * progress;
   return {
-    x: mix(from.x, to.x),
-    y: mix(from.y, to.y),
-    z: mix(from.z, to.z),
-    rotateX: mix(from.rotateX, to.rotateX),
-    rotateY: mix(from.rotateY, to.rotateY),
-    rotateZ: mix(from.rotateZ, to.rotateZ),
-    scale: mix(from.scale, to.scale),
-    scaleX: mix(from.scaleX, to.scaleX),
-    scaleY: mix(from.scaleY, to.scaleY),
-    scaleZ: mix(from.scaleZ, to.scaleZ),
+    x: lerp(from.x, to.x, progress),
+    y: lerp(from.y, to.y, progress),
+    z: lerp(from.z, to.z, progress),
+    rotateX: lerp(from.rotateX, to.rotateX, progress),
+    rotateY: lerp(from.rotateY, to.rotateY, progress),
+    rotateZ: lerp(from.rotateZ, to.rotateZ, progress),
+    scale: lerp(from.scale, to.scale, progress),
+    scaleX: lerp(from.scaleX, to.scaleX, progress),
+    scaleY: lerp(from.scaleY, to.scaleY, progress),
+    scaleZ: lerp(from.scaleZ, to.scaleZ, progress),
   };
 }
 
@@ -283,16 +284,17 @@ export function applyScene3D(
   }
 }
 
+export type Scene3DHandle = TimeStateBinding<Scene3DState> & {
+  canvas: HTMLElement;
+  world: HTMLElement;
+  apply: (state: Scene3DState) => void;
+  bind: TimelineBind;
+};
+
 export function createScene3D(
   root: HTMLElement,
   config: Scene3DConfig,
-): {
-  canvas: HTMLElement;
-  world: HTMLElement;
-  stateAt: (time: number) => Scene3DState;
-  apply: (state: Scene3DState) => void;
-  bind: (timeline: gsap.core.Timeline) => () => void;
-} {
+): Scene3DHandle {
   root.dataset.scene3d = "";
   root.style.position = "relative";
   root.style.width = "100%";
@@ -330,17 +332,10 @@ export function createScene3D(
 
   apply(stateAt(0));
 
-  const bind = (timeline: gsap.core.Timeline) => {
-    const previous = timeline.eventCallback("onUpdate");
-    const onUpdate = () => {
-      if (typeof previous === "function") previous.call(timeline);
+  const bind: TimelineBind = (timeline) =>
+    chainTimelineUpdate(timeline, () => {
       apply(stateAt(timeline.time()));
-    };
-    timeline.eventCallback("onUpdate", onUpdate);
-    return () => {
-      timeline.eventCallback("onUpdate", previous);
-    };
-  };
+    });
 
   return { canvas, world, stateAt, apply, bind };
 }

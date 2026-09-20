@@ -1,5 +1,5 @@
 export { catalogName } from "./name";
-export { HYPERBITS_UNPKG_IIFE, HYPERBITS_LOCAL_IIFE } from "./bit-schema";
+export { HYPERBITS_UNPKG_IIFE } from "./bit-schema";
 export type {
   BitManifest,
   BitValidationIssue,

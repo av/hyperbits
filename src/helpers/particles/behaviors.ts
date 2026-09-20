@@ -1,3 +1,4 @@
+import { clamp, lerp } from "../math";
 import { random } from "../random";
 import type { ParticleBehaviorHandler } from "./types";
 
@@ -60,6 +61,7 @@ export const createDrag = (
     return (particle) => {
       particle.velocity.x *= factor;
       particle.velocity.y *= factor;
+      particle.velocity.z *= factor;
     };
   }
 
@@ -130,8 +132,7 @@ export const createOpacityOverLife = (
     return (particle, age) => {
       const lifeProgress = age / particle.lifespan;
       if (keyframes.length === 2) {
-        particle.opacity =
-          keyframes[0] + (keyframes[1] - keyframes[0]) * lifeProgress;
+        particle.opacity = lerp(keyframes[0], keyframes[1], lifeProgress);
       }
     };
   }
@@ -151,15 +152,15 @@ export const createOpacityOverLife = (
         (random(`opacity-end-${particle.seed}`) - 0.5) * 2 * endVar;
 
       perParticleKeyframes.set(particle.id, [
-        Math.max(0, Math.min(1, start)),
-        Math.max(0, Math.min(1, end)),
+        clamp(start, 0, 1),
+        clamp(end, 0, 1),
       ]);
     }
 
     const [start, end] = perParticleKeyframes.get(particle.id)!;
     const lifeProgress = age / particle.lifespan;
     if (keyframes.length === 2) {
-      particle.opacity = start + (end - start) * lifeProgress;
+      particle.opacity = lerp(start, end, lifeProgress);
     }
   };
 };
@@ -173,7 +174,7 @@ export const createScaleOverLife = (
   if (!startVariance && !endVariance) {
     return (particle, age) => {
       const lifeProgress = age / particle.lifespan;
-      particle.scale = start + (end - start) * lifeProgress;
+      particle.scale = lerp(start, end, lifeProgress);
     };
   }
 
@@ -196,7 +197,6 @@ export const createScaleOverLife = (
       particle.id,
     )!;
     const lifeProgress = age / particle.lifespan;
-    particle.scale =
-      particleStart + (particleEnd - particleStart) * lifeProgress;
+    particle.scale = lerp(particleStart, particleEnd, lifeProgress);
   };
 };

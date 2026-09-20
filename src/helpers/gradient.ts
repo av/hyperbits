@@ -1,5 +1,7 @@
-import { interpolate as culoriInterpolate, formatRgb } from "culori";
+import type { GsapProxyBinding } from "./binding";
+import { mixOklch } from "./color";
 import type { EasingFunction } from "./interpolate";
+import { keyframeSegment, lerp } from "./math";
 
 export type GradientType = "linear" | "radial" | "conic";
 
@@ -306,8 +308,8 @@ function interpolatePositions(
   const fromPos = parseGradientPosition(from);
   const toPos = parseGradientPosition(to);
 
-  const x = fromPos.x + (toPos.x - fromPos.x) * progress;
-  const y = fromPos.y + (toPos.y - fromPos.y) * progress;
+  const x = lerp(fromPos.x, toPos.x, progress);
+  const y = lerp(fromPos.y, toPos.y, progress);
 
   return `${x}% ${y}%`;
 }
@@ -435,16 +437,7 @@ function interpolateColorAtPosition(
   const localProgress =
     (position - before.position!) / (after.position! - before.position!);
 
-  try {
-    const interpolator = culoriInterpolate(
-      [before.color, after.color],
-      "oklch",
-    );
-    const result = interpolator(localProgress);
-    return formatRgb(result) || before.color;
-  } catch {
-    return before.color;
-  }
+  return mixOklch(before.color, after.color, localProgress, before.color);
 }
 
 export function interpolateGradients(
@@ -491,23 +484,21 @@ export function interpolateGradients(
   const stops: ColorStop[] = fromMatched.map((fromStop, i) => {
     const toStop = toMatched[i];
 
-    const position =
-      fromStop.position! +
-      (toStop.position! - fromStop.position!) * easedProgress;
+    const position = lerp(
+      fromStop.position!,
+      toStop.position!,
+      easedProgress,
+    );
 
-    let color: string;
-    try {
-      const interpolator = culoriInterpolate(
-        [fromStop.color, toStop.color],
-        "oklch",
-      );
-      const result = interpolator(easedProgress);
-      color = formatRgb(result) || fromStop.color;
-    } catch {
-      color = fromStop.color;
-    }
-
-    return { color, position };
+    return {
+      color: mixOklch(
+        fromStop.color,
+        toStop.color,
+        easedProgress,
+        fromStop.color,
+      ),
+      position,
+    };
   });
 
   return {
@@ -554,23 +545,19 @@ export function interpolateGradientKeyframes(
   if (gradients.length === 0) return "";
   if (gradients.length === 1) return gradients[0];
 
-  const clampedProgress = Math.min(Math.max(progress, 0), 1);
+  const segment = keyframeSegment(progress, gradients.length);
+  if (!segment) return "";
 
-  const segments = gradients.length - 1;
-  const segmentProgress = clampedProgress * segments;
-  const segmentIndex = Math.min(Math.floor(segmentProgress), segments - 1);
-  const localProgress = segmentProgress - segmentIndex;
+  const fromGradient = parseGradient(gradients[segment.index]);
+  const toGradient = parseGradient(gradients[segment.index + 1]);
 
-  const fromGradient = parseGradient(gradients[segmentIndex]);
-  const toGradient = parseGradient(gradients[segmentIndex + 1]);
-
-  if (!fromGradient) return gradients[segmentIndex];
-  if (!toGradient) return gradients[segmentIndex + 1];
+  if (!fromGradient) return gradients[segment.index];
+  if (!toGradient) return gradients[segment.index + 1];
 
   const interpolated = interpolateGradients(
     fromGradient,
     toGradient,
-    localProgress,
+    segment.local,
     easingFn,
     useShortestAngle,
   );
@@ -582,11 +569,16 @@ export type GradientProxy = {
   progress: number;
 };
 
+export type GradientProxyOptions = {
+  shortestAngle?: boolean;
+  easingFn?: EasingFunction;
+};
+
 export function gradientProxy(
   element: HTMLElement,
   gradients: string[],
-  options?: { shortestAngle?: boolean; easingFn?: EasingFunction },
-): { proxy: GradientProxy; apply: () => void } {
+  options?: GradientProxyOptions,
+): GsapProxyBinding<GradientProxy> {
   const proxy: GradientProxy = { progress: 0 };
   const apply = () => {
     element.style.background = interpolateGradientKeyframes(

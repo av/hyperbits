@@ -217,4 +217,10 @@ describe("stagger", () => {
     const found = resolveTargets(root.querySelectorAll(".item"));
     expect(found).toHaveLength(3);
   });
+
+  it("returns a paused empty timeline for no targets", () => {
+    const timeline = stagger([], { opacity: [0, 1], duration: 0.4 });
+    expect(timeline.paused()).toBe(true);
+    expect(timeline.duration()).toBe(0);
+  });
 });

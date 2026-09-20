@@ -42,8 +42,6 @@ export const REGISTRY_NAME_PATTERN = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
 export const HYPERBITS_UNPKG_IIFE =
   "https://unpkg.com/hyperbits/dist/hyperbits.iife.js";
 
-export const HYPERBITS_LOCAL_IIFE = "../../../dist/hyperbits.iife.js";
-
 export type RegistryFile = {
   path: string;
   target: string;

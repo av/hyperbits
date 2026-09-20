@@ -1,5 +1,22 @@
 import { interpolate as culoriInterpolate, formatRgb } from "culori";
+import type { GsapProxyBinding } from "./binding";
 import type { EasingFunction } from "./interpolate";
+import { keyframeSegment } from "./math";
+
+export function mixOklch(
+  fromColor: string,
+  toColor: string,
+  progress: number,
+  fallback = "transparent",
+): string {
+  try {
+    const interpolator = culoriInterpolate([fromColor, toColor], "oklch");
+    const result = interpolator(progress);
+    return formatRgb(result) || fallback;
+  } catch {
+    return fallback;
+  }
+}
 
 export function interpolateColorKeyframes(
   colors: string[],
@@ -9,26 +26,11 @@ export function interpolateColorKeyframes(
   if (colors.length === 0) return "transparent";
   if (colors.length === 1) return colors[0];
 
-  const clampedProgress = Math.min(Math.max(progress, 0), 1);
+  const segment = keyframeSegment(progress, colors.length);
+  if (!segment) return "transparent";
 
-  const segments = colors.length - 1;
-  const segmentProgress = clampedProgress * segments;
-  const segmentIndex = Math.min(Math.floor(segmentProgress), segments - 1);
-  const localProgress = segmentProgress - segmentIndex;
-
-  const easedProgress = easingFn ? easingFn(localProgress) : localProgress;
-
-  const fromColor = colors[segmentIndex];
-  const toColor = colors[segmentIndex + 1];
-
-  try {
-    const interpolator = culoriInterpolate([fromColor, toColor], "oklch");
-    const result = interpolator(easedProgress);
-
-    return formatRgb(result) || "transparent";
-  } catch {
-    return "transparent";
-  }
+  const easedProgress = easingFn ? easingFn(segment.local) : segment.local;
+  return mixOklch(colors[segment.index], colors[segment.index + 1], easedProgress);
 }
 
 export type ColorProxyProperty = "background" | "backgroundColor" | "color";
@@ -37,11 +39,15 @@ export type ColorProxy = {
   progress: number;
 };
 
+export type ColorProxyOptions = {
+  property?: ColorProxyProperty;
+};
+
 export function colorProxy(
   element: HTMLElement,
   colors: string[],
   property: ColorProxyProperty = "backgroundColor",
-): { proxy: ColorProxy; apply: () => void } {
+): GsapProxyBinding<ColorProxy> {
   const proxy: ColorProxy = { progress: 0 };
   const apply = () => {
     const value = interpolateColorKeyframes(colors, proxy.progress);

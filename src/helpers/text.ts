@@ -1,3 +1,5 @@
+import { unitProgress } from "./math";
+
 export type SplitMode = "chars" | "words" | "lines";
 
 const CHAR_ATTR = "data-char";
@@ -51,7 +53,7 @@ export function charsVisibleAt(
   if (options.total <= 0) return 0;
   if (time <= delay) return 0;
   if (options.duration <= 0) return options.total;
-  const progress = Math.min(1, Math.max(0, (time - delay) / options.duration));
+  const progress = unitProgress((time - delay) / options.duration);
   if (progress >= 1) return options.total;
   return Math.floor(progress * options.total);
 }
@@ -86,10 +88,15 @@ export function applyTypewriter(
   return visible;
 }
 
+export type TypewriterDriver = {
+  apply: (time: number) => number;
+  spans: HTMLSpanElement[];
+};
+
 export function typewriter(
   element: Element,
   options: TypewriterOptions,
-): { apply: (time: number) => number; spans: HTMLSpanElement[] } {
+): TypewriterDriver {
   const spans = splitText(element, "chars");
   return {
     spans,

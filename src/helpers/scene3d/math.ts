@@ -1,3 +1,5 @@
+import { clamp } from "../math";
+
 export class Vec3 {
   constructor(
     public x: number = 0,
@@ -498,10 +500,6 @@ export class Mat4 {
     }
     return euler;
   }
-}
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value));
 }
 
 function quaternionFromRotation(

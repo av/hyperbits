@@ -131,6 +131,23 @@ describe("sceneStateAt", () => {
   });
 });
 
+describe("sceneStateAt empty and out of range", () => {
+  it("returns an identity camera when there are no steps", () => {
+    const state = sceneStateAt(1, { steps: [] });
+    expect(state.activeStepId).toBeUndefined();
+    expect(state.camera.x).toBe(0);
+    expect(state.camera.scale).toBe(1);
+  });
+
+  it("clamps to the last step after the sequence ends", () => {
+    const state = sceneStateAt(99, {
+      steps: [{ id: "only", duration: 2, x: 10 }],
+    });
+    expect(state.activeStepId).toBe("only");
+    expect(state.camera.x).toBe(10);
+  });
+});
+
 describe("createScene3D", () => {
   it("mounts a CSS 3D scene with perspective, steps, and elements", () => {
     const root = document.createElement("div");

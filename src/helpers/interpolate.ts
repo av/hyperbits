@@ -1,3 +1,5 @@
+import { lerp } from "./math";
+
 export type SpringConfig = {
   mass?: number;
   stiffness?: number;
@@ -411,10 +413,8 @@ export function interpolate(
     progress = easingFn(progress);
   }
 
-  return outputStart + (outputEnd - outputStart) * progress;
+  return lerp(outputStart, outputEnd, progress);
 }
-
-(interpolate as unknown as { hold: typeof hold }).hold = hold;
 
 export type InterpolateValue<Value = number> =
   | Value

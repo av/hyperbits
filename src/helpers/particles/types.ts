@@ -19,8 +19,6 @@ export interface Particle {
   spawnerId: string;
 }
 
-export type SpawnerShape = "point" | "rect" | "circle";
-
 export interface SpawnerConfig {
   id: string;
   rate?: number;

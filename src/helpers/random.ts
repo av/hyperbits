@@ -1,17 +1,10 @@
+import { hashCode } from "./math";
+
 function mulberry32(seed: number): number {
   let state = seed + 0x6d2b79f5;
   state = Math.imul(state ^ (state >>> 15), state | 1);
   state ^= state + Math.imul(state ^ (state >>> 7), state | 61);
   return ((state ^ (state >>> 14)) >>> 0) / 4294967296;
-}
-
-function hashCode(value: string): number {
-  let hash = 0;
-  for (let index = 0; index < value.length; index++) {
-    hash = (hash << 5) - hash + value.charCodeAt(index);
-    hash |= 0;
-  }
-  return hash;
 }
 
 export type RandomSeed = number | string;
@@ -34,8 +27,6 @@ export const randomFloat = (
   return random(seed) * (max - min) + min;
 };
 
-export const randomRange = randomFloat;
-
 export const randomInt = (
   seed: RandomSeed,
   min: number,
@@ -45,8 +36,9 @@ export const randomInt = (
 };
 
 export const pick = <Item>(seed: RandomSeed, array: Item[]): Item => {
+  if (array.length === 0) {
+    throw new Error("pick() requires a non-empty array");
+  }
   const index = randomInt(seed, 0, array.length - 1);
   return array[index];
 };
-
-export const anyElement = pick;

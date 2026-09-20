@@ -64,6 +64,17 @@ describe("line reveal and focus", () => {
     expect(Number(lines[1].style.opacity)).toBeCloseTo(0, 2);
   });
 
+  it("treats zero duration as instant once the start is reached", () => {
+    const container = document.createElement("div");
+    createCodeBlock(container, { code: "one\ntwo", language: "javascript" });
+    applyLineReveal(container, 0, { duration: 0, stagger: 0.2 });
+    const lines = codeLines(container);
+    expect(Number(lines[0].style.opacity)).toBe(1);
+    expect(Number(lines[1].style.opacity)).toBe(0);
+    applyLineReveal(container, 0.2, { duration: 0, stagger: 0.2 });
+    expect(Number(lines[1].style.opacity)).toBe(1);
+  });
+
   it("dims lines outside the focus range", () => {
     const container = document.createElement("div");
     createCodeBlock(container, { code: "a\nb\nc", language: "javascript" });
