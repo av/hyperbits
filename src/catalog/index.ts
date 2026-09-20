@@ -24,10 +24,12 @@ export {
   compositionSrcSnippet,
   fetchBit,
   findBits,
+  formatBitSuggestions,
   getBitCatalogSummaries,
   getBitCatalogTags,
   getDocsBitCatalogData,
   helperScriptTag,
   listBitCatalog,
   resolveBitCatalogIdentifier,
+  suggestBitIdentifiers,
 } from "./runtime";

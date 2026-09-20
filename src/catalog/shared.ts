@@ -204,6 +204,92 @@ export const findBits = (
   return limit === undefined ? matchedEntries : matchedEntries.slice(0, limit);
 };
 
+const compactText = (value: string): string =>
+  normalizeText(value).replace(/[-_\s]/g, "");
+
+const levenshtein = (left: string, right: string): number => {
+  if (left === right) return 0;
+  if (left.length === 0) return right.length;
+  if (right.length === 0) return left.length;
+
+  const previous = Array.from({ length: right.length + 1 }, (_, index) => index);
+  const current = Array.from({ length: right.length + 1 }, () => 0);
+
+  for (let i = 0; i < left.length; i++) {
+    current[0] = i + 1;
+    for (let j = 0; j < right.length; j++) {
+      const cost = left[i] === right[j] ? 0 : 1;
+      current[j + 1] = Math.min(
+        current[j] + 1,
+        previous[j + 1] + 1,
+        previous[j] + cost,
+      );
+    }
+    for (let j = 0; j <= right.length; j++) {
+      previous[j] = current[j];
+    }
+  }
+
+  return previous[right.length];
+};
+
+export const suggestBitIdentifiers = (
+  identifier: string,
+  limit = 5,
+): string[] => {
+  const normalized = normalizeText(identifier);
+  const compacted = compactText(identifier);
+  if (!normalized) {
+    return [];
+  }
+
+  const scored = catalogSummaries.map((entry) => {
+    const compactId = compactText(entry.id);
+    const compactName = compactText(entry.name);
+    let score = scoreBitCatalogEntry(entry, normalized);
+
+    if (compactId === compacted || compactName === compacted) {
+      score += 2000;
+    } else if (
+      compactId.startsWith(compacted) ||
+      compacted.startsWith(compactId)
+    ) {
+      score += 800;
+    }
+
+    const distance = Math.min(
+      levenshtein(compacted, compactId),
+      levenshtein(compacted, compactName),
+    );
+    if (distance <= 3) {
+      score += Math.max(0, 40 - distance * 10);
+    }
+
+    return { id: entry.id, score, distance };
+  });
+
+  return scored
+    .filter((entry) => entry.score > 0)
+    .sort((left, right) => {
+      if (right.score !== left.score) {
+        return right.score - left.score;
+      }
+      if (left.distance !== right.distance) {
+        return left.distance - right.distance;
+      }
+      return left.id.localeCompare(right.id);
+    })
+    .slice(0, limit)
+    .map((entry) => entry.id);
+};
+
+export const formatBitSuggestions = (suggestions: string[]): string => {
+  if (suggestions.length === 0) {
+    return "";
+  }
+  return ` Did you mean: ${suggestions.join(", ")}?`;
+};
+
 export const resolveBitCatalogIdentifier = (
   identifier: string,
 ): BitCatalogResolution => {

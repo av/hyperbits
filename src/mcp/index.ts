@@ -13,7 +13,12 @@ import {
   type Tool,
 } from "@modelcontextprotocol/sdk/types.js";
 
-import { fetchBit, findBits } from "../catalog/runtime";
+import {
+  fetchBit,
+  findBits,
+  formatBitSuggestions,
+  suggestBitIdentifiers,
+} from "../catalog/runtime";
 import type {
   BitCatalogEntry,
   BitCatalogSummary,
@@ -183,7 +188,7 @@ const toolDefinitions: Tool[] = [
     name: "fetch_hyperbit",
     title: "Fetch Hyperbit",
     description:
-      "Fetch one live hyperbit by id, including metadata, HTML source, helpers, and the data-composition-src embed snippet.",
+      "Fetch one live hyperbit by id or exact display name, including metadata, HTML source, helpers, and the data-composition-src embed snippet.",
     annotations: {
       title: "Fetch Hyperbit",
       readOnlyHint: true,
@@ -197,7 +202,8 @@ const toolDefinitions: Tool[] = [
       properties: {
         id: {
           type: "string",
-          description: "The bit id returned by find_hyperbits.",
+          description:
+            "Bit id returned by find_hyperbits, or the exact display name.",
         },
       },
       required: ["id"],
@@ -238,7 +244,10 @@ export const createHyperbitsMcpServer = (): Server => {
       const bit = await fetchBit(id);
 
       if (!bit) {
-        return createErrorResult(`No bit found for "${id}".`);
+        const suggestions = suggestBitIdentifiers(id);
+        return createErrorResult(
+          `No bit found for "${id}".${formatBitSuggestions(suggestions)}`,
+        );
       }
 
       return createSuccessResult({ bit });

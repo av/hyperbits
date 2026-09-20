@@ -7,6 +7,7 @@ import {
   findBits,
   listBitCatalog,
   resolveBitCatalogIdentifier,
+  suggestBitIdentifiers,
 } from "../runtime";
 import { sharedBitInventory } from "../inventory.generated";
 
@@ -70,6 +71,14 @@ describe("published runtime catalog", () => {
     });
     expect(bit?.sourceCode).toContain('data-composition-id="fade-in"');
     expect(bit?.sourceCode).toContain("window.__timelines");
+  });
+
+  it("suggests close bit ids for typos and missing hyphens", () => {
+    expect(suggestBitIdentifiers("fadein")).toContain("fade-in");
+    expect(suggestBitIdentifiers("fade-im")).toContain("fade-in");
+    expect(suggestBitIdentifiers("bit-does-not-exist")).not.toContain(
+      "fade-in",
+    );
   });
 
   it("lists a non-empty catalog from the published runtime surface", () => {

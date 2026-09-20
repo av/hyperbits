@@ -133,6 +133,27 @@ describe("hyperbits mcp server", () => {
     }
   });
 
+  it("returns an error with close matches when fetch_hyperbit misses", async () => {
+    const session = await createClient();
+
+    try {
+      const result = await session.client.callTool({
+        name: "fetch_hyperbit",
+        arguments: {
+          id: "fadein",
+        },
+      });
+
+      expect(result.isError).toBe(true);
+      expect(result.content[0]).toMatchObject({
+        type: "text",
+        text: expect.stringContaining("Did you mean: fade-in"),
+      });
+    } finally {
+      await session.close();
+    }
+  });
+
   it("rejects malformed MCP input for find_hyperbits", async () => {
     const session = await createClient();
 

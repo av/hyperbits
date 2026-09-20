@@ -141,6 +141,98 @@ describe("hyperbits lookup cli", () => {
     });
   });
 
+  it("prints usage for --help", async () => {
+    const { io, getStdout, getStderr } = createIo();
+    const exitCode = await runHyperbitsCli(["--help"], io);
+    expect(exitCode).toBe(0);
+    expect(getStderr()).toBe("");
+    expect(getStdout()).toContain("hyperbits find");
+    expect(getStdout()).toContain("hyperbits fetch");
+    expect(getStdout()).toContain("hyperbits add");
+    expect(getStdout()).toContain("hyperbits mcp");
+    expect(getStdout()).toContain("--query, -q");
+    expect(getStdout()).toContain("--tag, -t");
+    expect(getStdout()).toContain("--limit, -l");
+    expect(getStdout()).toContain("--into");
+    expect(getStdout()).toContain("--json, -j");
+  });
+
+  it("prints usage for find --help", async () => {
+    const { io, getStdout } = createIo();
+    const exitCode = await runHyperbitsCli(["find", "--help"], io);
+    expect(exitCode).toBe(0);
+    expect(getStdout()).toContain("Usage:");
+  });
+
+  it("rejects an unknown command with the supported list", async () => {
+    const { io, getStderr } = createIo();
+    const exitCode = await runHyperbitsCli(["nope"], io);
+    expect(exitCode).toBe(2);
+    expect(getStderr()).toContain('Unknown command "nope"');
+    expect(getStderr()).toContain("Expected find, fetch, add, or mcp");
+  });
+
+  it("suggests a close command name", async () => {
+    const { io, getStderr } = createIo();
+    const exitCode = await runHyperbitsCli(["fetsh"], io);
+    expect(exitCode).toBe(2);
+    expect(getStderr()).toContain("Did you mean: fetch?");
+  });
+
+  it("requires an identifier for fetch", async () => {
+    const { io, getStderr } = createIo();
+    const exitCode = await runHyperbitsCli(["fetch"], io);
+    expect(exitCode).toBe(2);
+    expect(getStderr()).toContain("requires a bit id or exact display name");
+  });
+
+  it("suggests close bit names when fetch misses", async () => {
+    const { io, getStderr } = createIo();
+    const exitCode = await runHyperbitsCli(["fetch", "fadein"], io);
+    expect(exitCode).toBe(3);
+    expect(getStderr()).toContain('No bit found for "fadein"');
+    expect(getStderr()).toContain("Did you mean: fade-in");
+  });
+
+  it("includes suggestions in JSON not-found errors", async () => {
+    const { io, getStdout } = createIo();
+    const exitCode = await runHyperbitsCli(
+      ["add", "fadein", "--json"],
+      io,
+    );
+    expect(exitCode).toBe(3);
+    expect(JSON.parse(getStdout())).toEqual({
+      error: {
+        code: "not-found",
+        message: expect.stringContaining("Did you mean: fade-in"),
+        suggestions: expect.arrayContaining(["fade-in"]),
+      },
+    });
+  });
+
+  it("writes a bit HTML file and prints JSON for add --json", async () => {
+    const { io, getStdout, getStderr } = createIo();
+    const destination = mkdtempSync(path.join(tmpdir(), "hyperbits-add-json-"));
+    tempDirs.push(destination);
+
+    const exitCode = await runHyperbitsCli(
+      ["add", "fade-in", "--into", destination, "--json"],
+      io,
+    );
+
+    expect(exitCode).toBe(0);
+    expect(getStderr()).toBe("");
+    expect(JSON.parse(getStdout())).toEqual({
+      added: {
+        id: "fade-in",
+        name: "Fade In",
+        path: `${destination}/fade-in.html`.split(path.sep).join("/"),
+        embedSnippet: `<div data-composition-src="${destination}/fade-in.html"></div>`,
+        helperScriptTag: expect.stringContaining("hyperbits.iife.js"),
+      },
+    });
+  });
+
   it("writes a bit HTML file and prints the embed snippet", async () => {
     const { io, getStdout, getStderr } = createIo();
     const destination = mkdtempSync(path.join(tmpdir(), "hyperbits-add-"));

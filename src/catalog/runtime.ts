@@ -8,11 +8,13 @@ import { DEFAULT_ADD_DIR } from "./contracts";
 import { sharedBitInventory } from "./inventory.generated";
 import {
   findBits,
+  formatBitSuggestions,
   getBitCatalogSummaries,
   getBitCatalogTags,
   getDocsBitCatalogData,
   listBitCatalog,
   resolveBitCatalogIdentifier,
+  suggestBitIdentifiers,
 } from "./shared";
 
 const packageRoot = (() => {
@@ -86,11 +88,13 @@ export const fetchBit = async (
 
 export {
   findBits,
+  formatBitSuggestions,
   getBitCatalogSummaries,
   getBitCatalogTags,
   getDocsBitCatalogData,
   listBitCatalog,
   resolveBitCatalogIdentifier,
+  suggestBitIdentifiers,
 };
 
 export type { BitCatalogResolution };

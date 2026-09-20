@@ -10,8 +10,10 @@ import {
   compositionSrcSnippet,
   fetchBit,
   findBits,
+  formatBitSuggestions,
   helperScriptTag,
   resolveBitCatalogIdentifier,
+  suggestBitIdentifiers,
 } from "../catalog/runtime";
 import type { BitCatalogEntry, BitCatalogSummary } from "../catalog/contracts";
 import { DEFAULT_ADD_DIR } from "../catalog/contracts";
@@ -27,16 +29,21 @@ interface CliIo {
   stderr: Writable;
 }
 
+type CliErrorDetails = {
+  matches?: string[];
+  suggestions?: string[];
+};
+
 class CliError extends Error {
   public readonly exitCode: number;
   public readonly code: string;
-  public readonly details?: Record<string, unknown>;
+  public readonly details?: CliErrorDetails;
 
   constructor(
     message: string,
     exitCode: number,
     code: string,
-    details?: Record<string, unknown>,
+    details?: CliErrorDetails,
   ) {
     super(message);
     this.name = "CliError";
@@ -136,6 +143,54 @@ const serializeEntry = (entry: BitCatalogEntry) => ({
 
 const stringifyJson = (value: unknown): string =>
   `${JSON.stringify(value, null, 2)}\n`;
+
+const COMMANDS = ["find", "fetch", "add", "mcp"] as const;
+
+const notFoundError = (identifier: string): CliError => {
+  const suggestions = suggestBitIdentifiers(identifier);
+  return new CliError(
+    `No bit found for "${identifier}".${formatBitSuggestions(suggestions)}`,
+    EXIT_NOT_FOUND,
+    "not-found",
+    suggestions.length > 0 ? { suggestions } : undefined,
+  );
+};
+
+const commandDistance = (left: string, right: string): number => {
+  if (left === right) return 0;
+  const previous = Array.from({ length: right.length + 1 }, (_, index) => index);
+  const current = Array.from({ length: right.length + 1 }, () => 0);
+  for (let i = 0; i < left.length; i++) {
+    current[0] = i + 1;
+    for (let j = 0; j < right.length; j++) {
+      const cost = left[i] === right[j] ? 0 : 1;
+      current[j + 1] = Math.min(
+        current[j] + 1,
+        previous[j + 1] + 1,
+        previous[j] + cost,
+      );
+    }
+    for (let j = 0; j <= right.length; j++) {
+      previous[j] = current[j];
+    }
+  }
+  return previous[right.length];
+};
+
+const closestCommand = (value: string): string | undefined => {
+  const normalized = value.trim().toLowerCase();
+  const ranked = COMMANDS.map((command) => {
+    const prefix =
+      command.startsWith(normalized) || normalized.startsWith(command);
+    return {
+      command,
+      distance: prefix ? 0 : commandDistance(normalized, command),
+    };
+  })
+    .filter((entry) => entry.distance <= 2)
+    .sort((left, right) => left.distance - right.distance);
+  return ranked[0]?.command;
+};
 
 const formatTags = (tags: string[]): string =>
   tags.length > 0 ? tags.join(", ") : "none";
@@ -380,21 +435,13 @@ const runFetchCommand = async (args: string[], io: CliIo): Promise<number> => {
       );
     }
 
-    throw new CliError(
-      `No bit found for "${options.identifier}".`,
-      EXIT_NOT_FOUND,
-      "not-found",
-    );
+    throw notFoundError(options.identifier);
   }
 
   const bit = await fetchBit(options.identifier);
 
   if (!bit) {
-    throw new CliError(
-      `No bit found for "${options.identifier}".`,
-      EXIT_NOT_FOUND,
-      "not-found",
-    );
+    throw notFoundError(options.identifier);
   }
 
   if (options.json) {
@@ -426,21 +473,13 @@ const runAddCommand = async (args: string[], io: CliIo): Promise<number> => {
       );
     }
 
-    throw new CliError(
-      `No bit found for "${options.identifier}".`,
-      EXIT_NOT_FOUND,
-      "not-found",
-    );
+    throw notFoundError(options.identifier);
   }
 
   const bit = await fetchBit(options.identifier);
 
   if (!bit) {
-    throw new CliError(
-      `No bit found for "${options.identifier}".`,
-      EXIT_NOT_FOUND,
-      "not-found",
-    );
+    throw notFoundError(options.identifier);
   }
 
   const into = options.into.replace(/\/+$/, "") || DEFAULT_ADD_DIR;
@@ -524,10 +563,14 @@ export const runHyperbitsCli = async (
       return await runMcpCommand(rest, io);
     }
 
+    const suggestion = closestCommand(command);
     throw new CliError(
-      `Unknown command "${command}".`,
+      `Unknown command "${command}". Expected find, fetch, add, or mcp.${
+        suggestion ? ` Did you mean: ${suggestion}?` : ""
+      }`,
       EXIT_INVALID_INPUT,
       "unknown-command",
+      suggestion ? { suggestions: [suggestion] } : undefined,
     );
   } catch (error) {
     if (error instanceof CliError) {
