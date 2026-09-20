@@ -132,6 +132,9 @@
     "docs:dev": "npm run inventory && npm run registry && node scripts/generate-docs.mjs && npm --prefix docs install && npm --prefix docs run dev",
     "docs:build": "npm run build && npm run registry && node scripts/generate-docs.mjs && npm --prefix docs install && npm --prefix docs run build",
     "docs:preview": "npm --prefix docs run preview",
+    "demo:sync": "npm --prefix demo run sync",
+    "demo:preview": "npm run demo:sync && npm --prefix demo run preview",
+    "demo:render": "npm run demo:sync && npm --prefix demo run render",
     "prepublishOnly": "npm run build && npm run registry",
     "prepack": "npm run build && npm run registry"
   },

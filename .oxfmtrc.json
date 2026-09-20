@@ -6,6 +6,9 @@
     "coverage/**",
     "**/*.tgz",
     "src/catalog/inventory.generated.*",
-    "docs/**"
+    "docs/**",
+    "demo/node_modules/**",
+    "demo/out/**",
+    "demo/public/**"
   ]
 }

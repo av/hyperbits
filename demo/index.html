@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
+    <title>hyperbits gallery</title>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <style>
       * {
@@ -16,21 +17,21 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background: #0a0a0a;
+        background-color: #0a0a0a;
       }
       #root {
         width: 100%;
         height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        position: relative;
+        overflow: hidden;
+        background-color: #0a0a0a;
       }
-      #title {
-        color: #f4f4f5;
-        font-size: 72px;
-        font-weight: 600;
-        letter-spacing: -0.03em;
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
       }
     </style>
   </head>
@@ -39,17 +40,70 @@
       id="root"
       data-composition-id="main"
       data-start="0"
-      data-duration="10"
+      data-duration="31"
       data-width="1920"
       data-height="1080"
     >
-      <h1 id="title" class="clip" data-start="0" data-duration="10" data-track-index="0">Title</h1>
+      <div
+        id="scene-fade-in"
+        class="scene clip"
+        data-composition-id="scene-fade-in"
+        data-composition-src="compositions/fade-in.html"
+        data-start="0"
+        data-duration="4"
+        data-track-index="0"
+      ></div>
+      <div
+        id="scene-staggered-fade-in"
+        class="scene clip"
+        data-composition-id="scene-staggered-fade-in"
+        data-composition-src="compositions/staggered-fade-in.html"
+        data-start="4"
+        data-duration="4"
+        data-track-index="1"
+      ></div>
+      <div
+        id="scene-linear-gradient"
+        class="scene clip"
+        data-composition-id="scene-linear-gradient"
+        data-composition-src="compositions/linear-gradient.html"
+        data-start="8"
+        data-duration="4"
+        data-track-index="2"
+      ></div>
+      <div
+        id="scene-fireflies"
+        class="scene clip"
+        data-composition-id="scene-fireflies"
+        data-composition-src="compositions/fireflies.html"
+        data-start="12"
+        data-duration="6"
+        data-track-index="3"
+      ></div>
+      <div
+        id="scene-3d-basic"
+        class="scene clip"
+        data-composition-id="scene-3d-basic"
+        data-composition-src="compositions/3d-basic.html"
+        data-start="18"
+        data-duration="5"
+        data-track-index="4"
+      ></div>
+      <div
+        id="scene-feature-showcase"
+        class="scene clip"
+        data-composition-id="scene-feature-showcase"
+        data-composition-src="compositions/feature-showcase.html"
+        data-start="23"
+        data-duration="8"
+        data-track-index="5"
+      ></div>
     </div>
     <script>
-      const tl = gsap.timeline({ paused: true });
-      // Example: tl.fromTo("#title", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6 }, 0);
-      window.__timelines["main"] = tl;
-      tl.seek(0);
+      window.__timelines = window.__timelines || {};
+      const timeline = gsap.timeline({ paused: true });
+      window.__timelines.main = timeline;
+      timeline.seek(0);
     </script>
   </body>
 </html>

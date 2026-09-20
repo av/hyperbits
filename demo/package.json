@@ -1,11 +1,16 @@
 {
-  "name": "demo",
-  "private": true,
+  "name": "hyperbits-demo",
+  "version": "1.0.0",
+  "description": "HyperFrames gallery reel for hyperbits",
   "type": "module",
+  "private": true,
   "scripts": {
-    "dev": "npx --yes hyperframes@0.8.50 preview",
+    "sync": "mkdir -p public && cp ../dist/hyperbits.iife.js public/hyperbits.iife.js",
+    "preview": "npm run sync && npx --yes hyperframes@0.8.50 preview",
+    "dev": "npm run preview",
     "check": "npx --yes hyperframes@0.8.50 check",
-    "render": "npx --yes hyperframes@0.8.50 render",
+    "lint": "npx --yes hyperframes@0.8.50 lint",
+    "render": "npm run sync && npx --yes hyperframes@0.8.50 render --output out/gallery.mp4",
     "publish": "npx --yes hyperframes@0.8.50 publish"
   }
 }

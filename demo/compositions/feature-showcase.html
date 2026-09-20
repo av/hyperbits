@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"title","type":"string","label":"Title","default":"hyperbits"}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="public/hyperbits.iife.js" data-hyperbits-src="public/hyperbits.iife.js" data-hyperbits-local="public/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #020617;
+        --fg: #f8fafc;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --accent-2: #f59e0b;
+        --danger: #f43f5e;
+        --ok: #34d399;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #020617;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        background-color: #020617;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+      #root { background-color: #020617; color: #f8fafc; overflow: hidden; }
+      .scene { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+      #hero-title { font-weight: 800; letter-spacing: -0.06em; }
+      #hero-sub { color: #94a3b8; margin-top: 0.3em; }
+      #chips { display: flex; flex-wrap: wrap; justify-content: center; width: 70%; }
+      .chip { background-color: #1e293b; color: #e2e8f0; border-radius: 999px; font-weight: 600; }
+      #stage { position: absolute; inset: 0; }
+      #code-panel { width: 64%; background-color: #0b1220; border-radius: 24px; padding: 32px 40px; }
+      .hyperbits-code { margin: 0; color: #e5e7eb; }
+      .token.keyword { color: #c084fc; }
+      .token.string { color: #86efac; }
+      #cta { font-weight: 800; }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="feature-showcase"
+      data-start="0"
+      data-duration="38"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="hero" class="scene clip" data-start="0" data-duration="8">
+        <h1 id="hero-title">hyperbits</h1>
+        <p id="hero-sub">Ready-made motion for HyperFrames</p>
+      </div>
+      <div id="helpers" class="scene clip" data-start="8" data-duration="8">
+        <div id="chips"></div>
+      </div>
+      <canvas id="stage" class="clip" data-start="16" data-duration="8"></canvas>
+      <div id="space" class="scene clip" data-start="24" data-duration="8"></div>
+      <div id="code-scene" class="scene clip" data-start="32" data-duration="6">
+        <div id="code-panel"></div>
+        <h2 id="cta">npx hyperbits add fade-in</h2>
+      </div>
+    </div>
+    <script>
+      (function () {
+
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+
+
+        const vars = bitVars();
+        const view = hyperbits.viewport();
+        const title = document.getElementById("hero-title");
+        const sub = document.getElementById("hero-sub");
+        title.textContent = vars.title;
+        title.style.fontSize = view.vmin * 10 + "px";
+        sub.style.fontSize = view.vmin * 3.2 + "px";
+        const chips = document.getElementById("chips");
+        chips.style.gap = view.vmin * 1.6 + "px";
+        ["text", "stagger", "gradient", "particles", "scene3d", "code"].forEach(function (name) {
+          const chip = document.createElement("div");
+          chip.className = "chip";
+          chip.textContent = name;
+          chip.style.padding = view.vmin * 1.4 + "px " + view.vmin * 2.4 + "px";
+          chip.style.fontSize = view.vmin * 2.4 + "px";
+          chips.append(chip);
+        });
+        const canvas = document.getElementById("stage");
+        canvas.width = view.width;
+        canvas.height = view.height;
+        const simulator = hyperbits.createParticles({
+          fps: 30,
+          spawners: [{
+            id: "burst",
+            burst: 90,
+            startFrame: 16 * 30,
+            position: { x: view.width / 2, y: view.height / 2 },
+            velocity: { x: 0, y: 0, varianceX: 22, varianceY: 16 },
+            lifespan: 80,
+          }],
+          behaviors: [
+            { id: "drag", handler: hyperbits.createDrag(0.98) },
+            { id: "fade", handler: hyperbits.createOpacityOverLife([1, 0]) },
+          ],
+        });
+        const space = document.getElementById("space");
+        const cube = document.createElement("div");
+        cube.textContent = "3D";
+        cube.style.fontSize = view.vmin * 8 + "px";
+        cube.style.fontWeight = "800";
+        const scene = hyperbits.createScene3D(space, {
+          perspective: 1200,
+          transitionDuration: 0.8,
+          stepDuration: 2.4,
+          steps: [
+            { id: "a", rotateY: -20, z: 0, element: cube },
+            { id: "b", rotateY: 25, z: view.vmin * 20 },
+            { id: "c", rotateX: 15, z: view.vmin * 8 },
+          ],
+        });
+        const panel = document.getElementById("code-panel");
+        hyperbits.createCodeBlock(panel, {
+          code: 'npx hyperbits add fade-in\n# writes compositions/fade-in.html',
+          language: "bash",
+          showLineNumbers: false,
+        });
+        document.getElementById("cta").style.fontSize = view.vmin * 3.4 + "px";
+        document.getElementById("cta").style.marginTop = view.vmin * 3 + "px";
+        const timeline = gsap.timeline({ paused: true });
+        const chars = hyperbits.splitText(title, "chars");
+        hyperbits.stagger(chars, { opacity: [0, 1], y: [30, 0], duration: 0.5, stagger: 0.03, ease: "power3.out" }, timeline);
+        timeline.fromTo(sub, { opacity: 0 }, { opacity: 1, duration: 0.6 }, 0.8);
+        hyperbits.stagger(chips.children, { opacity: [0, 1], y: [24, 0], duration: 0.4, stagger: 0.08, delay: 8 }, timeline);
+        hyperbits.bind(timeline, canvas, simulator, { color: "#38bdf8", size: view.vmin * 1.3 });
+        scene.bind(timeline);
+        timeline.fromTo(panel, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6 }, 32.2);
+        timeline.fromTo("#cta", { opacity: 0 }, { opacity: 1, duration: 0.5 }, 33);
+        timeline.to({}, { duration: 38 }, 0);
+        registerTimeline("feature-showcase", timeline);
+
+      })();
+    </script>
+  </body>
+</html>
