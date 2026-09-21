@@ -210,7 +210,8 @@ export function sceneStateAt(
 
   if (previous && progress < 1) {
     const fromForward = stepToTransform(previous);
-    const currentForward = fromForward.lerp(targetForward, eased);
+    const transformProgress = easingFn ? easingFn(eased) : eased;
+    const currentForward = fromForward.lerp(targetForward, transformProgress);
     cameraTransform = currentForward.inverse();
     camera = lerpCamera(stepToCamera(previous), targetCamera, eased);
   } else {
