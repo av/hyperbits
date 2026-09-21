@@ -138,6 +138,9 @@
         panel.style.fontSize = fontSize + "px";
         panel.style.padding = fontSize + "px";
         panel.style.width = view.width * 0.8 + "px";
+        const tokenStyle = document.createElement("style");
+        tokenStyle.textContent = "#panel .token.function { color: " + vars.color + "; }";
+        panel.append(tokenStyle);
         const fullCode = "const App = () => {\n    const [count, setCount] = useState(0);\n\n    useEffect(() => {\n        document.title = `Count: ${count}`;\n    }, [count]);\n\n    return (\n        <button onClick={() => setCount(c => c + 1)}>\n             Clicked {count} times\n        </button>\n    );\n};";
         const typingSpeed = 0.3;
         const proxy = { time: 0 };
@@ -150,22 +153,19 @@
           if (key === lastKey) return;
           lastKey = key;
           panel.innerHTML = "";
+          panel.append(tokenStyle);
           const block = hyperbits.createCodeBlock(panel, {
             code: fullCode.slice(0, charIndex) + (showCursor ? "|" : " "),
             language: "typescript",
             showLineNumbers: true,
           });
           block.style.fontSize = fontSize + "px";
-        hyperbits.codeLines(block).forEach(function (line) {
-          line.style.display = "flex";
-          const content = line.querySelector(".hyperbits-code-content");
-          content.style.display = "block";
-          content.style.width = "100%";
-        });
-          const functions = panel.querySelectorAll(".token.function");
-          for (let index = 0; index < functions.length; index += 1) {
-            functions[index].style.color = vars.color;
-          }
+          hyperbits.codeLines(block).forEach(function (line) {
+            line.style.display = "flex";
+            const content = line.querySelector(".hyperbits-code-content");
+            content.style.display = "block";
+            content.style.width = "100%";
+          });
         }
         const timeline = gsap.timeline({ paused: true });
         timeline.to(proxy, { time: 6, duration: 6, ease: "none", onUpdate: render }, 0);
