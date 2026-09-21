@@ -1,19 +1,24 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Accent","default":"#38bdf8"},{"id":"background","type":"color","label":"Background","default":"#020617"}]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Word color","default":"#fcc192"},{"id":"background","type":"color","label":"Background","default":"#100f0f"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Sans";
+        font-weight: 700;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5/files/geist-sans-latin-700-normal.woff2) format("woff2");
+      }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <script src="hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
-        --bg: #020617;
-        --fg: #f8fafc;
-        --muted: #94a3b8;
-        --accent: #38bdf8;
-        --accent-2: #f59e0b;
-        --danger: #f43f5e;
-        --ok: #34d399;
+        --bg: #100f0f;
+        --fg: #fcc192;
+        --primary: #ec8b49;
+        --surface-dark: #1c1b1a;
+        --surface-light: #343331;
       }
       * {
         margin: 0;
@@ -26,39 +31,29 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background-color: #020617;
+        background-color: #100f0f;
       }
       #root {
         width: 100%;
         height: 100%;
         position: relative;
-        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        font-family: "Geist Sans", Inter, ui-sans-serif, system-ui, sans-serif;
       }
       #scene {
         position: absolute;
         inset: 0;
         z-index: 1;
       }
-      .word {
-        color: #f8fafc;
-        font-weight: 800;
-        letter-spacing: -0.05em;
-        white-space: nowrap;
-        line-height: 1;
-        font-size: 10vmin;
+      .word-step {
+        width: 250px;
+      }
+      .word-step h1 {
+        font-weight: 700;
         text-align: center;
+        margin: 0.67em 0;
       }
-      .word[data-step-active="false"] {
+      .shape-wrap {
         opacity: 0;
-      }
-      .word[data-step-active="true"] {
-        opacity: 1;
-      }
-      .plane {
-        width: 18vmin;
-        height: 18vmin;
-        border-radius: 1.4vmin;
-        border: 0.28vmin solid rgba(248, 250, 252, 0.18);
       }
     </style>
   </head>
@@ -68,11 +63,11 @@
       class="clip"
       data-composition-id="3d-elements"
       data-start="0"
-      data-duration="6.67"
+      data-duration="6.667"
       data-width="1920"
       data-height="1080"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="6.67" style="position:absolute;inset:0;background-color:#020617"></div>
+      <div id="bg" class="clip" data-start="0" data-duration="6.667" style="position:absolute;inset:0;background-color:#100f0f"></div>
       <div id="scene"></div>
     </div>
     <script>
@@ -100,66 +95,98 @@
         const bg = document.getElementById("bg");
         const sceneEl = document.getElementById("scene");
         const view = hyperbits.viewport(root);
+        const vmin = view.vmin;
+        const unit = view.height / 1080;
         bg.style.backgroundColor = vars.background;
-        bg.setAttribute("data-color", vars.color);
-
+        const fontSize = vmin * 8;
         const words = ["Fly", "Your", "Camera", "Through", "Space"];
-        const steps = words.map(function (word, index) {
-          const node = document.createElement("h1");
-          node.className = "word";
-          node.textContent = word;
-          node.style.fontSize = view.vmin * 10 + "px";
-          node.style.color = vars.color;
-          node.setAttribute("data-layout-allow-overlap", "");
-          node.setAttribute("data-layout-allow-occlusion", "");
-          return {
-            id: "step-" + index,
-            x: (index - 2) * view.vmin * 36,
-            y: (index % 2 === 0 ? -1 : 1) * view.vmin * 6,
-            z: index * view.vmin * 18,
-            rotateY: (index - 2) * 10,
-            duration: 6.67 / words.length,
-            element: node,
-          };
-        });
-
-        const palette = [vars.color, "#f472b6", "#f59e0b", "#34d399", "#a78bfa", "#fb7185"];
-        const planeSize = view.vmin * 18;
+        const stepDuration = 20 / 30;
         const elements = [];
-        for (let index = 0; index < 8; index += 1) {
-          const plane = document.createElement("div");
-          plane.className = "plane";
-          plane.style.width = planeSize + "px";
-          plane.style.height = planeSize + "px";
-          plane.style.backgroundColor = palette[index % palette.length];
-          plane.style.opacity = "0.55";
-          plane.setAttribute("data-layout-allow-overlap", "");
-          plane.setAttribute("data-layout-allow-occlusion", "");
-          elements.push({
-            element: plane,
-            centered: true,
-            x: hyperbits.randomFloat("el-x-" + index, -view.vmin * 48, view.vmin * 48),
-            y: hyperbits.randomFloat("el-y-" + index, -view.vmin * 28, view.vmin * 28),
-            z: hyperbits.randomFloat("el-z-" + index, -view.vmin * 20, view.vmin * 90),
-            rotateY: hyperbits.randomFloat("el-ry-" + index, -24, 24),
-            rotateX: hyperbits.randomFloat("el-rx-" + index, -16, 16),
-          });
+        const sizes = [16, 32];
+        const cellSize = vmin * 2;
+        const shapesList = ["circle", "triangle", "diamond"];
+        for (let index = 0; index < 20; index += 1) {
+          const x = Math.round(hyperbits.randomFloat("element3d-x-" + index, -50 * view.vw, 200 * view.vw) / cellSize) * cellSize;
+          const y = Math.round(hyperbits.randomFloat("element3d-y-" + index, -100 * view.vh, 20 * view.vh) / cellSize) * cellSize;
+          const z = Math.round(hyperbits.randomFloat("element3d-z-" + index, -200 * vmin, 20 * vmin) / cellSize) * cellSize;
+          const shape = hyperbits.pick("el3d-shape-" + index + "-0", shapesList);
+          const color = "hsl(" + hyperbits.randomFloat("el3d-color-" + index + "-1", 0, 360) + ", 80%, 60%)";
+          const dimension = hyperbits.pick("el3d-size-" + index + "-2", sizes) * vmin * 1.25;
+          const wrap = document.createElement("div");
+          wrap.className = "shape-wrap";
+          wrap.setAttribute("data-layout-allow-overlap", "");
+          wrap.setAttribute("data-layout-allow-occlusion", "");
+          const node = document.createElement("div");
+          if (shape === "triangle") {
+            node.style.width = "0";
+            node.style.height = "0";
+            node.style.borderLeft = dimension / 2 + "px solid rgba(0, 0, 0, 0)";
+            node.style.borderRight = dimension / 2 + "px solid rgba(0, 0, 0, 0)";
+            node.style.borderBottom = dimension + "px solid " + color;
+          } else {
+            node.style.background = color;
+            node.style.width = dimension + "px";
+            node.style.height = dimension + "px";
+            if (shape === "diamond") node.style.transform = "rotate(45deg)";
+            else node.style.borderRadius = "50%";
+          }
+          wrap.append(node);
+          elements.push({ element: wrap, x: x, y: y, z: z, rotateZ: 0.0001 });
         }
-
+        const steps = words.map(function (word, index) {
+          const step = document.createElement("div");
+          step.className = "word-step";
+          step.style.width = 250 * (view.width / 1920) + "px";
+          step.setAttribute("data-layout-allow-overlap", "");
+          step.setAttribute("data-layout-allow-occlusion", "");
+          const inner = document.createElement("div");
+          inner.style.fontSize = vmin * 10 + "px";
+          const heading = document.createElement("h1");
+          heading.textContent = word;
+          heading.style.fontSize = fontSize + "px";
+          heading.style.color = vars.color;
+          inner.append(heading);
+          step.append(inner);
+          return { id: "step-" + index, x: index * vmin * 50, y: 0, z: 0, rotateZ: -index * 30, duration: stepDuration, element: step, inner: inner };
+        });
         const scene = hyperbits.createScene3D(sceneEl, {
-          perspective: 1000,
-          transitionDuration: 1.05,
-          easing: "easeInOutCubic",
+          perspective: view.width > 500 ? 1000 : 500,
+          transitionDuration: stepDuration,
+          stepDuration: stepDuration,
+          easing: "easeInOut",
           steps: steps,
           elements: elements,
         });
         sceneEl.style.position = "absolute";
         sceneEl.style.inset = "0";
         sceneEl.style.zIndex = "1";
-
         const timeline = gsap.timeline({ paused: true });
         scene.bind(timeline);
-        timeline.to({}, { duration: 6.67 }, 0);
+        function stepFade(element, enterTime, exitTime, options) {
+          const enter = options.enter;
+          const exit = options.exit;
+          if (enter) {
+            const target = Object.assign({ duration: enter.duration, ease: "none" }, enter.to);
+            timeline.fromTo(element, enter.from, target, enterTime);
+          }
+          if (exit) {
+            const target = Object.assign({ duration: exit.duration, ease: "none" }, exit.to);
+            timeline.to(element, target, exitTime);
+          }
+        }
+        elements.forEach(function (item) {
+          timeline.fromTo(item.element, { opacity: 0 }, { opacity: 0.2, duration: 1, ease: "none" }, 0);
+        });
+        steps.forEach(function (step, index) {
+          const enterTime = index * stepDuration;
+          if (index < steps.length - 1) {
+            stepFade(step.element, enterTime, enterTime + stepDuration, {
+              exit: { to: { opacity: 0 }, duration: 15 / 30 },
+            });
+          }
+          timeline.fromTo(step.inner, { y: vmin * 15, opacity: 0 }, { y: 0, opacity: 1, duration: 15 / 30, ease: hyperbits.Easing.easeOutCubic }, enterTime);
+        });
+        timeline.to({}, { duration: 6.667 }, 0);
         registerTimeline("3d-elements", timeline);
 
       })();
