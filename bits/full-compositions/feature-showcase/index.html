@@ -1,19 +1,34 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"title","type":"string","label":"Title","default":"hyperbits"},{"id":"color","type":"color","label":"Text color","default":"#f8fafc"},{"id":"background","type":"color","label":"Background","default":"#020617"}]'>
+<html lang="en" data-composition-variables='[{"id":"title","type":"string","label":"Title","default":"Remotion Bits"},{"id":"color","type":"color","label":"Accent","default":"#fcc192"},{"id":"background","type":"color","label":"Background","default":"#100f0f"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Sans";
+        font-weight: 700;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5/files/geist-sans-latin-700-normal.woff2) format("woff2");
+      }
+      @font-face {
+        font-family: "Geist Sans";
+        font-weight: 900;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5/files/geist-sans-latin-900-normal.woff2) format("woff2");
+      }
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 700;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-700-normal.woff2) format("woff2");
+      }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <script src="hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
-        --bg: #020617;
-        --fg: #f8fafc;
-        --muted: #94a3b8;
-        --accent: #38bdf8;
-        --accent-2: #f59e0b;
-        --danger: #f43f5e;
-        --ok: #34d399;
+        --bg: #100f0f;
+        --fg: #fcc192;
+        --primary: #ec8b49;
+        --surface-dark: #1c1b1a;
+        --surface-light: #343331;
       }
       * {
         margin: 0;
@@ -26,123 +41,111 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background-color: #020617;
+        background-color: #100f0f;
       }
       #root {
         width: 100%;
         height: 100%;
         position: relative;
-        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-        overflow: hidden;
+        font-family: "Geist Sans", Inter, ui-sans-serif, system-ui, sans-serif;
       }
-      .scene {
+      #scene {
         position: absolute;
         inset: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
+        z-index: 1;
       }
-      .stack {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
+      #scene h1 {
+        font-weight: 700;
+        font-size: 2em;
+        margin: 0.67em 0;
+      }
+      .step {
+        color: #fcc192;
+        font-weight: 700;
+      }
+      .card {
         position: relative;
-        z-index: 2;
-      }
-      #hero-title {
-        color: #f8fafc;
-        font-weight: 800;
-        letter-spacing: -0.06em;
-        line-height: 1.05;
-        font-size: 10vmin;
-      }
-      #hero-sub {
-        color: #94a3b8;
-        margin-top: 0.35em;
-        font-weight: 500;
-        font-size: 3.2vmin;
-      }
-      .scene-label {
-        color: #f8fafc;
-        font-weight: 800;
-        letter-spacing: -0.06em;
-        line-height: 1;
-        font-size: 10vmin;
-        text-shadow: 0 0.06em 0.28em rgba(2, 6, 23, 0.55);
-      }
-      #scene3d-label-wrap {
-        position: absolute;
-        top: 6%;
-        left: 0;
-        right: 0;
+        background: rgba(20, 20, 30, 0.6);
+        backdrop-filter: blur(10px);
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 3;
-        pointer-events: none;
+        overflow: hidden;
       }
-      .word-plane {
-        color: #f8fafc;
-        font-weight: 800;
-        letter-spacing: 0.06em;
-        white-space: nowrap;
-        font-size: 8vmin;
-      }
-      #stage {
+      .particle-layer {
         position: absolute;
         inset: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 0;
+        opacity: 0.6;
       }
-      #code-panel {
-        width: 70%;
-        background-color: #0b1220;
-        border: 1px solid #1f2937;
-        border-radius: 28px;
-        overflow: hidden;
-        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+      .particle {
+        position: absolute;
+        left: 0;
+        top: 0;
       }
-      .hyperbits-code {
-        margin: 0;
-        color: #e5e7eb;
-        white-space: pre;
+      .code-panel {
+        position: relative;
+        color: #9cdcfe;
+        font-family: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+        line-height: 1.5;
+        font-variant-ligatures: none;
       }
       .hyperbits-code-line {
-        display: block;
+        position: relative;
+        width: 100%;
       }
-      .hyperbits-code-gutter {
-        display: inline-block;
-        width: 3em;
-        color: #64748b;
+      .token.keyword,
+      .token.builtin {
+        color: #569cd6;
       }
-      .token.keyword { color: #c084fc; }
-      .token.function { color: #38bdf8; }
-      .token.string { color: #86efac; }
-      .token.boolean { color: #fbbf24; }
-      #chips {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        width: 78%;
+      .token.function {
+        color: #dcdcaa;
       }
-      .chip {
-        background-color: #1e293b;
-        color: #e2e8f0;
-        border-radius: 999px;
-        font-weight: 700;
-        font-size: 4vmin;
-        border: 2px solid #38bdf8;
+      .token.string,
+      .token.attr-value {
+        color: #ce9178;
       }
-      #cta {
-        font-weight: 800;
-        font-size: 3.4vmin;
-        margin-top: 0.8em;
-        letter-spacing: -0.03em;
+      .token.punctuation,
+      .token.operator {
+        color: #d4d4d4;
+      }
+      .token.number {
+        color: #b5cea8;
+      }
+      .token.class-name {
+        color: #4ec9b0;
+      }
+      .grid {
+        position: absolute;
+        transform-style: preserve-3d;
+      }
+      .tile-cell {
+        position: absolute;
+        transform-style: preserve-3d;
+      }
+      .tile {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+      }
+      .vignette {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 50% 50%, #100f0f88, rgba(16, 15, 15, 0) 30%);
+        z-index: 100;
+        transform: translateZ(0px);
+      }
+      .scene-item {
+        position: absolute;
+        transform-style: preserve-3d;
+      }
+      .title {
+        position: absolute;
+        transform-style: preserve-3d;
+        color: #fcc192;
+      }
+      .icon {
+        position: absolute;
+        transform-style: preserve-3d;
       }
     </style>
   </head>
@@ -156,44 +159,8 @@
       data-width="1920"
       data-height="1080"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="38" style="position:absolute;inset:0;background-color:#020617"></div>
-      <div id="text-scene" class="scene clip" data-start="0" data-duration="6">
-        <div class="stack">
-          <h1 id="hero-title">hyperbits</h1>
-          <p id="hero-sub">Ready-made motion for HyperFrames</p>
-        </div>
-      </div>
-      <div id="gradient-scene" class="scene clip" data-start="6" data-duration="6">
-        <h2 id="gradient-label" class="scene-label">gradient</h2>
-      </div>
-      <div id="particles-scene" class="scene clip" data-start="12" data-duration="6">
-        <canvas id="stage"></canvas>
-        <h2 id="particles-label" class="scene-label">particles</h2>
-      </div>
-      <div id="scene" class="scene clip" data-start="18" data-duration="8">
-        <div id="scene3d-label-wrap">
-          <h2 id="scene3d-label" class="scene-label">scene3d</h2>
-        </div>
-      </div>
-      <div id="code-scene" class="scene clip" data-start="26" data-duration="6">
-        <div class="stack" style="width:100%">
-          <h2 id="code-label" class="scene-label">code</h2>
-          <div id="code-panel"></div>
-        </div>
-      </div>
-      <div id="chips-scene" class="scene clip" data-start="32" data-duration="6">
-        <div class="stack">
-          <div id="chips">
-            <div class="chip">text</div>
-            <div class="chip">stagger</div>
-            <div class="chip">gradient</div>
-            <div class="chip">particles</div>
-            <div class="chip">scene3d</div>
-            <div class="chip">code</div>
-          </div>
-          <p id="cta">npx hyperbits add fade-in</p>
-        </div>
-      </div>
+      <div id="bg" class="clip" data-start="0" data-duration="38" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <div id="scene"></div>
     </div>
     <script>
       (function () {
@@ -218,242 +185,686 @@
         const vars = bitVars();
         const root = document.getElementById("root");
         const bg = document.getElementById("bg");
+        const sceneEl = document.getElementById("scene");
         const view = hyperbits.viewport(root);
-        const title = document.getElementById("hero-title");
-        const sub = document.getElementById("hero-sub");
-        const gradientLabel = document.getElementById("gradient-label");
-        const particlesLabel = document.getElementById("particles-label");
-        const scene3dLabel = document.getElementById("scene3d-label");
-        const codeLabel = document.getElementById("code-label");
-        const panel = document.getElementById("code-panel");
-        const cta = document.getElementById("cta");
-        const scene = document.getElementById("scene");
-        const canvas = document.getElementById("stage");
-        const chips = Array.from(document.querySelectorAll(".chip"));
-
-        document.documentElement.style.backgroundColor = vars.background;
-        document.body.style.backgroundColor = vars.background;
+        const vmin = view.vmin;
+        const unit = view.height / 1080;
         bg.style.backgroundColor = vars.background;
+        const accent = vars.color;
+        const primary = "#ec8b49";
+        const Transform3D = hyperbits.Transform3D;
+        const Vec3 = hyperbits.Vec3;
+        const Easing = hyperbits.Easing;
+        const clamp01 = function (value) { return Math.min(1, Math.max(0, value)); };
+        const kf = hyperbits.interpolateKeyframes;
+        const revealDuration = 20;
+        const fontSize = vmin * 10;
 
-        title.textContent = vars.title;
-        title.style.color = vars.color;
-        title.style.fontSize = view.vmin * 10 + "px";
-        sub.style.fontSize = view.vmin * 3.2 + "px";
-
-        const labels = [gradientLabel, particlesLabel, scene3dLabel, codeLabel];
-        for (let i = 0; i < labels.length; i += 1) {
-          labels[i].style.color = vars.color;
-          labels[i].style.fontSize = view.vmin * 10 + "px";
+        function toProps(transform) {
+          const euler = transform.toEuler("XYZ");
+          return {
+            x: transform.position.x, y: transform.position.y, z: transform.position.z,
+            rotateX: (euler.x * 180) / Math.PI, rotateY: (euler.y * 180) / Math.PI, rotateZ: (euler.z * 180) / Math.PI,
+            rotateOrder: "xyz", scaleX: transform.scale.x, scaleY: transform.scale.y, scaleZ: transform.scale.z,
+          };
+        }
+        function matrixAt(keys, progress, easeFn) {
+          if (keys.length === 1) return keys[0].toCSSMatrix3D();
+          const segments = keys.length - 1;
+          if (progress <= 0) return keys[0].toCSSMatrix3D();
+          if (progress >= 1) return keys[segments].toCSSMatrix3D();
+          const scaled = progress * segments;
+          const segment = Math.min(segments - 1, Math.floor(scaled));
+          const local = easeFn ? easeFn(scaled - segment) : scaled - segment;
+          return keys[segment].lerp(keys[segment + 1], local).toCSSMatrix3D();
+        }
+        function motionProgress(frame, enter, delay, duration, unitIndex, stagger) {
+          const offset = 2 * (delay || 0) + 2 * (unitIndex || 0) * (stagger || 0);
+          return clamp01((frame - enter - offset) / duration);
         }
 
-        const chipsWrap = document.getElementById("chips");
-        chipsWrap.style.gap = view.vmin * 1.8 + "px";
-        for (let i = 0; i < chips.length; i += 1) {
-          chips[i].style.color = vars.color;
-          chips[i].style.borderColor = vars.color;
-          chips[i].style.fontSize = view.vmin * 4 + "px";
-          chips[i].style.padding = view.vmin * 1.8 + "px " + view.vmin * 3.4 + "px";
+        const base = Transform3D.identity();
+        const initialIconBase = base.translate(-vmin * 40, -vmin * 1, 0);
+        const elementsBase = base.translate(0, -vmin * 120, 0).rotateX(15);
+        const elementsIconBase = elementsBase.scaleBy(2.0).rotateZ(-240);
+        const transitionsBase = base.translate(vmin * 200, vmin * 50, 0).rotateY(-15);
+        const transitionsIconBase = transitionsBase.translate(0, vmin * -20, 0).scaleBy(2.0);
+        const scenesBase = base.translate(-vmin * 120, vmin * 70, 0).rotateY(15);
+        const scenesIconBase = scenesBase.scaleBy(2.0);
+        const sceneItems = {
+          hero: base.translate(vmin * 28, vmin * -5, vmin * 5).rotateY(-10),
+          dash: base.translate(vmin * -80, vmin * -30, 0).rotateY(5),
+          notif: base.translate(vmin * -70, 0, vmin * 10),
+          code: base.translate(vmin * 50, vmin * -30, 0),
+          player: base.translate(vmin * -17, vmin * 18, 0),
+        };
+        const triangleOffset = new Vec3(0, -vmin * 2, 0);
+        const squareOffset = new Vec3(-vmin * 2, vmin * 2, 0);
+        const circleOffset = new Vec3(vmin * 2, vmin * 2, 0);
+        const scaled = function (vector, factor) { return new Vec3(vector.x * factor, vector.y * factor, vector.z * factor); };
+        const baseShift = base.translate(vmin * 7, 0, 0);
+        const transitionsShift = transitionsBase.translate(vmin * 23, 0, 0);
+        const scenesShift = scenesBase.translate(vmin * 23, 0, 0);
+        const transitionsShiftUp = transitionsShift.translate(0, -vmin * 10, 0);
+        const scenesShiftUp = scenesShift.translate(0, -vmin * 10, 0);
+        const squareScenesUp = scenesIconBase.translate(0, -vmin * 10, 0).rotateZ(180);
+        const cardW = vmin * 70;
+        const cardH = vmin * 40;
+        const itemPoses = {
+          particles: elementsBase.translate(-cardW, -cardH, 0).rotateY(15).rotateX(10),
+          animatedText: elementsBase.translate(0, -cardH - vmin * 10, vmin * 10).rotateX(10),
+          counter: elementsBase.translate(cardW, -cardH, 0).rotateY(-15).rotateX(10),
+          typeWriter: elementsBase.translate(-cardW, 0, vmin * 5).rotateY(15),
+          codeBlock: elementsBase.translate(0, 0, vmin * 10),
+          glitchCycle: elementsBase.translate(cardW, 0, vmin * 5).rotateY(-15),
+          slideIn: elementsBase.translate(-cardW, cardH, 0).rotateY(15).rotateX(-10),
+          carousel: elementsBase.translate(0, cardH + vmin * 10, vmin * 10).rotateX(-10),
+          typewriterRewrite: elementsBase.translate(cardW, cardH, 0).rotateY(-15).rotateX(-10),
+        };
+        const poses = {
+          intro: { title: [base, baseShift], icons: {
+            triangle: [initialIconBase.rotateZ(0), initialIconBase.rotateZ(180), initialIconBase.translate(scaled(triangleOffset, 2.5))],
+            square: [initialIconBase.rotateZ(0), initialIconBase.rotateZ(180), initialIconBase.translate(scaled(squareOffset, 2.5))],
+            circle: [initialIconBase, initialIconBase.rotateX(180), initialIconBase.translate(scaled(circleOffset, 2.5))],
+          } },
+          elementsTitle: [elementsBase.translate(0, vmin * 10, 0)],
+          elementsTriangle: elementsIconBase.translate(0, vmin * -7, 0),
+          transitionsTitle: [transitionsBase],
+          scenesTitle: { still: [scenesBase], scenes: [scenesBase.translate(0, vmin * 5.0, 0)], outro: [scenesShiftUp, scenesBase] },
+          scenesSquare: [scenesIconBase, squareScenesUp],
+          sceneItems: {
+            hero: [sceneItems.hero.translate(0, vmin * 20, 0), sceneItems.hero],
+            dash: [sceneItems.dash.translate(0, vmin * 15, 0), sceneItems.dash],
+            notif: [sceneItems.notif.scaleBy(0).translate(0, vmin * 10, 0), sceneItems.notif],
+            code: [sceneItems.code.translate(0, vmin * 15, 0), sceneItems.code],
+            player: [sceneItems.player],
+          },
+          outro: { title: [baseShift, baseShift, baseShift, baseShift, base], icons: {
+            triangle: [initialIconBase.translate(scaled(triangleOffset, 2.5)), initialIconBase.rotateZ(180), initialIconBase.rotateZ(0)],
+            square: [initialIconBase.translate(scaled(squareOffset, 2.5)), initialIconBase.rotateZ(180), initialIconBase.rotateZ(0)],
+            circle: [initialIconBase.translate(scaled(circleOffset, 2.5)), initialIconBase.rotateX(180), initialIconBase.rotateX(0)],
+          } },
+        };
+
+        function el(tag, className, styles) {
+          const node = document.createElement(tag);
+          if (className) node.className = className;
+          if (styles) Object.assign(node.style, styles);
+          return node;
         }
-        cta.style.color = vars.color;
-        cta.style.fontSize = view.vmin * 3.4 + "px";
-        cta.style.marginTop = view.vmin * 3.2 + "px";
-
-        panel.style.padding = view.vmin * 3.4 + "px " + view.vmin * 4.2 + "px";
-        panel.style.marginTop = view.vmin * 2.4 + "px";
-        const sample = "const view = hyperbits.viewport(root);\nconst chars = hyperbits.splitText(title, \"chars\");\nhyperbits.stagger(chars, {\n  opacity: [0, 1],\n  y: [40, 0],\n  duration: 0.5,\n  stagger: 0.04\n}, timeline);";
-        const block = hyperbits.createCodeBlock(panel, {
-          code: sample,
-          language: "javascript",
-          showLineNumbers: true,
-        });
-        block.style.fontSize = view.vmin * 2.6 + "px";
-        block.style.lineHeight = "1.55";
-        block.style.textAlign = "left";
-
-        canvas.width = view.width;
-        canvas.height = view.height;
-        const simulator = hyperbits.createParticles({
-          fps: 30,
-          spawners: [{
-            id: "field",
-            rate: 1.4,
-            burst: 72,
-            delayFrame: 12 * 30,
-            startFrame: 50,
-            max: 180,
-            position: { x: view.width / 2, y: view.height / 2 },
-            area: { width: view.width, height: view.height },
-            velocity: { x: 0, y: -1.1, varianceX: 1.6, varianceY: 0.9 },
-            lifespan: 90,
-            lifespanVariance: 24,
-          }],
-          behaviors: [
-            { id: "wiggle", handler: hyperbits.createWiggle(1.8, 0.2, 0.7) },
-            { id: "drag", handler: hyperbits.createDrag(0.99) },
-            { id: "fade", handler: hyperbits.createOpacityOverLife([0, 1, 0]) },
-            { id: "scale", handler: hyperbits.createScaleOverLife(0.55, 1.25, 0.2, 0.25) },
-          ],
-        });
-
-        const wordList = ["MOTION", "DEPTH", "SCALE", "LIGHT", "TIME", "SPACE", "FRAME", "SEEK"];
-        const wordElements = [];
-        for (let i = 0; i < wordList.length; i += 1) {
-          const node = document.createElement("div");
-          node.className = "word-plane";
+        function stepNode() {
+          const node = el("div", "step");
           node.setAttribute("data-layout-allow-overlap", "");
           node.setAttribute("data-layout-allow-occlusion", "");
-          node.textContent = wordList[i];
-          node.style.color = vars.color;
-          node.style.fontSize = view.vmin * hyperbits.randomFloat("fs-" + i, 7, 11) + "px";
-          wordElements.push({
-            element: node,
-            x: hyperbits.randomFloat("x-" + i, -view.vmin * 44, view.vmin * 44),
-            y: hyperbits.randomFloat("y-" + i, -view.vmin * 26, view.vmin * 26),
-            z: hyperbits.randomFloat("z-" + i, -view.vmin * 18, view.vmin * 96),
-            rotateY: hyperbits.randomFloat("ry-" + i, -28, 28),
+          return node;
+        }
+        function floatingCard() {
+          return el("div", "card", {
+            width: vmin * 60 + "px", height: vmin * 30 + "px", borderRadius: vmin + "px",
+            border: "1px solid " + accent, boxShadow: "0 0 " + 20 * unit + "px rgba(0, 0, 0, 0.2)",
           });
         }
-        const scene3d = hyperbits.createScene3D(scene, {
-          perspective: 1100,
-          transitionDuration: 1.7,
-          easing: "easeInOutCubic",
-          steps: [
-            { id: "wait", duration: 18, rotateY: -22, rotateX: 8, z: view.vmin * -8 },
-            { id: "fly", duration: 2.7, rotateY: 26, rotateX: -8, z: view.vmin * 52 },
-            { id: "close", duration: 2.7, rotateY: -16, rotateX: 14, z: view.vmin * 18 },
-            { id: "settle", duration: 2.6, rotateY: 10, rotateX: 4, z: view.vmin * 30 },
+        const mono = '"Geist Mono", "JetBrains Mono", ui-monospace, monospace';
+
+        const stepOrder = ["intro", "elements", "element-particles", "element-animated-text", "element-counter", "element-type-writer", "element-code-block", "element-glitch-cycle", "element-slide-in", "element-carousel", "element-typewriter-rewrite", "transitions", "scenes", "outro"];
+        const enterFrame = {};
+        let cursorFrame = 0;
+        stepOrder.forEach(function (id) {
+          enterFrame[id] = cursorFrame;
+          cursorFrame += id === "transitions" || id === "scenes" || id === "outro" ? 120 : 60;
+        });
+        const cards = {};
+        function cardStep(id) {
+          const step = stepNode();
+          const card = floatingCard();
+          step.append(card);
+          cards[id] = { step: step, card: card };
+          return card;
+        }
+
+        const particlesCard = cardStep("element-particles");
+        const particleLayer = el("div", "particle-layer");
+        particlesCard.append(particleLayer);
+        const particlesLabel = el("span", "", { position: "relative", zIndex: "1", fontWeight: "bold", fontSize: vmin * 3 + "px", fontFamily: mono });
+        particlesLabel.textContent = "Particles";
+        particlesCard.append(particlesLabel);
+        const particleSim = hyperbits.createParticles({
+          fps: 30,
+          spawners: [{ id: "spawner-0", rate: 1, max: 200, lifespan: 80, velocity: { x: 0, y: -0.6, varianceX: 0.4, varianceY: 0.2 }, area: { width: view.width, height: view.height } }],
+          behaviors: [
+            { id: "drag", handler: hyperbits.createDrag(0.96) },
+            { id: "wiggle", handler: hyperbits.createWiggle(0.6, 0.25) },
+            { id: "opacity", handler: hyperbits.createOpacityOverLife([1, 0]) },
+            { id: "scale", handler: hyperbits.createScaleOverLife(1, 0.4, 0.2, 0.1) },
           ],
-          elements: wordElements,
         });
-        scene.style.position = "absolute";
-        scene.style.inset = "0";
-        scene3d.canvas.style.zIndex = "0";
+        const particleNodes = new Map();
 
-        const gradientFrom = "linear-gradient(155deg, " + vars.background + " 0%, #1e3a8a 48%, #0f172a 100%)";
-        const gradientTo = "linear-gradient(25deg, #38bdf8 0%, #7c3aed 52%, " + vars.color + " 100%)";
-        const gradient = hyperbits.gradientProxy(bg, [gradientFrom, gradientTo]);
+        const textCard = cardStep("element-animated-text");
+        const textLine = el("span", "", { fontSize: vmin * 3 + "px", fontWeight: "bold", fontFamily: mono, display: "inline-block" });
+        textLine.textContent = "Text Effects";
+        textCard.append(textLine);
+        const textChars = hyperbits.splitText(textLine, "chars");
 
-        const timeline = gsap.timeline({ paused: true });
+        const counterCard = cardStep("element-counter");
+        const counterColumn = el("div", "", { display: "flex", flexDirection: "column", alignItems: "center", gap: vmin + "px" });
+        const counterValue = el("span", "", { display: "inline-flex", alignItems: "center", fontSize: vmin * 4 + "px", fontWeight: "bold", fontFamily: mono });
+        const counterNumber = el("span");
+        const counterPostfix = el("span");
+        counterPostfix.textContent = "+";
+        counterValue.append(counterNumber, counterPostfix);
+        const counterLabel = el("span", "", { fontSize: vmin * 2 + "px", fontFamily: mono, opacity: "0.8" });
+        counterLabel.textContent = "Counter";
+        counterColumn.append(counterValue, counterLabel);
+        counterCard.append(counterColumn);
 
-        const chars = hyperbits.splitText(title, "chars");
-        hyperbits.stagger(
-          chars,
-          {
-            opacity: [0, 1],
-            y: [view.vmin * 3.2, 0],
-            duration: 0.55,
-            stagger: 0.04,
-            ease: "power3.out",
-            at: 0,
-          },
-          timeline,
-        );
-        const subTl = gsap.timeline();
-        const subWords = hyperbits.splitText(sub, "words");
-        hyperbits.stagger(
-          subWords,
-          {
-            opacity: [0, 1],
-            y: [view.vmin * 1.6, 0],
-            duration: 0.45,
-            stagger: 0.08,
-            ease: "power2.out",
-            at: 0,
-          },
-          subTl,
-        );
-        timeline.add(subTl, 0.85);
-        timeline.to(title, { y: -view.vmin * 1.4, duration: 4.6, ease: "sine.inOut" }, 1.4);
+        const typeCard = cardStep("element-type-writer");
+        const typeBox = el("div", "", { width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: vmin * 2 + "px", fontFamily: mono });
+        const typeLine = el("span", "", { fontSize: vmin * 1.7 + "px", lineHeight: "1.25", whiteSpace: "pre", opacity: "0.9" });
+        const typeText = el("span");
+        const typeCursor = el("span", "", { display: "inline-block" });
+        typeCursor.textContent = "▋";
+        typeLine.append(typeText, typeCursor);
+        typeBox.append(typeLine);
+        typeCard.append(typeBox);
+        const typeWriterText = "import { TypeWriter } from 'remotion-bits';\n\n<TypeWriter\n  text=\"Hello Remotion\"\n  typeSpeed={2}\n  pauseAfterType={20}\n/>";
 
-        timeline.fromTo(
-          gradient.proxy,
-          { progress: 0 },
-          { progress: 1, duration: 6, ease: "sine.inOut", immediateRender: false },
-          6,
-        );
-        timeline.fromTo(
-          gradientLabel,
-          { opacity: 0, y: view.vmin * 4, scale: 0.9 },
-          { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power3.out" },
-          6.05,
-        );
-        timeline.to(gradientLabel, { y: -view.vmin * 2.2, scale: 1.05, duration: 5.1, ease: "sine.inOut" }, 6.9);
-
-        timeline.fromTo(
-          particlesLabel,
-          { opacity: 0, y: view.vmin * 4, scale: 0.9 },
-          { opacity: 1, y: 0, scale: 1, duration: 0.75, ease: "power3.out" },
-          12.05,
-        );
-        timeline.to(particlesLabel, { y: -view.vmin * 2, duration: 5.1, ease: "sine.inOut" }, 12.85);
-
-        timeline.fromTo(
-          scene3dLabel,
-          { opacity: 0, y: view.vmin * 4, scale: 0.92 },
-          { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power3.out" },
-          18.05,
-        );
-        timeline.to(scene3dLabel, { y: -view.vmin * 1.6, duration: 7.1, ease: "sine.inOut" }, 18.9);
-
-        timeline.fromTo(
-          codeLabel,
-          { opacity: 0, y: view.vmin * 3 },
-          { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" },
-          26.05,
-        );
-        timeline.fromTo(
-          panel,
-          { opacity: 0, y: view.vmin * 3.5 },
-          { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
-          26.2,
-        );
-        timeline.to(panel, { y: -view.vmin * 1.2, duration: 5.1, ease: "sine.inOut" }, 27);
-
-        const chipTl = gsap.timeline();
-        hyperbits.stagger(
-          chips,
-          {
-            opacity: [0, 1],
-            y: [view.vmin * 5.5, 0],
-            scale: [0.82, 1],
-            duration: 0.55,
-            stagger: 0.1,
-            ease: "power3.out",
-          },
-          chipTl,
-        );
-        timeline.add(chipTl, 32.1);
-        timeline.fromTo(
-          cta,
-          { opacity: 0, y: view.vmin * 2 },
-          { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" },
-          33.1,
-        );
-        timeline.to(chips, { y: -view.vmin * 1.1, duration: 4.4, ease: "sine.inOut", stagger: 0.06 }, 33.4);
-
-        hyperbits.bind(timeline, canvas, simulator, {
-          color: vars.color,
-          size: view.vmin * 1.5,
-          glow: 2.4,
-          shape: "circle",
+        const codeCard = cardStep("element-code-block");
+        const codePanel = el("div", "code-panel", { fontSize: vmin * 1.15 + "px", padding: vmin * 1.2 + "px" });
+        const codeBlock = hyperbits.createCodeBlock(codePanel, {
+          code: "import { AnimatedText, useViewportRect } from 'remotion-bits';\n\nconst rect = useViewportRect();\n\n<AnimatedText\n  style={{ fontSize: vmin * 4 }}\n  transition={{ split: 'character', splitStagger: 2 }}\n>\n  Remotion Bits\n</AnimatedText>",
+          language: "typescript",
         });
-        scene3d.bind(timeline);
+        codeBlock.style.fontSize = vmin * 1.15 + "px";
+        const codeLines = hyperbits.codeLines(codeBlock);
+        codeCard.append(codePanel);
 
-        const previousUpdate = timeline.eventCallback("onUpdate");
-        timeline.eventCallback("onUpdate", function () {
-          if (typeof previousUpdate === "function") previousUpdate.call(timeline);
-          const t = timeline.time();
-          if (t >= 6 && t < 12) {
-            gradient.apply();
-          } else {
-            bg.style.background = "";
-            bg.style.backgroundImage = "none";
-            bg.style.backgroundColor = vars.background;
+        const glitchCard = cardStep("element-glitch-cycle");
+        const glitchLine = el("span", "", { fontFamily: mono, fontSize: vmin * 2.5 + "px", fontWeight: "bold", display: "inline-block", whiteSpace: "pre" });
+        glitchCard.append(glitchLine);
+        const GLITCH_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?/~`";
+        const glitchTexts = ["INITIALIZING", "LOADING", "ONLINE", "READY"];
+
+        const slideCard = cardStep("element-slide-in");
+        const slideBox = el("div", "", { display: "flex", flexWrap: "wrap", gap: vmin + "px", justifyContent: "center", alignItems: "center", padding: vmin * 2 + "px", fontSize: vmin * 2.5 + "px", fontWeight: "bold" });
+        const slideWords = [
+          { text: "Top", delay: 20, from: { x: 0, y: -30 } },
+          { text: "Right", delay: 25, from: { x: 30, y: 0 } },
+          { text: "Bottom", delay: 30, from: { x: 0, y: 30 } },
+          { text: "Left", delay: 35, from: { x: -30, y: 0 } },
+        ].map(function (word) {
+          const node = el("span", "", { display: "inline-block", whiteSpace: "pre" });
+          node.textContent = word.text;
+          slideBox.append(node);
+          word.node = node;
+          return word;
+        });
+        slideCard.append(slideBox);
+
+        const carouselCard = cardStep("element-carousel");
+        const carouselLine = el("span", "", { fontSize: vmin * 3 + "px", fontWeight: "bold", fontFamily: mono, display: "inline-block", whiteSpace: "pre" });
+        carouselCard.append(carouselLine);
+        const carouselTexts = ["Design", "Build", "Animate", "Create"];
+
+        const rewriteCard = cardStep("element-typewriter-rewrite");
+        const rewriteBox = el("div", "", { width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: vmin * 2 + "px", fontFamily: mono });
+        const rewriteLine = el("span", "", { fontSize: vmin * 2 + "px", fontWeight: "bold", textAlign: "center" });
+        const rewriteText = el("span");
+        const rewriteCursor = el("span", "", { display: "inline-block" });
+        rewriteCursor.textContent = "▋";
+        rewriteLine.append(rewriteText, rewriteCursor);
+        rewriteBox.append(rewriteLine);
+        rewriteCard.append(rewriteBox);
+        const rewriteEvents = [{ frame: 0, text: "" }];
+        (function () {
+          const text = "Build amazing videos with Remotion";
+          let floatFrame = 0;
+          let current = "";
+          const push = function () { rewriteEvents.push({ frame: Math.round(floatFrame), text: current }); };
+          for (let index = 0; index < text.length; index += 1) { floatFrame += 2; current += text[index]; push(); }
+          floatFrame += 40; push();
+          for (let index = text.length - 1; index >= 0; index -= 1) { floatFrame += 3; current = current.slice(0, -1); push(); }
+          floatFrame += 10; push();
+          rewriteEvents.total = floatFrame;
+        })();
+        function eventText(events, frame) {
+          let active = 0;
+          for (let index = 0; index < events.length; index += 1) {
+            if (events[index].frame <= frame) active = index; else break;
           }
-          hyperbits.applyLineReveal(panel, t, { duration: 0.32, stagger: 0.14, delay: 26.35 });
-        });
+          return events[active].text;
+        }
 
-        timeline.to({}, { duration: 38 }, 0);
+        const transitionsStep = stepNode();
+        const gridRows = 10;
+        const gridCols = 25;
+        const tileSize = 10 * vmin;
+        const tileGap = 1 * vmin;
+        const gridWidth = gridCols * tileSize + (gridCols - 1) * tileGap;
+        const gridHeight = gridRows * tileSize + (gridRows - 1) * tileGap;
+        const gridEl = el("div", "grid", { width: gridWidth + "px", height: gridHeight + "px", transform: "translate(-50%, -50%) rotate(0.01deg) " + Transform3D.identity().toCSSMatrix3D() });
+        const palette = ["#fb4934", "#b8bb26", "#fabd2f", "#83a598", "#d3869b", "#8ec07c", "#fe8019", "#d5c4a1"];
+        const gradients = [
+          "linear-gradient(to right, #100f0f55, rgba(16, 15, 15, 0))",
+          "linear-gradient(to left, #100f0f55, rgba(16, 15, 15, 0))",
+          "linear-gradient(to bottom, #100f0f55, rgba(16, 15, 15, 0))",
+          "linear-gradient(to top, #100f0f55, rgba(16, 15, 15, 0))",
+          "radial-gradient(circle at 50% 50%, #100f0f33, rgba(16, 15, 15, 0))",
+        ];
+        const variants = [
+          function () { return { scale: [0, 1] }; },
+          function () { return { x: [tileSize, 0] }; },
+          function () { return { x: [-tileSize, 0] }; },
+          function () { return { y: [tileSize, 0] }; },
+          function () { return { y: [-tileSize, 0] }; },
+          function () { return { rotate: [90, 0] }; },
+          function () { return { rotate: [-90, 0] }; },
+          function () { return { blur: [0, 0] }; },
+          function () { return { borderRadius: [tileSize / 2, 4] }; },
+          function () { return { duration: 30 }; },
+        ];
+        const tiles = [];
+        for (let row = 0; row < gridRows; row += 1) {
+          for (let col = 0; col < gridCols; col += 1) {
+            const seed = "grid-" + row + "-" + col;
+            const cx = (gridCols - 1) / 2;
+            const cy = (gridRows - 1) / 2;
+            const dist = Math.sqrt(Math.pow(row - cy, 2) + Math.pow(col - cx, 2));
+            const props = { opacity: [0, 1], duration: 40, delay: 30 + dist * 2, easing: Easing.easeOutCubic, borderRadius: 4 };
+            const count = Math.floor(hyperbits.random(seed + "count") * 4) + 2;
+            for (let index = 0; index < count; index += 1) {
+              const pick = Math.floor(hyperbits.random(seed + "pick" + index) * variants.length);
+              Object.assign(props, variants[pick]());
+            }
+            const colorIndex = Math.floor(hyperbits.random(seed + "color") * palette.length);
+            const gradientIndex = Math.floor(hyperbits.random(seed + "gradient") * gradients.length);
+            const cell = el("div", "tile-cell", { left: col * (tileSize + tileGap) + "px", top: row * (tileSize + tileGap) + "px", width: tileSize + "px", height: tileSize + "px" });
+            const tile = el("div", "tile", { background: gradients[gradientIndex] + ", " + palette[colorIndex] });
+            cell.append(tile);
+            gridEl.append(cell);
+            tiles.push({ node: tile, props: props });
+          }
+        }
+        const vignette = el("div", "vignette");
+        gridEl.append(vignette);
+        transitionsStep.append(gridEl);
+
+        const scenesStep = stepNode();
+        scenesStep.style.transformStyle = "preserve-3d";
+        function sceneItem(width, height) {
+          const node = el("div", "scene-item", { width: width + "px" });
+          if (height) node.style.height = height + "px";
+          scenesStep.append(node);
+          return node;
+        }
+        const hero = sceneItem(vmin * 32, vmin * 24);
+        const heroBox = el("div", "", { width: "100%", height: "100%", background: "linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%)", borderRadius: vmin * 1.5 + "px", overflow: "hidden", position: "relative" });
+        const heroCopy = el("div", "", { position: "absolute", bottom: vmin * 3 + "px", left: vmin * 2.5 + "px", right: vmin * 2.5 + "px" });
+        const heroBadge = el("div", "", { background: "white", color: "black", padding: "0.4em 0.8em", borderRadius: "99px", display: "inline-block", fontSize: vmin * 1.2 + "px", fontWeight: "bold" });
+        heroBadge.textContent = "NEW ARRIVAL";
+        const heroTitle = el("span", "", { display: "inline-block", color: "#fff", fontSize: vmin * 4 + "px", lineHeight: "0.9", fontWeight: "900", textShadow: "0 2px 10px rgba(0,0,0,0.2)" });
+        heroTitle.textContent = "SUMMER VIBES";
+        heroCopy.append(heroBadge, heroTitle);
+        heroBox.append(heroCopy);
+        hero.append(heroBox);
+        const heroWords = hyperbits.splitText(heroTitle, "words");
+
+        const dash = sceneItem(vmin * 36, vmin * 16);
+        const dashBox = el("div", "", { width: "100%", height: "100%", background: "#1a1a2e", borderRadius: vmin * 1.2 + "px", padding: vmin * 2.5 + "px", border: "1px solid rgba(255,255,255,0.1)", boxShadow: "0 15px 35px rgba(0,0,0,0.4)", display: "flex", flexDirection: "column", lineHeight: "1rem" });
+        const dashHeader = el("div", "", { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: vmin + "px" });
+        const dashLeft = el("div", "", { display: "flex", alignItems: "center", gap: vmin + "px" });
+        dashLeft.append(el("div", "", { width: vmin + "px", height: vmin + "px", borderRadius: "50%", background: "#e94560" }));
+        const dashLabel = el("span", "", { color: "#fff", fontWeight: "bold", fontSize: vmin * 1.5 + "px" });
+        dashLabel.textContent = "Revenue";
+        dashLeft.append(dashLabel);
+        const dashWeek = el("span", "", { color: "#ffffff66", fontSize: vmin * 1.2 + "px" });
+        dashWeek.textContent = "This Week";
+        dashHeader.append(dashLeft, dashWeek);
+        const dashValueWrap = el("div", "", { marginBottom: vmin + "px" });
+        const dashValue = el("span", "", { display: "inline-flex", alignItems: "center", color: "#fff", fontSize: vmin * 4 + "px", fontWeight: "bold" });
+        const dashNumber = el("span");
+        const dashPostfix = el("span");
+        dashPostfix.textContent = "$";
+        dashValue.append(dashNumber, dashPostfix);
+        dashValueWrap.append(dashValue);
+        dashBox.append(dashHeader, dashValueWrap);
+        dash.append(dashBox);
+
+        const notif = sceneItem(vmin * 30, 0);
+        const notifBox = el("div", "", { width: "100%", background: "rgba(255,255,255,0.95)", borderRadius: vmin * 1.2 + "px", padding: vmin * 1.5 + "px", display: "flex", alignItems: "center", gap: vmin * 1.5 + "px", boxShadow: "0 10px 30px rgba(0,0,0,0.2)" });
+        const notifIcon = el("div", "", { width: vmin * 5 + "px", height: vmin * 5 + "px", background: "#10B981", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: "0" });
+        notifIcon.innerHTML = '<svg width="' + vmin * 2.5 + '" height="' + vmin * 2.5 + '" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+        const notifCopy = el("div");
+        const notifTitle = el("div", "", { color: "#111", fontWeight: "bold", fontSize: vmin * 1.4 + "px", lineHeight: "1.2" });
+        notifTitle.textContent = "Render Complete";
+        const notifFile = el("div", "", { color: "#666", fontSize: vmin * 1.1 + "px" });
+        notifFile.textContent = "video_final_v2.mp4";
+        notifCopy.append(notifTitle, notifFile);
+        notifBox.append(notifIcon, notifCopy);
+        notif.append(notifBox);
+
+        const code = sceneItem(vmin * 28, vmin * 18);
+        const codeBox = el("div", "", { width: "100%", height: "100%", background: "#282c34", borderRadius: vmin + "px", padding: vmin * 1.5 + "px", boxShadow: "0 15px 30px rgba(0,0,0,0.4)", border: "1px solid #3e4451", fontFamily: mono, fontSize: vmin * 1.2 + "px", color: "#abb2bf", overflow: "hidden" });
+        const codeDots = el("div", "", { display: "flex", gap: vmin / 2 + "px", marginBottom: vmin + "px" });
+        ["#e06c75", "#e5c07b", "#98c379"].forEach(function (hex) { codeDots.append(el("div", "", { width: vmin + "px", height: vmin + "px", borderRadius: "50%", background: hex })); });
+        codeBox.append(codeDots);
+        const codeLinesHtml = [
+          '<span style="color:#c678dd">const</span> <span style="color:#e5c07b">Video</span> = () =&gt; {',
+          '<span style="padding-left:' + vmin * 2 + 'px"><span style="color:#e06c75">return</span> (</span>',
+          '<span style="padding-left:' + vmin * 4 + 'px">&lt;<span style="color:#e5c07b">Composition</span> /&gt;</span>',
+          '<span style="padding-left:' + vmin * 2 + 'px">);</span>',
+          '};',
+        ];
+        codeLinesHtml.forEach(function (html) { const line = el("div"); line.innerHTML = html; codeBox.append(line); });
+        code.append(codeBox);
+
+        const player = sceneItem(vmin * 25, vmin * 15);
+        const playerBox = el("div", "", { width: "100%", height: "100%", background: "#000", borderRadius: vmin + "px", overflow: "hidden", boxShadow: "0 10px 40px rgba(0,0,0,0.5)", border: "1px solid #333", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" });
+        playerBox.append(el("div", "", { position: "absolute", inset: "0", background: "linear-gradient(45deg, #111, #222)", opacity: "0.5" }));
+        const playButton = el("div", "", { width: vmin * 6 + "px", height: vmin * 6 + "px", borderRadius: "50%", background: "rgba(255,255,255,0.1)", backdropFilter: "blur(5px)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.2)", zIndex: "10" });
+        playButton.append(el("div", "", { width: "0", height: "0", borderTop: vmin * 1.5 + "px solid rgba(0, 0, 0, 0)", borderBottom: vmin * 1.5 + "px solid rgba(0, 0, 0, 0)", borderLeft: vmin * 2.5 + "px solid white", marginLeft: vmin * 0.5 + "px" }));
+        playerBox.append(playButton);
+        const progressTrack = el("div", "", { position: "absolute", bottom: vmin * 1.5 + "px", left: vmin * 1.5 + "px", right: vmin * 1.5 + "px", height: vmin * 0.5 + "px", background: "rgba(255,255,255,0.2)", borderRadius: vmin + "px" });
+        progressTrack.append(el("div", "", { width: "60%", height: "100%", background: accent, borderRadius: vmin + "px", boxShadow: "0 0 10px " + accent }));
+        playerBox.append(progressTrack);
+        player.append(playerBox);
+        const sceneItemSpecs = [
+          { node: hero, delay: 10, duration: 35, keys: poses.sceneItems.hero, ease: Easing.easeInOutCubic },
+          { node: dash, delay: 20, duration: 35, keys: poses.sceneItems.dash, ease: Easing.easeInOutCubic },
+          { node: notif, delay: 30, duration: 20, keys: poses.sceneItems.notif, ease: Easing.easeOutCubic },
+          { node: code, delay: 40, duration: 35, keys: poses.sceneItems.code, ease: Easing.easeOutCubic },
+          { node: player, delay: 25, duration: 35, keys: poses.sceneItems.player, ease: Easing.easeOutCubic },
+        ];
+
+        const steps = [
+          Object.assign({ id: "intro", duration: 2, element: stepNode() }, toProps(base)),
+          Object.assign({ id: "elements", duration: 2, element: stepNode() }, toProps(elementsBase)),
+          Object.assign({ id: "element-particles", duration: 2, element: cards["element-particles"].step }, toProps(itemPoses.particles)),
+          Object.assign({ id: "element-animated-text", duration: 2, element: cards["element-animated-text"].step }, toProps(itemPoses.animatedText)),
+          Object.assign({ id: "element-counter", duration: 2, element: cards["element-counter"].step }, toProps(itemPoses.counter)),
+          Object.assign({ id: "element-type-writer", duration: 2, element: cards["element-type-writer"].step }, toProps(itemPoses.typeWriter)),
+          Object.assign({ id: "element-code-block", duration: 2, element: cards["element-code-block"].step }, toProps(itemPoses.codeBlock)),
+          Object.assign({ id: "element-glitch-cycle", duration: 2, element: cards["element-glitch-cycle"].step }, toProps(itemPoses.glitchCycle)),
+          Object.assign({ id: "element-slide-in", duration: 2, element: cards["element-slide-in"].step }, toProps(itemPoses.slideIn)),
+          Object.assign({ id: "element-carousel", duration: 2, element: cards["element-carousel"].step }, toProps(itemPoses.carousel)),
+          Object.assign({ id: "element-typewriter-rewrite", duration: 2, element: cards["element-typewriter-rewrite"].step }, toProps(itemPoses.typewriterRewrite)),
+          Object.assign({ id: "transitions", duration: 4, element: transitionsStep }, toProps(transitionsBase)),
+          Object.assign({ id: "scenes", duration: 4, element: scenesStep }, toProps(scenesBase)),
+          Object.assign({ id: "outro", duration: 4, element: stepNode() }, toProps(base)),
+        ];
+        const scene = hyperbits.createScene3D(sceneEl, {
+          perspective: 1000,
+          transitionDuration: 2,
+          stepDuration: 2,
+          easing: "easeInOutCubic",
+          steps: steps,
+        });
+        sceneEl.style.position = "absolute";
+        sceneEl.style.inset = "0";
+        sceneEl.style.zIndex = "1";
+
+        function worldNode(tag, className, styles) {
+          const node = el(tag, className, styles);
+          node.setAttribute("data-layout-allow-overlap", "");
+          node.setAttribute("data-layout-allow-occlusion", "");
+          scene.world.append(node);
+          return node;
+        }
+        function title(text, width) {
+          const node = worldNode("h1", "title", { fontSize: fontSize + "px", width: width });
+          node.textContent = text;
+          return node;
+        }
+        const titleMain = title(String(vars.title), vmin * 70 + "px");
+        const titleElements = title("Elements", "max-content");
+        const titleTransitions = title("Transitions", "max-content");
+        titleTransitions.style.textShadow = "0 0 10px rgba(0,0,0,0.5)";
+        const titleScenes = title("Scenes", "max-content");
+        function icon(variant) {
+          const size = vmin * 10;
+          const inner = variant === "triangle"
+            ? '<path d="M13.73 4a2 2 0 0 0-3.46 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />'
+            : variant === "square" ? '<rect width="18" height="18" x="3" y="3" rx="2" />' : '<circle cx="12" cy="12" r="10" />';
+          const holder = document.createElement("div");
+          holder.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="icon" width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="' + accent + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + inner + "</svg>";
+          const node = holder.firstChild;
+          node.setAttribute("data-layout-allow-overlap", "");
+          node.setAttribute("data-layout-allow-occlusion", "");
+          scene.world.append(node);
+          return node;
+        }
+        const iconTriangle = icon("triangle");
+        const iconSquare = icon("square");
+        const iconCircle = icon("circle");
+        const elementStepIds = stepOrder.slice(1, 11);
+        function mapElementSteps(props) {
+          const map = {};
+          elementStepIds.forEach(function (id) { map[id] = props; });
+          return map;
+        }
+        const responsiveSpecs = [
+          { node: titleMain, steps: { intro: { transform: poses.intro.title }, outro: { transform: poses.outro.title, duration: "step", easing: Easing.easeInOutCubic } } },
+          { node: titleElements, steps: Object.assign({ intro: { transform: poses.elementsTitle } }, mapElementSteps({ transform: poses.elementsTitle }), { transitions: { transform: poses.elementsTitle } }) },
+          { node: titleTransitions, steps: Object.assign({ intro: { transform: poses.transitionsTitle } }, mapElementSteps({ transform: poses.transitionsTitle }), { transitions: { transform: poses.transitionsTitle }, scenes: { transform: poses.transitionsTitle } }) },
+          { node: titleScenes, steps: { intro: { transform: poses.scenesTitle.still }, transitions: { transform: poses.scenesTitle.still }, scenes: { transform: poses.scenesTitle.scenes }, outro: { transform: poses.scenesTitle.outro, duration: "step" } } },
+          { node: iconTriangle, steps: Object.assign({ intro: { opacity: [0, 1], transform: poses.intro.icons.triangle } }, mapElementSteps({ transform: poses.elementsTriangle }), { outro: { transform: poses.outro.icons.triangle, opacity: [1, 1, 1, 0], duration: "step", easing: Easing.easeInOutCubic } }) },
+          { node: iconSquare, steps: { intro: { opacity: [0, 1], transform: poses.intro.icons.square }, scenes: { transform: poses.scenesSquare }, outro: { transform: poses.outro.icons.square, opacity: [1, 1, 1, 0], duration: "step", easing: Easing.easeInOutCubic } } },
+          { node: iconCircle, steps: { intro: { opacity: [0, 1], transform: poses.intro.icons.circle }, transitions: { transform: transitionsIconBase }, outro: { transform: poses.outro.icons.circle, opacity: [1, 1, 1, 0], duration: "step", easing: Easing.easeInOutCubic } } },
+        ];
+        function cumulative(spec, index) {
+          const result = {};
+          for (let step = 0; step <= index; step += 1) {
+            if (step > 0) {
+              for (const key in result) {
+                if (Array.isArray(result[key]) && result[key].length > 0) result[key] = result[key][result[key].length - 1];
+              }
+            }
+            const props = spec.steps[stepOrder[step]];
+            if (props) Object.assign(result, props);
+          }
+          return result;
+        }
+        function mergeValues(fromVal, toVal) {
+          const effectiveFrom = Array.isArray(fromVal) ? fromVal[fromVal.length - 1] : fromVal;
+          let target = Array.isArray(toVal) ? toVal.slice() : [toVal];
+          if (effectiveFrom === target[0]) {
+            target = target.slice(1);
+            if (target.length === 0) return [effectiveFrom];
+          }
+          return [effectiveFrom].concat(target);
+        }
+        function applyResponsive(spec, state, frame) {
+          const index = state.activeStepIndex;
+          const stepId = stepOrder[index];
+          const current = spec.steps[stepId];
+          const target = cumulative(spec, index);
+          const previous = index > 0 ? cumulative(spec, index - 1) : {};
+          let progress = state.transitionProgress;
+          let easeFn;
+          if (current && current.duration !== undefined) {
+            const activeStep = state.steps[index];
+            const duration = current.duration === "step" ? (activeStep.exitTime - activeStep.enterTime) * 30 : current.duration;
+            progress = clamp01((frame - activeStep.enterTime * 30) / duration);
+            easeFn = current.easing;
+          }
+          const resolve = function (key) {
+            const fromVal = previous[key];
+            const toVal = target[key];
+            if (fromVal !== undefined && toVal !== undefined) return mergeValues(fromVal, toVal);
+            if (toVal !== undefined) return toVal;
+            return fromVal;
+          };
+          const transformValue = resolve("transform");
+          const transforms = Array.isArray(transformValue) ? transformValue : transformValue ? [transformValue] : null;
+          spec.node.style.transform = "translate(-50%, -50%) rotate(0.01deg)" + (transforms ? " " + matrixAt(transforms, progress, easeFn) : "");
+          const opacityValue = resolve("opacity");
+          if (opacityValue !== undefined) {
+            spec.node.style.opacity = String(Array.isArray(opacityValue) ? kf(opacityValue, progress, easeFn) : opacityValue);
+          }
+        }
+
+        const glyphs = function (text, frame, glitchVal) {
+          let output = "";
+          for (let charIndex = 0; charIndex < text.length; charIndex += 1) {
+            const char = text[charIndex];
+            if (char === " " || glitchVal <= 0) output += char;
+            else if (hyperbits.random("glitch-" + frame + "-0-" + charIndex) < glitchVal) output += GLITCH_CHARS[Math.floor(hyperbits.random("char-" + frame + "-0-" + charIndex) * GLITCH_CHARS.length)];
+            else output += char;
+          }
+          return output;
+        };
+        const counter = hyperbits.createCounter(counterNumber, { decimals: 0 });
+        const dashCounter = hyperbits.createCounter(dashNumber, { decimals: 0 });
+
+        const proxy = { time: 0 };
+        function render() {
+          const time = proxy.time;
+          const frame = Math.round(time * 30);
+          const state = scene.stateAt(time);
+          const active = state.activeStepIndex;
+
+          state.steps.forEach(function (step, index) {
+            const enter = step.enterTime * 30;
+            const exit = step.exitTime * 30;
+            if (cards[step.id]) {
+              const progress = clamp01((frame - enter) / 30);
+              step.element.style.opacity = String(progress);
+              const blur = 10 * (1 - progress);
+              step.element.style.filter = blur > 0 ? "blur(" + blur * unit + "px)" : "none";
+            }
+            if (step.id === "transitions") {
+              if (index < active) {
+                const progress = clamp01((frame - exit) / 30);
+                step.element.style.opacity = String(1 - progress);
+                step.element.style.filter = progress > 0 ? "blur(" + 10 * progress * unit + "px)" : "none";
+              } else {
+                step.element.style.opacity = "1";
+                step.element.style.filter = "none";
+              }
+            }
+            if (step.id === "scenes" && index < active) {
+              const progress = clamp01((frame - exit) / 30);
+              step.element.style.transform = matrixAt([scenesBase, scenesBase.translate(0, vmin * 20, 0)], progress);
+            }
+          });
+
+          const particles = particleSim.stateAt(time);
+          const seen = new Set();
+          for (const particle of particles) {
+            let node = particleNodes.get(particle.id);
+            if (!node) {
+              node = el("div", "particle");
+              const dot = el("div", "", { width: vmin * 2 + "px", height: vmin * 2 + "px", borderRadius: "50%", background: particle.seed < 0.5 ? accent : primary });
+              node.append(dot);
+              particleLayer.append(node);
+              particleNodes.set(particle.id, node);
+            }
+            seen.add(particle.id);
+            node.style.display = "block";
+            node.style.transform = "translate3d(" + particle.position.x + "px, " + particle.position.y + "px, " + particle.position.z + "px) rotate(" + particle.rotation + "deg) scale(" + particle.scale + ")";
+            node.style.opacity = String(particle.opacity);
+          }
+          particleNodes.forEach(function (node, id) { if (!seen.has(id)) node.style.display = "none"; });
+
+          const textEnter = enterFrame["element-animated-text"];
+          textChars.forEach(function (span, index) {
+            const progress = motionProgress(frame, textEnter, 20, 10, index, 1);
+            const eased = Easing.easeInOutCubic(progress);
+            span.style.transform = "translateY(" + 10 * (1 - eased) * unit + "px)";
+            span.style.opacity = String(eased);
+            const blur = 2 * (1 - eased);
+            span.style.filter = blur > 0 ? "blur(" + blur * unit + "px)" : "none";
+          });
+
+          const counterProgress = motionProgress(frame, enterFrame["element-counter"], 20, revealDuration);
+          counter.proxy.value = 1000 * counterProgress;
+          counter.apply();
+          counterValue.style.color = hyperbits.interpolateColorKeyframes(["#fb4934", "#8ec07c"], counterProgress);
+          counterValue.style.transform = "scale(" + (0.8 + 0.2 * counterProgress) + ")";
+
+          const typeRelative = frame - 330;
+          const typeVisible = typeRelative < 0 ? 0 : Math.min(typeWriterText.length, Math.floor(typeRelative / 2));
+          typeText.textContent = typeWriterText.slice(0, typeVisible);
+          typeCursor.style.opacity = typeRelative >= 0 && typeRelative % 30 < 15 ? "1" : "0";
+
+          const codeEnter = enterFrame["element-code-block"];
+          codeLines.forEach(function (line, index) {
+            const progress = motionProgress(frame, codeEnter, 20, revealDuration, index, 2);
+            line.style.opacity = String(progress);
+            line.style.transform = "translateY(" + 8 * (1 - progress) * unit + "px)";
+            const blur = 10 * (1 - progress);
+            line.style.filter = blur > 0 ? "blur(" + blur * unit + "px)" : "none";
+          });
+
+          const glitchRelative = Math.max(0, frame - 20);
+          const glitchIndex = Math.floor(glitchRelative / (revealDuration * 2)) % glitchTexts.length;
+          const glitchProgress = clamp01((glitchRelative % (revealDuration * 2)) / revealDuration);
+          glitchLine.textContent = glyphs(glitchTexts[glitchIndex], frame, kf([0.6, 0], glitchProgress));
+
+          slideWords.forEach(function (word) {
+            const progress = Easing.easeOutCubic(motionProgress(frame, enterFrame["element-slide-in"], word.delay, revealDuration - 5));
+            word.node.style.transform = "translateX(" + word.from.x * (1 - progress) * unit + "px) translateY(" + word.from.y * (1 - progress) * unit + "px)";
+            word.node.style.opacity = String(progress);
+          });
+
+          const carouselRelative = Math.max(0, frame - 20);
+          const carouselIndex = Math.floor(carouselRelative / revealDuration) % carouselTexts.length;
+          const carouselProgress = clamp01((carouselRelative % revealDuration) / revealDuration);
+          carouselLine.textContent = carouselTexts[carouselIndex];
+          carouselLine.style.opacity = String(kf([0, 1, 1, 0], carouselProgress));
+          carouselLine.style.transform = "translateY(" + kf([10, 0, 0, -10], carouselProgress) * unit + "px)";
+
+          const rewriteLocal = frame - 20;
+          if (rewriteLocal >= 0) {
+            const looped = rewriteLocal % rewriteEvents.total;
+            rewriteText.textContent = eventText(rewriteEvents, looped);
+            rewriteCursor.style.opacity = looped % 30 < 15 ? "1" : "0";
+            rewriteLine.style.visibility = "visible";
+          } else {
+            rewriteLine.style.visibility = "hidden";
+          }
+
+          const gridEnter = enterFrame.transitions;
+          tiles.forEach(function (tile) {
+            const props = tile.props;
+            const progress = motionProgress(frame, gridEnter, props.delay, props.duration);
+            const ease = props.easing;
+            const parts = [];
+            if (props.x) parts.push("translateX(" + kf(props.x, progress, ease) + "px)");
+            if (props.y) parts.push("translateY(" + kf(props.y, progress, ease) + "px)");
+            if (props.scale) parts.push("scale(" + kf(props.scale, progress, ease) + ")");
+            if (props.rotate) parts.push("rotate(" + kf(props.rotate, progress, ease) + "deg)");
+            tile.node.style.transform = parts.join(" ");
+            tile.node.style.opacity = String(kf(props.opacity, progress, ease));
+            const radius = Array.isArray(props.borderRadius) ? kf(props.borderRadius, progress, ease) : props.borderRadius;
+            tile.node.style.borderRadius = radius * unit + "px";
+            if (props.blur) {
+              const blur = kf(props.blur, progress, ease);
+              tile.node.style.filter = blur > 0 ? "blur(" + blur + "px)" : "none";
+            }
+          });
+
+          const scenesEnter = enterFrame.scenes;
+          sceneItemSpecs.forEach(function (spec) {
+            const progress = motionProgress(frame, scenesEnter, spec.delay, spec.duration);
+            spec.node.style.opacity = String(spec.ease(progress));
+            spec.node.style.transform = matrixAt(spec.keys, progress, spec.ease);
+          });
+          heroWords.forEach(function (span, index) {
+            const progress = Easing.easeInOutCubic(motionProgress(frame, scenesEnter, 20, 20, index, 5));
+            span.style.transform = "translateY(" + 10 * (1 - progress) * unit + "px)";
+            span.style.opacity = String(progress);
+          });
+          const dashProgress = Easing.easeOutQuart(motionProgress(frame, scenesEnter, 20, 45));
+          dashCounter.proxy.value = 8492 * dashProgress;
+          dashCounter.apply();
+
+          responsiveSpecs.forEach(function (spec) { applyResponsive(spec, state, frame); });
+        }
+        const timeline = gsap.timeline({ paused: true });
+        scene.bind(timeline);
+        timeline.to(proxy, { time: 38, duration: 38, ease: "none", onUpdate: render }, 0);
+        render();
         registerTimeline("feature-showcase", timeline);
 
       })();
