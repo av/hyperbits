@@ -46,32 +46,53 @@
         opacity: 1;
       }
       .panel {
-        width: 70vmin;
-        min-height: 36vmin;
+        width: 48vmin;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.6vmin;
         border-radius: 2vmin;
-        padding: 3.2vmin 3.6vmin;
+        padding: 2.6vmin 3vmin 3.2vmin;
         background-color: rgba(15, 23, 42, 0.72);
         border: 0.28vmin solid rgba(248, 250, 252, 0.16);
         color: #f8fafc;
         box-sizing: border-box;
+        overflow: visible;
       }
-      .panel h1 {
+      .shape-slot {
+        width: 40vmin;
+        height: 40vmin;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform-style: preserve-3d;
+      }
+      .caption {
+        text-align: center;
+      }
+      .caption h1 {
         font-weight: 800;
-        letter-spacing: -0.05em;
-        line-height: 1.05;
-        font-size: 8vmin;
+        letter-spacing: -0.04em;
+        line-height: 1.1;
+        font-size: 3.6vmin;
       }
-      .panel p {
-        margin-top: 0.4em;
-        font-size: 3.2vmin;
+      .caption p {
+        margin-top: 0.25em;
+        font-size: 2.4vmin;
         color: #cbd5e1;
         font-weight: 600;
       }
-      .cube {
-        width: 12vmin;
-        height: 12vmin;
-        border: 0.45vmin solid #38bdf8;
-        margin-top: 2.4vmin;
+      .shape {
+        width: 28vmin;
+        height: 28vmin;
+        position: relative;
+        transform-style: preserve-3d;
+      }
+      .shape-face {
+        position: absolute;
+        inset: 0;
+        box-sizing: border-box;
+        backface-visibility: hidden;
       }
     </style>
   </head>
@@ -116,24 +137,57 @@
         bg.style.backgroundColor = vars.background;
         bg.setAttribute("data-color", vars.color);
 
+        function makeCube(size, color) {
+          const cube = document.createElement("div");
+          cube.className = "shape";
+          cube.style.width = size + "px";
+          cube.style.height = size + "px";
+          cube.style.transformStyle = "preserve-3d";
+          const half = size / 2;
+          const specs = [
+            { rotate: "rotateY(0deg)", opacity: "1" },
+            { rotate: "rotateY(180deg)", opacity: "0.72" },
+            { rotate: "rotateY(90deg)", opacity: "0.86" },
+            { rotate: "rotateY(-90deg)", opacity: "0.64" },
+            { rotate: "rotateX(90deg)", opacity: "0.94" },
+            { rotate: "rotateX(-90deg)", opacity: "0.5" },
+          ];
+          for (let index = 0; index < specs.length; index += 1) {
+            const face = document.createElement("div");
+            face.className = "shape-face";
+            face.style.backgroundColor = color;
+            face.style.opacity = specs[index].opacity;
+            face.style.border = view.vmin * 0.28 + "px solid " + color;
+            face.style.backfaceVisibility = "hidden";
+            face.style.transform = specs[index].rotate + " translateZ(" + half + "px)";
+            cube.append(face);
+          }
+          return cube;
+        }
+
         function panel(title, body) {
           const node = document.createElement("div");
           node.className = "panel";
-          node.style.width = view.vmin * 70 + "px";
+          node.style.width = view.vmin * 48 + "px";
           node.style.borderColor = vars.color;
+          const cube = makeCube(view.vmin * 28, vars.color);
+          const slot = document.createElement("div");
+          slot.className = "shape-slot";
+          slot.style.width = view.vmin * 40 + "px";
+          slot.style.height = view.vmin * 40 + "px";
+          slot.style.transformStyle = "preserve-3d";
+          slot.append(cube);
+          const caption = document.createElement("div");
+          caption.className = "caption";
           const heading = document.createElement("h1");
           heading.textContent = title;
-          heading.style.fontSize = view.vmin * 8 + "px";
+          heading.style.fontSize = view.vmin * 3.6 + "px";
           heading.style.color = vars.color;
           const copy = document.createElement("p");
           copy.textContent = body;
-          copy.style.fontSize = view.vmin * 3.2 + "px";
-          const cube = document.createElement("div");
-          cube.className = "cube";
-          cube.style.width = view.vmin * 12 + "px";
-          cube.style.height = view.vmin * 12 + "px";
-          cube.style.borderColor = vars.color;
-          node.append(heading, copy, cube);
+          copy.style.fontSize = view.vmin * 2.4 + "px";
+          caption.append(heading, copy);
+          node.append(caption, slot);
           node.setAttribute("data-layout-allow-overlap", "");
           node.setAttribute("data-layout-allow-occlusion", "");
           return { node: node, cube: cube };

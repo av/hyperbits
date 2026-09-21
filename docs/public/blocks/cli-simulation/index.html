@@ -53,8 +53,12 @@
         box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
       }
       .row {
-        display: block;
-        white-space: pre;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: baseline;
+        white-space: nowrap;
+        gap: 0.45em;
       }
       .ok {
         color: #4ec9b0;
@@ -92,11 +96,7 @@
     >
       <div id="bg" class="clip" data-start="0" data-duration="15" style="position:absolute;inset:0;background-color:#0b1220"></div>
       <div id="term" class="clip" data-start="0" data-duration="15">
-        <div class="row">
-          <span id="prompt" class="ok">$</span>
-          <span class="path"> ~ </span>
-          <span id="typed" class="cmd"></span><span id="cursor"></span>
-        </div>
+        <div class="row"><span id="prompt" class="ok">$</span><span class="path">~</span><span id="typed" class="cmd"></span><span id="cursor"></span></div>
         <div id="output"></div>
       </div>
     </div>

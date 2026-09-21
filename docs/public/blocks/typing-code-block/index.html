@@ -38,8 +38,8 @@
         justify-content: center;
       }
       #panel {
-        width: 78%;
-        min-height: 54%;
+        width: fit-content;
+        max-width: 88%;
         background-color: #111827;
         border: 2px solid #38bdf8;
         border-radius: 24px;
@@ -52,7 +52,7 @@
         color: #e5e7eb;
         white-space: pre;
         font-family: "JetBrains Mono", ui-monospace, monospace;
-        font-size: 2.2vw;
+        font-size: 2.8vmin;
         line-height: 1.5;
       }
       .hyperbits-code-line {
@@ -117,8 +117,9 @@
         bg.style.backgroundColor = vars.background;
         panel.style.borderColor = vars.color;
         panel.setAttribute("data-color", vars.color);
-        panel.style.padding = view.vmin * 4 + "px " + view.vmin * 5 + "px";
-        panel.style.width = view.vw * 78 + "px";
+        panel.style.padding = view.vmin * 3.2 + "px " + view.vmin * 3.6 + "px";
+        panel.style.width = "fit-content";
+        panel.style.maxWidth = view.vw * 88 + "px";
         const fullCode = "const App = () => {\n    const [count, setCount] = useState(0);\n    useEffect(() => {\n        document.title = `Count: ${count}`;\n    }, [count]);\n    return (\n        <button onClick={() => setCount(c => c + 1)}>\n             Clicked {count} times\n        </button>\n    );\n};";
         const proxy = { chars: 0 };
         const timeline = gsap.timeline({ paused: true });
@@ -130,7 +131,7 @@
             language: "javascript",
             showLineNumbers: true,
           });
-          block.style.fontSize = view.vw * 1.8 + "px";
+          block.style.fontSize = view.vmin * 2.8 + "px";
           block.style.whiteSpace = "pre";
           block.style.lineHeight = "1.5";
           const functions = panel.querySelectorAll(".token.function");
