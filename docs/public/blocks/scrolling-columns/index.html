@@ -1,19 +1,24 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Card color","default":"#38bdf8"},{"id":"background","type":"color","label":"Background","default":"#020617"}]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Card text","default":"#ffffff"},{"id":"background","type":"color","label":"Background","default":"#111827"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Sans";
+        font-weight: 700;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5/files/geist-sans-latin-700-normal.woff2) format("woff2");
+      }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
-        --bg: #020617;
-        --fg: #f8fafc;
-        --muted: #94a3b8;
-        --accent: #38bdf8;
-        --accent-2: #f59e0b;
-        --danger: #f43f5e;
-        --ok: #34d399;
+        --bg: #111827;
+        --fg: #fcc192;
+        --primary: #ec8b49;
+        --surface-dark: #1c1b1a;
+        --surface-light: #343331;
       }
       * {
         margin: 0;
@@ -26,42 +31,33 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background-color: #020617;
+        background-color: #111827;
       }
       #root {
         width: 100%;
         height: 100%;
         position: relative;
-        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        font-family: "Geist Sans", Inter, ui-sans-serif, system-ui, sans-serif;
         overflow: hidden;
       }
-      #world {
+      #scene {
         position: absolute;
         inset: 0;
         z-index: 1;
-        overflow: hidden;
       }
-      .col {
+      #world {
         position: absolute;
-        top: 0;
-        height: 100%;
-        overflow: hidden;
-      }
-      .track {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
       }
       .card {
-        width: 100%;
-        flex: 0 0 auto;
-        overflow: hidden;
+        position: absolute;
+        left: 0;
+        top: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #f8fafc;
         font-weight: 700;
-        font-size: 4vmin;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
       }
     </style>
   </head>
@@ -75,8 +71,8 @@
       data-width="1920"
       data-height="1080"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#020617"></div>
-      <div id="world" class="clip" data-start="0" data-duration="10"></div>
+      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#111827"></div>
+      <div id="scene"></div>
     </div>
     <script>
       (function () {
@@ -101,58 +97,100 @@
         const vars = bitVars();
         const root = document.getElementById("root");
         const bg = document.getElementById("bg");
-        const world = document.getElementById("world");
         const view = hyperbits.viewport(root);
+        const vmin = view.vmin;
+        const vmax = view.vmax;
         bg.style.backgroundColor = vars.background;
-        bg.style.setProperty("--knob-color", vars.color);
-        world.style.setProperty("--knob-color", vars.color);
-        const columnCount = 4;
-        const palette = ["#1e3a8a", "#1d4ed8", "#0f766e", "#9a3412", "#6d28d9", "#be123c", "#0369a1"];
-        const speeds = [0.42, 0.68, 0.33, 0.55];
-        const columns = [];
-        const cardHeight = view.height / 3;
-        const cardsPerColumn = 18;
-        for (let col = 0; col < columnCount; col += 1) {
-          const left = Math.round((col * view.width) / columnCount);
-          const next = Math.round(((col + 1) * view.width) / columnCount);
-          const column = document.createElement("div");
-          column.className = "col";
-          column.style.left = left + "px";
-          column.style.width = next - left + "px";
-          column.style.backgroundColor = vars.background;
-          const track = document.createElement("div");
-          track.className = "track";
-          for (let cardIndex = 0; cardIndex < cardsPerColumn; cardIndex += 1) {
-            const card = document.createElement("div");
-            card.className = "card";
-            card.setAttribute("data-layout-allow-overlap", "");
-            card.setAttribute("data-layout-allow-occlusion", "");
-            card.setAttribute("data-layout-allow-overflow", "");
-            card.style.height = cardHeight + "px";
-            card.style.fontSize = view.vmin * 4 + "px";
-            card.style.backgroundColor = palette[hyperbits.randomInt("c-" + col + "-" + cardIndex, 0, palette.length - 1)];
-            card.style.color = "#f8fafc";
-            card.style.textShadow = "0 2px 10px rgba(0,0,0,0.65)";
-            card.style.boxShadow = "inset 0 0 0 " + Math.max(2, view.vmin * 0.25) + "px " + vars.color;
-            card.textContent = String(hyperbits.randomInt("n-" + col + "-" + cardIndex, 1, 9));
-            track.append(card);
-          }
-          column.append(track);
-          world.append(column);
-          columns.push({ track: track, speed: speeds[col] });
+        const sceneEl = document.getElementById("scene");
+        const durationInFrames = 300;
+        const columns = [
+          { x: -view.width * 0.3, speed: 4, z: 50 },
+          { x: -view.width * 0.1, speed: 7, z: 0 },
+          { x: view.width * 0.1, speed: 5, z: 100 },
+          { x: view.width * 0.3, speed: 6, z: -50 },
+        ];
+        const itemWidth = view.width * 0.15;
+        const itemHeight = itemWidth * 1.2;
+        const gap = 30 * (view.height / 1080);
+        const cardColors = ["#ef4444", "#f87171", "#fca5a5", "#3b82f6", "#60a5fa", "#93c5fd", "#10b981", "#34d399", "#6ee7b7", "#f59e0b", "#fbbf24", "#fcd34d", "#8b5cf6", "#a78bfa", "#c4b5fd"];
+        const world = document.createElement("div");
+        world.id = "world";
+        world.style.width = view.width + "px";
+        world.style.height = view.height + "px";
+        world.style.left = -view.width / 2 + "px";
+        world.style.top = -view.height / 2 + "px";
+        const anchor = document.createElement("div");
+        anchor.append(world);
+        const simulator = hyperbits.createParticles({
+          fps: 30,
+          spawners: columns.map(function (column, index) {
+            return {
+              id: "spawner-" + index,
+              rate: column.speed / (itemHeight + gap),
+              position: { x: column.x + view.width / 2 - itemWidth / 2, y: -view.height * 0.15, z: column.z },
+              velocity: { x: 0, y: column.speed, z: 0 },
+              lifespan: durationInFrames + 200,
+              startFrame: 150,
+            };
+          }),
+        });
+        const cards = new Map();
+        function cardFor(particle) {
+          let card = cards.get(particle.id);
+          if (card) return card;
+          card = document.createElement("div");
+          card.className = "card";
+          const variant = Math.floor(particle.seed * cardColors.length);
+          card.style.width = itemWidth + "px";
+          card.style.height = itemHeight + "px";
+          card.style.backgroundColor = cardColors[variant];
+          card.style.color = vars.color;
+          card.style.fontSize = itemWidth * 0.2 + "px";
+          card.style.borderRadius = itemWidth * 0.05 + "px";
+          card.textContent = String((variant % 9) + 1);
+          card.setAttribute("data-layout-allow-overlap", "");
+          card.setAttribute("data-layout-allow-occlusion", "");
+          card.setAttribute("data-layout-allow-overflow", "");
+          world.append(card);
+          cards.set(particle.id, card);
+          return card;
         }
-        const proxy = { t: 0 };
+        const scene = hyperbits.createScene3D(sceneEl, {
+          perspective: 2000,
+          transitionDuration: durationInFrames / 30,
+          easing: "easeIn",
+          steps: [
+            { id: "start", x: -view.width * 0.2, y: view.height * 1.5, scale: 0.85, duration: 1 / 30 },
+            { id: "end", x: view.width * 0.5, y: view.height * 1.2, scale: 1, duration: durationInFrames / 30 },
+          ],
+          elements: [{ element: anchor, x: 0, y: 0, z: 0 }],
+        });
+        sceneEl.style.position = "absolute";
+        sceneEl.style.inset = "0";
+        sceneEl.style.zIndex = "1";
         const timeline = gsap.timeline({ paused: true });
-        timeline.to(proxy, {
-          t: 10,
-          duration: 10,
-          ease: "none",
-          onUpdate: function () {
-            columns.forEach(function (column) {
-              column.track.style.transform = "translateY(" + -proxy.t * column.speed * view.height * 0.55 + "px)";
-            });
-          },
-        }, 0);
+        scene.bind(timeline);
+        const previousUpdate = timeline.eventCallback("onUpdate");
+        function renderCards() {
+          const active = simulator.stateAt(timeline.time());
+          const seen = new Set();
+          for (const particle of active) {
+            const card = cardFor(particle);
+            seen.add(particle.id);
+            card.style.display = "flex";
+            card.style.transform = "translate3d(" + particle.position.x + "px, " + particle.position.y + "px, " + particle.position.z + "px)";
+            card.style.opacity = String(particle.opacity);
+          }
+          cards.forEach(function (card, id) {
+            if (!seen.has(id)) card.style.display = "none";
+          });
+        }
+        timeline.eventCallback("onUpdate", function () {
+          if (typeof previousUpdate === "function") previousUpdate.call(timeline);
+          renderCards();
+        });
+        renderCards();
+        timeline.to({}, { duration: 10 }, 0);
         registerTimeline("scrolling-columns", timeline);
 
       })();

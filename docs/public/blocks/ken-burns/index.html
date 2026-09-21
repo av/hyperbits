@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Accent","default":"#38bdf8"},{"id":"background","type":"color","label":"Background","default":"#111827"}]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Vignette tint","default":"#000000"},{"id":"background","type":"color","label":"Background","default":"#000000"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -7,13 +7,11 @@
     <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
-        --bg: #111827;
-        --fg: #f8fafc;
-        --muted: #94a3b8;
-        --accent: #38bdf8;
-        --accent-2: #f59e0b;
-        --danger: #f43f5e;
-        --ok: #34d399;
+        --bg: #000000;
+        --fg: #fcc192;
+        --primary: #ec8b49;
+        --surface-dark: #1c1b1a;
+        --surface-light: #343331;
       }
       * {
         margin: 0;
@@ -26,7 +24,7 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background-color: #111827;
+        background-color: #000000;
       }
       #root {
         width: 100%;
@@ -38,15 +36,13 @@
         position: absolute;
         inset: 0;
         z-index: 1;
+      }
+      .frame {
         overflow: hidden;
       }
-      #plane {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
+      .frame img {
         object-fit: cover;
-        transform-origin: center center;
+        display: block;
       }
     </style>
   </head>
@@ -60,10 +56,8 @@
       data-width="1920"
       data-height="1080"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#111827"></div>
-      <div id="scene">
-        <div id="plane"></div>
-      </div>
+      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#000000"></div>
+      <div id="scene"></div>
     </div>
     <script>
       (function () {
@@ -88,21 +82,80 @@
         const vars = bitVars();
         const root = document.getElementById("root");
         const bg = document.getElementById("bg");
-        const plane = document.getElementById("plane");
+        const sceneEl = document.getElementById("scene");
         const view = hyperbits.viewport(root);
+        const vmin = view.vmin;
+        const unit = view.height / 1080;
         bg.style.backgroundColor = vars.background;
         bg.setAttribute("data-color", vars.color);
-        plane.style.backgroundImage = "linear-gradient(135deg, " + vars.background + " 0%, " + vars.color + " 48%, #f59e0b 100%)";
-        plane.style.backgroundSize = "cover";
-        plane.style.backgroundPosition = "center";
-
+        const frameWidth = vmin * 177.78;
+        const frameHeight = vmin * 100;
+        const xShift = vmin * 4.63;
+        const yShift = vmin * 5.56;
+        const shots = [
+          { seed: 1, scale: [1.1, 1.4], x: [0, xShift], y: [0, 0] },
+          { seed: 2, scale: [1.3, 1.1], x: [-xShift, 0], y: [0, 0] },
+          { seed: 4, scale: [1.0, 1.2], x: [0, 0], y: [yShift, -yShift] },
+        ];
+        const stepDuration = 100 / 30;
+        const steps = shots.map(function (shot, index) {
+          const frame = document.createElement("div");
+          frame.className = "frame";
+          frame.style.width = frameWidth + "px";
+          frame.style.height = frameHeight + "px";
+          frame.style.opacity = "0";
+          frame.setAttribute("data-layout-allow-overlap", "");
+          frame.setAttribute("data-layout-allow-occlusion", "");
+          const mover = document.createElement("div");
+          mover.style.width = frameWidth + "px";
+          mover.style.height = frameHeight + "px";
+          const image = document.createElement("img");
+          image.src = "https://picsum.photos/seed/" + shot.seed + "/1920/1080";
+          image.alt = "";
+          image.style.width = frameWidth + "px";
+          image.style.height = frameHeight + "px";
+          mover.append(image);
+          frame.append(mover);
+          return { id: String(index), x: 0, y: 0, z: -10 * index, duration: stepDuration, element: frame, mover: mover, shot: shot };
+        });
+        const scene = hyperbits.createScene3D(sceneEl, {
+          perspective: 1000,
+          transitionDuration: 2,
+          stepDuration: stepDuration,
+          easing: "easeInOutCubic",
+          steps: steps,
+        });
+        sceneEl.style.position = "absolute";
+        sceneEl.style.inset = "0";
+        sceneEl.style.zIndex = "1";
         const timeline = gsap.timeline({ paused: true });
-        timeline.fromTo(
-          plane,
-          { scale: 1.05, x: 0, y: 0 },
-          { scale: 1.25, x: view.vmin * 8, y: -view.vmin * 6, duration: 10, ease: "none" },
-          0
-        );
+        scene.bind(timeline);
+        function stepFade(element, enterTime, exitTime, options) {
+          const enter = options.enter;
+          const exit = options.exit;
+          if (enter) {
+            const target = Object.assign({ duration: enter.duration, ease: "none" }, enter.to);
+            timeline.fromTo(element, enter.from, target, enterTime);
+          }
+          if (exit) {
+            const target = Object.assign({ duration: exit.duration, ease: "none" }, exit.to);
+            timeline.to(element, target, exitTime);
+          }
+        }
+        steps.forEach(function (step, index) {
+          const enterTime = index * stepDuration;
+          stepFade(step.element, enterTime, enterTime + stepDuration, {
+            enter: { from: { opacity: 0 }, to: { opacity: 1 }, duration: 1 },
+            exit: { to: { opacity: 0 }, duration: 1 },
+          });
+          timeline.fromTo(
+            step.mover,
+            { scale: step.shot.scale[0], x: step.shot.x[0], y: step.shot.y[0] },
+            { scale: step.shot.scale[1], x: step.shot.x[1], y: step.shot.y[1], duration: stepDuration, ease: "none" },
+            enterTime,
+          );
+        });
+        timeline.to({}, { duration: 10 }, 0);
         registerTimeline("ken-burns", timeline);
 
       })();

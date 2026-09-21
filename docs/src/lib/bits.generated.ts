@@ -94,12 +94,14 @@ export const docsBits: DocsBit[] = [
     "width": 1920,
     "height": 1080,
     "helpers": [
-      "text",
-      "stagger",
-      "gradient",
-      "particles",
-      "scene3d",
       "code",
+      "color",
+      "counter",
+      "interpolate",
+      "particles",
+      "random",
+      "scene3d",
+      "text",
       "viewport"
     ],
     "htmlPath": "/bits/feature-showcase.html"
@@ -138,7 +140,7 @@ export const docsBits: DocsBit[] = [
       "burst",
       "fountain"
     ],
-    "duration": 6,
+    "duration": 2,
     "width": 1920,
     "height": 1080,
     "helpers": [
@@ -159,7 +161,7 @@ export const docsBits: DocsBit[] = [
       "grid",
       "snap"
     ],
-    "duration": 6.67,
+    "duration": 6.667,
     "width": 1920,
     "height": 1080,
     "helpers": [
@@ -206,8 +208,9 @@ export const docsBits: DocsBit[] = [
     "width": 1920,
     "height": 1080,
     "helpers": [
-      "viewport",
-      "random"
+      "particles",
+      "scene3d",
+      "viewport"
     ],
     "htmlPath": "/bits/scrolling-columns.html"
   },
@@ -246,12 +249,13 @@ export const docsBits: DocsBit[] = [
       "presentation",
       "transition"
     ],
-    "duration": 6.67,
+    "duration": 6.667,
     "width": 1920,
     "height": 1080,
     "helpers": [
-      "scene3d",
+      "interpolate",
       "random",
+      "scene3d",
       "viewport"
     ],
     "htmlPath": "/bits/3d-elements.html"
@@ -319,6 +323,7 @@ export const docsBits: DocsBit[] = [
     "width": 1920,
     "height": 1080,
     "helpers": [
+      "interpolate",
       "scene3d",
       "viewport"
     ],
@@ -341,7 +346,8 @@ export const docsBits: DocsBit[] = [
     "width": 1920,
     "height": 1080,
     "helpers": [
-      "scene3d",
+      "interpolate",
+      "particles",
       "viewport"
     ],
     "htmlPath": "/bits/flying-through-words.html"
@@ -363,6 +369,7 @@ export const docsBits: DocsBit[] = [
     "width": 1920,
     "height": 1080,
     "helpers": [
+      "scene3d",
       "viewport"
     ],
     "htmlPath": "/bits/ken-burns.html"
@@ -386,7 +393,6 @@ export const docsBits: DocsBit[] = [
     "helpers": [
       "scene3d",
       "stagger",
-      "text",
       "viewport"
     ],
     "htmlPath": "/bits/step-timing-context.html"
@@ -408,8 +414,8 @@ export const docsBits: DocsBit[] = [
     "width": 1920,
     "height": 1080,
     "helpers": [
+      "interpolate",
       "scene3d",
-      "text",
       "viewport"
     ],
     "htmlPath": "/bits/terminal-3d.html"
@@ -428,10 +434,11 @@ export const docsBits: DocsBit[] = [
       "quaternion",
       "chainable"
     ],
-    "duration": 16.67,
+    "duration": 16.667,
     "width": 1920,
     "height": 1080,
     "helpers": [
+      "interpolate",
       "scene3d",
       "viewport"
     ],
@@ -454,6 +461,7 @@ export const docsBits: DocsBit[] = [
     "width": 1080,
     "height": 1080,
     "helpers": [
+      "stagger",
       "viewport"
     ],
     "htmlPath": "/bits/card-stack.html"
@@ -473,10 +481,10 @@ export const docsBits: DocsBit[] = [
       "product-demo"
     ],
     "duration": 5,
-    "width": 1920,
-    "height": 1080,
+    "width": 1080,
+    "height": 1920,
     "helpers": [
-      "stagger",
+      "interpolate",
       "viewport"
     ],
     "htmlPath": "/bits/chat-conversation.html"
@@ -494,9 +502,10 @@ export const docsBits: DocsBit[] = [
       "staggered-motion"
     ],
     "duration": 3,
-    "width": 1920,
+    "width": 1080,
     "height": 1080,
     "helpers": [
+      "interpolate",
       "viewport"
     ],
     "htmlPath": "/bits/easings-visualizer.html"
@@ -516,9 +525,10 @@ export const docsBits: DocsBit[] = [
       "transition"
     ],
     "duration": 6,
-    "width": 1920,
+    "width": 1080,
     "height": 1080,
     "helpers": [
+      "interpolate",
       "random",
       "viewport"
     ],
@@ -563,6 +573,7 @@ export const docsBits: DocsBit[] = [
     "width": 1080,
     "height": 1080,
     "helpers": [
+      "interpolate",
       "stagger",
       "viewport"
     ],
@@ -587,6 +598,7 @@ export const docsBits: DocsBit[] = [
     "width": 1920,
     "height": 1080,
     "helpers": [
+      "interpolate",
       "viewport"
     ],
     "htmlPath": "/bits/lower-third.html"
@@ -606,9 +618,10 @@ export const docsBits: DocsBit[] = [
       "layout"
     ],
     "duration": 9,
-    "width": 1920,
+    "width": 1080,
     "height": 1080,
     "helpers": [
+      "interpolate",
       "viewport"
     ],
     "htmlPath": "/bits/mosaic-reframe.html"
@@ -629,6 +642,7 @@ export const docsBits: DocsBit[] = [
     "width": 1920,
     "height": 1080,
     "helpers": [
+      "interpolate",
       "viewport"
     ],
     "htmlPath": "/bits/slide-from-left.html"
@@ -673,8 +687,8 @@ export const docsBits: DocsBit[] = [
     "width": 1920,
     "height": 1080,
     "helpers": [
-      "stagger",
       "counter",
+      "interpolate",
       "viewport"
     ],
     "htmlPath": "/bits/bar-chart.html"
@@ -696,7 +710,6 @@ export const docsBits: DocsBit[] = [
     "height": 1080,
     "helpers": [
       "code",
-      "stagger",
       "viewport"
     ],
     "htmlPath": "/bits/basic-code-block.html"
@@ -718,6 +731,7 @@ export const docsBits: DocsBit[] = [
     "height": 1080,
     "helpers": [
       "counter",
+      "interpolate",
       "viewport"
     ],
     "htmlPath": "/bits/basic-counter.html"
@@ -738,7 +752,6 @@ export const docsBits: DocsBit[] = [
     "width": 1920,
     "height": 1080,
     "helpers": [
-      "text",
       "viewport"
     ],
     "htmlPath": "/bits/basic-typewriter.html"
@@ -806,7 +819,6 @@ export const docsBits: DocsBit[] = [
     "width": 1920,
     "height": 1080,
     "helpers": [
-      "text",
       "viewport"
     ],
     "htmlPath": "/bits/cli-simulation.html"
@@ -829,6 +841,7 @@ export const docsBits: DocsBit[] = [
     "height": 1080,
     "helpers": [
       "counter",
+      "interpolate",
       "particles",
       "viewport"
     ],
@@ -870,6 +883,7 @@ export const docsBits: DocsBit[] = [
     "width": 1920,
     "height": 1080,
     "helpers": [
+      "interpolate",
       "random",
       "viewport"
     ],
@@ -891,7 +905,7 @@ export const docsBits: DocsBit[] = [
     "width": 1920,
     "height": 1080,
     "helpers": [
-      "text",
+      "interpolate",
       "random",
       "viewport"
     ],
@@ -936,8 +950,6 @@ export const docsBits: DocsBit[] = [
     "width": 1920,
     "height": 1080,
     "helpers": [
-      "text",
-      "interpolate",
       "viewport"
     ],
     "htmlPath": "/bits/multi-text-typewriter.html"
@@ -987,7 +999,6 @@ export const docsBits: DocsBit[] = [
     "height": 1080,
     "helpers": [
       "code",
-      "text",
       "viewport"
     ],
     "htmlPath": "/bits/typing-code-block.html"
@@ -1009,9 +1020,8 @@ export const docsBits: DocsBit[] = [
     "width": 1920,
     "height": 1080,
     "helpers": [
-      "text",
-      "random",
       "interpolate",
+      "random",
       "viewport"
     ],
     "htmlPath": "/bits/variable-speed-typewriter.html"

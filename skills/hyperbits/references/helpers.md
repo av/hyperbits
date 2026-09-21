@@ -546,13 +546,31 @@ type ParticleSize = number | ((particle: Particle) => number);
 ### `ParticleShape`
 
 ```ts
-type ParticleShape = "circle" | "rect";
+type ParticleShape = "circle" | "rect" | "square" | "diamond" | "glow";
+```
+
+### `ParticleShapeOption`
+
+```ts
+type ParticleShapeOption = ParticleShape | ((particle: Particle) => ParticleShape);
+```
+
+### `ParticleOffset`
+
+```ts
+type ParticleOffset = { x: number; y: number } | ((particle: Particle) => { x: number; y: number });
+```
+
+### `GlowStop`
+
+```ts
+type GlowStop = [offset: number, alpha: number];
 ```
 
 ### `ParticleRenderOptions`
 
 ```ts
-type ParticleRenderOptions = { color?: ParticleColor; size?: ParticleSize; glow?: number; shape?: ParticleShape; clear?: boolean; };
+type ParticleRenderOptions = { color?: ParticleColor; size?: ParticleSize; glow?: number; glowStops?: GlowStop[]; shape?: ParticleShapeOption; cornerRadius?: number; offset?: ParticleOffset; clear?: boolean; };
 ```
 
 ### `renderParticles`

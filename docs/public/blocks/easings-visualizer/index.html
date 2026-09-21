@@ -1,19 +1,24 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Dot color","default":"#38bdf8"},{"id":"background","type":"color","label":"Background","default":"#09090b"}]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Square color","default":"#3b82f6"},{"id":"background","type":"color","label":"Background","default":"#09090b"}]'>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=1920, height=1080" />
+    <meta name="viewport" content="width=1080, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 700;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-700-normal.woff2) format("woff2");
+      }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
         --bg: #09090b;
-        --fg: #f8fafc;
-        --muted: #94a3b8;
-        --accent: #38bdf8;
-        --accent-2: #f59e0b;
-        --danger: #f43f5e;
-        --ok: #34d399;
+        --fg: #fcc192;
+        --primary: #ec8b49;
+        --surface-dark: #1c1b1a;
+        --surface-light: #343331;
       }
       * {
         margin: 0;
@@ -23,7 +28,7 @@
       html,
       body {
         margin: 0;
-        width: 1920px;
+        width: 1080px;
         height: 1080px;
         overflow: hidden;
         background-color: #09090b;
@@ -33,46 +38,39 @@
         height: 100%;
         position: relative;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-        display: flex;
-        align-items: center;
-        justify-content: center;
       }
       #board {
-        display: flex;
-        flex-direction: column;
-        width: 70%;
         position: relative;
         z-index: 1;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        color: #e4e4e7;
+        font-family: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+        font-weight: 700;
+        overflow: hidden;
       }
       .row {
         display: flex;
         align-items: center;
       }
       .label {
-        color: #e2e8f0;
-        font-weight: 600;
-        width: 28%;
-        font-size: 4vmin;
-        font-family: "JetBrains Mono", ui-monospace, monospace;
+        opacity: 0.8;
         flex-shrink: 0;
-        z-index: 2;
       }
       .track {
         flex: 1;
-        height: 1.8vmin;
-        background-color: #1e293b;
-        border-radius: 99px;
         position: relative;
       }
       .dot {
+        border-radius: 4px;
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+      }
+      #caption {
         position: absolute;
-        top: 50%;
-        left: 0;
-        width: 5.5vmin;
-        height: 5.5vmin;
-        margin-top: -2.75vmin;
-        border-radius: 1vmin;
-        background-color: #38bdf8;
+        opacity: 0.5;
       }
     </style>
   </head>
@@ -83,11 +81,11 @@
       data-composition-id="easings-visualizer"
       data-start="0"
       data-duration="3"
-      data-width="1920"
+      data-width="1080"
       data-height="1080"
     >
       <div id="bg" class="clip" data-start="0" data-duration="3" style="position:absolute;inset:0;background-color:#09090b"></div>
-      <div id="board" class="clip" data-start="0" data-duration="3"></div>
+      <div id="board" class="clip" data-start="0" data-duration="3"><div id="caption">Duration: 60 frames</div></div>
     </div>
     <script>
       (function () {
@@ -112,48 +110,59 @@
         const vars = bitVars();
         const root = document.getElementById("root");
         const bg = document.getElementById("bg");
-        const board = document.getElementById("board");
         const view = hyperbits.viewport(root);
+        const vmin = view.vmin;
+        const unit = view.height / 1080;
         bg.style.backgroundColor = vars.background;
-        const boardWidth = view.width * 0.7;
-        const labelWidth = boardWidth * 0.22;
-        const rowGap = view.vmin * 3.2;
-        const dotSize = view.vmin * 5.5;
-        const trackWidth = boardWidth - labelWidth - rowGap;
-        const travel = Math.max(trackWidth - dotSize, view.vmin * 20);
-        board.style.width = boardWidth + "px";
-        board.style.gap = view.vmin * 3.2 + "px";
-        const easings = ["none", "power1.out", "power2.out", "power3.inOut", "back.out", "elastic.out"];
-        const dots = [];
-        for (const easing of easings) {
+        const board = document.getElementById("board");
+        const caption = document.getElementById("caption");
+        const easings = [
+          { label: "linear", value: hyperbits.Easing.linear },
+          { label: "easeInQuad", value: hyperbits.Easing.easeInQuad },
+          { label: "easeOutQuad", value: hyperbits.Easing.easeOutQuad },
+          { label: "easeInOutQuad", value: hyperbits.Easing.easeInOutQuad },
+          { label: "easeInCubic", value: hyperbits.Easing.easeInCubic },
+          { label: "easeOutCubic", value: hyperbits.Easing.easeOutCubic },
+          { label: "easeInOutCubic", value: hyperbits.Easing.easeInOutCubic },
+          { label: "spring", value: hyperbits.Easing.spring },
+          { label: "steps(5)", value: hyperbits.steps(5) },
+        ];
+        const labelWidth = Math.max(view.width * 0.2, 120 * unit);
+        const trackWidth = view.width - labelWidth - 40 * unit;
+        const verticalPadding = 40 * unit;
+        const itemHeight = (view.height - verticalPadding * 2) / easings.length;
+        const squareSize = Math.min(itemHeight * 0.6, 40 * unit);
+        const travel = trackWidth - squareSize;
+        board.style.padding = verticalPadding + "px " + 20 * unit + "px";
+        caption.style.bottom = 10 * unit + "px";
+        caption.style.right = 20 * unit + "px";
+        caption.style.fontSize = 12 * unit + "px";
+        const timeline = gsap.timeline({ paused: true });
+        easings.forEach(function (item, index) {
           const row = document.createElement("div");
           row.className = "row";
-          row.style.gap = rowGap + "px";
+          row.style.height = itemHeight + "px";
+          if (index < easings.length - 1) row.style.borderBottom = unit + "px solid #27272a";
           const label = document.createElement("div");
           label.className = "label";
-          label.textContent = easing;
+          label.textContent = item.label;
           label.style.width = labelWidth + "px";
-          label.style.fontSize = view.vmin * 4 + "px";
-          label.setAttribute("data-layout-allow-occlusion", "");
+          label.style.paddingRight = 10 * unit + "px";
+          label.style.fontSize = Math.min(itemHeight * 0.4, 16 * unit) + "px";
           const track = document.createElement("div");
           track.className = "track";
-          track.style.height = view.vmin * 1.8 + "px";
           const dot = document.createElement("div");
           dot.className = "dot";
-          dot.style.width = dotSize + "px";
-          dot.style.height = dotSize + "px";
-          dot.style.marginTop = -dotSize / 2 + "px";
-          dot.style.borderRadius = view.vmin * 0.8 + "px";
+          dot.style.width = squareSize + "px";
+          dot.style.height = squareSize + "px";
+          dot.style.borderRadius = 4 * unit + "px";
           dot.style.backgroundColor = vars.color;
           track.append(dot);
           row.append(label, track);
-          board.append(row);
-          dots.push({ dot: dot, easing: easing });
-        }
-        const timeline = gsap.timeline({ paused: true });
-        dots.forEach(function (item) {
-          timeline.fromTo(item.dot, { x: 0 }, { x: travel, duration: 2.2, ease: item.easing }, 0.2);
+          board.insertBefore(row, caption);
+          timeline.fromTo(dot, { x: 0 }, { x: travel, duration: 2, ease: item.value }, 0);
         });
+        timeline.to({}, { duration: 3 }, 0);
         registerTimeline("easings-visualizer", timeline);
 
       })();

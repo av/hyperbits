@@ -1,19 +1,24 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"words","type":"string","label":"Words (comma separated)","default":"INITIALIZING,LOADING ASSETS,SYSTEM ONLINE,WELCOME USER"},{"id":"color","type":"color","label":"Text color","default":"#4ade80"},{"id":"background","type":"color","label":"Background","default":"#020617"}]'>
+<html lang="en" data-composition-variables='[{"id":"words","type":"string","label":"Words (comma separated)","default":"INITIALIZING,LOADING ASSETS,SYSTEM ONLINE,WELCOME USER"},{"id":"color","type":"color","label":"Text color","default":"#fcc192"},{"id":"background","type":"color","label":"Background","default":"#100f0f"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 700;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-700-normal.woff2) format("woff2");
+      }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
-        --bg: #020617;
-        --fg: #f8fafc;
-        --muted: #94a3b8;
-        --accent: #38bdf8;
-        --accent-2: #f59e0b;
-        --danger: #f43f5e;
-        --ok: #34d399;
+        --bg: #100f0f;
+        --fg: #fcc192;
+        --primary: #ec8b49;
+        --surface-dark: #1c1b1a;
+        --surface-light: #343331;
       }
       * {
         margin: 0;
@@ -26,7 +31,7 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background-color: #020617;
+        background-color: #100f0f;
       }
       #root {
         width: 100%;
@@ -38,14 +43,13 @@
         justify-content: center;
       }
       #title {
-        color: #4ade80;
-        font-family: "JetBrains Mono", ui-monospace, monospace;
+        color: #fcc192;
+        font-family: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
         font-weight: 700;
-        letter-spacing: 0.14em;
-        font-size: 10vmin;
+        font-size: 5vw;
+        white-space: pre;
         position: relative;
         z-index: 1;
-        text-align: center;
       }
     </style>
   </head>
@@ -59,7 +63,7 @@
       data-width="1920"
       data-height="1080"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="8" style="position:absolute;inset:0;background-color:#020617"></div>
+      <div id="bg" class="clip" data-start="0" data-duration="8" style="position:absolute;inset:0;background-color:#100f0f"></div>
       <h1 id="title" class="clip" data-start="0" data-duration="8">INITIALIZING</h1>
     </div>
     <script>
@@ -87,38 +91,37 @@
         const bg = document.getElementById("bg");
         const title = document.getElementById("title");
         const view = hyperbits.viewport(root);
-        const words = String(vars.words).split(",").map(function (part) { return part.trim(); }).filter(Boolean);
+        const unit = view.height / 1080;
         bg.style.backgroundColor = vars.background;
         title.style.color = vars.color;
-        title.setAttribute("data-color", vars.color);
-        title.style.fontSize = view.vmin * 10 + "px";
+        title.style.fontSize = view.vw * 5 + "px";
+        const words = String(vars.words).split(",").map(function (part) { return part.trim(); }).filter(Boolean);
         title.setAttribute("aria-label", vars.words);
-        const glyphs = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$";
-        const itemDuration = 2;
+        const GLITCH_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?/~`";
+        const itemDuration = 60;
         const proxy = { time: 0 };
-        const timeline = gsap.timeline({ paused: true });
         function renderCycle() {
-          const time = proxy.time;
-          const index = Math.min(Math.max(words.length - 1, 0), Math.floor(time / itemDuration));
-          const local = time - index * itemDuration;
+          const frame = Math.round(proxy.time * 30);
+          const index = Math.floor(frame / itemDuration) % words.length;
           const target = words[index] || "";
-          const glitchWindow = 0.35;
-          if (local < glitchWindow) {
-            const mix = local / glitchWindow;
-            let output = "";
-            for (let charIndex = 0; charIndex < target.length; charIndex += 1) {
-              if (hyperbits.random("cycle-" + index + "-" + charIndex + "-" + Math.floor(mix * 12)) < mix) {
-                output += target[charIndex];
-              } else {
-                output += glyphs[hyperbits.randomInt("g-" + index + "-" + charIndex + "-" + Math.floor(local * 20), 0, glyphs.length - 1)];
-              }
+          const progress = Math.min(1, Math.max(0, (frame % itemDuration) / itemDuration));
+          const glitchVal = hyperbits.interpolateKeyframes([1, 0, 0, 0.1, 0, 0, 1], progress);
+          let output = "";
+          for (let charIndex = 0; charIndex < target.length; charIndex += 1) {
+            const char = target[charIndex];
+            if (char === " " || glitchVal <= 0) {
+              output += char;
+            } else if (hyperbits.random("glitch-" + frame + "-0-" + charIndex) < glitchVal) {
+              output += GLITCH_CHARS[Math.floor(hyperbits.random("char-" + frame + "-0-" + charIndex) * GLITCH_CHARS.length)];
+            } else {
+              output += char;
             }
-            title.textContent = output;
-          } else {
-            title.textContent = target;
           }
+          title.textContent = output;
         }
+        const timeline = gsap.timeline({ paused: true });
         timeline.to(proxy, { time: 8, duration: 8, ease: "none", onUpdate: renderCycle }, 0);
+        renderCycle();
         registerTimeline("glitch-cycle", timeline);
 
       })();

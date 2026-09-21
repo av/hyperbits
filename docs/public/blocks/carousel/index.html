@@ -1,19 +1,24 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Accent","default":"#38bdf8"},{"id":"background","type":"color","label":"Background","default":"#0b1220"}]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Card color","default":"#fcc192"},{"id":"background","type":"color","label":"Background","default":"#111111"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Sans";
+        font-weight: 700;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5/files/geist-sans-latin-700-normal.woff2) format("woff2");
+      }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
-        --bg: #0b1220;
-        --fg: #f8fafc;
-        --muted: #94a3b8;
-        --accent: #38bdf8;
-        --accent-2: #f59e0b;
-        --danger: #f43f5e;
-        --ok: #34d399;
+        --bg: #111111;
+        --fg: #fcc192;
+        --primary: #ec8b49;
+        --surface-dark: #1c1b1a;
+        --surface-light: #343331;
       }
       * {
         margin: 0;
@@ -26,13 +31,13 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background-color: #0b1220;
+        background-color: #111111;
       }
       #root {
         width: 100%;
         height: 100%;
         position: relative;
-        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        font-family: "Geist Sans", Inter, ui-sans-serif, system-ui, sans-serif;
       }
       #scene {
         position: absolute;
@@ -40,31 +45,11 @@
         z-index: 1;
       }
       .card {
-        width: 32vmin;
-        height: 42vmin;
-        position: relative;
-        transform-style: preserve-3d;
-        background-color: transparent;
-      }
-      .card-face {
-        position: absolute;
-        inset: 0;
-        border-radius: 2.2vmin;
         display: flex;
-        align-items: flex-end;
-        color: #f8fafc;
-        font-weight: 800;
-        padding: 2.2vmin;
-        box-sizing: border-box;
-        letter-spacing: -0.04em;
-        font-size: 6vmin;
-        border: 0.28vmin solid rgba(248, 250, 252, 0.16);
-        box-shadow: 0 1.6vmin 4vmin rgba(0, 0, 0, 0.45);
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
-      }
-      .card-face-back {
-        transform: rotateY(180deg);
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-weight: 700;
       }
     </style>
   </head>
@@ -78,7 +63,7 @@
       data-width="1920"
       data-height="1080"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#0b1220"></div>
+      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#111111"></div>
       <div id="scene"></div>
     </div>
     <script>
@@ -106,72 +91,62 @@
         const bg = document.getElementById("bg");
         const sceneEl = document.getElementById("scene");
         const view = hyperbits.viewport(root);
+        const vmin = view.vmin;
+        const unit = view.height / 1080;
         bg.style.backgroundColor = vars.background;
-        bg.setAttribute("data-color", vars.color);
-
-        const labels = ["North", "Atlas", "Signal", "Harbor", "Nova", "Prism"];
-        const colors = [vars.color, "#0f766e", "#9a3412", "#6d28d9", "#be123c", "#0369a1"];
-        const radius = view.vmin * 48;
-        const cardW = view.vmin * 32;
-        const cardH = view.vmin * 42;
-
-        const elements = labels.map(function (label, index) {
+        const radius = vmin * 60;
+        const count = 8;
+        const cardWidth = vmin * 40;
+        const cardHeight = vmin * 40;
+        const rotationSpeed = 360 / (30 * 10);
+        const elements = [];
+        for (let index = 0; index < count; index += 1) {
           const card = document.createElement("div");
           card.className = "card";
-          card.style.width = cardW + "px";
-          card.style.height = cardH + "px";
-          card.style.transformStyle = "preserve-3d";
+          card.style.width = cardWidth + "px";
+          card.style.height = cardHeight + "px";
+          card.style.backgroundColor = vars.color;
+          card.style.borderRadius = vmin + "px";
+          card.style.fontSize = vmin * 4 + "px";
+          card.style.boxShadow = "0 " + vmin + "px " + vmin * 10 + "px rgba(0, 0, 0, 0.5)";
+          card.textContent = String(index + 1);
           card.setAttribute("data-layout-allow-overlap", "");
           card.setAttribute("data-layout-allow-occlusion", "");
-
-          const front = document.createElement("div");
-          front.className = "card-face card-face-front";
-          front.textContent = label;
-          front.style.backgroundColor = colors[index];
-          front.style.fontSize = view.vmin * 6 + "px";
-          front.style.borderColor = vars.color;
-          front.style.backfaceVisibility = "hidden";
-
-          const back = document.createElement("div");
-          back.className = "card-face card-face-back";
-          back.style.backgroundColor = colors[index];
-          back.style.borderColor = vars.color;
-          back.style.backfaceVisibility = "hidden";
-          back.style.transform = "rotateY(180deg)";
-
-          card.append(front, back);
-          const angle = (index / labels.length) * Math.PI * 2;
-          return {
-            element: card,
-            centered: true,
-            x: Math.sin(angle) * radius,
-            z: Math.cos(angle) * radius,
-            rotateY: (index / labels.length) * 360,
-          };
-        });
-
-        const steps = labels.map(function (_label, index) {
-          return {
-            id: "c" + index,
-            rotateY: -(index / labels.length) * 360,
-            rotateX: 8,
-            z: view.vmin * 8,
-            duration: 10 / labels.length,
-          };
-        });
-
+          elements.push({ element: card, centered: true, x: 0, y: 0, z: 0, rotateY: 0, index: index });
+        }
+        function placeCards(time) {
+          const frame = time * 30;
+          const baseRotation = frame * rotationSpeed;
+          for (const item of elements) {
+            const angle = item.index * (360 / count) + baseRotation;
+            const angleRad = (angle * Math.PI) / 180;
+            item.x = Math.sin(angleRad) * radius;
+            item.z = Math.cos(angleRad) * radius;
+            item.rotateY = angle;
+          }
+        }
+        placeCards(0);
         const scene = hyperbits.createScene3D(sceneEl, {
-          perspective: 1400,
-          transitionDuration: 1.45,
+          perspective: 1000,
+          transitionDuration: 1,
+          stepDuration: 1,
           easing: "easeInOutCubic",
-          steps: steps,
+          steps: [
+            { id: "0", duration: 1 },
+            { id: "1", z: -vmin * 100, rotateZ: 180, duration: 1 },
+            { id: "3", duration: 8 },
+          ],
           elements: elements,
         });
         sceneEl.style.position = "absolute";
         sceneEl.style.inset = "0";
         sceneEl.style.zIndex = "1";
-
         const timeline = gsap.timeline({ paused: true });
+        const previousUpdate = timeline.eventCallback("onUpdate");
+        timeline.eventCallback("onUpdate", function () {
+          if (typeof previousUpdate === "function") previousUpdate.call(timeline);
+          placeCards(timeline.time());
+        });
         scene.bind(timeline);
         timeline.to({}, { duration: 10 }, 0);
         registerTimeline("carousel", timeline);

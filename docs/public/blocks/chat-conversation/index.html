@@ -1,19 +1,24 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"message","type":"string","label":"First message","default":"Did the render finish?"},{"id":"color","type":"color","label":"My bubble","default":"#2563eb"},{"id":"background","type":"color","label":"Background","default":"#0b1220"}]'>
+<html lang="en" data-composition-variables='[{"id":"message","type":"string","label":"First message","default":"Hey, did the render finish?"},{"id":"color","type":"color","label":"My bubble color","default":"#ec8b49"},{"id":"background","type":"color","label":"Background","default":"#100f0f"}]'>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=1920, height=1080" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <style>
+      @font-face {
+        font-family: "Geist Sans";
+        font-weight: 700;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5/files/geist-sans-latin-700-normal.woff2) format("woff2");
+      }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
-        --bg: #0b1220;
-        --fg: #f8fafc;
-        --muted: #94a3b8;
-        --accent: #38bdf8;
-        --accent-2: #f59e0b;
-        --danger: #f43f5e;
-        --ok: #34d399;
+        --bg: #100f0f;
+        --fg: #fcc192;
+        --primary: #ec8b49;
+        --surface-dark: #1c1b1a;
+        --surface-light: #343331;
       }
       * {
         margin: 0;
@@ -23,47 +28,50 @@
       html,
       body {
         margin: 0;
-        width: 1920px;
-        height: 1080px;
+        width: 1080px;
+        height: 1920px;
         overflow: hidden;
-        background-color: #0b1220;
+        background-color: #100f0f;
       }
       #root {
         width: 100%;
         height: 100%;
         position: relative;
-        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        font-family: "Geist Sans", Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+      #thread {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        font-weight: 700;
+      }
+      .msg {
+        display: flex;
+        align-items: flex-end;
+      }
+      .msg.me,
+      .msg.me .inner {
+        flex-direction: row-reverse;
+      }
+      .inner {
+        display: flex;
+        align-items: flex-end;
+      }
+      .avatar {
+        border-radius: 50%;
+        flex-shrink: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-      }
-      #thread {
-        display: flex;
-        flex-direction: column;
-        width: 60%;
-        gap: 2.2vmin;
-        font-size: 3.2vmin;
-        position: relative;
-        z-index: 1;
+        font-weight: 700;
       }
       .bubble {
-        max-width: 78%;
-        padding: 2.2vmin 2.8vmin;
-        border-radius: 2.4vmin;
-        font-weight: 500;
-        line-height: 1.35;
-      }
-      .me {
-        align-self: flex-end;
-        background-color: #2563eb;
-        color: #eff6ff;
-        border-bottom-right-radius: 0.5vmin;
-      }
-      .them {
-        align-self: flex-start;
-        background-color: #1f2937;
-        color: #e5e7eb;
-        border-bottom-left-radius: 0.5vmin;
+        color: #ffffff;
+        line-height: 1.3;
       }
     </style>
   </head>
@@ -74,10 +82,10 @@
       data-composition-id="chat-conversation"
       data-start="0"
       data-duration="5"
-      data-width="1920"
-      data-height="1080"
+      data-width="1080"
+      data-height="1920"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="5" style="position:absolute;inset:0;background-color:#0b1220"></div>
+      <div id="bg" class="clip" data-start="0" data-duration="5" style="position:absolute;inset:0;background-color:#100f0f"></div>
       <div id="thread" class="clip" data-start="0" data-duration="5"></div>
     </div>
     <script>
@@ -103,35 +111,66 @@
         const vars = bitVars();
         const root = document.getElementById("root");
         const bg = document.getElementById("bg");
-        const thread = document.getElementById("thread");
         const view = hyperbits.viewport(root);
+        const vmin = view.vmin;
+        const unit = view.height / 1080;
         bg.style.backgroundColor = vars.background;
-        thread.style.width = view.width * 0.6 + "px";
-        thread.style.gap = view.vmin * 2.2 + "px";
-        thread.style.fontSize = view.vmin * 4.2 + "px";
+        const thread = document.getElementById("thread");
         const messages = [
-          { who: "them", text: vars.message },
-          { who: "me", text: "Just exported the 1080p master." },
-          { who: "them", text: "How is the motion on the lower third?" },
-          { who: "me", text: "Seek-safe now. Try scrubbing it." },
-          { who: "them", text: "Nice. Ship it." },
+          { from: "them", text: String(vars.message) },
+          { from: "me", text: "Yep, 4K in under two minutes." },
+          { from: "them", text: "No way. What did you change?" },
+          { from: "me", text: "Switched the intro to remotion-bits." },
+          { from: "me", text: "Staggered motion, zero manual keyframes." },
+          { from: "them", text: "Okay, sending you the next brief now." },
         ];
-        for (const message of messages) {
-          const bubble = document.createElement("div");
-          bubble.className = "bubble " + message.who;
-          bubble.textContent = message.text;
-          bubble.style.padding = view.vmin * 2.2 + "px " + view.vmin * 2.8 + "px";
-          bubble.style.borderRadius = view.vmin * 2.4 + "px";
-          if (message.who === "me") {
-            bubble.style.backgroundColor = vars.color;
-            bubble.style.borderBottomRightRadius = view.vmin * 0.5 + "px";
-          } else {
-            bubble.style.borderBottomLeftRadius = view.vmin * 0.5 + "px";
-          }
-          thread.append(bubble);
-        }
+        const bubbleFont = vmin * 4;
+        const maxBubbleWidth = vmin * 66;
+        const avatarSize = vmin * 6;
+        const startDelay = 10;
+        const stagger = 20;
+        thread.style.gap = vmin * 2.2 + "px";
+        thread.style.padding = "0 " + vmin * 6 + "px";
         const timeline = gsap.timeline({ paused: true });
-        hyperbits.stagger(thread.children, { opacity: [0, 1], y: [view.vmin * 2.4, 0], duration: 0.45, stagger: 0.55, ease: "power2.out" }, timeline);
+        messages.forEach(function (message, index) {
+          const isMe = message.from === "me";
+          const wrap = document.createElement("div");
+          wrap.className = "msg " + (isMe ? "me" : "them");
+          wrap.style.gap = vmin * 1.5 + "px";
+          const inner = document.createElement("div");
+          inner.className = "inner";
+          inner.style.gap = vmin * 1.5 + "px";
+          inner.style.transformOrigin = isMe ? "bottom right" : "bottom left";
+          const avatar = document.createElement("div");
+          avatar.className = "avatar";
+          avatar.style.width = avatarSize + "px";
+          avatar.style.height = avatarSize + "px";
+          avatar.style.fontSize = avatarSize * 0.42 + "px";
+          avatar.style.color = isMe ? vars.background : "#ffffff";
+          avatar.style.backgroundColor = isMe ? "#fcc192" : "#343331";
+          avatar.textContent = isMe ? "ME" : "AL";
+          const bubble = document.createElement("div");
+          bubble.className = "bubble";
+          bubble.textContent = message.text;
+          bubble.style.maxWidth = maxBubbleWidth + "px";
+          bubble.style.padding = vmin * 2.2 + "px " + vmin * 3.2 + "px";
+          bubble.style.borderRadius = vmin * 4 + "px";
+          bubble.style.borderBottomRightRadius = (isMe ? vmin * 1 : vmin * 4) + "px";
+          bubble.style.borderBottomLeftRadius = (isMe ? vmin * 4 : vmin * 1) + "px";
+          bubble.style.backgroundColor = isMe ? vars.color : "#343331";
+          bubble.style.fontSize = bubbleFont + "px";
+          bubble.style.boxShadow = "0 " + vmin * 0.6 + "px " + vmin * 2 + "px rgba(0, 0, 0, 0.35)";
+          inner.append(avatar, bubble);
+          wrap.append(inner);
+          thread.append(wrap);
+          timeline.fromTo(
+            inner,
+            { scale: 0.4, y: vmin * 4, opacity: 0 },
+            { scale: 1, y: 0, opacity: 1, duration: 22 / 30, ease: hyperbits.Easing.spring },
+            (startDelay + index * stagger) / 30,
+          );
+        });
+        timeline.to({}, { duration: 5 }, 0);
         registerTimeline("chat-conversation", timeline);
 
       })();

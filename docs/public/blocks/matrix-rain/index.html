@@ -1,19 +1,29 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Color","default":"#00FF41"},{"id":"background","type":"color","label":"Background","default":"#000000"},{"id":"fontSize","type":"number","label":"Font size","default":36},{"id":"speed","type":"number","label":"Speed","default":1},{"id":"density","type":"number","label":"Density","default":1}]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Rain color","default":"#00FF41"},{"id":"fontSize","type":"number","label":"Font size (px at 1080p)","default":30},{"id":"speed","type":"number","label":"Speed","default":1},{"id":"density","type":"number","label":"Density (0-1)","default":1},{"id":"streamLength","type":"number","label":"Stream length","default":15},{"id":"background","type":"color","label":"Background","default":"#100f0f"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 400;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-400-normal.woff2) format("woff2");
+      }
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 700;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-700-normal.woff2) format("woff2");
+      }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
-        --bg: #000000;
-        --fg: #f8fafc;
-        --muted: #94a3b8;
-        --accent: #38bdf8;
-        --accent-2: #f59e0b;
-        --danger: #f43f5e;
-        --ok: #34d399;
+        --bg: #100f0f;
+        --fg: #fcc192;
+        --primary: #ec8b49;
+        --surface-dark: #1c1b1a;
+        --surface-light: #343331;
       }
       * {
         margin: 0;
@@ -26,7 +36,7 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background-color: #000000;
+        background-color: #100f0f;
       }
       #root {
         width: 100%;
@@ -53,7 +63,7 @@
       data-width="1920"
       data-height="1080"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#000000"></div>
+      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#100f0f"></div>
       <canvas id="rain" class="clip" data-start="0" data-duration="10"></canvas>
     </div>
     <script>
@@ -79,9 +89,9 @@
         const vars = bitVars();
         const root = document.getElementById("root");
         const bg = document.getElementById("bg");
-        const canvas = document.getElementById("rain");
         const view = hyperbits.viewport(root);
         bg.style.backgroundColor = vars.background;
+        const canvas = document.getElementById("rain");
         canvas.setAttribute("data-color", vars.color);
         canvas.width = view.width;
         canvas.height = view.height;
@@ -91,37 +101,56 @@
         } catch (err) {
           context = null;
         }
-        const fontSize = Math.max(Number(vars.fontSize) || 36, view.vmin * 3.2);
-        const columns = Math.max(1, Math.floor((view.width / fontSize) * Number(vars.density || 1)));
-        const glyphs = "アイウエオカキクケコｱｲｳｴｵ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        const drops = [];
-        for (let index = 0; index < columns; index += 1) {
-          drops.push({
-            y: hyperbits.randomFloat("drop-y-" + index, -20, view.height / fontSize),
-            speed: hyperbits.randomFloat("drop-s-" + index, 0.4, 1.4) * Number(vars.speed || 1),
-            length: hyperbits.randomInt("drop-l-" + index, 8, 22),
+        const fontSize = (Number(vars.fontSize) || 30) * (view.height / 1080);
+        const color = String(vars.color);
+        const speed = Number(vars.speed) || 1;
+        const density = Math.min(Math.max(Number(vars.density) || 0, 0), 1);
+        const streamLength = Number(vars.streamLength) || 15;
+        const charset = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz$+-*/=%\"'#&_(),.;:?!\\|{}<>[]^~";
+        const cols = Math.floor(view.width / fontSize);
+        const rows = Math.ceil(view.height / fontSize);
+        const effectiveHeight = view.height + streamLength * fontSize;
+        const streams = [];
+        for (let index = 0; index < cols; index += 1) {
+          streams.push({
+            isVisible: hyperbits.random(index) < density,
+            speed: speed * (0.5 + hyperbits.random(index + 1) * 1.5),
+            offset: hyperbits.random(index + 2) * effectiveHeight,
+            seed: index,
           });
         }
+        const fontFamily = '"Geist Mono", "JetBrains Mono", ui-monospace, monospace';
         const proxy = { time: 0 };
-        const timeline = gsap.timeline({ paused: true });
         function draw() {
-          if (!context) return;
+          if (!context || typeof context.fillText !== "function") return;
+          const frame = Math.round(proxy.time * 30);
           context.clearRect(0, 0, canvas.width, canvas.height);
-          context.font = fontSize + "px ui-monospace, monospace";
-          for (let index = 0; index < drops.length; index += 1) {
-            const drop = drops[index];
-            const head = (drop.y + proxy.time * drop.speed * 18) % (view.height / fontSize + drop.length);
-            for (let trail = 0; trail < drop.length; trail += 1) {
-              const glyph = glyphs[hyperbits.randomInt("g-" + index + "-" + trail, 0, glyphs.length - 1)];
-              const alpha = 1 - trail / drop.length;
-              context.fillStyle = trail === 0 ? "#e7ffe7" : vars.color;
-              context.globalAlpha = Math.max(0.12, alpha);
-              context.fillText(glyph, index * fontSize, (head - trail) * fontSize);
+          context.textBaseline = "top";
+          for (let colIndex = 0; colIndex < streams.length; colIndex += 1) {
+            const stream = streams[colIndex];
+            if (!stream.isVisible) continue;
+            const headY = (frame * stream.speed * fontSize + stream.offset) % effectiveHeight;
+            for (let row = 0; row < rows; row += 1) {
+              const y = row * fontSize;
+              const distInChars = (headY - y) / fontSize;
+              if (distInChars < 0 || distInChars >= streamLength) continue;
+              const isHead = distInChars < 1;
+              const charSeed = stream.seed * 1000 + row * 100 + Math.floor(frame / 4);
+              const glyph = charset[Math.floor(hyperbits.random(charSeed) * charset.length)];
+              context.globalAlpha = isHead ? 1 : 1 - distInChars / streamLength;
+              context.fillStyle = isHead ? "#FFFFFF" : color;
+              context.font = (isHead ? "bold " : "") + fontSize + "px " + fontFamily;
+              context.shadowBlur = isHead ? 8 * (view.height / 1080) : 0;
+              context.shadowColor = isHead ? "#FFFFFF" : "rgba(0, 0, 0, 0)";
+              context.fillText(glyph, colIndex * fontSize, y);
             }
           }
           context.globalAlpha = 1;
+          context.shadowBlur = 0;
         }
+        const timeline = gsap.timeline({ paused: true });
         timeline.to(proxy, { time: 10, duration: 10, ease: "none", onUpdate: draw }, 0);
+        draw();
         registerTimeline("matrix-rain", timeline);
 
       })();
