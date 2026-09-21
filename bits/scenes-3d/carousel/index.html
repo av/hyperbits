@@ -42,6 +42,13 @@
       .card {
         width: 32vmin;
         height: 42vmin;
+        position: relative;
+        transform-style: preserve-3d;
+        background-color: transparent;
+      }
+      .card-face {
+        position: absolute;
+        inset: 0;
         border-radius: 2.2vmin;
         display: flex;
         align-items: flex-end;
@@ -53,6 +60,11 @@
         font-size: 6vmin;
         border: 0.28vmin solid rgba(248, 250, 252, 0.16);
         box-shadow: 0 1.6vmin 4vmin rgba(0, 0, 0, 0.45);
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+      }
+      .card-face-back {
+        transform: rotateY(180deg);
       }
     </style>
   </head>
@@ -106,14 +118,28 @@
         const elements = labels.map(function (label, index) {
           const card = document.createElement("div");
           card.className = "card";
-          card.textContent = label;
           card.style.width = cardW + "px";
           card.style.height = cardH + "px";
-          card.style.backgroundColor = colors[index];
-          card.style.fontSize = view.vmin * 6 + "px";
-          card.style.borderColor = vars.color;
+          card.style.transformStyle = "preserve-3d";
           card.setAttribute("data-layout-allow-overlap", "");
           card.setAttribute("data-layout-allow-occlusion", "");
+
+          const front = document.createElement("div");
+          front.className = "card-face card-face-front";
+          front.textContent = label;
+          front.style.backgroundColor = colors[index];
+          front.style.fontSize = view.vmin * 6 + "px";
+          front.style.borderColor = vars.color;
+          front.style.backfaceVisibility = "hidden";
+
+          const back = document.createElement("div");
+          back.className = "card-face card-face-back";
+          back.style.backgroundColor = colors[index];
+          back.style.borderColor = vars.color;
+          back.style.backfaceVisibility = "hidden";
+          back.style.transform = "rotateY(180deg)";
+
+          card.append(front, back);
           const angle = (index / labels.length) * Math.PI * 2;
           return {
             element: card,

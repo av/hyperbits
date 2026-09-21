@@ -92,16 +92,17 @@
 
         const list = String(vars.words).split(",").map(function (part) { return part.trim(); }).filter(Boolean);
         const slots = [
-          { x: -22, y: -10 },
-          { x: 24, y: 12 },
-          { x: -18, y: 16 },
-          { x: 20, y: -14 },
-          { x: -26, y: 8 },
-          { x: 14, y: 18 },
-          { x: -12, y: -18 },
-          { x: 22, y: 4 },
+          { x: -42, y: -26 },
+          { x: 42, y: 26 },
+          { x: -42, y: 26 },
+          { x: 42, y: -26 },
+          { x: -48, y: 0 },
+          { x: 48, y: 0 },
+          { x: 0, y: -20 },
+          { x: 0, y: 22 },
         ];
         const depth = view.vmin * 40;
+        const perspectivePx = 900;
         const count = Math.max(list.length, slots.length);
         const elements = [];
         for (let index = 0; index < Math.min(count, slots.length); index += 1) {
@@ -112,6 +113,9 @@
           node.style.color = vars.color;
           node.setAttribute("data-layout-allow-overlap", "");
           node.setAttribute("data-layout-allow-occlusion", "");
+          node.setAttribute("data-lane-x", String(slots[index].x));
+          node.setAttribute("data-lane-y", String(slots[index].y));
+          node.setAttribute("data-lane-z", String(index + 1));
           elements.push({
             element: node,
             centered: true,
@@ -134,7 +138,7 @@
         }
 
         const scene = hyperbits.createScene3D(sceneEl, {
-          perspective: 900,
+          perspective: perspectivePx,
           transitionDuration: 1.28,
           easing: "easeInOutCubic",
           steps: steps,
@@ -145,8 +149,22 @@
         sceneEl.style.zIndex = "1";
 
         const timeline = gsap.timeline({ paused: true });
+        function clipWords() {
+          const camZ = scene.stateAt(timeline.time()).camera.z;
+          for (let index = 0; index < elements.length; index += 1) {
+            const zCam = elements[index].z - camZ;
+            const visible = zCam < perspectivePx * 0.88 && zCam > -perspectivePx * 3;
+            elements[index].element.style.opacity = visible ? "1" : "0";
+          }
+        }
         scene.bind(timeline);
         timeline.to({}, { duration: 10 }, 0);
+        const previousUpdate = timeline.eventCallback("onUpdate");
+        timeline.eventCallback("onUpdate", function () {
+          if (typeof previousUpdate === "function") previousUpdate.call(timeline);
+          clipWords();
+        });
+        clipWords();
         registerTimeline("flying-through-words", timeline);
 
       })();
