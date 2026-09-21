@@ -13,7 +13,6 @@
   "height": 1080,
   "helpers": [
     "code",
-    "text",
     "viewport"
   ],
   "iifeLocal": "../../../dist/hyperbits.iife.js",

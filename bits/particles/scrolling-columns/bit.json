@@ -12,8 +12,9 @@
   "width": 1920,
   "height": 1080,
   "helpers": [
-    "viewport",
-    "random"
+    "particles",
+    "scene3d",
+    "viewport"
   ],
   "iifeLocal": "../../../dist/hyperbits.iife.js",
   "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",

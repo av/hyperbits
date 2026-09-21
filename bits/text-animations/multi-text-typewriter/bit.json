@@ -12,8 +12,6 @@
   "width": 1920,
   "height": 1080,
   "helpers": [
-    "text",
-    "interpolate",
     "viewport"
   ],
   "iifeLocal": "../../../dist/hyperbits.iife.js",

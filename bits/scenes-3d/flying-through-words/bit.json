@@ -12,7 +12,8 @@
   "width": 1920,
   "height": 1080,
   "helpers": [
-    "scene3d",
+    "interpolate",
+    "particles",
     "viewport"
   ],
   "iifeLocal": "../../../dist/hyperbits.iife.js",
