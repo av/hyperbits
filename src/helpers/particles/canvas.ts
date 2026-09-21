@@ -6,13 +6,22 @@ export type ParticleColor = string | ((particle: Particle) => string);
 export type ParticleSize = number | ((particle: Particle) => number);
 export type ParticleShape = "circle" | "rect";
 
+export type GlowStop = [offset: number, alpha: number];
+
 export type ParticleRenderOptions = {
   color?: ParticleColor;
   size?: ParticleSize;
   glow?: number;
+  glowStops?: GlowStop[];
   shape?: ParticleShape;
   clear?: boolean;
 };
+
+const DEFAULT_GLOW_STOPS: GlowStop[] = [
+  [0, 1],
+  [0.35, 0.55],
+  [1, 0],
+];
 
 function resolveColor(
   color: ParticleColor | undefined,
@@ -82,9 +91,9 @@ export function renderParticles(
         0,
         glowRadius,
       );
-      gradient.addColorStop(0, color);
-      gradient.addColorStop(0.35, withAlpha(color, 0.55));
-      gradient.addColorStop(1, withAlpha(color, 0));
+      for (const [offset, alpha] of options.glowStops ?? DEFAULT_GLOW_STOPS) {
+        gradient.addColorStop(offset, withAlpha(color, alpha));
+      }
       context.fillStyle = gradient;
       context.beginPath();
       context.arc(0, 0, glowRadius, 0, Math.PI * 2);
