@@ -863,7 +863,13 @@
         }
         const timeline = gsap.timeline({ paused: true });
         scene.bind(timeline);
-        timeline.to(proxy, { time: 38, duration: 38, ease: "none", onUpdate: render }, 0);
+        const previousUpdate = timeline.eventCallback("onUpdate");
+        timeline.eventCallback("onUpdate", function () {
+          if (typeof previousUpdate === "function") previousUpdate.call(timeline);
+          proxy.time = timeline.time();
+          render();
+        });
+        timeline.to({}, { duration: 38 }, 0);
         render();
         registerTimeline("feature-showcase", timeline);
 
