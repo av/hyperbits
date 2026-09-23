@@ -1,19 +1,24 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"command","type":"string","label":"Command","default":"git status"},{"id":"color","type":"color","label":"Accent","default":"#86efac"},{"id":"background","type":"color","label":"Background","default":"#020617"}]'>
+<html lang="en" data-composition-variables='[{"id":"command","type":"string","label":"Command","default":"git status"},{"id":"color","type":"color","label":"Terminal text","default":"#fcc192"},{"id":"background","type":"color","label":"Background","default":"#100f0f"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 700;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-700-normal.woff2) format("woff2");
+      }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <script src="hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
-        --bg: #020617;
-        --fg: #f8fafc;
-        --muted: #94a3b8;
-        --accent: #38bdf8;
-        --accent-2: #f59e0b;
-        --danger: #f43f5e;
-        --ok: #34d399;
+        --bg: #100f0f;
+        --fg: #fcc192;
+        --primary: #ec8b49;
+        --surface-dark: #1c1b1a;
+        --surface-light: #343331;
       }
       * {
         margin: 0;
@@ -26,7 +31,7 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background-color: #020617;
+        background-color: #100f0f;
       }
       #root {
         width: 100%;
@@ -39,58 +44,45 @@
         inset: 0;
         z-index: 1;
       }
-      .term[data-step-active="false"] {
-        opacity: 0.12;
-      }
-      .term[data-step-active="true"] {
-        opacity: 1;
+      .term-wrap {
+        transform-style: preserve-3d;
       }
       .term {
-        width: 40%;
-        height: 50%;
-        background-color: #0b1220;
-        border: 1px solid #1e293b;
-        border-radius: 1.4vmin;
+        background-color: #1c1b1a;
         overflow: hidden;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
         display: flex;
         flex-direction: column;
-        box-shadow: 0 1.6vmin 4vmin rgba(0, 0, 0, 0.45);
+        border: 1px solid #1c1b1a;
+        font-weight: 700;
       }
       .term-bar {
-        height: 12%;
-        background-color: #1e293b;
+        background-color: #343331;
         display: flex;
         align-items: center;
-        padding: 0 3%;
-        gap: 0.8vmin;
+        border-bottom: 1px solid #1c1b1a;
+      }
+      .term-dots {
+        display: flex;
       }
       .term-dot {
-        width: 1.2vmin;
-        height: 1.2vmin;
         border-radius: 50%;
       }
       .term-title {
         flex: 1;
         text-align: center;
-        color: #94a3b8;
-        font-size: 2vmin;
-        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       .term-body {
         flex: 1;
-        padding: 4%;
-        color: #86efac;
-        font-family: "JetBrains Mono", ui-monospace, monospace;
-        font-size: 3vmin;
-        line-height: 1.45;
-        white-space: pre;
+        font-family: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+        white-space: pre-wrap;
         overflow: hidden;
       }
       .cursor {
         display: inline-block;
-        width: 0.55em;
-        background-color: #86efac;
-        margin-left: 0.06em;
       }
     </style>
   </head>
@@ -104,7 +96,7 @@
       data-width="1920"
       data-height="1080"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#020617"></div>
+      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#100f0f"></div>
       <div id="scene"></div>
     </div>
     <script>
@@ -132,84 +124,107 @@
         const bg = document.getElementById("bg");
         const sceneEl = document.getElementById("scene");
         const view = hyperbits.viewport(root);
+        const vmin = view.vmin;
+        const unit = view.height / 1080;
         bg.style.backgroundColor = vars.background;
-        bg.setAttribute("data-color", vars.color);
-
-        const termW = view.width * 0.4;
-        const termH = view.height * 0.5;
-
-        function terminal(title, text) {
+        const termWidth = view.width * 0.4;
+        const termHeight = view.height * 0.5;
+        function terminal(title, lead, typedText, typeSpeed, cursorEnabled) {
+          const wrap = document.createElement("div");
+          wrap.className = "term-wrap";
+          wrap.style.perspective = view.width * 2 + "px";
+          wrap.setAttribute("data-layout-allow-overlap", "");
+          wrap.setAttribute("data-layout-allow-occlusion", "");
           const node = document.createElement("div");
           node.className = "term";
-          node.style.width = termW + "px";
-          node.style.height = termH + "px";
-          node.style.borderColor = vars.color;
+          node.style.width = termWidth + "px";
+          node.style.height = termHeight + "px";
+          node.style.borderRadius = termWidth * 0.02 + "px";
+          node.style.color = vars.color;
           const bar = document.createElement("div");
           bar.className = "term-bar";
+          bar.style.height = termWidth * 0.08 + "px";
+          bar.style.padding = "0 " + termWidth * 0.02 + "px";
+          const dots = document.createElement("div");
+          dots.className = "term-dots";
+          dots.style.gap = termWidth * 0.015 + "px";
           ["#ff5f56", "#ffbd2e", "#27c93f"].forEach(function (hex) {
             const dot = document.createElement("div");
             dot.className = "term-dot";
+            dot.style.width = termWidth * 0.03 + "px";
+            dot.style.height = termWidth * 0.03 + "px";
             dot.style.backgroundColor = hex;
-            bar.append(dot);
+            dots.append(dot);
           });
           const label = document.createElement("div");
           label.className = "term-title";
           label.textContent = title;
-          bar.append(label);
-          const body = document.createElement("pre");
+          label.style.fontSize = termWidth * 0.04 * 0.8 + "px";
+          bar.append(dots, label);
+          const body = document.createElement("div");
           body.className = "term-body";
-          body.style.whiteSpace = "pre";
-          body.style.color = vars.color;
-          body.style.fontSize = view.vmin * 3 + "px";
+          body.style.padding = termWidth * 0.04 + "px";
+          body.style.fontSize = termWidth * 0.04 + "px";
+          for (const part of lead) {
+            const span = document.createElement("span");
+            span.textContent = part.text;
+            if (part.color) span.style.color = part.color;
+            if (part.block) span.style.display = "block";
+            body.append(span);
+          }
           const typed = document.createElement("span");
-          typed.textContent = text;
           const cursor = document.createElement("span");
           cursor.className = "cursor";
-          cursor.textContent = " ";
-          cursor.style.backgroundColor = vars.color;
+          cursor.textContent = "|";
+          cursor.style.display = cursorEnabled ? "inline-block" : "none";
           body.append(typed, cursor);
           node.append(bar, body);
-          node.setAttribute("data-layout-allow-overlap", "");
-          node.setAttribute("data-layout-allow-occlusion", "");
-          return { node: node, typed: typed, cursor: cursor };
+          wrap.append(node);
+          return { wrap: wrap, node: node, typed: typed, cursor: cursor, text: typedText, typeSpeed: typeSpeed };
         }
-
         const command = String(vars.command);
-        const one = terminal("user@dev:~/project", "$ " + command + "\nOn branch main\nworking tree clean");
-        const two = terminal("server-logs", "[INFO] Server started on port 3000\n[INFO] Connected to database\n[WARN] High memory usage");
-        const three = terminal("build-process", "> build project\n> transpile modules\n> optimize assets\nBuild successful");
-
+        const main = terminal("user@dev:~/project", [
+          { text: "\u279C", color: "#4caf50" }, { text: " " }, { text: "~/project", color: "#64b5f6" }, { text: " " },
+          { text: command.split(" ")[0], color: "#f44336" }, { text: command.indexOf(" ") >= 0 ? " " + command.slice(command.indexOf(" ") + 1) : "" }, { text: "\n" },
+        ], "On branch main\nYour branch is up to date with 'origin/main'.\n\nworking tree clean", 1, false);
+        main.node.setAttribute("aria-label", command);
+        const side = terminal("server-logs", [{ text: "[INFO] Server started on port 3000", color: "#81c784", block: true }], "[INFO] Connected to database\n[WARN] High memory usage detected\n[INFO] Request handled in 23ms", 2, true);
+        const top = terminal("build-process", [], "> build project\n> transpile modules\n> optimize assets\n\nBuild successful! \u2728", 1, true);
+        const stepDuration = 2;
+        const steps = [
+          { id: "main", x: 0, y: 0, z: 0, duration: stepDuration, element: main.wrap },
+          { id: "side", x: view.width * 0.8, y: 0, z: 150 * unit, rotateY: -45, duration: stepDuration, element: side.wrap },
+          { id: "top", x: view.width * 0.8, y: -view.height * 0.8, z: 150 * unit, duration: stepDuration, element: top.wrap },
+        ];
         const scene = hyperbits.createScene3D(sceneEl, {
           perspective: 1000,
-          transitionDuration: 1.15,
+          transitionDuration: 40 / 30,
+          stepDuration: stepDuration,
           easing: "easeInOutCubic",
-          steps: [
-            { id: "main", x: 0, y: 0, z: 0, rotateY: -6, duration: 3.4, element: one.node },
-            { id: "side", x: view.vmin * 58, y: 0, z: view.vmin * 18, rotateY: -22, duration: 3.3, element: two.node },
-            { id: "top", x: view.vmin * 58, y: -view.vmin * 42, z: view.vmin * 18, rotateX: 8, duration: 3.3, element: three.node },
-          ],
+          steps: steps,
         });
         sceneEl.style.position = "absolute";
         sceneEl.style.inset = "0";
         sceneEl.style.zIndex = "1";
-
-        const writers = [
-          hyperbits.typewriter(one.typed, { duration: 2.4, delay: 0.2 }),
-          hyperbits.typewriter(two.typed, { duration: 2.4, delay: 3.5 }),
-          hyperbits.typewriter(three.typed, { duration: 2.4, delay: 6.8 }),
-        ];
-        const proxy = { time: 0 };
         const timeline = gsap.timeline({ paused: true });
         scene.bind(timeline);
-        timeline.to(proxy, {
-          time: 10,
-          duration: 10,
-          ease: "none",
-          onUpdate: function () {
-            writers.forEach(function (writer) { writer.apply(proxy.time); });
-          },
-        }, 0);
-        timeline.fromTo([one.cursor, two.cursor, three.cursor], { opacity: 1 }, { opacity: 0.15, duration: 0.45, repeat: 21, yoyo: true, ease: "none" }, 0);
+        const wobble = hyperbits.Easing.easeInOutCubic;
+        timeline.fromTo(main.node, { rotationY: -5, rotationX: -5 }, { rotationY: 5, rotationX: 5, duration: 120 / 30, ease: wobble }, 0);
+        timeline.fromTo(side.node, { rotationY: 5, rotationX: 5 }, { rotationY: -5, rotationX: -5, duration: 100 / 30, ease: wobble }, 0);
+        timeline.fromTo(top.node, { rotationY: 5, rotationX: 5 }, { rotationY: -5, rotationX: -5, duration: 100 / 30, ease: wobble }, 0);
+        const terminals = [main, side, top];
+        const proxy = { time: 0 };
+        function render() {
+          const frame = Math.round(proxy.time * 30);
+          for (const term of terminals) {
+            const visible = Math.min(term.text.length, Math.floor(frame / term.typeSpeed));
+            term.typed.textContent = term.text.slice(0, visible);
+            term.cursor.style.opacity = frame % 30 < 15 ? "1" : "0";
+          }
+        }
+        timeline.to(proxy, { time: 10, duration: 10, ease: "none", onUpdate: render }, 0);
+        render();
+        timeline.to({}, { duration: 10 }, 0);
         registerTimeline("terminal-3d", timeline);
 
       })();

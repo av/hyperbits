@@ -164,10 +164,18 @@ export class Quat {
   }
 
   multiplyQuaternions(a: Quat, b: Quat): this {
-    this.x = a.x * b.w + a.w * b.x + a.y * b.z - a.z * b.y;
-    this.y = a.y * b.w + a.w * b.y + a.z * b.x - a.x * b.z;
-    this.z = a.z * b.w + a.w * b.z + a.x * b.y - a.y * b.x;
-    this.w = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z;
+    const ax = a.x;
+    const ay = a.y;
+    const az = a.z;
+    const aw = a.w;
+    const bx = b.x;
+    const by = b.y;
+    const bz = b.z;
+    const bw = b.w;
+    this.x = ax * bw + aw * bx + ay * bz - az * by;
+    this.y = ay * bw + aw * by + az * bx - ax * bz;
+    this.z = az * bw + aw * bz + ax * by - ay * bx;
+    this.w = aw * bw - ax * bx - ay * by - az * bz;
     return this;
   }
 

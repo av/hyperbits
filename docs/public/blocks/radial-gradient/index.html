@@ -70,8 +70,8 @@
 
         const vars = bitVars();
         const bg = document.getElementById("bg");
-        const from = "radial-gradient(circle at 20% 20%, " + vars.color1Start + ", " + vars.color1End + ")";
-        const to = "radial-gradient(circle at 80% 80%, " + vars.color2Start + ", " + vars.color2End + ")";
+        const from = "radial-gradient(circle at 20% 20%, " + vars.color1Start + " 0%, " + vars.color1End + " 60%)";
+        const to = "radial-gradient(circle at 80% 80%, " + vars.color2Start + " 0%, " + vars.color2End + " 100%)";
         const proxy = hyperbits.gradientProxy(bg, [from, to]);
         const apply = function () {
           proxy.apply();

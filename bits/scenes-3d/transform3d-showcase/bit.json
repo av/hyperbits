@@ -9,10 +9,11 @@
     "quaternion",
     "chainable"
   ],
-  "duration": 16.67,
+  "duration": 16.667,
   "width": 1920,
   "height": 1080,
   "helpers": [
+    "interpolate",
     "scene3d",
     "viewport"
   ],
@@ -36,7 +37,7 @@
       "width": 1920,
       "height": 1080
     },
-    "duration": 16.67,
+    "duration": 16.667,
     "files": [
       {
         "path": "index.html",

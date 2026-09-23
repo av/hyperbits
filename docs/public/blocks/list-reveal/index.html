@@ -1,19 +1,24 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Accent","default":"#38bdf8"},{"id":"background","type":"color","label":"Background","default":"#09090b"}]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Icon color","default":"#fcc192"},{"id":"background","type":"color","label":"Background","default":"#09090b"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1080, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Sans";
+        font-weight: 500;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5/files/geist-sans-latin-500-normal.woff2) format("woff2");
+      }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
         --bg: #09090b;
-        --fg: #f8fafc;
-        --muted: #94a3b8;
-        --accent: #38bdf8;
-        --accent-2: #f59e0b;
-        --danger: #f43f5e;
-        --ok: #34d399;
+        --fg: #fcc192;
+        --primary: #ec8b49;
+        --surface-dark: #1c1b1a;
+        --surface-light: #343331;
       }
       * {
         margin: 0;
@@ -32,43 +37,39 @@
         width: 100%;
         height: 100%;
         position: relative;
-        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        font-family: "Geist Sans", Inter, ui-sans-serif, system-ui, sans-serif;
         display: flex;
         align-items: center;
         justify-content: center;
       }
-      #list {
-        display: flex;
-        flex-direction: column;
-        width: 72%;
-        gap: 2.4vmin;
+      #list-outer {
         position: relative;
         z-index: 1;
       }
+      #list {
+        display: flex;
+        flex-direction: column;
+      }
       .item {
+        width: 100%;
         background-color: #27272a;
-        border-radius: 1.4vmin;
         display: flex;
         align-items: center;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+      .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .title {
         color: #f4f4f5;
         font-weight: 500;
-        font-size: 3.2vmin;
-        height: 10vmin;
-        padding: 0 3vmin;
-        gap: 2vmin;
-      }
-      .accent {
-        width: 0.8vmin;
-        height: 46%;
-        border-radius: 99px;
-        background-color: #38bdf8;
-        flex-shrink: 0;
+        flex: 1;
       }
       .dot {
         border-radius: 50%;
-        background-color: #38bdf8;
-        margin-left: auto;
-        flex-shrink: 0;
+        background-color: #52525b;
       }
     </style>
   </head>
@@ -83,7 +84,7 @@
       data-height="1080"
     >
       <div id="bg" class="clip" data-start="0" data-duration="3" style="position:absolute;inset:0;background-color:#09090b"></div>
-      <div id="list" class="clip" data-start="0" data-duration="3"></div>
+      <div id="list-outer" class="clip" data-start="0" data-duration="3"><div id="list"></div></div>
     </div>
     <script>
       (function () {
@@ -108,9 +109,12 @@
         const vars = bitVars();
         const root = document.getElementById("root");
         const bg = document.getElementById("bg");
-        const list = document.getElementById("list");
         const view = hyperbits.viewport(root);
+        const vmin = view.vmin;
+        const unit = view.height / 1080;
         bg.style.backgroundColor = vars.background;
+        const outer = document.getElementById("list-outer");
+        const list = document.getElementById("list");
         const items = [
           { title: "Dashboard", path: "M3 13h8V3H3v10zm10 8h8V3h-8v18zM3 21h8v-6H3v6z" },
           { title: "Analytics", path: "M3 17l6-6 4 4 8-8" },
@@ -119,44 +123,45 @@
           { title: "Messages", path: "M4 4h16v12H7l-3 3V4z" },
           { title: "Notifications", path: "M12 22a2 2 0 002-2H10a2 2 0 002 2zm6-6V11a6 6 0 10-12 0v5L4 18v1h16v-1l-2-2z" },
         ];
-        const itemWidth = view.width * 0.72;
-        const itemHeight = view.vmin * 10;
-        const iconSize = view.vmin * 3.6;
+        const itemWidth = Math.min(view.width * 0.8, 600 * unit);
+        const itemHeight = 80 * unit;
         list.style.width = itemWidth + "px";
-        list.style.gap = view.vmin * 2.4 + "px";
+        list.style.gap = 16 * unit + "px";
         for (const item of items) {
           const row = document.createElement("div");
           row.className = "item";
           row.style.height = itemHeight + "px";
-          row.style.padding = "0 " + view.vmin * 3 + "px";
-          row.style.gap = view.vmin * 2 + "px";
-          row.style.fontSize = view.vmin * 3.2 + "px";
-          row.style.borderRadius = view.vmin * 1.4 + "px";
-          const accent = document.createElement("div");
-          accent.className = "accent";
-          accent.style.width = view.vmin * 0.8 + "px";
-          accent.style.backgroundColor = vars.color;
+          row.style.borderRadius = 12 * unit + "px";
+          row.style.padding = "0 " + 24 * unit + "px";
+          row.style.gap = 16 * unit + "px";
+          const icon = document.createElement("div");
+          icon.className = "icon";
+          icon.style.width = 24 * unit + "px";
+          icon.style.height = 24 * unit + "px";
           const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          svg.setAttribute("width", String(iconSize));
-          svg.setAttribute("height", String(iconSize));
+          svg.setAttribute("width", String(24 * unit));
+          svg.setAttribute("height", String(24 * unit));
           svg.setAttribute("viewBox", "0 0 24 24");
           svg.setAttribute("fill", vars.color);
           const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
           path.setAttribute("d", item.path);
           svg.append(path);
+          icon.append(svg);
           const title = document.createElement("div");
+          title.className = "title";
           title.textContent = item.title;
-          title.style.flex = "1";
+          title.style.fontSize = 20 * unit + "px";
           const dot = document.createElement("div");
           dot.className = "dot";
-          dot.style.width = view.vmin * 1.2 + "px";
-          dot.style.height = view.vmin * 1.2 + "px";
-          dot.style.backgroundColor = vars.color;
-          row.append(accent, svg, title, dot);
+          dot.style.width = 8 * unit + "px";
+          dot.style.height = 8 * unit + "px";
+          row.append(icon, title, dot);
           list.append(row);
         }
         const timeline = gsap.timeline({ paused: true });
-        hyperbits.stagger(list.children, { y: [view.vmin * 5, 0], opacity: [0, 1], scale: [0.9, 1], duration: 40 / 30, stagger: 3 / 30, ease: "easeOutCubic" }, timeline);
+        timeline.fromTo(list, { y: 200 * unit }, { y: -100 * unit, duration: 1, ease: hyperbits.Easing.easeInOutCubic }, 0);
+        hyperbits.stagger(list.children, { y: [50 * unit, 0], opacity: [0, 1], scale: [0.9, 1], duration: 40 / 30, stagger: 3 / 30, ease: "easeOutCubic", at: 0 }, timeline);
+        timeline.to({}, { duration: 3 }, 0);
         registerTimeline("list-reveal", timeline);
 
       })();

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Particle color","default":"#38bdf8"},{"id":"background","type":"color","label":"Background","default":"#020617"}]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Cell color","default":"#ffffff"},{"id":"background","type":"color","label":"Background","default":"#100f0f"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -7,13 +7,11 @@
     <script src="hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
-        --bg: #020617;
-        --fg: #f8fafc;
-        --muted: #94a3b8;
-        --accent: #38bdf8;
-        --accent-2: #f59e0b;
-        --danger: #f43f5e;
-        --ok: #34d399;
+        --bg: #100f0f;
+        --fg: #fcc192;
+        --primary: #ec8b49;
+        --surface-dark: #1c1b1a;
+        --surface-light: #343331;
       }
       * {
         margin: 0;
@@ -26,7 +24,7 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background-color: #020617;
+        background-color: #100f0f;
       }
       #root {
         width: 100%;
@@ -50,12 +48,12 @@
       class="clip"
       data-composition-id="particles-grid"
       data-start="0"
-      data-duration="6.67"
+      data-duration="6.667"
       data-width="1920"
       data-height="1080"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="6.67" style="position:absolute;inset:0;background-color:#020617"></div>
-      <canvas id="stage" class="clip" data-start="0" data-duration="6.67" style="position:absolute;inset:0;width:100%;height:100%;z-index:1"></canvas>
+      <div id="bg" class="clip" data-start="0" data-duration="6.667" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <canvas id="stage" class="clip" data-start="0" data-duration="6.667" style="position:absolute;inset:0;width:100%;height:100%;z-index:1"></canvas>
     </div>
     <script>
       (function () {
@@ -80,46 +78,62 @@
         const vars = bitVars();
         const root = document.getElementById("root");
         const bg = document.getElementById("bg");
-        const canvas = document.getElementById("stage");
         const view = hyperbits.viewport(root);
+        const vmin = view.vmin;
+        const vmax = view.vmax;
         bg.style.backgroundColor = vars.background;
+        const canvas = document.getElementById("stage");
+        canvas.setAttribute("data-color", vars.color);
         canvas.width = view.width;
         canvas.height = view.height;
-        const cols = 20;
-        const rows = 12;
-        const cellW = view.width / cols;
-        const cellH = view.height / rows;
+        const gridSize = Math.floor(view.width * 0.05);
+        const jumpInterval = 30;
+        const snapToGrid = function (particle, age) {
+          particle.position.x = Math.floor(particle.position.x / gridSize) * gridSize;
+          particle.position.y = Math.floor(particle.position.y / gridSize) * gridSize;
+          if (age % jumpInterval === 0 && age > 0) {
+            const step = Math.floor(age / jumpInterval);
+            const dir = (particle.seed + step) % 4;
+            if (dir === 0) particle.position.x += gridSize;
+            if (dir === 1) particle.position.x -= gridSize;
+            if (dir === 2) particle.position.y += gridSize;
+            if (dir === 3) particle.position.y -= gridSize;
+          }
+        };
+        const fadeIn = function (particle, age) {
+          particle.opacity = Math.min(1, Math.max(0, age / 10));
+        };
+        const shapes = ["square", "circle", "diamond"];
+        const alphas = [(0x22 / 255) * 0.8, (0x5f / 255) * 0.8, (0x5f / 255) * 0.8];
         const simulator = hyperbits.createParticles({
           fps: 30,
           spawners: [{
-            id: "grid",
-            burst: cols * rows,
-            startFrame: 1,
+            id: "spawner-0",
+            rate: 1,
+            max: 50,
             position: { x: view.width / 2, y: view.height / 2 },
-            area: { width: 0, height: 0 },
-            velocity: { x: 0, y: 0 },
-            lifespan: 220,
-            max: cols * rows,
+            area: { width: view.width * 0.52, height: view.height * 0.74 },
+            lifespan: 150,
           }],
-          behaviors: [{
-            id: "lattice",
-            handler: function (particle, age) {
-              const col = particle.index % cols;
-              const row = Math.floor(particle.index / cols);
-              particle.position.x = cellW * (col + 0.5);
-              particle.position.y = cellH * (row + 0.5);
-              particle.opacity = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(age * 0.12 + col * 0.45 + row * 0.35));
-            },
-          }],
+          behaviors: [
+            { id: "snap", handler: snapToGrid },
+            { id: "fade", handler: fadeIn },
+          ],
         });
+        const red = parseInt(vars.color.slice(1, 3), 16);
+        const green = parseInt(vars.color.slice(3, 5), 16);
+        const blue = parseInt(vars.color.slice(5, 7), 16);
         const timeline = gsap.timeline({ paused: true });
         hyperbits.bind(timeline, canvas, simulator, {
-          color: vars.color,
-          size: view.vmin * 1.4,
-          glow: 1.2,
-          shape: "circle",
+          size: gridSize,
+          shape: function (particle) { return shapes[Math.floor(particle.seed * shapes.length)]; },
+          color: function (particle) {
+            const alpha = alphas[Math.floor(particle.seed * shapes.length)];
+            return "rgba(" + red + ", " + green + ", " + blue + ", " + alpha + ")";
+          },
+          offset: { x: gridSize / 2, y: gridSize / 2 },
         });
-        timeline.fromTo(canvas, { x: 0 }, { x: 0.5, duration: 6.67, ease: "none" }, 0);
+        timeline.to({}, { duration: 6.667 }, 0);
         registerTimeline("particles-grid", timeline);
 
       })();

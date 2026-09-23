@@ -1,19 +1,17 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Feature tile","default":"#0ea5e9"},{"id":"background","type":"color","label":"Background","default":"#020617"}]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Tile shadow","default":"#000000"},{"id":"background","type":"color","label":"Background","default":"#09090b"}]'>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=1920, height=1080" />
+    <meta name="viewport" content="width=1080, height=1080" />
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
-        --bg: #020617;
-        --fg: #f8fafc;
-        --muted: #94a3b8;
-        --accent: #38bdf8;
-        --accent-2: #f59e0b;
-        --danger: #f43f5e;
-        --ok: #34d399;
+        --bg: #09090b;
+        --fg: #fcc192;
+        --primary: #ec8b49;
+        --surface-dark: #1c1b1a;
+        --surface-light: #343331;
       }
       * {
         margin: 0;
@@ -23,30 +21,42 @@
       html,
       body {
         margin: 0;
-        width: 1920px;
+        width: 1080px;
         height: 1080px;
         overflow: hidden;
-        background-color: #020617;
+        background-color: #09090b;
       }
       #root {
         width: 100%;
         height: 100%;
         position: relative;
         font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       #stage {
-        position: absolute;
-        inset: 8%;
+        position: relative;
+        transform-style: preserve-3d;
         z-index: 1;
       }
-      .tile {
+      .tile-wrap {
         position: absolute;
-        border-radius: 1.6vmin;
-        overflow: hidden;
+        left: 0;
+        top: 0;
+        width: 0;
+        height: 0;
       }
-      .swatch {
+      .tile {
+        overflow: hidden;
+        backface-visibility: hidden;
+      }
+      .tile img {
         width: 100%;
         height: 100%;
+        object-fit: cover;
+        backface-visibility: hidden;
+        transform: translateZ(0);
       }
     </style>
   </head>
@@ -57,10 +67,10 @@
       data-composition-id="mosaic-reframe"
       data-start="0"
       data-duration="9"
-      data-width="1920"
+      data-width="1080"
       data-height="1080"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="9" style="position:absolute;inset:0;background-color:#020617"></div>
+      <div id="bg" class="clip" data-start="0" data-duration="9" style="position:absolute;inset:0;background-color:#09090b"></div>
       <div id="stage" class="clip" data-start="0" data-duration="9"></div>
     </div>
     <script>
@@ -86,87 +96,117 @@
         const vars = bitVars();
         const root = document.getElementById("root");
         const bg = document.getElementById("bg");
-        const stage = document.getElementById("stage");
         const view = hyperbits.viewport(root);
+        const vmin = view.vmin;
+        const unit = view.height / 1080;
         bg.style.backgroundColor = vars.background;
-        const colors = [vars.color, "#6366f1", "#f43f5e", "#f59e0b", "#22c55e", "#14b8a6", "#e879f9", "#94a3b8", "#f97316", "#38bdf8", "#a3e635", "#f472b6"];
+        const stage = document.getElementById("stage");
+        const containerSize = vmin * 75;
+        const gap = vmin * 1.5;
+        const TILE_COUNT = 12;
+        stage.style.width = containerSize + "px";
+        stage.style.height = containerSize + "px";
+        stage.style.perspective = vmin * 120 + "px";
+        function buildConfigA(size, gapSize) {
+          const cols = 4;
+          const rows = 3;
+          const tileW = (size - (cols - 1) * gapSize) / cols;
+          const tileH = (size - (rows - 1) * gapSize) / rows;
+          const configs = [];
+          for (let index = 0; index < TILE_COUNT; index += 1) {
+            const col = index % cols;
+            const row = Math.floor(index / cols);
+            configs.push({ x: col * (tileW + gapSize), y: row * (tileH + gapSize), w: tileW, h: tileH, rotate: 0 });
+          }
+          return configs;
+        }
+        function buildConfigB(size, gapSize) {
+          const configs = [];
+          const cols = 4;
+          const rows = 3;
+          const cellW = (size - (cols - 1) * gapSize) / cols;
+          const cellH = (size - (rows - 1) * gapSize) / rows;
+          const featureW = cellW * 2 + gapSize;
+          const featureH = cellH * 2 + gapSize;
+          configs.push({ x: 0, y: 0, w: featureW, h: featureH, rotate: 0 });
+          const rightX = featureW + gapSize;
+          const rightW = (size - rightX - gapSize) / 2;
+          configs.push({ x: rightX, y: 0, w: rightW, h: cellH, rotate: 0 });
+          configs.push({ x: rightX + rightW + gapSize, y: 0, w: rightW, h: cellH, rotate: 0 });
+          configs.push({ x: rightX, y: cellH + gapSize, w: rightW, h: cellH, rotate: 0 });
+          configs.push({ x: rightX + rightW + gapSize, y: cellH + gapSize, w: rightW, h: cellH, rotate: 0 });
+          const bottomY = featureH + gapSize;
+          const bottomH = size - bottomY;
+          const bottomCount = 7;
+          const bottomTileW = (size - (bottomCount - 1) * gapSize) / bottomCount;
+          for (let index = 0; index < bottomCount; index += 1) {
+            configs.push({ x: index * (bottomTileW + gapSize), y: bottomY, w: bottomTileW, h: bottomH, rotate: 0 });
+          }
+          return configs;
+        }
+        function buildConfigC(size) {
+          const configs = [];
+          const tileSize = size * 0.2;
+          const step = (size - tileSize) / (TILE_COUNT - 1);
+          for (let index = 0; index < TILE_COUNT; index += 1) {
+            configs.push({ x: step * index, y: step * index, w: tileSize, h: tileSize, rotate: -15 + index * 3 });
+          }
+          return configs;
+        }
+        const configA = buildConfigA(containerSize, gap);
+        const configB = buildConfigB(containerSize, gap);
+        const configC = buildConfigC(containerSize);
+        const ease = hyperbits.Easing.easeInOutCubic;
+        const smoothstep = function (t) { return t * t * (3 - 2 * t); };
+        const hold = hyperbits.hold(60);
+        const radius = vmin * 1.2;
         const tiles = [];
-        for (let index = 0; index < 12; index += 1) {
+        for (let index = 0; index < TILE_COUNT; index += 1) {
+          const a = configA[index];
+          const b = configB[index];
+          const c = configC[index];
+          const maxW = Math.max(a.w, b.w, c.w);
+          const maxH = Math.max(a.h, b.h, c.h);
+          const wrap = document.createElement("div");
+          wrap.className = "tile-wrap";
+          wrap.setAttribute("data-layout-allow-overlap", "");
+          wrap.setAttribute("data-layout-allow-occlusion", "");
           const tile = document.createElement("div");
           tile.className = "tile";
-          tile.style.borderRadius = view.vmin * 1.6 + "px";
-          const swatch = document.createElement("div");
-          swatch.className = "swatch";
-          swatch.style.backgroundColor = colors[index];
-          tile.append(swatch);
-          stage.append(tile);
-          tiles.push(tile);
+          tile.style.width = maxW + "px";
+          tile.style.height = maxH + "px";
+          tile.style.borderRadius = radius + "px";
+          tile.style.boxShadow = "0 " + vmin * 0.4 + "px " + vmin * 1.5 + "px " + vars.color + "66";
+          const image = document.createElement("img");
+          image.src = "https://picsum.photos/seed/" + (index + 1) + "/" + Math.round(maxW * 2) + "/" + Math.round(maxH * 2);
+          image.alt = "";
+          tile.append(image);
+          wrap.append(tile);
+          stage.append(wrap);
+          tiles.push({ index: index, element: tile, a: a, b: b, c: c, maxW: maxW, maxH: maxH, depth: (index - (TILE_COUNT - 1) / 2) * vmin * 1.2 });
         }
-        const stageWidth = view.width * 0.84;
-        const stageHeight = view.height * 0.84;
-        const baseW = stageWidth * 0.22;
-        const baseH = stageHeight * 0.26;
-        function gridPos(index) {
-          const col = index % 4;
-          const row = Math.floor(index / 4);
-          return { x: col * 24, y: row * 30, w: 22, h: 26 };
+        const proxy = { frame: 0 };
+        function render() {
+          const frame = proxy.frame;
+          stage.style.opacity = String(hyperbits.interpolate(frame, [0, 20, 255, 270], [0, 1, 1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }));
+          for (const tile of tiles) {
+            const shift = tile.index * 2;
+            const progress = Math.min(1, Math.max(0, (frame - shift - 90) / 150));
+            const track = function (from, mid, to) {
+              return hyperbits.interpolateKeyframes([from, mid, hold, to], progress, ease, 150);
+            };
+            const sizeRange = [90 + shift, 135 + shift, 195 + shift, 240 + shift];
+            const desiredW = hyperbits.interpolate(frame, sizeRange, [tile.a.w, tile.b.w, tile.b.w, tile.c.w], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: smoothstep });
+            const desiredH = hyperbits.interpolate(frame, sizeRange, [tile.a.h, tile.b.h, tile.b.h, tile.c.h], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: smoothstep });
+            tile.element.style.transform =
+              "translateX(" + track(tile.a.x, tile.b.x, tile.c.x) + "px) translateY(" + track(tile.a.y, tile.b.y, tile.c.y) + "px) translateZ(" + track(0, 0, tile.depth) + "px)" +
+              " rotate(" + track(tile.a.rotate, tile.b.rotate, tile.c.rotate) + "deg) rotateX(" + track(0, 0, -8) + "deg)";
+            tile.element.style.clipPath = "inset(0px " + (tile.maxW - desiredW) + "px " + (tile.maxH - desiredH) + "px 0px round " + radius + "px)";
+          }
         }
-        function featurePos(index) {
-          if (index === 0) return { x: 0, y: 0, w: 46, h: 62 };
-          if (index < 5) return { x: 50, y: (index - 1) * 16, w: 22, h: 14 };
-          return { x: 76, y: (index - 5) * 12, w: 22, h: 10 };
-        }
-        function cascadePos(index) {
-          return { x: 8 + index * 6, y: 8 + index * 6, w: 18, h: 22 };
-        }
-        function toMotion(box) {
-          return {
-            x: (box.x / 100) * stageWidth,
-            y: (box.y / 100) * stageHeight,
-            scaleX: box.w / 22,
-            scaleY: box.h / 26,
-          };
-        }
-        tiles.forEach(function (tile, index) {
-          const start = toMotion(gridPos(index));
-          gsap.set(tile, {
-            width: baseW,
-            height: baseH,
-            transformOrigin: "0 0",
-            x: start.x,
-            y: start.y,
-            scaleX: start.scaleX,
-            scaleY: start.scaleY,
-          });
-        });
         const timeline = gsap.timeline({ paused: true });
-        tiles.forEach(function (tile, index) {
-          const start = toMotion(gridPos(index));
-          const feature = toMotion(featurePos(index));
-          const cascade = toMotion(cascadePos(index));
-          timeline.fromTo(
-            tile,
-            { opacity: 0, scaleX: start.scaleX * 0.8, scaleY: start.scaleY * 0.8 },
-            { opacity: 1, scaleX: start.scaleX, scaleY: start.scaleY, duration: 0.45, ease: "power2.out" },
-            index * 0.04,
-          );
-          timeline.to(tile, {
-            x: feature.x,
-            y: feature.y,
-            scaleX: feature.scaleX,
-            scaleY: feature.scaleY,
-            duration: 1.1,
-            ease: "power3.inOut",
-          }, 2.2);
-          timeline.to(tile, {
-            x: cascade.x,
-            y: cascade.y,
-            scaleX: cascade.scaleX,
-            scaleY: cascade.scaleY,
-            duration: 1.1,
-            ease: "power3.inOut",
-          }, 5.4);
-        });
+        timeline.to(proxy, { frame: 270, duration: 9, ease: "none", onUpdate: render }, 0);
+        render();
         registerTimeline("mosaic-reframe", timeline);
 
       })();

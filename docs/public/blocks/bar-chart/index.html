@@ -1,19 +1,29 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"title","type":"string","label":"Title","default":"Weekly commits by language"},{"id":"color","type":"color","label":"Bar color","default":"#38bdf8"},{"id":"background","type":"color","label":"Background","default":"#0b1220"}]'>
+<html lang="en" data-composition-variables='[{"id":"title","type":"string","label":"Title","default":"Weekly commits by language"},{"id":"color","type":"color","label":"Bar color","default":"#ec8b49"},{"id":"background","type":"color","label":"Background","default":"#100f0f"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Sans";
+        font-weight: 500;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5/files/geist-sans-latin-500-normal.woff2) format("woff2");
+      }
+      @font-face {
+        font-family: "Geist Sans";
+        font-weight: 700;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5/files/geist-sans-latin-700-normal.woff2) format("woff2");
+      }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
-        --bg: #0b1220;
-        --fg: #f8fafc;
-        --muted: #94a3b8;
-        --accent: #38bdf8;
-        --accent-2: #f59e0b;
-        --danger: #f43f5e;
-        --ok: #34d399;
+        --bg: #100f0f;
+        --fg: #fcc192;
+        --primary: #ec8b49;
+        --surface-dark: #1c1b1a;
+        --surface-light: #343331;
       }
       * {
         margin: 0;
@@ -26,60 +36,59 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background-color: #0b1220;
+        background-color: #100f0f;
       }
       #root {
         width: 100%;
         height: 100%;
         position: relative;
-        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        font-family: "Geist Sans", Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+      #chart-wrap {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        color: #f8fafc;
-      }
-      #stage {
-        width: 82%;
-        position: relative;
-        z-index: 1;
+        color: #ffffff;
       }
       #heading {
         font-weight: 700;
-        font-size: 4vmin;
-        margin-bottom: 0.5em;
-        color: #f8fafc;
+        font-size: 4.5vmin;
       }
-      #chart {
+      #rows {
         display: flex;
         flex-direction: column;
-        width: 100%;
       }
       .row {
         display: flex;
         align-items: center;
       }
+      .label-wrap {
+        display: flex;
+        justify-content: flex-end;
+      }
       .label {
-        color: #cbd5e1;
-        font-weight: 600;
-        font-size: 2.8vmin;
+        font-weight: 500;
+        color: #fcc192;
+        display: inline-block;
       }
       .track {
-        background-color: #1e293b;
-        border-radius: 999px;
-        overflow: hidden;
+        display: flex;
+        align-items: center;
       }
       .bar {
-        height: 100%;
-        background-color: #38bdf8;
-        border-radius: 999px;
         transform-origin: left center;
+        background: linear-gradient(90deg, #ec8b49 0%, #fcc192 100%);
       }
       .count {
-        font-variant-numeric: tabular-nums;
-        color: #e2e8f0;
+        display: inline-flex;
+        align-items: center;
         font-weight: 700;
-        font-size: 2.8vmin;
+        font-variant-numeric: tabular-nums;
       }
     </style>
   </head>
@@ -93,10 +102,10 @@
       data-width="1920"
       data-height="1080"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="4" style="position:absolute;inset:0;background-color:#0b1220"></div>
-      <div id="stage" class="clip" data-start="0" data-duration="4">
-        <h1 id="heading">Weekly commits by language</h1>
-        <div id="chart"></div>
+      <div id="bg" class="clip" data-start="0" data-duration="4" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <div id="chart-wrap" class="clip" data-start="0" data-duration="4">
+        <div id="heading-wrap"><div id="heading">Weekly commits by language</div></div>
+        <div id="rows"></div>
       </div>
     </div>
     <script>
@@ -122,69 +131,69 @@
         const vars = bitVars();
         const root = document.getElementById("root");
         const bg = document.getElementById("bg");
-        const heading = document.getElementById("heading");
-        const chart = document.getElementById("chart");
         const view = hyperbits.viewport(root);
+        const vmin = view.vmin;
         bg.style.backgroundColor = vars.background;
+        const heading = document.getElementById("heading");
+        const rows = document.getElementById("rows");
         heading.textContent = vars.title;
-        heading.style.color = vars.color;
-        heading.setAttribute("data-color", vars.color);
-        heading.style.fontSize = view.vmin * 4 + "px";
-        heading.style.marginBottom = view.vmin * 4.5 + "px";
-        const rows = [
+        const data = [
           { label: "TypeScript", value: 84 },
           { label: "Rust", value: 67 },
           { label: "Python", value: 58 },
           { label: "Go", value: 41 },
           { label: "Zig", value: 23 },
         ];
-        const maxValue = 84;
+        const maxValue = Math.max.apply(null, data.map(function (row) { return row.value; }));
         const chartWidth = view.vw * 60;
-        const labelWidth = view.vw * 12;
-        const barHeight = view.vmin * 7;
-        const gap = view.vmin * 3;
-        chart.style.gap = gap + "px";
-        const bars = [];
-        const counters = [];
-        for (const row of rows) {
+        const labelWidth = view.vw * 14;
+        const barHeight = vmin * 7;
+        const gap = vmin * 3;
+        heading.style.fontSize = vmin * 4.5 + "px";
+        heading.style.marginBottom = gap * 1.5 + "px";
+        heading.style.marginLeft = labelWidth + "px";
+        rows.style.gap = gap + "px";
+        const timeline = gsap.timeline({ paused: true });
+        timeline.fromTo(heading, { opacity: 0, y: vmin * 2 }, { opacity: 1, y: 0, duration: 1, ease: hyperbits.Easing.easeOutCubic }, 0);
+        data.forEach(function (row, index) {
+          const delay = (15 + index * 8) / 30;
           const line = document.createElement("div");
           line.className = "row";
-          line.style.gap = view.vmin * 2 + "px";
-          const label = document.createElement("div");
+          line.style.height = barHeight + "px";
+          line.style.gap = vmin * 2 + "px";
+          const labelWrap = document.createElement("div");
+          labelWrap.className = "label-wrap";
+          labelWrap.style.width = labelWidth + "px";
+          const label = document.createElement("span");
           label.className = "label";
           label.textContent = row.label;
-          label.style.width = labelWidth + "px";
-          label.style.fontSize = view.vmin * 2.8 + "px";
+          label.style.fontSize = vmin * 3 + "px";
+          labelWrap.append(label);
           const track = document.createElement("div");
           track.className = "track";
           track.style.width = chartWidth + "px";
-          track.style.height = barHeight + "px";
+          track.style.gap = vmin * 2 + "px";
           const bar = document.createElement("div");
           bar.className = "bar";
-          bar.style.width = (row.value / maxValue) * 100 + "%";
-          bar.style.backgroundColor = vars.color;
-          track.append(bar);
-          const count = document.createElement("div");
+          bar.style.width = (row.value / maxValue) * chartWidth + "px";
+          bar.style.height = barHeight + "px";
+          bar.style.borderRadius = vmin + "px";
+          bar.style.background = "linear-gradient(90deg, " + vars.color + " 0%, #fcc192 100%)";
+          const countWrap = document.createElement("div");
+          const count = document.createElement("span");
           count.className = "count";
-          count.style.width = view.vw * 6 + "px";
-          count.style.fontSize = view.vmin * 2.8 + "px";
+          count.style.fontSize = vmin * 3.2 + "px";
+          countWrap.append(count);
           const counter = hyperbits.createCounter(count, {});
-          line.append(label, track, count);
-          chart.append(line);
-          bars.push(bar);
-          counters.push({ counter: counter, value: row.value });
-        }
-        const timeline = gsap.timeline({ paused: true });
-        hyperbits.stagger(bars, { scaleX: [0, 1], duration: 45 / 30, stagger: 8 / 30, ease: "easeOutCubic" }, timeline);
-        timeline.fromTo(heading, { opacity: 0, y: view.vmin * 2 }, { opacity: 1, y: 0, duration: 1, ease: "power3.out" }, 0);
-        counters.forEach(function (item, index) {
-          timeline.fromTo(
-            item.counter.proxy,
-            { value: 0 },
-            { value: item.value, duration: 45 / 30, ease: "power2.out", onUpdate: item.counter.apply },
-            8 / 30 * index,
-          );
+          track.append(bar, countWrap);
+          line.append(labelWrap, track);
+          rows.append(line);
+          timeline.fromTo(label, { opacity: 0, x: -vmin * 3 }, { opacity: 1, x: 0, duration: 25 / 30, ease: hyperbits.Easing.easeOutCubic }, delay);
+          timeline.fromTo(bar, { scaleX: 0 }, { scaleX: 1, duration: 45 / 30, ease: hyperbits.Easing.easeOutQuart }, delay);
+          timeline.fromTo(count, { opacity: 0 }, { opacity: 1, duration: 15 / 30, ease: "none" }, delay);
+          timeline.fromTo(counter.proxy, { value: 0 }, { value: row.value, duration: 45 / 30, ease: hyperbits.Easing.easeOutQuart, onUpdate: counter.apply }, delay);
         });
+        timeline.to({}, { duration: 4 }, 0);
         registerTimeline("bar-chart", timeline);
 
       })();

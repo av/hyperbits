@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Particle color","default":"#ebb03b"},{"id":"background","type":"color","label":"Background","default":"#140d08"}]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Spark color","default":"#ebb03b"},{"id":"background","type":"color","label":"Background","default":"#100f0f"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -7,13 +7,11 @@
     <script src="hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
-        --bg: #140d08;
-        --fg: #f8fafc;
-        --muted: #94a3b8;
-        --accent: #38bdf8;
-        --accent-2: #f59e0b;
-        --danger: #f43f5e;
-        --ok: #34d399;
+        --bg: #100f0f;
+        --fg: #fcc192;
+        --primary: #ec8b49;
+        --surface-dark: #1c1b1a;
+        --surface-light: #343331;
       }
       * {
         margin: 0;
@@ -26,7 +24,7 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background-color: #140d08;
+        background-color: #100f0f;
       }
       #root {
         width: 100%;
@@ -50,12 +48,12 @@
       class="clip"
       data-composition-id="particles-fountain"
       data-start="0"
-      data-duration="6"
+      data-duration="2"
       data-width="1920"
       data-height="1080"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="6" style="position:absolute;inset:0;background-color:#140d08"></div>
-      <canvas id="stage" class="clip" data-start="0" data-duration="6" style="position:absolute;inset:0;width:100%;height:100%;z-index:1"></canvas>
+      <div id="bg" class="clip" data-start="0" data-duration="2" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <canvas id="stage" class="clip" data-start="0" data-duration="2" style="position:absolute;inset:0;width:100%;height:100%;z-index:1"></canvas>
     </div>
     <script>
       (function () {
@@ -80,43 +78,46 @@
         const vars = bitVars();
         const root = document.getElementById("root");
         const bg = document.getElementById("bg");
-        const canvas = document.getElementById("stage");
         const view = hyperbits.viewport(root);
+        const vmin = view.vmin;
+        const vmax = view.vmax;
         bg.style.backgroundColor = vars.background;
+        const canvas = document.getElementById("stage");
+        canvas.setAttribute("data-color", vars.color);
         canvas.width = view.width;
         canvas.height = view.height;
+        const variants = [
+          { size: vmax * 1, color: vars.color + "99" },
+          { size: vmax * 2, color: vars.color + "22" },
+          { size: vmax * 1.5, color: "#808080" },
+          { size: vmax * 30, color: "rgba(176, 126, 223, 0.05)" },
+        ];
+        const variantOf = function (particle) {
+          return variants[Math.floor(particle.seed * variants.length)];
+        };
         const simulator = hyperbits.createParticles({
           fps: 30,
           spawners: [{
-            id: "jet",
+            id: "spawner-0",
             rate: 10,
-            burst: 24,
-            startFrame: 40,
-            max: 220,
-            position: { x: view.width / 2, y: view.height * 0.92 },
-            area: { width: view.width * 0.02, height: 0 },
-            velocity: {
-              x: 0,
-              y: -view.height * 0.018,
-              varianceX: view.width * 0.012,
-              varianceY: view.height * 0.004,
-            },
-            lifespan: 110,
-            lifespanVariance: 16,
+            burst: 20,
+            startFrame: 100,
+            max: 200,
+            position: { x: view.width / 2, y: view.height * 1.1 },
+            area: { width: view.width * 0.1, height: 0 },
+            velocity: { x: 0, y: -view.height * 0.05, varianceX: view.width * 0.1, varianceY: view.height * 0.01 },
+            lifespan: 100,
           }],
-          behaviors: [
-            { id: "gravity", handler: hyperbits.createGravity({ y: 0.22 }) },
-            { id: "fade", handler: hyperbits.createOpacityOverLife([1, 1, 0]) },
-          ],
+          behaviors: [{ id: "gravity", handler: hyperbits.createGravity({ y: 0.2 }) }],
         });
         const timeline = gsap.timeline({ paused: true });
         hyperbits.bind(timeline, canvas, simulator, {
-          color: vars.color,
-          size: view.vmin * 1.6,
-          glow: 1.8,
-          shape: "circle",
+          shape: "glow",
+          size: function (particle) { return variantOf(particle).size * Math.SQRT1_2; },
+          color: function (particle) { return variantOf(particle).color; },
+          offset: function (particle) { const size = variantOf(particle).size; return { x: size / 2, y: size / 2 }; },
         });
-        timeline.to({}, { duration: 6 }, 0);
+        timeline.to({}, { duration: 2 }, 0);
         registerTimeline("particles-fountain", timeline);
 
       })();

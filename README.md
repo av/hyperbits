@@ -12,7 +12,7 @@ Ready-made animation bits for [HyperFrames](https://github.com/heygen-com/hyperf
 
 ## Status
 
-0.1.0 is ready to publish. Helpers, 46 bits, CLI, MCP, docs, demo, and skill ship in this package. Publish itself is a manual step (`npm publish`).
+0.1.0: helpers, 46 bits, CLI, MCP server, docs site, demo reel and agent skill. Every bit is verified against its remotion-bits original; see [docs/parity/README.md](./docs/parity/README.md).
 
 ## Single-step usage
 
@@ -234,13 +234,13 @@ HyperFrames already ships a registry of installable "blocks" via `npx hyperframe
 
 ## Decisions
 
-Settled during phase 1 from HyperFrames 0.8.50 (`/tmp/hf/package`) and remotion-bits. Not guesses.
+Settled against HyperFrames 0.8.50 and remotion-bits.
 
 ### `npx hyperframes add` and third-party registries
 
 `hyperframes add` does **not** take a registry URL. `npx hyperframes add --help` (v0.8.50) accepts one positional `NAME` (registry item name or tag) plus `--dir`, `--clipboard` / `--no-clipboard`, `--json`, `--vars`, `--force`. There is no `--registry` flag and no URL argument.
 
-The name is looked up in a single registry base URL (`/tmp/hf/package/dist/cli.js` `runAdd` → `resolveItemWithDependencies(opts.name, { baseUrl: config.registry })`). Names must match `^[a-z0-9]([a-z0-9-]*[a-z0-9])?$` (`validRegistryName`); a URL cannot be an item name.
+The name is looked up in a single registry base URL (`runAdd` in the HyperFrames CLI resolves the name against `config.registry`). Names must match `^[a-z0-9]([a-z0-9-]*[a-z0-9])?$` (`validRegistryName`); a URL cannot be an item name.
 
 The default registry is `https://raw.githubusercontent.com/heygen-com/hyperframes/main/registry` (`DEFAULT_REGISTRY_URL` in `cli.js`). A project can point at a different **registry base** by setting `registry` in `hyperframes.json` (`DEFAULT_PROJECT_CONFIG` in `cli.js`). That base must serve `registry.json` plus `<type-dir>/<name>/registry-item.json` (`fetchRegistryManifest` / `fetchItemManifest`). Item types live under `examples/`, `blocks/`, `components/` (`ITEM_TYPE_DIRS`). Custom bases are already handled in error text ("set by this project's hyperframes.json, not the public registry").
 

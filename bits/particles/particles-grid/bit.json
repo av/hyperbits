@@ -7,7 +7,7 @@
     "grid",
     "snap"
   ],
-  "duration": 6.67,
+  "duration": 6.667,
   "width": 1920,
   "height": 1080,
   "helpers": [
@@ -32,7 +32,7 @@
       "width": 1920,
       "height": 1080
     },
-    "duration": 6.67,
+    "duration": 6.667,
     "files": [
       {
         "path": "index.html",

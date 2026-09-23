@@ -1,19 +1,29 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"title","type":"string","label":"Title","default":"Service health"},{"id":"color","type":"color","label":"Ring color","default":"#38bdf8"},{"id":"background","type":"color","label":"Background","default":"#0b1220"}]'>
+<html lang="en" data-composition-variables='[{"id":"title","type":"string","label":"Caption (empty hides it)","default":""},{"id":"color","type":"color","label":"Ring color","default":"#ec8b49"},{"id":"background","type":"color","label":"Background","default":"#100f0f"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Sans";
+        font-weight: 500;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5/files/geist-sans-latin-500-normal.woff2) format("woff2");
+      }
+      @font-face {
+        font-family: "Geist Sans";
+        font-weight: 700;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5/files/geist-sans-latin-700-normal.woff2) format("woff2");
+      }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
-        --bg: #0b1220;
-        --fg: #f8fafc;
-        --muted: #94a3b8;
-        --accent: #38bdf8;
-        --accent-2: #f59e0b;
-        --danger: #f43f5e;
-        --ok: #34d399;
+        --bg: #100f0f;
+        --fg: #fcc192;
+        --primary: #ec8b49;
+        --surface-dark: #1c1b1a;
+        --surface-light: #343331;
       }
       * {
         margin: 0;
@@ -26,37 +36,33 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background-color: #0b1220;
+        background-color: #100f0f;
       }
       #root {
         width: 100%;
         height: 100%;
         position: relative;
-        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        font-family: "Geist Sans", Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+      #wrap {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        color: #f8fafc;
-      }
-      #stage {
-        width: 80%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        position: relative;
-        z-index: 1;
+        color: #ffffff;
       }
       #heading {
         font-weight: 700;
         font-size: 4vmin;
-        margin-bottom: 6vmin;
-        color: #f8fafc;
+        color: #fcc192;
+        display: none;
       }
       #row {
         display: flex;
-        width: 100%;
-        justify-content: space-around;
       }
       .stat {
         display: flex;
@@ -66,20 +72,34 @@
       .ring-wrap {
         position: relative;
       }
-      .value {
+      .ring-wrap svg {
+        transform: rotate(-90deg);
+      }
+      .value-wrap {
         position: absolute;
         inset: 0;
         display: flex;
         align-items: center;
         justify-content: center;
+      }
+      .value {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
         font-weight: 700;
         font-variant-numeric: tabular-nums;
+        line-height: 1;
+      }
+      .unit {
+        position: absolute;
+        left: 100%;
+        top: 0;
+        color: #fcc192;
       }
       .label {
-        color: #94a3b8;
-        font-weight: 600;
+        font-weight: 500;
+        color: #fcc192;
         text-transform: uppercase;
-        letter-spacing: 0.08em;
       }
     </style>
   </head>
@@ -93,9 +113,9 @@
       data-width="1920"
       data-height="1080"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="4" style="position:absolute;inset:0;background-color:#0b1220"></div>
-      <div id="stage" class="clip" data-start="0" data-duration="4">
-        <h1 id="heading">Service health</h1>
+      <div id="bg" class="clip" data-start="0" data-duration="4" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <div id="wrap" class="clip" data-start="0" data-duration="4">
+        <div id="heading"></div>
         <div id="row"></div>
       </div>
     </div>
@@ -122,91 +142,99 @@
         const vars = bitVars();
         const root = document.getElementById("root");
         const bg = document.getElementById("bg");
+        const view = hyperbits.viewport(root);
+        const vmin = view.vmin;
+        bg.style.backgroundColor = vars.background;
         const heading = document.getElementById("heading");
         const row = document.getElementById("row");
-        const view = hyperbits.viewport(root);
-        bg.style.backgroundColor = vars.background;
-        heading.textContent = vars.title;
-        heading.style.color = vars.color;
-        heading.setAttribute("data-color", vars.color);
-        heading.style.fontSize = view.vmin * 4 + "px";
-        heading.style.marginBottom = view.vmin * 6 + "px";
-        row.style.gap = view.vmin * 8 + "px";
+        if (String(vars.title)) {
+          heading.textContent = vars.title;
+          heading.style.display = "block";
+          heading.style.fontSize = vmin * 4 + "px";
+          heading.style.marginBottom = vmin * 4 + "px";
+        }
+        row.style.gap = vmin * 8 + "px";
         const stats = [
           { label: "Uptime", value: 99.9, decimals: 1 },
           { label: "Test coverage", value: 87, decimals: 0 },
           { label: "Cache hits", value: 64, decimals: 0 },
         ];
-        const ringSize = view.vmin * 30;
-        const strokeWidth = view.vmin * 2.4;
+        const ringSize = vmin * 34;
+        const strokeWidth = vmin * 2.6;
         const radius = (ringSize - strokeWidth) / 2;
         const circumference = 2 * Math.PI * radius;
-        const rings = [];
-        stats.forEach(function (stat) {
+        const svgNs = "http://www.w3.org/2000/svg";
+        const timeline = gsap.timeline({ paused: true });
+        const cards = stats.map(function (stat, index) {
           const card = document.createElement("div");
           card.className = "stat";
+          card.style.gap = vmin * 3 + "px";
           const wrap = document.createElement("div");
           wrap.className = "ring-wrap";
           wrap.style.width = ringSize + "px";
           wrap.style.height = ringSize + "px";
-          const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          const svg = document.createElementNS(svgNs, "svg");
           svg.setAttribute("width", String(ringSize));
           svg.setAttribute("height", String(ringSize));
           svg.setAttribute("viewBox", "0 0 " + ringSize + " " + ringSize);
-          function circle(color, dash) {
-            const node = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          function circle(color) {
+            const node = document.createElementNS(svgNs, "circle");
             node.setAttribute("cx", String(ringSize / 2));
             node.setAttribute("cy", String(ringSize / 2));
             node.setAttribute("r", String(radius));
             node.setAttribute("fill", "none");
             node.setAttribute("stroke", color);
             node.setAttribute("stroke-width", String(strokeWidth));
-            node.setAttribute("stroke-linecap", "round");
-            node.setAttribute("transform", "rotate(-90 " + ringSize / 2 + " " + ringSize / 2 + ")");
-            node.setAttribute("stroke-dasharray", String(circumference));
-            node.setAttribute("stroke-dashoffset", String(dash));
             svg.append(node);
             return node;
           }
-          circle("#1e293b", 0);
-          const arc = circle(vars.color, circumference);
+          circle("#343331");
+          const arc = circle(vars.color);
+          arc.setAttribute("stroke-linecap", "round");
+          arc.setAttribute("stroke-dasharray", String(circumference));
+          arc.setAttribute("stroke-dashoffset", String(circumference));
+          const valueWrap = document.createElement("div");
+          valueWrap.className = "value-wrap";
           const valueEl = document.createElement("div");
           valueEl.className = "value";
-          valueEl.style.fontSize = view.vmin * 5 + "px";
-          valueEl.style.color = vars.color;
-          const counter = hyperbits.createCounter(valueEl, { decimals: stat.decimals, postfix: "%" });
-          wrap.append(svg, valueEl);
+          valueEl.style.fontSize = vmin * 7 + "px";
+          const number = document.createElement("span");
+          const unit = document.createElement("span");
+          unit.className = "unit";
+          unit.textContent = "%";
+          unit.style.marginLeft = vmin * 0.5 + "px";
+          unit.style.fontSize = vmin * 3 + "px";
+          valueEl.append(number, unit);
+          valueWrap.append(valueEl);
+          wrap.append(svg, valueWrap);
           const label = document.createElement("div");
           label.className = "label";
           label.textContent = stat.label;
-          label.style.fontSize = view.vmin * 2.4 + "px";
-          label.style.marginTop = view.vmin * 2 + "px";
+          label.style.fontSize = vmin * 3 + "px";
+          label.style.letterSpacing = vmin * 0.1 + "px";
           card.append(wrap, label);
           row.append(card);
-          rings.push({ arc: arc, counter: counter, value: stat.value });
-        });
-        const timeline = gsap.timeline({ paused: true });
-        hyperbits.stagger(row.children, { opacity: [0, 1], scale: [0.6, 1], duration: 1, stagger: 12 / 30, delay: 5 / 30, ease: "spring" }, timeline);
-        timeline.fromTo(heading, { opacity: 0, y: view.vmin * 2 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0);
-        rings.forEach(function (item, index) {
+          const counter = hyperbits.createCounter(number, { decimals: stat.decimals });
           const delay = (20 + index * 12) / 30;
           const proxy = { progress: 0 };
-          timeline.fromTo(
-            proxy,
-            { progress: 0 },
-            {
-              progress: item.value / 100,
-              duration: 2,
-              ease: "power2.out",
-              onUpdate: function () {
-                item.arc.setAttribute("stroke-dashoffset", String(circumference * (1 - proxy.progress)));
-                item.counter.proxy.value = proxy.progress * 100;
-                item.counter.apply();
-              },
+          timeline.to(proxy, {
+            progress: 1,
+            duration: 2,
+            ease: "none",
+            onUpdate: function () {
+              const eased = hyperbits.Easing.easeOutCubic(proxy.progress);
+              arc.setAttribute("stroke-dashoffset", String(circumference * (1 - (stat.value / 100) * eased)));
+              counter.proxy.value = stat.value * eased;
+              counter.apply();
             },
-            delay,
-          );
+          }, delay);
+          return card;
         });
+        hyperbits.stagger(cards, { opacity: [0, 1], scale: [0.6, 1], duration: 1, stagger: 12 / 30, delay: 5 / 30, ease: "spring", at: 0 }, timeline);
+        if (heading.style.display === "block") {
+          timeline.fromTo(heading, { opacity: 0, y: vmin * 2 }, { opacity: 1, y: 0, duration: 1, ease: hyperbits.Easing.easeOutCubic }, 0);
+        }
+        timeline.to({}, { duration: 4 }, 0);
         registerTimeline("stat-rings", timeline);
 
       })();

@@ -1,19 +1,24 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"words","type":"string","label":"Words","default":"SEEK,FRAME,MOTION,SCALE,DEPTH,LIGHT,TIME,SPACE"},{"id":"color","type":"color","label":"Text color","default":"#e2e8f0"},{"id":"background","type":"color","label":"Background","default":"#000000"}]'>
+<html lang="en" data-composition-variables='[{"id":"words","type":"string","label":"Words (comma separated)","default":"GPT,Claude,PaLM,Gemini,LLaMA,Mistral,Mixtral,Falcon,BLOOM,Kimi,MiniMax,Qwen"},{"id":"color","type":"color","label":"Word color","default":"#fcc192"},{"id":"background","type":"color","label":"Background","default":"#100f0f"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Sans";
+        font-weight: 700;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5/files/geist-sans-latin-700-normal.woff2) format("woff2");
+      }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <script src="hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
-        --bg: #000000;
-        --fg: #f8fafc;
-        --muted: #94a3b8;
-        --accent: #38bdf8;
-        --accent-2: #f59e0b;
-        --danger: #f43f5e;
-        --ok: #34d399;
+        --bg: #100f0f;
+        --fg: #fcc192;
+        --primary: #ec8b49;
+        --surface-dark: #1c1b1a;
+        --surface-light: #343331;
       }
       * {
         margin: 0;
@@ -26,26 +31,30 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background-color: #000000;
+        background-color: #100f0f;
       }
       #root {
         width: 100%;
         height: 100%;
         position: relative;
-        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        font-family: "Geist Sans", Inter, ui-sans-serif, system-ui, sans-serif;
       }
-      #scene {
+      #space {
         position: absolute;
         inset: 0;
         z-index: 1;
+        overflow: hidden;
+      }
+      .fly {
+        position: absolute;
+        left: 0;
+        top: 0;
       }
       .word {
-        color: #e2e8f0;
-        font-weight: 800;
-        letter-spacing: 0.08em;
-        white-space: nowrap;
-        line-height: 1;
-        font-size: 8vmin;
+        display: inline-block;
+        text-align: center;
+        font-weight: 700;
+        white-space: pre;
       }
     </style>
   </head>
@@ -59,8 +68,8 @@
       data-width="1920"
       data-height="1080"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#000000"></div>
-      <div id="scene"></div>
+      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <div id="space" class="clip" data-start="0" data-duration="10"></div>
     </div>
     <script>
       (function () {
@@ -85,86 +94,67 @@
         const vars = bitVars();
         const root = document.getElementById("root");
         const bg = document.getElementById("bg");
-        const sceneEl = document.getElementById("scene");
-        const view = hyperbits.viewport(root);
+                const view = hyperbits.viewport(root);
+        const vmin = view.vmin;
+        const unit = view.height / 1080;
         bg.style.backgroundColor = vars.background;
-        bg.setAttribute("data-color", vars.color);
-
-        const list = String(vars.words).split(",").map(function (part) { return part.trim(); }).filter(Boolean);
-        const slots = [
-          { x: -42, y: -26 },
-          { x: 42, y: 26 },
-          { x: -42, y: 26 },
-          { x: 42, y: -26 },
-          { x: -48, y: 0 },
-          { x: 48, y: 0 },
-          { x: 0, y: -20 },
-          { x: 0, y: 22 },
-        ];
-        const depth = view.vmin * 40;
-        const perspectivePx = 900;
-        const count = Math.max(list.length, slots.length);
-        const elements = [];
-        for (let index = 0; index < Math.min(count, slots.length); index += 1) {
-          const node = document.createElement("div");
-          node.className = "word";
-          node.textContent = list[index % list.length];
-          node.style.fontSize = view.vmin * 8 + "px";
-          node.style.color = vars.color;
+        const space = document.getElementById("space");
+        space.style.perspective = (view.width < 500 ? 1000 : 5000) + "px";
+        const words = String(vars.words).split(",").map(function (part) { return part.trim(); }).filter(Boolean);
+        space.setAttribute("aria-label", vars.words);
+        space.style.color = vars.color;
+        const simulator = hyperbits.createParticles({
+          fps: 30,
+          spawners: [{
+            id: "spawner-0",
+            rate: 0.2,
+            area: { width: view.width, height: view.height, depth: -vmin * 50 },
+            position: { x: view.width / 2, y: view.height / 2 },
+            lifespan: 100,
+            velocity: { x: 0, y: 0, z: vmin * 10, varianceZ: vmin * 10 },
+          }],
+        });
+        const nodes = new Map();
+        function nodeFor(particle) {
+          let node = nodes.get(particle.id);
+          if (node) return node;
+          node = document.createElement("div");
+          node.className = "fly";
           node.setAttribute("data-layout-allow-overlap", "");
           node.setAttribute("data-layout-allow-occlusion", "");
-          node.setAttribute("data-lane-x", String(slots[index].x));
-          node.setAttribute("data-lane-y", String(slots[index].y));
-          node.setAttribute("data-lane-z", String(index + 1));
-          elements.push({
-            element: node,
-            centered: true,
-            x: slots[index].x * view.vmin,
-            y: slots[index].y * view.vmin,
-            z: (index + 1) * depth,
-          });
+          node.setAttribute("data-layout-allow-overflow", "");
+          const word = document.createElement("span");
+          word.className = "word";
+          word.textContent = words[Math.floor(particle.seed * words.length)];
+          word.style.fontSize = vmin * 10 + "px";
+          word.style.color = vars.color;
+          node.append(word);
+          space.append(node);
+          nodes.set(particle.id, { node: node, word: word });
+          return nodes.get(particle.id);
         }
-
-        const stepCount = 7;
-        const steps = [];
-        for (let index = 0; index < stepCount; index += 1) {
-          steps.push({
-            id: "z" + index,
-            x: 0,
-            y: 0,
-            z: index * depth + view.vmin * 8,
-            duration: 10 / stepCount,
-          });
-        }
-
-        const scene = hyperbits.createScene3D(sceneEl, {
-          perspective: perspectivePx,
-          transitionDuration: 1.28,
-          easing: "easeInOutCubic",
-          steps: steps,
-          elements: elements,
-        });
-        sceneEl.style.position = "absolute";
-        sceneEl.style.inset = "0";
-        sceneEl.style.zIndex = "1";
-
-        const timeline = gsap.timeline({ paused: true });
-        function clipWords() {
-          const camZ = scene.stateAt(timeline.time()).camera.z;
-          for (let index = 0; index < elements.length; index += 1) {
-            const zCam = elements[index].z - camZ;
-            const visible = zCam < perspectivePx * 0.88 && zCam > -perspectivePx * 3;
-            elements[index].element.style.opacity = visible ? "1" : "0";
+        const proxy = { time: 0 };
+        function render() {
+          const frame = Math.round(proxy.time * 30);
+          const active = simulator.stateAt(frame / 30);
+          const seen = new Set();
+          for (const particle of active) {
+            const entry = nodeFor(particle);
+            seen.add(particle.id);
+            const age = frame - particle.birthFrame;
+            const progress = Math.min(1, Math.max(0, age / particle.lifespan));
+            entry.node.style.display = "block";
+            entry.node.style.transform = "translate3d(" + particle.position.x + "px, " + particle.position.y + "px, " + particle.position.z + "px) rotate(" + particle.rotation + "deg) scale(" + particle.scale + ")";
+            entry.node.style.opacity = String(particle.opacity);
+            entry.word.style.opacity = String(hyperbits.interpolateKeyframes([0, 1, 0.5, 0.2, 0], progress));
           }
+          nodes.forEach(function (entry, id) {
+            if (!seen.has(id)) entry.node.style.display = "none";
+          });
         }
-        scene.bind(timeline);
-        timeline.to({}, { duration: 10 }, 0);
-        const previousUpdate = timeline.eventCallback("onUpdate");
-        timeline.eventCallback("onUpdate", function () {
-          if (typeof previousUpdate === "function") previousUpdate.call(timeline);
-          clipWords();
-        });
-        clipWords();
+        const timeline = gsap.timeline({ paused: true });
+        timeline.to(proxy, { time: 10, duration: 10, ease: "none", onUpdate: render }, 0);
+        render();
         registerTimeline("flying-through-words", timeline);
 
       })();

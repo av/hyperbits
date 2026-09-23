@@ -8,6 +8,10 @@
     "type": "git",
     "url": "git+https://github.com/av/hyperbits.git"
   },
+  "homepage": "https://hyperbits.pages.dev",
+  "bugs": {
+    "url": "https://github.com/av/hyperbits/issues"
+  },
   "keywords": [
     "hyperframes",
     "gsap",

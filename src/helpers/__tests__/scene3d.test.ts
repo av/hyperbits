@@ -28,6 +28,21 @@ describe("Transform3D", () => {
     expect(euler.x).toBeCloseTo(Math.PI / 2, 5);
   });
 
+  it("keeps chained axis rotations unit-length", () => {
+    const flipped = Transform3D.identity().rotateZ(180).toMatrix4().elements;
+    expect(flipped[0]).toBeCloseTo(-1, 6);
+    expect(flipped[1]).toBeCloseTo(0, 6);
+    expect(flipped[4]).toBeCloseTo(0, 6);
+    expect(flipped[5]).toBeCloseTo(-1, 6);
+    const tilted = Transform3D.identity().rotateY(15).toMatrix4().elements;
+    expect(tilted[0]).toBeCloseTo(Math.cos(Math.PI / 12), 6);
+    expect(tilted[2]).toBeCloseTo(-Math.sin(Math.PI / 12), 6);
+    const chained = Transform3D.identity().rotateX(15).scaleBy(2).rotateZ(-240);
+    const quaternion = chained.rotation;
+    const length = Math.hypot(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+    expect(length).toBeCloseTo(1, 6);
+  });
+
   it("scales", () => {
     const scaled = Transform3D.identity().scaleBy(2, 3, 4);
     expect(scaled.scale.x).toBe(2);

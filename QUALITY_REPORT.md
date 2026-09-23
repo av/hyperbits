@@ -68,6 +68,22 @@ Review of hyperbits 0.1.0 before publication. Every bit was rendered through `np
 | `npx hyperframes render` of all 46 bits, contact sheets inspected | no blank or unreadable frames |
 | demo reel rendered and inspected | every scene shows its bit with a background |
 
+## Parity pass, 2026-09-21
+
+The owner review after this report judged most bits to be lower-fidelity versions of their remotion-bits originals: flatter motion, wrong timings and eases, a different palette and type, and several bits that were different animations altogether (glitch, counters, particles, all of the 3D scenes and the showcase). A second pass rendered every original with Remotion and every port with HyperFrames at the same size and frame rate, compared them at five points and as side-by-side clips, and rewrote the ports until they match in motion feel and finish.
+
+Results, method and the per-bit before/after fidelity scores are in [docs/parity/README.md](./docs/parity/README.md), with one note per bit in `docs/parity/<bit>.md`.
+
+Helper fixes that came out of it:
+
+- `sceneStateAt` now eases the camera transform twice, as remotion's Scene3D does, so 3D moves accelerate the same way.
+- Quaternion multiplication read its own partially written components; chained `rotateX/Y/Z` produced non-unit rotations. Fixed and covered by a test.
+- The particle canvas renderer draws the sprite variants of the originals: soft glow, square and diamond shapes, per-particle shape and offset, glow falloff stops, corner radius, alpha colours, and rotation in degrees.
+- Bits declare Geist Sans/Mono with inline `@font-face` rules from the fontsource CDN (the linter rejects `<link>`-only fonts) so type matches the docs site.
+- Bits that use `hyperbits.stagger` after other tweens pass `at: 0`; the helper otherwise appends at the end of the timeline.
+
+`src/catalog/parity-timing.test.ts` pins the timings that the fixes depend on (linear 30 frame fade, 5 frame box stagger, step fades, double-eased camera, hold keyframes, typewriter cadence, glitch settle).
+
 ## Known limits
 
 - Rendering to MP4 on this host still needs an FFmpeg with libx264; the PNG-sequence path was used for verification.

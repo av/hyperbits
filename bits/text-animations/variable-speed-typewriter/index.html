@@ -1,19 +1,24 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"text","type":"string","label":"Text","default":"Typing with errors and variable speed..."},{"id":"color","type":"color","label":"Text color","default":"#ff6b6b"},{"id":"background","type":"color","label":"Background","default":"#0f172a"}]'>
+<html lang="en" data-composition-variables='[{"id":"text","type":"string","label":"Text","default":"Typing with errors and variable speed..."},{"id":"color","type":"color","label":"Text color","default":"#ff6b6b"},{"id":"background","type":"color","label":"Background","default":"#100f0f"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 700;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-700-normal.woff2) format("woff2");
+      }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <script src="hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
-        --bg: #0f172a;
-        --fg: #f8fafc;
-        --muted: #94a3b8;
-        --accent: #38bdf8;
-        --accent-2: #f59e0b;
-        --danger: #f43f5e;
-        --ok: #34d399;
+        --bg: #100f0f;
+        --fg: #fcc192;
+        --primary: #ec8b49;
+        --surface-dark: #1c1b1a;
+        --surface-light: #343331;
       }
       * {
         margin: 0;
@@ -26,7 +31,7 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background-color: #0f172a;
+        background-color: #100f0f;
       }
       #root {
         width: 100%;
@@ -38,21 +43,14 @@
         justify-content: center;
       }
       #line {
-        color: #ff6b6b;
-        font-family: "JetBrains Mono", ui-monospace, monospace;
-        font-weight: 700;
-        max-width: 86%;
-        font-size: 10vmin;
         position: relative;
         z-index: 1;
+        color: #fcc192;
+        font-family: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+        font-weight: 700;
       }
       #cursor {
         display: inline-block;
-        width: 0.08em;
-        height: 0.9em;
-        margin-left: 0.06em;
-        background-color: #ff6b6b;
-        vertical-align: -0.05em;
       }
     </style>
   </head>
@@ -66,10 +64,8 @@
       data-width="1920"
       data-height="1080"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="13.33" style="position:absolute;inset:0;background-color:#0f172a"></div>
-      <div id="line" class="clip" data-start="0" data-duration="13.33">
-        <span id="typed"></span><span id="cursor"></span>
-      </div>
+      <div id="bg" class="clip" data-start="0" data-duration="13.33" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <span id="line" class="clip" data-start="0" data-duration="13.33"><span id="typed"></span><span id="cursor">_</span></span>
     </div>
     <script>
       (function () {
@@ -94,54 +90,59 @@
         const vars = bitVars();
         const root = document.getElementById("root");
         const bg = document.getElementById("bg");
+        const view = hyperbits.viewport(root);
+        const vmin = view.vmin;
+        const unit = view.height / 1080;
+        bg.style.backgroundColor = vars.background;
         const line = document.getElementById("line");
         const typed = document.getElementById("typed");
         const cursor = document.getElementById("cursor");
-        const view = hyperbits.viewport(root);
-        bg.style.backgroundColor = vars.background;
+        const text = String(vars.text);
+        line.setAttribute("aria-label", text);
         line.style.color = vars.color;
-        line.setAttribute("data-color", vars.color);
-        cursor.style.backgroundColor = vars.color;
-        line.style.fontSize = view.vmin * 10 + "px";
-        line.setAttribute("aria-label", vars.text);
-        const target = String(vars.text);
-        const events = [];
-        let output = "";
-        let timeCursor = 0.3;
-        const wrongGlyphs = "abcdefghijklmnopqrstuvwxyz";
-        for (let index = 0; index < target.length; index += 1) {
-          const progress = index / Math.max(1, target.length - 1);
-          const speed = hyperbits.interpolate(progress, [0, 0.5, 1], [2, 10, 2]) / 30;
-          const willErr = hyperbits.random("err-" + index) < 0.1 && target[index] !== " ";
-          if (willErr) {
-            const wrong = wrongGlyphs[hyperbits.randomInt("w-" + index, 0, wrongGlyphs.length - 1)];
-            output += wrong;
-            events.push({ time: timeCursor, text: output });
-            timeCursor += 10 / 30;
-            output = output.slice(0, -1);
-            events.push({ time: timeCursor, text: output });
-            timeCursor += speed;
+        line.style.fontSize = vmin * 6 + "px";
+        const KEYBOARD_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,!? ";
+        const errorRate = 0.1;
+        const errorCorrectDelay = 10;
+        const deleteSpeed = 2;
+        const blinkSpeed = 20;
+        const events = [{ frame: 0, text: "" }];
+        let floatFrame = 0;
+        let current = "";
+        function push() { events.push({ frame: Math.round(floatFrame), text: current }); }
+        const length = text.length;
+        for (let index = 0; index < length; index += 1) {
+          const progress = index / Math.max(1, length);
+          const charSeed = "typewriter-0-" + index;
+          const typeSpeed = hyperbits.interpolateKeyframes([2, 10, 2], progress);
+          if (hyperbits.random(charSeed) < errorRate) {
+            const wrongChar = KEYBOARD_CHARS[hyperbits.randomInt(charSeed + "-wrong", 0, KEYBOARD_CHARS.length - 1)];
+            floatFrame += typeSpeed;
+            current += wrongChar;
+            push();
+            floatFrame += errorCorrectDelay;
+            push();
+            floatFrame += deleteSpeed;
+            current = current.slice(0, -1);
+            push();
           }
-          output += target[index];
-          events.push({ time: timeCursor, text: output });
-          timeCursor += speed;
-        }
-        function textAt(time) {
-          let current = "";
-          for (const event of events) {
-            if (event.time <= time) current = event.text;
-          }
-          return current;
+          floatFrame += typeSpeed;
+          current += text[index];
+          push();
         }
         const proxy = { time: 0 };
+        function render() {
+          const frame = Math.round(proxy.time * 30);
+          let active = 0;
+          for (let index = 0; index < events.length; index += 1) {
+            if (events[index].frame <= frame) active = index; else break;
+          }
+          typed.textContent = events[active].text;
+          cursor.style.opacity = frame % blinkSpeed < blinkSpeed / 2 ? "1" : "0";
+        }
         const timeline = gsap.timeline({ paused: true });
-        timeline.to(proxy, {
-          time: 13.33,
-          duration: 13.33,
-          ease: "none",
-          onUpdate: function () { typed.textContent = textAt(proxy.time); },
-        }, 0);
-        timeline.fromTo(cursor, { opacity: 1 }, { opacity: 0, duration: 20 / 30, repeat: 20, yoyo: true, ease: "none" }, 0);
+        timeline.to(proxy, { time: 13.33, duration: 13.33, ease: "none", onUpdate: render }, 0);
+        render();
         registerTimeline("variable-speed-typewriter", timeline);
 
       })();

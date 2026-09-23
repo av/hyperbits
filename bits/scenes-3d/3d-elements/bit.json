@@ -8,12 +8,13 @@
     "presentation",
     "transition"
   ],
-  "duration": 6.67,
+  "duration": 6.667,
   "width": 1920,
   "height": 1080,
   "helpers": [
-    "scene3d",
+    "interpolate",
     "random",
+    "scene3d",
     "viewport"
   ],
   "iifeLocal": "../../../dist/hyperbits.iife.js",
@@ -35,7 +36,7 @@
       "width": 1920,
       "height": 1080
     },
-    "duration": 6.67,
+    "duration": 6.667,
     "files": [
       {
         "path": "index.html",

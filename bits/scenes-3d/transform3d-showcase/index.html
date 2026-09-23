@@ -1,19 +1,29 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Accent","default":"#38bdf8"},{"id":"background","type":"color","label":"Background","default":"#020617"}]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Accent","default":"#fcc192"},{"id":"background","type":"color","label":"Background","default":"#100f0f"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Sans";
+        font-weight: 700;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5/files/geist-sans-latin-700-normal.woff2) format("woff2");
+      }
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 700;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-700-normal.woff2) format("woff2");
+      }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <script src="hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
-        --bg: #020617;
-        --fg: #f8fafc;
-        --muted: #94a3b8;
-        --accent: #38bdf8;
-        --accent-2: #f59e0b;
-        --danger: #f43f5e;
-        --ok: #34d399;
+        --bg: #100f0f;
+        --fg: #fcc192;
+        --primary: #ec8b49;
+        --surface-dark: #1c1b1a;
+        --surface-light: #343331;
       }
       * {
         margin: 0;
@@ -26,73 +36,41 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background-color: #020617;
+        background-color: #100f0f;
       }
       #root {
         width: 100%;
         height: 100%;
         position: relative;
-        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        font-family: "Geist Sans", Inter, ui-sans-serif, system-ui, sans-serif;
       }
       #scene {
         position: absolute;
         inset: 0;
         z-index: 1;
       }
-      .panel[data-step-active="false"] {
-        opacity: 0;
-      }
-      .panel[data-step-active="true"] {
-        opacity: 1;
+      .step {
+        font-weight: 700;
+        filter: blur(20px);
       }
       .panel {
-        width: 48vmin;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1.6vmin;
-        border-radius: 2vmin;
-        padding: 2.6vmin 3vmin 3.2vmin;
-        background-color: rgba(15, 23, 42, 0.72);
-        border: 0.28vmin solid rgba(248, 250, 252, 0.16);
-        color: #f8fafc;
-        box-sizing: border-box;
-        overflow: visible;
+        background: rgba(0, 0, 0, 0.15);
       }
-      .shape-slot {
-        width: 40vmin;
-        height: 40vmin;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transform-style: preserve-3d;
+      .panel h2 {
+        color: #fcc192;
+        margin: 0.83em 0;
       }
-      .caption {
-        text-align: center;
+      .panel pre {
+        font-family: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+        margin: 0;
+        line-height: 1.6;
       }
-      .caption h1 {
-        font-weight: 800;
-        letter-spacing: -0.04em;
-        line-height: 1.1;
-        font-size: 3.6vmin;
-      }
-      .caption p {
-        margin-top: 0.25em;
-        font-size: 2.4vmin;
-        color: #cbd5e1;
-        font-weight: 600;
-      }
-      .shape {
-        width: 28vmin;
-        height: 28vmin;
-        position: relative;
-        transform-style: preserve-3d;
-      }
-      .shape-face {
+      .el {
         position: absolute;
-        inset: 0;
-        box-sizing: border-box;
-        backface-visibility: hidden;
+        transform-style: preserve-3d;
+      }
+      .cube {
+        transform-style: preserve-3d;
       }
     </style>
   </head>
@@ -102,11 +80,11 @@
       class="clip"
       data-composition-id="transform3d-showcase"
       data-start="0"
-      data-duration="16.67"
+      data-duration="16.667"
       data-width="1920"
       data-height="1080"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="16.67" style="position:absolute;inset:0;background-color:#020617"></div>
+      <div id="bg" class="clip" data-start="0" data-duration="16.667" style="position:absolute;inset:0;background-color:#100f0f"></div>
       <div id="scene"></div>
     </div>
     <script>
@@ -134,92 +112,207 @@
         const bg = document.getElementById("bg");
         const sceneEl = document.getElementById("scene");
         const view = hyperbits.viewport(root);
+        const vmin = view.vmin;
+        const unit = view.height / 1080;
         bg.style.backgroundColor = vars.background;
-        bg.setAttribute("data-color", vars.color);
-
-        function makeCube(size, color) {
-          const cube = document.createElement("div");
-          cube.className = "shape";
-          cube.style.width = size + "px";
-          cube.style.height = size + "px";
-          cube.style.transformStyle = "preserve-3d";
-          const half = size / 2;
-          const specs = [
-            { rotate: "rotateY(0deg)", opacity: "1" },
-            { rotate: "rotateY(180deg)", opacity: "0.72" },
-            { rotate: "rotateY(90deg)", opacity: "0.86" },
-            { rotate: "rotateY(-90deg)", opacity: "0.64" },
-            { rotate: "rotateX(90deg)", opacity: "0.94" },
-            { rotate: "rotateX(-90deg)", opacity: "0.5" },
-          ];
-          for (let index = 0; index < specs.length; index += 1) {
-            const face = document.createElement("div");
-            face.className = "shape-face";
-            face.style.backgroundColor = color;
-            face.style.opacity = specs[index].opacity;
-            face.style.border = view.vmin * 0.28 + "px solid " + color;
-            face.style.backfaceVisibility = "hidden";
-            face.style.transform = specs[index].rotate + " translateZ(" + half + "px)";
-            cube.append(face);
-          }
-          return cube;
+        const fontSize = vmin * 4;
+        const Transform3D = hyperbits.Transform3D;
+        const accent = vars.color;
+        function toProps(transform) {
+          const euler = transform.toEuler("XYZ");
+          return {
+            x: transform.position.x,
+            y: transform.position.y,
+            z: transform.position.z,
+            rotateX: (euler.x * 180) / Math.PI,
+            rotateY: (euler.y * 180) / Math.PI,
+            rotateZ: (euler.z * 180) / Math.PI,
+            rotateOrder: "xyz",
+            scaleX: transform.scale.x,
+            scaleY: transform.scale.y,
+            scaleZ: transform.scale.z,
+          };
         }
-
-        function panel(title, body) {
+        function stepNode() {
           const node = document.createElement("div");
-          node.className = "panel";
-          node.style.width = view.vmin * 48 + "px";
-          node.style.borderColor = vars.color;
-          const cube = makeCube(view.vmin * 28, vars.color);
-          const slot = document.createElement("div");
-          slot.className = "shape-slot";
-          slot.style.width = view.vmin * 40 + "px";
-          slot.style.height = view.vmin * 40 + "px";
-          slot.style.transformStyle = "preserve-3d";
-          slot.append(cube);
-          const caption = document.createElement("div");
-          caption.className = "caption";
-          const heading = document.createElement("h1");
-          heading.textContent = title;
-          heading.style.fontSize = view.vmin * 3.6 + "px";
-          heading.style.color = vars.color;
-          const copy = document.createElement("p");
-          copy.textContent = body;
-          copy.style.fontSize = view.vmin * 2.4 + "px";
-          caption.append(heading, copy);
-          node.append(caption, slot);
+          node.className = "step";
           node.setAttribute("data-layout-allow-overlap", "");
           node.setAttribute("data-layout-allow-occlusion", "");
-          return { node: node, cube: cube };
+          return node;
+        }
+        function panel(title, code, options) {
+          const node = document.createElement("div");
+          node.className = "panel";
+          node.style.padding = vmin * 3 + "px";
+          node.style.borderRadius = vmin + "px";
+          node.style.border = vmin * 0.3 + "px solid #1c1b1a";
+          if (options && options.width) node.style.width = options.width + "px";
+          if (options && options.transform) node.style.transform = options.transform;
+          const heading = document.createElement("h2");
+          heading.textContent = title;
+          heading.style.fontSize = fontSize + "px";
+          heading.style.color = accent;
+          if (options && options.headingMargin) heading.style.margin = "0 0 " + vmin * 2 + "px";
+          const pre = document.createElement("pre");
+          pre.textContent = code;
+          pre.style.fontSize = fontSize * 0.6 + "px";
+          pre.style.color = options && options.codeColor ? options.codeColor : accent;
+          node.append(heading, pre);
+          return node;
+        }
+        function box(size, border) {
+          const node = document.createElement("div");
+          node.style.width = size + "px";
+          node.style.height = size + "px";
+          node.style.border = border + "px solid " + accent;
+          return node;
+        }
+        const baseTransform = Transform3D.identity().translate(0, vmin * -10, 0).rotateZ(Math.PI / 8);
+        const cubeSize = vmin * 8;
+        const orbitSize = vmin * 5;
+
+        const intro = stepNode();
+        const introBox = document.createElement("div");
+        introBox.style.fontSize = fontSize * 1.5 + "px";
+        introBox.style.color = accent;
+        introBox.style.textAlign = "center";
+        introBox.style.padding = vmin * 2 + "px " + vmin * 4 + "px";
+        introBox.style.borderRadius = vmin + "px";
+        introBox.style.width = view.width * 0.8 + "px";
+        const introTitle = document.createElement("h1");
+        introTitle.textContent = "Transform3D API";
+        introTitle.style.margin = "0";
+        introTitle.style.fontSize = fontSize * 1.5 + "px";
+        const introCopy = document.createElement("p");
+        introCopy.textContent = "Chainable \u2022 Matrix-based \u2022 Quaternion SLERP";
+        introCopy.style.margin = vmin * 2 + "px 0 0";
+        introCopy.style.fontSize = fontSize + "px";
+        introCopy.style.opacity = "0.8";
+        introBox.append(introTitle, introCopy);
+        intro.append(introBox);
+
+        const chainable = stepNode();
+        chainable.append(panel("Chainable Transforms", "Transform3D.identity()\n  .translate(x, y, z)\n  .rotateZ(Math.PI / 8)\n  .scaleBy(1.5, 1.5, 1.5)", { width: vmin * 45, transform: "translateX(-50%)", headingMargin: true }));
+        const chainCube = box(cubeSize, vmin);
+        chainCube.className = "cube";
+        chainable.append(chainCube);
+        const chainableBase = Transform3D.identity().translate(vmin * 40, -vmin * 35, 0);
+        const chainKeys = [
+          chainableBase,
+          chainableBase.translate(vmin * 20, 0, 0).rotateZ(90),
+          chainableBase.translate(vmin * 20, vmin * 20, 0).scaleBy(0.5),
+          chainableBase.translate(0, vmin * 20, 0).rotateY(180),
+          chainableBase,
+        ];
+
+        const relative = stepNode();
+        relative.style.perspective = "1000px";
+        relative.append(panel("Relative Positioning", "// Satellites orbit parent\nconst orbit = Transform3D.identity()\n  .translate(x, y, z)\n  .rotateY(angle)", { transform: "translateY(-50%)", headingMargin: true, codeColor: "#ec8b49" }));
+        const relativeTransform = Transform3D.identity().translate(vmin * 25, vmin * -7, 0).rotateX(-5);
+        const relativeCss = relativeTransform.toCSSMatrix3D();
+        const centralWrap = document.createElement("div");
+        centralWrap.className = "el";
+        centralWrap.style.transform = relativeCss;
+        centralWrap.append(box(cubeSize, vmin));
+        relative.append(centralWrap);
+        const satellites = [0, 0.33, 0.66].map(function () {
+          const wrap = document.createElement("div");
+          wrap.className = "el";
+          wrap.style.transform = relativeCss;
+          const orb = box(orbitSize, vmin);
+          orb.style.position = "absolute";
+          orb.style.borderRadius = "50%";
+          wrap.append(orb);
+          relative.append(wrap);
+          return orb;
+        });
+
+        const interpolation = stepNode();
+        const interpPanel = panel("Smooth Interpolation", "// Quaternion SLERP - no gimbal lock!\ninterpolateTransform(\n  from, to, progress, easing\n)", { codeColor: "#ec8b49" });
+        const interpCopy = document.createElement("p");
+        interpCopy.innerHTML = "\u2713 Natural rotation paths<br />\u2713 No gimbal lock artifacts<br />\u2713 Single matrix operation";
+        interpCopy.style.fontSize = fontSize * 0.7 + "px";
+        interpCopy.style.color = "#343331";
+        interpCopy.style.margin = vmin * 2 + "px 0 0";
+        interpPanel.append(interpCopy);
+        interpolation.append(interpPanel);
+
+        const composition = stepNode();
+        composition.append(panel("Transform Composition", "// Combine transforms\nconst combined = parent\n  .multiply(child)\n  \n// Apply to points\nconst worldPos = transform\n  .apply(localPos)", { width: vmin * 80, transform: "translateY(-20%)", headingMargin: true, codeColor: "#ec8b49" }));
+        const outerEl = document.createElement("div");
+        outerEl.className = "el";
+        outerEl.style.transform = Transform3D.fromEuler(0, 0, 0, new hyperbits.Vec3(vmin * -10, 0, 0), 1.5).toCSSMatrix3D();
+        composition.append(outerEl);
+        const nested = [];
+        let parent = outerEl;
+        for (let level = 0; level < 4; level += 1) {
+          const node = document.createElement("div");
+          node.className = "el cube";
+          node.style.width = cubeSize + "px";
+          node.style.height = cubeSize + "px";
+          node.style.border = vmin * 0.3 + "px solid " + accent;
+          parent.append(node);
+          nested.push(node);
+          parent = node;
         }
 
-        const intro = panel("Transform3D", "Chainable matrix motion");
-        const chain = panel("Translate", "Move in x y z");
-        const orbit = panel("Rotate", "Quaternion slerp");
-        const compose = panel("Compose", "Parent times child");
-        const hold = 16.67 / 4;
+        const outro = stepNode();
 
+        const steps = [
+          Object.assign({ id: "intro", duration: 80 / 30, element: intro }, toProps(baseTransform)),
+          Object.assign({ id: "chainable", duration: 120 / 30, element: chainable }, toProps(baseTransform.translate(vmin * 100, 0, 0).rotateY(-15))),
+          Object.assign({ id: "relative", duration: 80 / 30, element: relative }, toProps(Transform3D.identity().translate(vmin * 200, vmin * 20, vmin * -50).rotateX(10).scaleBy(0.5, 0.5, 0.5))),
+          { id: "interpolation", duration: 80 / 30, element: interpolation, x: vmin * 300, y: vmin * -20, z: vmin * 30, rotateY: 25 },
+          { id: "composition", duration: 80 / 30, element: composition, x: vmin * 400, y: 0, z: 0, rotateY: -10 },
+          { id: "outro", duration: 80 / 30, element: outro, x: vmin * 400, y: vmin * 200, z: 0, rotateY: -10 },
+        ];
         const scene = hyperbits.createScene3D(sceneEl, {
           perspective: 1200,
-          transitionDuration: 2.2,
+          transitionDuration: 2,
+          stepDuration: 80 / 30,
           easing: "easeInOutCubic",
-          steps: [
-            { id: "intro", x: 0, y: -view.vmin * 4, z: 0, rotateY: -8, duration: hold, element: intro.node },
-            { id: "chain", x: view.vmin * 70, y: 0, z: view.vmin * 12, rotateY: -16, duration: hold, element: chain.node },
-            { id: "orbit", x: view.vmin * 140, y: view.vmin * 6, z: view.vmin * 8, rotateY: 14, duration: hold, element: orbit.node },
-            { id: "compose", x: view.vmin * 210, y: 0, z: view.vmin * 16, rotateY: -10, duration: hold, element: compose.node },
-          ],
+          steps: steps,
         });
         sceneEl.style.position = "absolute";
         sceneEl.style.inset = "0";
         sceneEl.style.zIndex = "1";
-
+        const ease = hyperbits.Easing.easeInOutCubic;
+        const proxy = { time: 0 };
+        function render() {
+          const time = proxy.time;
+          const frame = time * 30;
+          const state = scene.stateAt(time);
+          state.steps.forEach(function (step, index) {
+            let blur = 20;
+            if (index < state.activeStepIndex) {
+              blur = hyperbits.interpolateKeyframes([0, 20], Math.min(1, Math.max(0, (time - step.exitTime) / 1)));
+            } else if (index === state.activeStepIndex) {
+              blur = hyperbits.interpolateKeyframes([20, 0], Math.min(1, Math.max(0, (time - step.enterTime) / 1)));
+            }
+            step.element.style.filter = blur > 0 ? "blur(" + blur * unit + "px)" : "none";
+          });
+          const chainStart = state.steps[1].enterTime + 40 / 30;
+          const chainProgress = Math.min(1, Math.max(0, (time - chainStart) / (80 / 30)));
+          const segments = chainKeys.length - 1;
+          const scaled = chainProgress * segments;
+          const segment = Math.min(segments - 1, Math.floor(scaled));
+          const local = chainProgress >= 1 ? 1 : ease(scaled - segment);
+          chainCube.style.transform = chainKeys[segment].lerp(chainKeys[segment + 1], local).toCSSMatrix3D();
+          const orbitProgress = (Math.round(frame) % 100) / 100;
+          satellites.forEach(function (orb, index) {
+            const angle = (orbitProgress + [0, 0.33, 0.66][index]) * Math.PI * 2;
+            const distance = vmin * 40;
+            const orbit = Transform3D.identity().translate(Math.cos(angle) * distance, vmin * 5, Math.sin(angle) * distance).rotateY(angle + Math.PI / 2);
+            orb.style.transform = orbit.toCSSMatrix3D();
+          });
+          const nestedTransform = Transform3D.identity().translate(vmin * 10, 0, 0).rotateX(Math.round(frame) * 0.05).scaleBy(1.1);
+          const nestedCss = nestedTransform.toCSSMatrix3D();
+          nested.forEach(function (node) { node.style.transform = nestedCss; });
+        }
         const timeline = gsap.timeline({ paused: true });
         scene.bind(timeline);
-        [intro, chain, orbit, compose].forEach(function (item) {
-          timeline.to(item.cube, { rotateY: 180, rotateX: 90, duration: 4.1, ease: "sine.inOut", yoyo: true, repeat: 3 }, 0);
-        });
-        timeline.to({}, { duration: 16.67 }, 0);
+        timeline.to(proxy, { time: 16.667, duration: 16.667, ease: "none", onUpdate: render }, 0);
+        render();
         registerTimeline("transform3d-showcase", timeline);
 
       })();

@@ -1,19 +1,24 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"title","type":"string","label":"Title","default":"Enter"},{"id":"color","type":"color","label":"Text color","default":"#f8fafc"},{"id":"background","type":"color","label":"Background","default":"#0f172a"}]'>
+<html lang="en" data-composition-variables='[{"id":"title","type":"string","label":"First heading","default":"Step 1"},{"id":"color","type":"color","label":"Text color","default":"#fcc192"},{"id":"background","type":"color","label":"Background","default":"#100f0f"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Sans";
+        font-weight: 700;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5/files/geist-sans-latin-700-normal.woff2) format("woff2");
+      }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <script src="hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
-        --bg: #0f172a;
-        --fg: #f8fafc;
-        --muted: #94a3b8;
-        --accent: #38bdf8;
-        --accent-2: #f59e0b;
-        --danger: #f43f5e;
-        --ok: #34d399;
+        --bg: #100f0f;
+        --fg: #fcc192;
+        --primary: #ec8b49;
+        --surface-dark: #1c1b1a;
+        --surface-light: #343331;
       }
       * {
         margin: 0;
@@ -26,13 +31,13 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background-color: #0f172a;
+        background-color: #100f0f;
       }
       #root {
         width: 100%;
         height: 100%;
         position: relative;
-        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        font-family: "Geist Sans", Inter, ui-sans-serif, system-ui, sans-serif;
       }
       #scene {
         position: absolute;
@@ -40,27 +45,24 @@
         z-index: 1;
       }
       .slide {
+        width: max-content;
         text-align: center;
-        width: 70vmin;
-      }
-      .slide h1 {
-        font-weight: 800;
-        letter-spacing: -0.05em;
-        line-height: 1.05;
-        font-size: 8vmin;
-        color: #f8fafc;
-      }
-      .slide p {
-        margin-top: 0.35em;
-        color: #cbd5e1;
-        font-size: 3.2vmin;
-        font-weight: 600;
-      }
-      .slide[data-step-active="false"] {
+        font-weight: 700;
         opacity: 0;
       }
-      .slide[data-step-active="true"] {
-        opacity: 1;
+      .slide h1 {
+        margin: 0.67em 0;
+      }
+      .slide h2 {
+        color: #666666;
+        margin: 0.83em 0;
+      }
+      .slide p {
+        color: #999999;
+      }
+      .unit {
+        display: inline-block;
+        white-space: pre;
       }
     </style>
   </head>
@@ -74,7 +76,7 @@
       data-width="1920"
       data-height="1080"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#0f172a"></div>
+      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#100f0f"></div>
       <div id="scene"></div>
     </div>
     <script>
@@ -102,61 +104,121 @@
         const bg = document.getElementById("bg");
         const sceneEl = document.getElementById("scene");
         const view = hyperbits.viewport(root);
+        const vmin = view.vmin;
+        const unit = view.height / 1080;
         bg.style.backgroundColor = vars.background;
-        bg.setAttribute("data-color", vars.color);
-
-        function slide(titleText, bodyText) {
-          const wrap = document.createElement("div");
-          wrap.className = "slide";
-          wrap.style.width = view.vmin * 70 + "px";
-          const title = document.createElement("h1");
-          title.textContent = titleText;
-          title.style.fontSize = view.vmin * 8 + "px";
-          title.style.color = vars.color;
-          const body = document.createElement("p");
-          body.textContent = bodyText;
-          body.style.fontSize = view.vmin * 3.2 + "px";
-          wrap.append(title, body);
-          wrap.setAttribute("data-layout-allow-overlap", "");
-          wrap.setAttribute("data-layout-allow-occlusion", "");
+        const fontSize = vmin * 6;
+        const stepDuration = 100 / 30;
+        function slide() {
+          const node = document.createElement("div");
+          node.className = "slide";
+          node.style.color = vars.color;
+          node.setAttribute("data-layout-allow-overlap", "");
+          node.setAttribute("data-layout-allow-occlusion", "");
+          return node;
+        }
+        function heading2(text, marginBottom) {
+          const node = document.createElement("h2");
+          node.textContent = text;
+          node.style.fontSize = fontSize * 0.6 + "px";
+          node.style.marginBottom = marginBottom * unit + "px";
+          return node;
+        }
+        function unit1(text, size, color) {
+          const wrap = document.createElement("span");
+          wrap.className = "unit";
+          const node = document.createElement("h1");
+          node.textContent = text;
+          node.style.fontSize = size + "px";
+          if (color) node.style.color = color;
+          wrap.append(node);
           return wrap;
         }
+        function paragraph(text) {
+          const node = document.createElement("p");
+          node.textContent = text;
+          node.style.fontSize = fontSize * 0.5 + "px";
+          node.style.marginBottom = 10 * unit + "px";
+          return node;
+        }
+        const one = slide();
+        const oneTitle = unit1(String(vars.title), fontSize);
+        one.append(heading2("Auto-Aligned Timing", 20), oneTitle);
 
-        const first = slide(String(vars.title), "Copy settles.");
-        const second = slide("Hold", "Motion waits.");
-        const third = slide("Leave", "Exit starts.");
-        const fourth = slide("Time", "Steps own the clock.");
-        const depth = view.vmin * 70;
-        const hold = 10 / 4;
+        const two = slide();
+        const twoAuto = unit1("Auto", fontSize);
+        const twoExplicit = unit1("Explicit", fontSize);
+        const twoBlock = document.createElement("div");
+        twoBlock.style.marginBottom = 40 * unit + "px";
+        twoBlock.append(paragraph("Auto-aligned (uses Step frames):"), twoAuto);
+        const twoBlock2 = document.createElement("div");
+        twoBlock2.append(paragraph("Explicit frames (overrides Step):"), twoExplicit);
+        two.append(heading2("Mixed Timing", 20), twoBlock, twoBlock2);
 
+        const three = slide();
+        const threeWords = ["Letter", "By", "Letter"].map(function (word, index) {
+          const node = document.createElement("h1");
+          node.textContent = word;
+          node.style.fontSize = fontSize + "px";
+          if (index < 2) node.style.marginBottom = 10 * unit + "px";
+          return node;
+        });
+        const threeWrap = document.createElement("div");
+        threeWords.forEach(function (node) { threeWrap.append(node); });
+        three.append(heading2("Staggered Within Step", 40), threeWrap);
+
+        const four = slide();
+        const fourA = unit1("useMotionTiming", fontSize * 1.2, "#4CAF50");
+        const fourB = unit1("is Step-Aware!", fontSize * 1.2, "#4CAF50");
+        four.append(heading2("Summary", 20), fourA, fourB);
+
+        const steps = [
+          { id: "1", x: 0, y: -vmin * 20, z: 0, duration: stepDuration, element: one },
+          { id: "2", x: 0, y: vmin * 10, z: vmin * 300, duration: stepDuration, element: two },
+          { id: "3", x: 0, y: vmin * 30, z: vmin * 600, duration: stepDuration, element: three },
+          { id: "4", x: 0, y: vmin * 50, z: vmin * 900, duration: stepDuration, element: four },
+        ];
         const scene = hyperbits.createScene3D(sceneEl, {
-          perspective: 1100,
-          transitionDuration: 0.85,
+          perspective: 1000,
+          transitionDuration: 40 / 30,
+          stepDuration: stepDuration,
           easing: "easeInOutCubic",
-          steps: [
-            { id: "enter", x: 0, y: 0, z: 0, duration: hold, element: first },
-            { id: "hold", x: 0, y: view.vmin * 4, z: depth, duration: hold, element: second },
-            { id: "leave", x: 0, y: view.vmin * 8, z: depth * 2, duration: hold, element: third },
-            { id: "time", x: 0, y: view.vmin * 12, z: depth * 3, duration: hold, element: fourth },
-          ],
+          steps: steps,
         });
         sceneEl.style.position = "absolute";
         sceneEl.style.inset = "0";
         sceneEl.style.zIndex = "1";
-
         const timeline = gsap.timeline({ paused: true });
         scene.bind(timeline);
-        [first, second, third, fourth].forEach(function (node, index) {
-          const words = hyperbits.splitText(node.querySelector("h1"), "words");
-          hyperbits.stagger(words, {
-            opacity: [0, 1],
-            y: [18, 0],
-            duration: 0.4,
-            stagger: 0.05,
-            delay: index * hold,
-            ease: "easeOutCubic",
-          }, timeline);
+        function stepFade(element, enterTime, exitTime, options) {
+          const enter = options.enter;
+          const exit = options.exit;
+          if (enter) {
+            const target = Object.assign({ duration: enter.duration, ease: "none" }, enter.to);
+            timeline.fromTo(element, enter.from, target, enterTime);
+          }
+          if (exit) {
+            const target = Object.assign({ duration: exit.duration, ease: "none" }, exit.to);
+            timeline.to(element, target, exitTime);
+          }
+        }
+        const enter = function (index) { return index * stepDuration; };
+        stepFade(one, enter(0), enter(1), {
+          enter: { from: { opacity: 0, y: 50 * unit }, to: { opacity: 1, y: 0 }, duration: 1 },
+          exit: { to: { opacity: 0, y: -50 * unit }, duration: 1 },
         });
+        stepFade(two, enter(1), enter(2), { enter: { from: { opacity: 0 }, to: { opacity: 1 }, duration: 1 }, exit: { to: { opacity: 0 }, duration: 1 } });
+        stepFade(three, enter(2), enter(3), { enter: { from: { opacity: 0 }, to: { opacity: 1 }, duration: 1 }, exit: { to: { opacity: 0 }, duration: 1 } });
+        stepFade(four, enter(3), enter(4), {
+          enter: { from: { opacity: 0, scale: 0.9 }, to: { opacity: 1, scale: 1 }, duration: 1 },
+          exit: { to: { opacity: 0, scale: 0.9 }, duration: 1 },
+        });
+        timeline.fromTo(oneTitle, { opacity: 0, y: 20 * unit }, { opacity: 1, y: 0, duration: 1, ease: "none" }, enter(0));
+        timeline.fromTo(twoAuto, { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 25 / 30, ease: "none" }, enter(1));
+        timeline.fromTo(twoExplicit, { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 40 / 30, ease: "none" }, 140 / 30);
+        hyperbits.stagger(threeWords, { opacity: [0, 1], y: [30 * unit, 0], duration: 20 / 30, stagger: 8 / 30, at: enter(2) }, timeline);
+        timeline.fromTo(fourA, { opacity: 0, y: 20 * unit }, { opacity: 1, y: 0, duration: 25 / 30, ease: "none" }, enter(3));
+        timeline.fromTo(fourB, { opacity: 0, y: 20 * unit }, { opacity: 1, y: 0, duration: 25 / 30, ease: "none" }, enter(3) + 10 / 30);
         timeline.to({}, { duration: 10 }, 0);
         registerTimeline("step-timing-context", timeline);
 

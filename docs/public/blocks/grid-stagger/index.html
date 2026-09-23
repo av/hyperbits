@@ -1,19 +1,24 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Cell color","default":"#3b82f6"},{"id":"background","type":"color","label":"Background","default":"#09090b"}]'>
+<html lang="en" data-composition-variables='[{"id":"color","type":"color","label":"Cell color","default":"#ec8b49"},{"id":"background","type":"color","label":"Background","default":"#09090b"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1080, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Sans";
+        font-weight: 700;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5/files/geist-sans-latin-700-normal.woff2) format("woff2");
+      }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
         --bg: #09090b;
-        --fg: #f8fafc;
-        --muted: #94a3b8;
-        --accent: #38bdf8;
-        --accent-2: #f59e0b;
-        --danger: #f43f5e;
-        --ok: #34d399;
+        --fg: #fcc192;
+        --primary: #ec8b49;
+        --surface-dark: #1c1b1a;
+        --surface-light: #343331;
       }
       * {
         margin: 0;
@@ -32,11 +37,12 @@
         width: 100%;
         height: 100%;
         position: relative;
-        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        font-family: "Geist Sans", Inter, ui-sans-serif, system-ui, sans-serif;
         display: flex;
         align-items: center;
         justify-content: center;
         color: #e4e4e7;
+        overflow: hidden;
       }
       #grid {
         display: grid;
@@ -44,12 +50,15 @@
         z-index: 1;
       }
       .cell {
-        background-color: #3b82f6;
+        width: 100%;
+        height: 100%;
+        corner-shape: squircle;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        color: rgba(255, 255, 255, 0.85);
+        color: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       }
     </style>
   </head>
@@ -89,28 +98,33 @@
         const vars = bitVars();
         const root = document.getElementById("root");
         const bg = document.getElementById("bg");
-        const grid = document.getElementById("grid");
         const view = hyperbits.viewport(root);
+        const vmin = view.vmin;
+        const unit = view.height / 1080;
         bg.style.backgroundColor = vars.background;
+        const grid = document.getElementById("grid");
         const cols = 4;
-        const gap = view.vmin * 2;
-        const padding = view.vmin * 8;
-        const available = Math.min(view.width, view.height) - padding * 2 - gap * (cols - 1);
-        const itemSize = available / cols;
-        grid.style.gridTemplateColumns = "repeat(4, " + itemSize + "px)";
-        grid.style.gridTemplateRows = "repeat(4, " + itemSize + "px)";
+        const rows = 4;
+        const gap = 20 * unit;
+        const padding = 60 * unit;
+        const availableWidth = view.width - padding * 2 - gap * (cols - 1);
+        const availableHeight = view.height - padding * 2 - gap * (rows - 1);
+        const itemSize = Math.min(availableWidth / cols, availableHeight / rows);
+        grid.style.gridTemplateColumns = "repeat(" + cols + ", " + itemSize + "px)";
+        grid.style.gridTemplateRows = "repeat(" + rows + ", " + itemSize + "px)";
         grid.style.gap = gap + "px";
-        for (let index = 0; index < 16; index += 1) {
+        for (let index = 0; index < cols * rows; index += 1) {
           const cell = document.createElement("div");
           cell.className = "cell";
           cell.textContent = String(index + 1);
           cell.style.backgroundColor = vars.color;
-          cell.style.borderRadius = itemSize * 0.22 + "px";
+          cell.style.borderRadius = itemSize + "px";
           cell.style.fontSize = itemSize * 0.3 + "px";
           grid.append(cell);
         }
         const timeline = gsap.timeline({ paused: true });
-        hyperbits.stagger(grid.children, { scale: [0, 1], opacity: [0, 1], duration: 1.5, stagger: 3 / 30, staggerDirection: "center", ease: "spring" }, timeline);
+        hyperbits.stagger(grid.children, { scale: [0, 1], opacity: [0, 1], duration: 45 / 30, stagger: 3 / 30, staggerDirection: "center", ease: "spring", at: 0 }, timeline);
+        timeline.to({}, { duration: 3 }, 0);
         registerTimeline("grid-stagger", timeline);
 
       })();
