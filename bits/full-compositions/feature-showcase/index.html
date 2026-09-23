@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"title","type":"string","label":"Title","default":"Remotion Bits"},{"id":"color","type":"color","label":"Accent","default":"#fcc192"},{"id":"background","type":"color","label":"Background","default":"#100f0f"}]'>
+<html lang="en" data-composition-variables='[{"id":"title","type":"string","label":"Title","default":"hyperbits"},{"id":"color","type":"color","label":"Accent","default":"#fcc192"},{"id":"background","type":"color","label":"Background","default":"#100f0f"}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -142,6 +142,7 @@
         position: absolute;
         transform-style: preserve-3d;
         color: #fcc192;
+        text-align: center;
       }
       .icon {
         position: absolute;
@@ -367,12 +368,12 @@
         typeLine.append(typeText, typeCursor);
         typeBox.append(typeLine);
         typeCard.append(typeBox);
-        const typeWriterText = "import { TypeWriter } from 'remotion-bits';\n\n<TypeWriter\n  text=\"Hello Remotion\"\n  typeSpeed={2}\n  pauseAfterType={20}\n/>";
+        const typeWriterText = "const { typewriter } = hyperbits;\n\ntypewriter(line, {\n  duration: 2,\n  delay: 0.5,\n}).apply(t);";
 
         const codeCard = cardStep("element-code-block");
         const codePanel = el("div", "code-panel", { fontSize: vmin * 1.15 + "px", padding: vmin * 1.2 + "px" });
         const codeBlock = hyperbits.createCodeBlock(codePanel, {
-          code: "import { AnimatedText, useViewportRect } from 'remotion-bits';\n\nconst rect = useViewportRect();\n\n<AnimatedText\n  style={{ fontSize: vmin * 4 }}\n  transition={{ split: 'character', splitStagger: 2 }}\n>\n  Remotion Bits\n</AnimatedText>",
+          code: "const view = hyperbits.viewport(root);\nconst chars = hyperbits.splitText(title, \"chars\");\n\nhyperbits.stagger(chars, {\n  opacity: [0, 1],\n  y: [view.vmin * 2, 0],\n  stagger: 2 / 30,\n}, timeline);",
           language: "typescript",
         });
         codeBlock.style.fontSize = vmin * 1.15 + "px";
@@ -417,7 +418,7 @@
         rewriteCard.append(rewriteBox);
         const rewriteEvents = [{ frame: 0, text: "" }];
         (function () {
-          const text = "Build amazing videos with Remotion";
+          const text = "Build amazing videos with HyperFrames";
           let floatFrame = 0;
           let current = "";
           const push = function () { rewriteEvents.push({ frame: Math.round(floatFrame), text: current }); };
