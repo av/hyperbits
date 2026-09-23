@@ -1,6 +1,9 @@
 ---
 export { getStaticPaths, prerender } from '@astrojs/starlight/routes/static/index.astro';
 import StarlightDocs from '@astrojs/starlight/routes/static/index.astro';
+import type { ComponentProps } from 'astro/types';
+
+type Props = ComponentProps<typeof StarlightDocs>;
 ---
 
 <StarlightDocs {...Astro.props} />

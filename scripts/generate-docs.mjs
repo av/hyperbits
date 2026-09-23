@@ -1,6 +1,13 @@
 #!/usr/bin/env node
 
-import { copyFile, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
+import {
+  copyFile,
+  mkdir,
+  readdir,
+  readFile,
+  rm,
+  writeFile,
+} from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -29,7 +36,10 @@ const generatedCatalogPath = path.join(
 const IIFE_PUBLIC_PATH = "/vendor/hyperbits.iife.js";
 
 const escapeMdx = (value) =>
-  value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+  value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
 
 const preparePlaygroundHtml = (html) => {
   let prepared = html.replaceAll(
@@ -45,7 +55,8 @@ const preparePlaygroundHtml = (html) => {
   return prepared;
 };
 
-const yamlQuote = (value) => `"${value.replaceAll("\\", "\\\\").replaceAll('"', '\\"')}"`;
+const yamlQuote = (value) =>
+  `"${value.replaceAll("\\", "\\\\").replaceAll('"', '\\"')}"`;
 
 const bitMdx = (bit) => `---
 title: ${yamlQuote(bit.title)}
@@ -75,13 +86,9 @@ const copyVendorFiles = async () => {
     }
   }
 
-  const playerDest = path.join(
-    publicVendorDir,
-    "hyperframes-player.global.js",
-  );
+  const playerDest = path.join(publicVendorDir, "hyperframes-player.global.js");
   const playerCandidates = [
     path.join(publicVendorDir, "hyperframes-player.global.js"),
-    "/tmp/hf/package/dist/hyperframes-player.global.js",
     path.join(
       projectRoot,
       "node_modules",
@@ -106,7 +113,7 @@ const copyVendorFiles = async () => {
     await copyFile(playerSource, playerDest);
   } else if (!playerSource) {
     throw new Error(
-      "hyperframes-player.global.js not found. Expected /tmp/hf/package/dist/hyperframes-player.global.js",
+      "hyperframes-player.global.js not found. Restore docs/public/vendor/hyperframes-player.global.js or install hyperframes locally.",
     );
   }
 };

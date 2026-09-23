@@ -102,7 +102,6 @@ export default defineConfig({
                 '@codemirror/state',
                 '@codemirror/view',
                 '@codemirror/lang-html',
-                '@codemirror/theme-one-dark',
             ],
         },
         plugins: [tailwindcss()],

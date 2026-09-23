@@ -10,6 +10,7 @@ coverage/
 *.tsbuildinfo
 *.tgz
 .vite/
+.wrangler/
 .env
 .env.local
 .env.*.local

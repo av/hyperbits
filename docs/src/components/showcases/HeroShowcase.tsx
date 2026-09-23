@@ -18,9 +18,10 @@ const ShowcaseItem: React.FC<{ bitName: string; className?: string }> = ({
   return (
     <a
       href={`/docs/bits/${bit.id}`}
+      aria-label={`Explore ${bit.title}`}
       className={`group relative block overflow-hidden rounded-xl squircle border border-white/10 bg-gray-900 shadow-lg transition-all hover:border-primary hover:shadow-primary/20 aspect-video ${className || ''}`}
     >
-      <div className="absolute inset-0 w-full h-full pointer-events-none">
+      <div className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true">
         <BitPreview
           src={bit.htmlPath}
           width={bit.width}

@@ -1,0 +1,95 @@
+---
+import BentoCard from './BentoCard.astro';
+import { BitPreview } from './BitPreview';
+import { docsBitsById } from '../lib/bits.generated';
+
+const previews = [
+  {
+    id: 'blur-slide-word',
+    title: 'Text with a little character.',
+    description: 'Type, blur, glitch, or reveal one word at a time. Make it yours with composition variables.',
+    eyebrow: '01 / Typography',
+    className: 'bento-wide md:col-span-2',
+  },
+  {
+    id: 'particles-fountain',
+    title: 'A thousand moving parts.',
+    description: 'Confetti, snow, and fireflies. Seeded particles that look the same on every render.',
+    eyebrow: '02 / Particles',
+  },
+  {
+    id: 'staggered-fade-in',
+    title: 'Find your rhythm.',
+    description: 'Stagger entrances, shape an easing curve, and give every element its moment.',
+    eyebrow: '03 / Motion',
+  },
+];
+---
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6" data-landing-bento>
+  {previews.map((preview) => {
+    const bit = docsBitsById[preview.id];
+    return (
+      <BentoCard
+        title={preview.title}
+        description={preview.description}
+        eyebrow={preview.eyebrow}
+        href={`/docs/bits/${bit.id}`}
+        class={preview.className}
+      >
+        <div class="aspect-video pointer-events-none" aria-hidden="true" inert>
+          <BitPreview client:visible src={bit.htmlPath} width={bit.width} height={bit.height} />
+        </div>
+      </BentoCard>
+    );
+  })}
+  <BentoCard
+    title="From prompt to composition."
+    description="Find a bit, fetch its source, and add it to your project. Your agent can use the same catalog through MCP."
+    eyebrow="04 / CLI + MCP"
+    href="/docs/cli"
+  >
+    <div class="terminal">
+      <div class="terminal-label">terminal</div>
+      <pre><code><span class="text-primary">$</span> npx hyperbits find "fade in"<br /><span class="text-gray-500">  fade-in · staggered-fade-in</span><br /><br /><span class="text-primary">$</span> npx hyperbits add fade-in</code></pre>
+    </div>
+  </BentoCard>
+  <BentoCard
+    title="Drop it into your timeline."
+    description="Install from the HyperFrames registry, then embed the HTML. The source is yours to edit."
+    eyebrow="05 / Compositions"
+    href="/docs/getting-started"
+    class="md:col-span-2 lg:col-span-1"
+  >
+    <div class="terminal">
+      <div class="terminal-label">hyperframes.json</div>
+      <pre><code>&#123; "registry": <span class="text-primary">"https://hyperbits.dev"</span> &#125;</code></pre>
+      <div class="mt-4 border-t border-white/10 pt-4">
+        <pre><code><span class="text-primary">$</span> npx hyperframes add fade-in</code></pre>
+      </div>
+    </div>
+  </BentoCard>
+</div>
+
+<style>
+  .terminal {
+    margin: 0 1.25rem 1.25rem;
+    padding: 1.25rem;
+    border: 1px solid #ffffff14;
+    border-radius: 0.75rem;
+    background: #100f0f;
+    color: #d1d5db;
+    min-height: 11rem;
+  }
+  .terminal-label {
+    color: #9ca3af;
+    font: 0.65rem var(--font-mono);
+    letter-spacing: 0.08em;
+    margin-bottom: 1rem;
+  }
+  pre {
+    font: 0.7rem/1.8 var(--font-mono);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+</style>
