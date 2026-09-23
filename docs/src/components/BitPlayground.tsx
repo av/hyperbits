@@ -239,7 +239,14 @@ export const BitPlayground: React.FC<BitPlaygroundProps> = ({ bitName }) => {
       )}
 
       <div className="bit-playground-content">
-        <div className="bit-playground-preview-section">
+        <div
+          className="bit-playground-preview-section"
+          style={
+            bit.width >= bit.height
+              ? { aspectRatio: `${bit.width} / ${bit.height}`, width: '100%' }
+              : { aspectRatio: `${bit.width} / ${bit.height}`, height: '640px', width: 'auto' }
+          }
+        >
           <div className="bit-playground-preview">
             <div className="bit-playground-player-container">
               {loadError ? (
@@ -447,7 +454,8 @@ export const BitPlayground: React.FC<BitPlaygroundProps> = ({ bitName }) => {
 
         .bit-playground-preview-section {
           overflow: hidden;
-          aspect-ratio: 16 / 9;
+          max-width: 100%;
+          margin: 0 auto;
         }
 
         .bit-playground-error {

@@ -36,7 +36,12 @@ const total = docsBits.length;
         data-preview-height={String(bit.height)}
       >
         <div
-          class="catalog-preview mb-3 overflow-hidden rounded-lg border border-white/10 aspect-video bg-black"
+          class="catalog-preview mb-3 overflow-hidden rounded-lg border border-white/10 bg-black"
+          style={
+            bit.width >= bit.height
+              ? `aspect-ratio: ${bit.width} / ${bit.height}; width: 100%;`
+              : `aspect-ratio: ${bit.width} / ${bit.height}; height: 14rem; width: auto; margin-inline: auto;`
+          }
           data-preview-host
         >
         </div>
