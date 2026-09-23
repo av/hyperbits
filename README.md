@@ -87,7 +87,7 @@ Embed the written file:
 
 ```json
 {
-  "registry": "https://hyperbits.pages.dev"
+  "registry": "https://hyperbits.dev"
 }
 ```
 
@@ -154,7 +154,7 @@ Each helper is deterministic given a time value so HyperFrames frame-by-frame re
 - `code`: Prism-highlighted code with line reveal and focus
 - `scene3d`: CSS 3D scene (`stateAt` + `bind`) with steps, camera moves, and `Transform3D`
 
-Reference pages live on the [docs site](https://hyperbits.pages.dev/docs/getting-started).
+Reference pages live on the [docs site](https://hyperbits.dev/docs/getting-started).
 
 ## Bits
 
@@ -169,13 +169,13 @@ Reference pages live on the [docs site](https://hyperbits.pages.dev/docs/getting
 | 3D Scenes | 10 | `3d-basic`, `3d-elements`, `carousel`, `cube-navigation`, `cursor-flyover`, `flying-through-words`, `ken-burns`, `step-timing-context`, `terminal-3d`, `transform3d-showcase` |
 | Full Compositions | 1 | `feature-showcase` |
 
-Browse them in the [catalog](https://hyperbits.pages.dev/docs/bits-catalog).
+Browse them in the [catalog](https://hyperbits.dev/docs/bits-catalog).
 
 ## Docs
 
 Documentation, playground, and the HyperFrames registry:
 
-https://hyperbits.pages.dev
+https://hyperbits.dev
 
 ## Development
 
