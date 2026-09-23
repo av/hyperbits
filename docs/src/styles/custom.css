@@ -33,7 +33,7 @@
   }
 }
 
-/* Custom styles for Remotion Bits docs */
+/* Custom styles for the hyperbits docs */
 /* Retain existing vars for Starlight compat if needed, though we are overriding the index page */
 :root {
     --sl-hue-accent: 250;

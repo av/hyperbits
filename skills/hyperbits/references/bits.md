@@ -101,7 +101,7 @@ Simulates a command-line interface with user typing and system output.
 - Size: 1920x1080, duration 15s
 - Helpers: `viewport`
 - Knobs (`data-composition-variables`):
-  - `command` (string, default "npm install remotion-bits") — Command
+  - `command` (string, default "npm install hyperbits") — Command
   - `color` (color, default "#ce9178") — Command color
   - `background` (color, default "#1e1e1e") — Background
 
@@ -604,6 +604,6 @@ Promotional showcase for the hyperbits catalog of HyperFrames animation bits.
 - Size: 1920x1080, duration 38s
 - Helpers: `code`, `color`, `counter`, `interpolate`, `particles`, `random`, `scene3d`, `text`, `viewport`
 - Knobs (`data-composition-variables`):
-  - `title` (string, default "Remotion Bits") — Title
+  - `title` (string, default "hyperbits") — Title
   - `color` (color, default "#fcc192") — Accent
   - `background` (color, default "#100f0f") — Background
