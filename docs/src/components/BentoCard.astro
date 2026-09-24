@@ -1,51 +1,20 @@
 ---
 interface Props {
   class?: string;
-  title: string;
-  description: string;
-  href: string;
-  eyebrow: string;
 }
 
-const { class: className, title, description, href, eyebrow } = Astro.props;
+const { class: className } = Astro.props;
 ---
 
-<article
+<div
   class:list={[
-    "bento-card rounded-xl squircle border border-white/10 bg-surface-dark relative overflow-hidden group hover:border-primary/40 transition-colors",
+    "rounded-xl squircle border border-white/10 bg-surface-light/20 p-8 relative overflow-hidden group hover:border-primary/30 transition-colors duration-500",
     className,
   ]}
 >
-  <div class="bento-copy">
-    <span class="text-primary text-xs font-mono uppercase tracking-widest">{eyebrow}</span>
-    <h3 class="text-xl font-semibold text-white mt-3 mb-2">
-      <a href={href} class="hover:text-primary focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4">
-        {title}<span aria-hidden="true" class="text-primary ml-2">↗</span>
-      </a>
-    </h3>
-    <p class="text-gray-400 text-sm leading-relaxed">{description}</p>
+  <div
+    class="absolute inset-0 bg-gradient-to-br from-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"
+  >
   </div>
-  <div class="bento-visual"><slot /></div>
-</article>
-
-<style>
-  .bento-card {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-  }
-  .bento-copy { padding: 1.75rem 1.75rem 1.25rem; }
-  .bento-visual {
-    margin-top: auto;
-    min-width: 0;
-    overflow: hidden;
-  }
-  @media (min-width: 1024px) {
-    .bento-card:global(.bento-wide) {
-      display: grid;
-      grid-template-columns: 1fr 1.15fr;
-      align-items: center;
-    }
-    .bento-card:global(.bento-wide) .bento-visual { margin-top: 0; }
-  }
-</style>
+  <slot />
+</div>
