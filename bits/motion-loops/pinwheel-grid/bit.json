@@ -1,7 +1,7 @@
 {
   "name": "pinwheel-grid",
   "title": "Pinwheel Grid",
-  "description": "Seamless 12-second loop of a pinwheel grid snapping through counter-rotating quarter turns",
+  "description": "Pinwheel grid snapping through counter-rotating quarter turns",
   "tags": [
     "loop",
     "background",
@@ -24,7 +24,7 @@
     "name": "pinwheel-grid",
     "type": "hyperframes:block",
     "title": "Pinwheel Grid",
-    "description": "Seamless 12-second loop of a pinwheel grid snapping through counter-rotating quarter turns",
+    "description": "Pinwheel grid snapping through counter-rotating quarter turns",
     "tags": [
       "loop",
       "background",

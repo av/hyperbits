@@ -3,7 +3,7 @@
   "name": "horizon-grid",
   "type": "hyperframes:block",
   "title": "Horizon Grid",
-  "description": "Seamless 12-second loop of a mirrored perspective grid streaming toward a glowing horizon",
+  "description": "Mirrored perspective grid streaming toward a glowing horizon",
   "tags": [
     "loop",
     "background",

@@ -1,7 +1,7 @@
 {
   "name": "speed-streaks",
   "title": "Speed Streaks",
-  "description": "Seamless 12-second loop of light streaks racing across the frame in parallax lanes",
+  "description": "Light streaks racing across the frame in parallax lanes",
   "tags": [
     "loop",
     "background",
@@ -24,7 +24,7 @@
     "name": "speed-streaks",
     "type": "hyperframes:block",
     "title": "Speed Streaks",
-    "description": "Seamless 12-second loop of light streaks racing across the frame in parallax lanes",
+    "description": "Light streaks racing across the frame in parallax lanes",
     "tags": [
       "loop",
       "background",

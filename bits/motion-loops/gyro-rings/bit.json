@@ -1,7 +1,7 @@
 {
   "name": "gyro-rings",
   "title": "Gyro Rings",
-  "description": "Seamless 12-second loop of wireframe rings tumbling in 3D around a glowing core",
+  "description": "Wireframe rings tumbling in 3D around a glowing core",
   "tags": [
     "loop",
     "background",
@@ -24,7 +24,7 @@
     "name": "gyro-rings",
     "type": "hyperframes:block",
     "title": "Gyro Rings",
-    "description": "Seamless 12-second loop of wireframe rings tumbling in 3D around a glowing core",
+    "description": "Wireframe rings tumbling in 3D around a glowing core",
     "tags": [
       "loop",
       "background",

@@ -1,7 +1,7 @@
 {
   "name": "truchet-weave",
   "title": "Truchet Weave",
-  "description": "Seamless 12-second loop of Truchet arc tiles flipping in a ripple to rewire one continuous maze",
+  "description": "Truchet arc tiles flipping in a ripple to rewire one continuous maze",
   "tags": [
     "loop",
     "background",
@@ -25,7 +25,7 @@
     "name": "truchet-weave",
     "type": "hyperframes:block",
     "title": "Truchet Weave",
-    "description": "Seamless 12-second loop of Truchet arc tiles flipping in a ripple to rewire one continuous maze",
+    "description": "Truchet arc tiles flipping in a ripple to rewire one continuous maze",
     "tags": [
       "loop",
       "background",

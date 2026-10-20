@@ -1,7 +1,7 @@
 {
   "name": "contour-drift",
   "title": "Contour Drift",
-  "description": "Seamless 12-second loop of topographic contour lines flowing over a shifting terrain",
+  "description": "Topographic contour lines flowing over a shifting terrain",
   "tags": [
     "loop",
     "background",
@@ -24,7 +24,7 @@
     "name": "contour-drift",
     "type": "hyperframes:block",
     "title": "Contour Drift",
-    "description": "Seamless 12-second loop of topographic contour lines flowing over a shifting terrain",
+    "description": "Topographic contour lines flowing over a shifting terrain",
     "tags": [
       "loop",
       "background",

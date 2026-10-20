@@ -3,7 +3,7 @@
   "name": "ray-burst",
   "type": "hyperframes:block",
   "title": "Ray Burst",
-  "description": "Seamless 12-second loop of radial lines breathing around a pulsing centre",
+  "description": "Radial lines breathing around a pulsing centre",
   "tags": [
     "loop",
     "background",

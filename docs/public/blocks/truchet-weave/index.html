@@ -90,6 +90,9 @@
         function rgba(rgb, alpha) {
           return "rgba(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
         }
+        function mix(from, to, amount) {
+          return from.map((value, index) => Math.round(value + (to[index] - value) * amount));
+        }
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
         const columns = Math.max(2, Math.round(Number(vars.columns) || 16));
@@ -111,7 +114,6 @@
               tileX,
               tileY,
               flipped: hyperbits.random(key + "-flip") > 0.5,
-              lit: hyperbits.random(key + "-lit") > 0.94,
               delay: (Math.hypot(tileX - centerX, tileY - centerY) / reach) * 0.25,
             });
           }
@@ -120,26 +122,23 @@
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
           context.lineCap = "butt";
-          context.lineWidth = size * 0.2;
+          context.lineWidth = size * 0.28;
           const half = size / 2;
-          for (const pass of [false, true]) {
-            for (const tile of tiles) {
-              if (tile.lit !== pass) continue;
-              const beat = phase * 2 - tile.delay;
-              const whole = Math.floor(beat);
-              const local = Math.min(Math.max((beat - whole) / 0.3, 0), 1);
-              const angle = (Math.PI / 2) * ((tile.flipped ? 1 : 0) + whole + ease(local));
-              context.save();
-              context.translate(tile.tileX, tile.tileY);
-              context.rotate(angle);
-              context.strokeStyle = rgba(tile.lit ? accent : foreground, 1);
-              context.beginPath();
-              context.arc(-half, -half, half, 0, Math.PI / 2);
-              context.moveTo(half, 0);
-              context.arc(half, half, half, Math.PI * 1.5, Math.PI, true);
-              context.stroke();
-              context.restore();
-            }
+          for (const tile of tiles) {
+            const beat = phase * 2 - tile.delay;
+            const whole = Math.floor(beat);
+            const local = Math.min(Math.max((beat - whole) / 0.3, 0), 1);
+            const angle = (Math.PI / 2) * ((tile.flipped ? 1 : 0) + whole + ease(local));
+            context.save();
+            context.translate(tile.tileX, tile.tileY);
+            context.rotate(angle);
+            context.strokeStyle = rgba(mix(foreground, accent, Math.sin(Math.PI * local)), 1);
+            context.beginPath();
+            context.arc(-half, -half, half, 0, Math.PI / 2);
+            context.moveTo(half, 0);
+            context.arc(half, half, half, Math.PI * 1.5, Math.PI, true);
+            context.stroke();
+            context.restore();
           }
         }
         const proxy = { time: 0 };

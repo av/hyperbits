@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#4fb6ec"},{"id":"columns","type":"number","label":"Grid columns","default":24}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#4fb6ec"},{"id":"columns","type":"number","label":"Grid columns","default":28}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -93,44 +93,45 @@
         const background = channels(vars.background);
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const columns = Math.max(6, Math.round(Number(vars.columns) || 24));
+        const columns = Math.max(6, Math.round(Number(vars.columns) || 28));
         const centerX = view.width / 2;
         const horizon = view.height / 2;
-        const focal = view.height * 0.42;
+        const focal = view.height * 0.3;
         const near = 0.12;
-        const far = 32;
-        const rowsPerLoop = 18;
+        const far = 14;
+        const spacing = 0.32;
+        const rowsPerLoop = 12;
         function fade(depth) {
           const distance = Math.min(Math.max((depth - near) / (far - near), 0), 1);
-          return Math.pow(1 - distance, 1.5);
+          return Math.pow(1 - distance, 0.9);
         }
         function draw(phase) {
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
           const travel = (phase * rowsPerLoop) % 1;
           const sway = Math.sin(turn * phase) * 0.7;
-          const glow = context.createLinearGradient(0, horizon - view.vh * 18, 0, horizon + view.vh * 18);
+          const glow = context.createLinearGradient(0, horizon - view.vh * 10, 0, horizon + view.vh * 10);
           glow.addColorStop(0, rgba(accent, 0));
-          glow.addColorStop(0.5, rgba(accent, 0.38));
+          glow.addColorStop(0.5, rgba(accent, 0.22));
           glow.addColorStop(1, rgba(accent, 0));
           context.fillStyle = glow;
-          context.fillRect(0, horizon - view.vh * 18, view.width, view.vh * 36);
+          context.fillRect(0, horizon - view.vh * 10, view.width, view.vh * 20);
           context.lineCap = "round";
           for (const side of [1, -1]) {
-            const strength = side > 0 ? 1 : 0.45;
-            for (let row = 0; row <= far + 1; row += 1) {
-              const depth = row + 1 - travel;
+            const strength = side > 0 ? 1 : 0.7;
+            for (let row = 0; row <= far / spacing + 1; row += 1) {
+              const depth = (row + 1 - travel) * spacing;
               if (depth < near || depth > far) continue;
               const lineY = horizon + (side * focal) / depth;
               context.strokeStyle = rgba(accent, fade(depth) * strength);
-              context.lineWidth = Math.max(view.vmin * 0.09, (view.vmin * 0.6) / depth);
+              context.lineWidth = Math.max(view.vmin * 0.1, (view.vmin * 0.16) / depth);
               context.beginPath();
               context.moveTo(0, lineY);
               context.lineTo(view.width, lineY);
               context.stroke();
             }
             for (let column = 0; column <= columns; column += 1) {
-              const worldX = column - columns / 2 - sway;
+              const worldX = (column - columns / 2 - sway) * spacing;
               const nearX = centerX + (worldX * focal) / near;
               const nearY = horizon + (side * focal) / near;
               const farX = centerX + (worldX * focal) / far;
@@ -154,7 +155,7 @@
           const vignette = context.createRadialGradient(centerX, horizon, 0, centerX, horizon, view.vmax * 62);
           vignette.addColorStop(0, rgba(background, 0));
           vignette.addColorStop(0.55, rgba(background, 0));
-          vignette.addColorStop(1, rgba(background, 0.7));
+          vignette.addColorStop(1, rgba(background, 0.45));
           context.fillStyle = vignette;
           context.fillRect(0, 0, view.width, view.height);
         }

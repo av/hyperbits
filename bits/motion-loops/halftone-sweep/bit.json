@@ -1,7 +1,7 @@
 {
   "name": "halftone-sweep",
   "title": "Halftone Sweep",
-  "description": "Seamless 12-second loop of halftone dots swelling as soft diagonal bands sweep across",
+  "description": "Halftone dots swelling as soft diagonal bands sweep across",
   "tags": [
     "loop",
     "background",
@@ -23,7 +23,7 @@
     "name": "halftone-sweep",
     "type": "hyperframes:block",
     "title": "Halftone Sweep",
-    "description": "Seamless 12-second loop of halftone dots swelling as soft diagonal bands sweep across",
+    "description": "Halftone dots swelling as soft diagonal bands sweep across",
     "tags": [
       "loop",
       "background",

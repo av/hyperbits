@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#f2f0e5"},{"id":"foreground","type":"color","label":"Foreground","default":"#100f0f"},{"id":"accent","type":"color","label":"Accent","default":"#f2652a"},{"id":"rays","type":"number","label":"Rays","default":96},{"id":"seed","type":"number","label":"Seed","default":12}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#f2f0e5"},{"id":"foreground","type":"color","label":"Foreground","default":"#100f0f"},{"id":"accent","type":"color","label":"Accent","default":"#f2652a"},{"id":"rays","type":"number","label":"Rays","default":64},{"id":"seed","type":"number","label":"Seed","default":12}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -92,9 +92,9 @@
         }
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const rays = Math.max(8, Math.round(Number(vars.rays) || 96));
+        const rays = Math.max(8, Math.round(Number(vars.rays) || 64));
         const seed = Number(vars.seed) || 0;
-        const lengths = Array.from({ length: rays }, (_, ray) => hyperbits.randomFloat("burst-" + seed + "-" + ray, 0.45, 1));
+        const lengths = Array.from({ length: rays }, (_, ray) => hyperbits.randomFloat("burst-" + seed + "-" + ray, 0.5, 1));
         const centerX = view.width / 2;
         const centerY = view.height / 2;
         function draw(phase) {
@@ -104,31 +104,28 @@
           for (let ray = 0; ray < rays; ray += 1) {
             const angle = (turn * ray) / rays;
             const breath = 0.82 + 0.1 * Math.sin(3 * angle - turn * phase) + 0.08 * Math.sin(turn * (phase * 2 + ray * 0.37));
-            const reach = 11 + 52 * lengths[ray] * breath;
+            const reach = 16 + 74 * lengths[ray] * breath;
             const inner = 8.5 + 0.5 * Math.sin(turn * (phase * 2 + ray / rays));
             const startX = centerX + Math.cos(angle) * view.vmin * inner;
             const startY = centerY + Math.sin(angle) * view.vmin * inner;
             const endX = centerX + Math.cos(angle) * view.vmin * reach;
             const endY = centerY + Math.sin(angle) * view.vmin * reach;
             context.strokeStyle = rgba(foreground, 1);
-            context.lineWidth = view.vmin * 0.2;
+            context.lineWidth = view.vmin * 0.42;
             context.beginPath();
             context.moveTo(startX, startY);
             context.lineTo(endX, endY);
             context.stroke();
             context.fillStyle = rgba(foreground, 1);
             context.beginPath();
-            context.arc(endX, endY, view.vmin * 0.38, 0, turn);
+            context.arc(endX, endY, view.vmin * 0.55, 0, turn);
             context.fill();
           }
-          context.strokeStyle = rgba(foreground, 0.85);
-          context.lineWidth = view.vmin * 0.16;
-          context.setLineDash([view.vmin * 0.5, view.vmin * 0.9]);
-          context.lineDashOffset = phase * view.vmin * 1.4 * 10;
+          context.strokeStyle = rgba(foreground, 1);
+          context.lineWidth = view.vmin * 0.3;
           context.beginPath();
           context.arc(centerX, centerY, view.vmin * 6.2, 0, turn);
           context.stroke();
-          context.setLineDash([]);
           const pulse = 0.5 + 0.5 * Math.sin(turn * phase * 4);
           context.strokeStyle = rgba(accent, 0.25 + 0.5 * (1 - pulse));
           context.lineWidth = view.vmin * 0.3;

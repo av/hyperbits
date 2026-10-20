@@ -94,12 +94,12 @@
         const accent = channels(vars.accent);
         const count = Math.max(1, Math.round(Number(vars.drops) || 6));
         const seed = Number(vars.seed) || 0;
-        const pitch = view.vmin * 2.4;
+        const pitch = view.vmin * 4.2;
         const columns = Math.ceil(view.width / pitch);
         const rows = Math.ceil(view.height / pitch);
         const marginX = (view.width - (columns - 1) * pitch) / 2;
         const marginY = (view.height - (rows - 1) * pitch) / 2;
-        const dotRadius = view.vmin * 0.22;
+        const dotRadius = view.vmin * 0.5;
         const speed = view.vmin * 16;
         const width = view.vmin * 7;
         const drops = Array.from({ length: count }, (_, index) => {
@@ -134,14 +134,14 @@
                 const distance = Math.hypot(deltaX, deltaY) || 1;
                 const offset = (distance - wave.front) / width;
                 const crest = Math.exp(-offset * offset) * wave.strength;
-                pushX += (deltaX / distance) * crest * pitch * 0.8;
-                pushY += (deltaY / distance) * crest * pitch * 0.8;
+                pushX += (deltaX / distance) * crest * pitch * 1.1;
+                pushY += (deltaY / distance) * crest * pitch * 1.1;
                 energy += crest;
               }
               const glow = Math.min(energy, 1);
               const dotX = homeX + pushX;
               const dotY = homeY + pushY;
-              context.fillStyle = rgba(foreground, 0.45 + 0.55 * glow);
+              context.fillStyle = rgba(foreground, 0.85 + 0.15 * glow);
               context.beginPath();
               context.arc(dotX, dotY, dotRadius * (1 + 2.2 * glow), 0, turn);
               context.fill();

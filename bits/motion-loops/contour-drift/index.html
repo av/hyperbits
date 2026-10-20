@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#f2652a"},{"id":"levels","type":"number","label":"Contour levels","default":18},{"id":"seed","type":"number","label":"Seed","default":4}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#f2652a"},{"id":"levels","type":"number","label":"Contour levels","default":14},{"id":"seed","type":"number","label":"Seed","default":4}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -92,7 +92,7 @@
         }
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const levels = Math.max(3, Math.round(Number(vars.levels) || 18));
+        const levels = Math.max(3, Math.round(Number(vars.levels) || 14));
         const seed = Number(vars.seed) || 0;
         const cell = view.vmin * 1.6;
         const columns = Math.ceil(view.width / cell) + 1;
@@ -100,7 +100,7 @@
         const waves = Array.from({ length: 7 }, (_, index) => {
           const key = "contour-" + seed + "-" + index;
           const direction = hyperbits.randomFloat(key + "-dir", 0, turn);
-          const frequency = hyperbits.randomFloat(key + "-freq", 1.2, 3.4) / (view.vmin * 100);
+          const frequency = hyperbits.randomFloat(key + "-freq", 0.6, 1.7) / (view.vmin * 100);
           return {
             stepX: Math.cos(direction) * frequency * turn,
             stepY: Math.sin(direction) * frequency * turn,
@@ -161,8 +161,8 @@
           for (let level = 0; level < levels; level += 1) {
             const threshold = -0.78 + (1.56 * (level + 0.5)) / levels;
             const isMajor = level % 5 === 2;
-            context.strokeStyle = isMajor ? rgba(foreground, 0.7) : rgba(accent, 0.35 + 0.5 * (level / levels));
-            context.lineWidth = view.vmin * (isMajor ? 0.2 : 0.13);
+            context.strokeStyle = isMajor ? rgba(foreground, 0.9) : rgba(accent, 0.7 + 0.3 * (level / levels));
+            context.lineWidth = view.vmin * (isMajor ? 0.42 : 0.3);
             contour(threshold);
           }
         }

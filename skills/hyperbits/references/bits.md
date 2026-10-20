@@ -410,7 +410,7 @@ Smooth transition between radial gradients
 
 ### `bauhaus-tiles`
 
-Seamless 12-second loop of geometric Bauhaus tiles turning in a diagonal wave
+Geometric Bauhaus tiles turning in a diagonal wave
 
 - Path: `bits/motion-loops/bauhaus-tiles/index.html`
 - Title: Bauhaus Tiles
@@ -420,12 +420,12 @@ Seamless 12-second loop of geometric Bauhaus tiles turning in a diagonal wave
   - `background` (color, default "#100f0f") — Background
   - `foreground` (color, default "#f2f0e5") — Foreground
   - `accent` (color, default "#9d8af0") — Accent
-  - `columns` (number, default 8) — Columns
+  - `columns` (number, default 6) — Columns
   - `seed` (number, default 11) — Seed
 
 ### `contour-drift`
 
-Seamless 12-second loop of topographic contour lines flowing over a shifting terrain
+Topographic contour lines flowing over a shifting terrain
 
 - Path: `bits/motion-loops/contour-drift/index.html`
 - Title: Contour Drift
@@ -435,12 +435,12 @@ Seamless 12-second loop of topographic contour lines flowing over a shifting ter
   - `background` (color, default "#100f0f") — Background
   - `foreground` (color, default "#f2f0e5") — Foreground
   - `accent` (color, default "#f2652a") — Accent
-  - `levels` (number, default 18) — Contour levels
+  - `levels` (number, default 14) — Contour levels
   - `seed` (number, default 4) — Seed
 
 ### `dot-ripple`
 
-Seamless 12-second loop of ripples rolling through a fine dot grid like drops on water
+Ripples rolling through a fine dot grid like drops on water
 
 - Path: `bits/motion-loops/dot-ripple/index.html`
 - Title: Dot Ripple
@@ -455,7 +455,7 @@ Seamless 12-second loop of ripples rolling through a fine dot grid like drops on
 
 ### `dot-tunnel`
 
-Seamless 12-second loop of dotted rings flying out of a curving tunnel
+Dotted rings flying out of a curving tunnel
 
 - Path: `bits/motion-loops/dot-tunnel/index.html`
 - Title: Dot Tunnel
@@ -470,7 +470,7 @@ Seamless 12-second loop of dotted rings flying out of a curving tunnel
 
 ### `floating-shapes`
 
-Seamless 12-second loop of flat geometric shapes drifting upward in layered parallax
+Flat geometric shapes drifting upward in layered parallax
 
 - Path: `bits/motion-loops/floating-shapes/index.html`
 - Title: Floating Shapes
@@ -480,12 +480,12 @@ Seamless 12-second loop of flat geometric shapes drifting upward in layered para
   - `background` (color, default "#100f0f") — Background
   - `foreground` (color, default "#f2f0e5") — Foreground
   - `accent` (color, default "#9d8af0") — Accent
-  - `shapes` (number, default 48) — Shapes
+  - `shapes` (number, default 16) — Shapes
   - `seed` (number, default 8) — Seed
 
 ### `gyro-rings`
 
-Seamless 12-second loop of wireframe rings tumbling in 3D around a glowing core
+Wireframe rings tumbling in 3D around a glowing core
 
 - Path: `bits/motion-loops/gyro-rings/index.html`
 - Title: Gyro Rings
@@ -500,7 +500,7 @@ Seamless 12-second loop of wireframe rings tumbling in 3D around a glowing core
 
 ### `halftone-sweep`
 
-Seamless 12-second loop of halftone dots swelling as soft diagonal bands sweep across
+Halftone dots swelling as soft diagonal bands sweep across
 
 - Path: `bits/motion-loops/halftone-sweep/index.html`
 - Title: Halftone Sweep
@@ -514,7 +514,7 @@ Seamless 12-second loop of halftone dots swelling as soft diagonal bands sweep a
 
 ### `horizon-grid`
 
-Seamless 12-second loop of a mirrored perspective grid streaming toward a glowing horizon
+Mirrored perspective grid streaming toward a glowing horizon
 
 - Path: `bits/motion-loops/horizon-grid/index.html`
 - Title: Horizon Grid
@@ -524,11 +524,11 @@ Seamless 12-second loop of a mirrored perspective grid streaming toward a glowin
   - `background` (color, default "#100f0f") — Background
   - `foreground` (color, default "#f2f0e5") — Foreground
   - `accent` (color, default "#4fb6ec") — Accent
-  - `columns` (number, default 24) — Grid columns
+  - `columns` (number, default 28) — Grid columns
 
 ### `phyllotaxis-bloom`
 
-Seamless 12-second loop of dots spiralling out of a sunflower pattern with travelling pulses
+Dots spiralling out of a sunflower pattern with travelling pulses
 
 - Path: `bits/motion-loops/phyllotaxis-bloom/index.html`
 - Title: Phyllotaxis Bloom
@@ -542,7 +542,7 @@ Seamless 12-second loop of dots spiralling out of a sunflower pattern with trave
 
 ### `pinwheel-grid`
 
-Seamless 12-second loop of a pinwheel grid snapping through counter-rotating quarter turns
+Pinwheel grid snapping through counter-rotating quarter turns
 
 - Path: `bits/motion-loops/pinwheel-grid/index.html`
 - Title: Pinwheel Grid
@@ -552,11 +552,11 @@ Seamless 12-second loop of a pinwheel grid snapping through counter-rotating qua
   - `background` (color, default "#100f0f") — Background
   - `foreground` (color, default "#f2f0e5") — Foreground
   - `accent` (color, default "#9d8af0") — Accent
-  - `columns` (number, default 10) — Columns
+  - `columns` (number, default 7) — Columns
 
 ### `pixel-rain`
 
-Seamless 12-second loop of stepped pixel trails falling down a dotted grid
+Stepped pixel trails falling down a dotted grid
 
 - Path: `bits/motion-loops/pixel-rain/index.html`
 - Title: Pixel Rain
@@ -566,12 +566,12 @@ Seamless 12-second loop of stepped pixel trails falling down a dotted grid
   - `background` (color, default "#f2f0e5") — Background
   - `foreground` (color, default "#100f0f") — Foreground
   - `accent` (color, default "#ef5da8") — Accent
-  - `columns` (number, default 64) — Columns
+  - `columns` (number, default 40) — Columns
   - `seed` (number, default 2) — Seed
 
 ### `ray-burst`
 
-Seamless 12-second loop of radial lines breathing around a pulsing centre
+Radial lines breathing around a pulsing centre
 
 - Path: `bits/motion-loops/ray-burst/index.html`
 - Title: Ray Burst
@@ -581,12 +581,12 @@ Seamless 12-second loop of radial lines breathing around a pulsing centre
   - `background` (color, default "#f2f0e5") — Background
   - `foreground` (color, default "#100f0f") — Foreground
   - `accent` (color, default "#f2652a") — Accent
-  - `rays` (number, default 96) — Rays
+  - `rays` (number, default 64) — Rays
   - `seed` (number, default 12) — Seed
 
 ### `speed-streaks`
 
-Seamless 12-second loop of light streaks racing across the frame in parallax lanes
+Light streaks racing across the frame in parallax lanes
 
 - Path: `bits/motion-loops/speed-streaks/index.html`
 - Title: Speed Streaks
@@ -596,12 +596,12 @@ Seamless 12-second loop of light streaks racing across the frame in parallax lan
   - `background` (color, default "#100f0f") — Background
   - `foreground` (color, default "#f2f0e5") — Foreground
   - `accent` (color, default "#f2652a") — Accent
-  - `streaks` (number, default 110) — Streaks
+  - `streaks` (number, default 70) — Streaks
   - `seed` (number, default 9) — Seed
 
 ### `truchet-weave`
 
-Seamless 12-second loop of Truchet arc tiles flipping in a ripple to rewire one continuous maze
+Truchet arc tiles flipping in a ripple to rewire one continuous maze
 
 - Path: `bits/motion-loops/truchet-weave/index.html`
 - Title: Truchet Weave
@@ -616,7 +616,7 @@ Seamless 12-second loop of Truchet arc tiles flipping in a ripple to rewire one 
 
 ### `wave-stack`
 
-Seamless 12-second loop of stacked sine lines rolling over a bold colour field
+Stacked sine lines rolling over a bold colour field
 
 - Path: `bits/motion-loops/wave-stack/index.html`
 - Title: Wave Stack
@@ -630,7 +630,7 @@ Seamless 12-second loop of stacked sine lines rolling over a bold colour field
 
 ### `zoom-polygons`
 
-Seamless 12-second loop of nested twisting polygons zooming in forever
+Nested twisting polygons zooming in forever
 
 - Path: `bits/motion-loops/zoom-polygons/index.html`
 - Title: Zoom Polygons

@@ -1,7 +1,7 @@
 {
   "name": "floating-shapes",
   "title": "Floating Shapes",
-  "description": "Seamless 12-second loop of flat geometric shapes drifting upward in layered parallax",
+  "description": "Flat geometric shapes drifting upward in layered parallax",
   "tags": [
     "loop",
     "background",
@@ -24,7 +24,7 @@
     "name": "floating-shapes",
     "type": "hyperframes:block",
     "title": "Floating Shapes",
-    "description": "Seamless 12-second loop of flat geometric shapes drifting upward in layered parallax",
+    "description": "Flat geometric shapes drifting upward in layered parallax",
     "tags": [
       "loop",
       "background",

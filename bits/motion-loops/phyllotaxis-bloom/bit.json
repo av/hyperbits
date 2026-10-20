@@ -1,7 +1,7 @@
 {
   "name": "phyllotaxis-bloom",
   "title": "Phyllotaxis Bloom",
-  "description": "Seamless 12-second loop of dots spiralling out of a sunflower pattern with travelling pulses",
+  "description": "Dots spiralling out of a sunflower pattern with travelling pulses",
   "tags": [
     "loop",
     "background",
@@ -23,7 +23,7 @@
     "name": "phyllotaxis-bloom",
     "type": "hyperframes:block",
     "title": "Phyllotaxis Bloom",
-    "description": "Seamless 12-second loop of dots spiralling out of a sunflower pattern with travelling pulses",
+    "description": "Dots spiralling out of a sunflower pattern with travelling pulses",
     "tags": [
       "loop",
       "background",

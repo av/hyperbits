@@ -1,7 +1,7 @@
 {
   "name": "wave-stack",
   "title": "Wave Stack",
-  "description": "Seamless 12-second loop of stacked sine lines rolling over a bold colour field",
+  "description": "Stacked sine lines rolling over a bold colour field",
   "tags": [
     "loop",
     "background",
@@ -23,7 +23,7 @@
     "name": "wave-stack",
     "type": "hyperframes:block",
     "title": "Wave Stack",
-    "description": "Seamless 12-second loop of stacked sine lines rolling over a bold colour field",
+    "description": "Stacked sine lines rolling over a bold colour field",
     "tags": [
       "loop",
       "background",

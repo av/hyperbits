@@ -3,7 +3,7 @@
   "name": "pixel-rain",
   "type": "hyperframes:block",
   "title": "Pixel Rain",
-  "description": "Seamless 12-second loop of stepped pixel trails falling down a dotted grid",
+  "description": "Stepped pixel trails falling down a dotted grid",
   "tags": [
     "loop",
     "background",

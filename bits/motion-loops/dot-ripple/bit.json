@@ -1,7 +1,7 @@
 {
   "name": "dot-ripple",
   "title": "Dot Ripple",
-  "description": "Seamless 12-second loop of ripples rolling through a fine dot grid like drops on water",
+  "description": "Ripples rolling through a fine dot grid like drops on water",
   "tags": [
     "loop",
     "background",
@@ -24,7 +24,7 @@
     "name": "dot-ripple",
     "type": "hyperframes:block",
     "title": "Dot Ripple",
-    "description": "Seamless 12-second loop of ripples rolling through a fine dot grid like drops on water",
+    "description": "Ripples rolling through a fine dot grid like drops on water",
     "tags": [
       "loop",
       "background",

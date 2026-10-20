@@ -115,7 +115,7 @@ export const docsBits: DocsBit[] = [
     "id": "bauhaus-tiles",
     "name": "Bauhaus Tiles",
     "title": "Bauhaus Tiles",
-    "description": "Seamless 12-second loop of geometric Bauhaus tiles turning in a diagonal wave",
+    "description": "Geometric Bauhaus tiles turning in a diagonal wave",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -141,7 +141,7 @@ export const docsBits: DocsBit[] = [
     "id": "contour-drift",
     "name": "Contour Drift",
     "title": "Contour Drift",
-    "description": "Seamless 12-second loop of topographic contour lines flowing over a shifting terrain",
+    "description": "Topographic contour lines flowing over a shifting terrain",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -166,7 +166,7 @@ export const docsBits: DocsBit[] = [
     "id": "dot-ripple",
     "name": "Dot Ripple",
     "title": "Dot Ripple",
-    "description": "Seamless 12-second loop of ripples rolling through a fine dot grid like drops on water",
+    "description": "Ripples rolling through a fine dot grid like drops on water",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -191,7 +191,7 @@ export const docsBits: DocsBit[] = [
     "id": "dot-tunnel",
     "name": "Dot Tunnel",
     "title": "Dot Tunnel",
-    "description": "Seamless 12-second loop of dotted rings flying out of a curving tunnel",
+    "description": "Dotted rings flying out of a curving tunnel",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -215,7 +215,7 @@ export const docsBits: DocsBit[] = [
     "id": "floating-shapes",
     "name": "Floating Shapes",
     "title": "Floating Shapes",
-    "description": "Seamless 12-second loop of flat geometric shapes drifting upward in layered parallax",
+    "description": "Flat geometric shapes drifting upward in layered parallax",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -240,7 +240,7 @@ export const docsBits: DocsBit[] = [
     "id": "gyro-rings",
     "name": "Gyro Rings",
     "title": "Gyro Rings",
-    "description": "Seamless 12-second loop of wireframe rings tumbling in 3D around a glowing core",
+    "description": "Wireframe rings tumbling in 3D around a glowing core",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -265,7 +265,7 @@ export const docsBits: DocsBit[] = [
     "id": "halftone-sweep",
     "name": "Halftone Sweep",
     "title": "Halftone Sweep",
-    "description": "Seamless 12-second loop of halftone dots swelling as soft diagonal bands sweep across",
+    "description": "Halftone dots swelling as soft diagonal bands sweep across",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -289,7 +289,7 @@ export const docsBits: DocsBit[] = [
     "id": "horizon-grid",
     "name": "Horizon Grid",
     "title": "Horizon Grid",
-    "description": "Seamless 12-second loop of a mirrored perspective grid streaming toward a glowing horizon",
+    "description": "Mirrored perspective grid streaming toward a glowing horizon",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -313,7 +313,7 @@ export const docsBits: DocsBit[] = [
     "id": "phyllotaxis-bloom",
     "name": "Phyllotaxis Bloom",
     "title": "Phyllotaxis Bloom",
-    "description": "Seamless 12-second loop of dots spiralling out of a sunflower pattern with travelling pulses",
+    "description": "Dots spiralling out of a sunflower pattern with travelling pulses",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -337,7 +337,7 @@ export const docsBits: DocsBit[] = [
     "id": "pinwheel-grid",
     "name": "Pinwheel Grid",
     "title": "Pinwheel Grid",
-    "description": "Seamless 12-second loop of a pinwheel grid snapping through counter-rotating quarter turns",
+    "description": "Pinwheel grid snapping through counter-rotating quarter turns",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -362,7 +362,7 @@ export const docsBits: DocsBit[] = [
     "id": "pixel-rain",
     "name": "Pixel Rain",
     "title": "Pixel Rain",
-    "description": "Seamless 12-second loop of stepped pixel trails falling down a dotted grid",
+    "description": "Stepped pixel trails falling down a dotted grid",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -387,7 +387,7 @@ export const docsBits: DocsBit[] = [
     "id": "ray-burst",
     "name": "Ray Burst",
     "title": "Ray Burst",
-    "description": "Seamless 12-second loop of radial lines breathing around a pulsing centre",
+    "description": "Radial lines breathing around a pulsing centre",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -412,7 +412,7 @@ export const docsBits: DocsBit[] = [
     "id": "speed-streaks",
     "name": "Speed Streaks",
     "title": "Speed Streaks",
-    "description": "Seamless 12-second loop of light streaks racing across the frame in parallax lanes",
+    "description": "Light streaks racing across the frame in parallax lanes",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -437,7 +437,7 @@ export const docsBits: DocsBit[] = [
     "id": "truchet-weave",
     "name": "Truchet Weave",
     "title": "Truchet Weave",
-    "description": "Seamless 12-second loop of Truchet arc tiles flipping in a ripple to rewire one continuous maze",
+    "description": "Truchet arc tiles flipping in a ripple to rewire one continuous maze",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -463,7 +463,7 @@ export const docsBits: DocsBit[] = [
     "id": "wave-stack",
     "name": "Wave Stack",
     "title": "Wave Stack",
-    "description": "Seamless 12-second loop of stacked sine lines rolling over a bold colour field",
+    "description": "Stacked sine lines rolling over a bold colour field",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -487,7 +487,7 @@ export const docsBits: DocsBit[] = [
     "id": "zoom-polygons",
     "name": "Zoom Polygons",
     "title": "Zoom Polygons",
-    "description": "Seamless 12-second loop of nested twisting polygons zooming in forever",
+    "description": "Nested twisting polygons zooming in forever",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [

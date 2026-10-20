@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#9d8af0"},{"id":"columns","type":"number","label":"Columns","default":10}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#9d8af0"},{"id":"columns","type":"number","label":"Columns","default":7}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -95,8 +95,8 @@
         }
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const shade = mix(accent, channels(vars.background), 0.5);
-        const columns = Math.max(2, Math.round(Number(vars.columns) || 10));
+        const shade = mix(accent, channels(vars.background), 0.3);
+        const columns = Math.max(2, Math.round(Number(vars.columns) || 7));
         const size = view.width / columns;
         const rows = Math.ceil(view.height / size);
         const marginY = (view.height - rows * size) / 2;

@@ -96,9 +96,9 @@
         const dots = Math.max(8, Math.round(Number(vars.dots) || 48));
         const centerX = view.width / 2;
         const centerY = view.height / 2;
-        const focal = view.vmin * 42;
+        const focal = view.vmin * 30;
         const near = 0.28;
-        const far = 16;
+        const far = 12;
         const spacing = (far - near) / rings;
         const ringsPerLoop = 8;
         function draw(phase) {
@@ -115,7 +115,7 @@
             const slot = (((ring - phase * ringsPerLoop) % rings) + rings) % rings;
             const depth = near + slot * spacing;
             const distance = (depth - near) / (far - near);
-            const alpha = Math.pow(1 - distance, 1.25) * Math.min(1, slot * 1.5);
+            const alpha = Math.pow(1 - distance, 0.7) * Math.min(1, slot * 1.5);
             if (alpha <= 0.002) continue;
             const bend = Math.min(depth / far, 1);
             const offsetX = Math.sin(turn * phase + depth * 0.32) * view.vw * 13 * bend;
@@ -124,7 +124,7 @@
             const ringY = centerY + offsetY;
             const radius = focal / depth;
             const twist = depth * 0.18 + (turn / dots) * phase * 3;
-            const dotRadius = Math.max(view.vmin * 0.12, (view.vmin * 0.75) / depth);
+            const dotRadius = Math.max(view.vmin * 0.16, (view.vmin * 0.95) / depth);
             const isBright = Math.round(ring) % 4 === 0;
             context.fillStyle = rgba(isBright ? foreground : accent, alpha);
             context.beginPath();

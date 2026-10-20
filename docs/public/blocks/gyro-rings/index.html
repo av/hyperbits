@@ -96,7 +96,7 @@
         const seed = Number(vars.seed) || 0;
         const centerX = view.width / 2;
         const centerY = view.height / 2;
-        const unit = view.vmin * 36;
+        const unit = view.vmin * 42;
         const camera = 3.2;
         const segments = 160;
         const rings = Array.from({ length: count }, (_, ring) => {
@@ -148,7 +148,7 @@
               const point = project(ring, (turn * segment) / segments, phase);
               const facing = 0.5 - (previous.depth + point.depth) / (4 * ring.radius);
               context.strokeStyle = rgba(color, 0.18 + 0.82 * facing);
-              context.lineWidth = view.vmin * (0.12 + 0.22 * facing) * point.scale;
+              context.lineWidth = view.vmin * (0.16 + 0.34 * facing) * point.scale;
               context.beginPath();
               context.moveTo(previous.screenX, previous.screenY);
               context.lineTo(point.screenX, point.screenY);
