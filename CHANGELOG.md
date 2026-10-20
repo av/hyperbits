@@ -1,3 +1,8 @@
+### Unreleased
+
+- 16 Motion Loops bits in a new `motion-loops` category: seamless 12-second backgrounds in four families (depth, lines, dots, shapes), each restyled with `background`, `foreground` and `accent` palette tokens and shipped with a `preview.png`
+- Docs: Motion Loops page with a family-filtered live gallery and design rules; catalog cards show `preview.png` posters before the live player mounts
+
 ### v0.1.0
 
 Initial release of hyperbits, a catalog of animation bits and helpers for HyperFrames HTML + GSAP compositions.

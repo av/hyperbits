@@ -152,6 +152,10 @@ export default defineConfig({
                     link: '/docs/mcp',
                 },
                 {
+                    label: 'Motion Loops',
+                    link: '/docs/motion-loops',
+                },
+                {
                     label: 'Reference',
                     collapsed: true,
                     items: [

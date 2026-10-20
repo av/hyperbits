@@ -1,0 +1,67 @@
+---
+title: Motion Loops
+description: Seamless 12-second motion graphics backgrounds you restyle with three palette tokens
+---
+import BitsCatalog from '@components/BitsCatalog.astro';
+
+Motion loops are flat, graphic backgrounds that repeat every 12 seconds with no visible seam: the last frame flows straight back into the first. Each one is a single canvas drawn from the loop phase, so any frame renders the same way every time.
+
+They come in four families, tagged so you can filter them:
+
+- `depth`: perspective grids, tunnels, infinite zooms, tumbling rings
+- `lines`: speed streaks, stacked waves, radial bursts, topographic contours
+- `dots`: halftone bands, ripples, phyllotaxis spirals, pixel rain
+- `shapes`: Bauhaus tiles, Truchet mazes, floating shapes, pinwheels
+
+## Restyle with palette tokens
+
+Every loop exposes the same three colour knobs, plus one or two structural ones (density, columns, seed):
+
+| Token | Role |
+| --- | --- |
+| `background` | The field colour, painted on the `#bg` layer |
+| `foreground` | Ink: the main lines, dots or a highlight |
+| `accent` | The brand colour that carries the motion |
+
+Install one, then pass your brand colours on the embed:
+
+```bash
+npx hyperbits add halftone-sweep --into compositions/
+```
+
+```html
+<div
+  data-composition-id="brand-backdrop"
+  data-composition-src="compositions/halftone-sweep.html"
+  data-start="0"
+  data-duration="12"
+  data-variable-values='{"background":"#0b1020","foreground":"#e8ecff","accent":"#5b7cfa"}'
+></div>
+```
+
+Or render it directly:
+
+```bash
+npx hyperframes render --composition compositions/halftone-sweep.html \
+  --variables '{"accent":"#5b7cfa"}' --output renders/backdrop.mp4
+```
+
+To cover more than 12 seconds, place copies back to back (`data-start="0"`, `"12"`, `"24"`). Frame 12s equals frame 0, so the joins are invisible.
+
+## Design your own
+
+Start from the loop closest to the look you want (`npx hyperbits fetch dot-tunnel`) and keep its shell: `#bg`, one full-bleed canvas, a paused 12-second timeline and the three palette tokens. Then follow these rules so the loop stays seamless:
+
+1. Draw everything from `phase = (time % 12) / 12`. The timeline tween calls `draw(phase)`; nothing else keeps state between frames.
+2. Every periodic term completes a whole number of cycles per loop: `Math.sin(turn * (phase * 2 + offset))`, never `phase * 1.5`.
+3. Anything that travels moves a whole number of pattern repeats per loop. A grid scrolls by whole rows, a stream wraps with `(offset + phase * laps) % 1` with integer `laps`, a zoom advances an even number of layers when layers alternate colours.
+4. Rotations use the shape's symmetry: a square may turn 90° per loop, a triangle 120°, an asymmetric shape a full turn.
+5. Things that appear and disappear do it at zero size or zero opacity: fade at the far plane, grow from the centre, decay to nothing before the wrap.
+6. Randomness is seeded (`hyperbits.random`, `randomFloat`, `pick`) and drawn once at setup, keyed by a `seed` knob.
+7. Derive tints from the tokens (mix the accent into the background) instead of adding hard-coded colours, so a palette swap restyles the whole loop.
+
+Check it before you ship: render frame 0 and frame 12s, they must match, and the step from the last frame (11.967s at 30 fps) into frame 0 should be no larger than any other frame-to-frame step.
+
+## Gallery
+
+<BitsCatalog category="motion-loops" groups={["depth", "lines", "dots", "shapes"]} />

@@ -12,7 +12,7 @@ Ready-made animation bits for [HyperFrames](https://github.com/heygen-com/hyperf
 
 ## Status
 
-0.1.0: helpers, 46 bits, CLI, MCP server, docs site, demo reel and agent skill.
+0.1.0: helpers, 46 bits, CLI, MCP server, docs site, demo reel and agent skill. Unreleased on `master`: 16 seamless motion loops.
 
 ## Single-step usage
 
@@ -158,18 +158,40 @@ Reference pages live on the [docs site](https://hyperbits.dev/docs/getting-start
 
 ## Bits
 
-46 bits in 6 categories. Each is a self-contained HTML composition with `bit.json` metadata.
+62 bits in 7 categories. Each is a self-contained HTML composition with `bit.json` metadata.
 
 | Category | Count | Bits |
 | --- | ---: | --- |
 | Text Animations | 17 | `bar-chart`, `basic-code-block`, `basic-counter`, `basic-typewriter`, `blur-slide-word`, `char-by-char`, `cli-simulation`, `counter-confetti`, `fade-in`, `glitch-cycle`, `glitch-in`, `matrix-rain`, `multi-text-typewriter`, `stat-rings`, `typing-code-block`, `variable-speed-typewriter`, `word-by-word` |
 | Staggered Motion | 10 | `card-stack`, `chat-conversation`, `easings-visualizer`, `fracture-reassemble`, `grid-stagger`, `list-reveal`, `lower-third`, `mosaic-reframe`, `slide-from-left`, `staggered-fade-in` |
 | Background Effects | 3 | `conic-gradient`, `linear-gradient`, `radial-gradient` |
+| Motion Loops | 16 | `bauhaus-tiles`, `contour-drift`, `dot-ripple`, `dot-tunnel`, `floating-shapes`, `gyro-rings`, `halftone-sweep`, `horizon-grid`, `phyllotaxis-bloom`, `pinwheel-grid`, `pixel-rain`, `ray-burst`, `speed-streaks`, `truchet-weave`, `wave-stack`, `zoom-polygons` |
 | Particles | 5 | `fireflies`, `particles-fountain`, `particles-grid`, `particles-snow`, `scrolling-columns` |
 | 3D Scenes | 10 | `3d-basic`, `3d-elements`, `carousel`, `cube-navigation`, `cursor-flyover`, `flying-through-words`, `ken-burns`, `step-timing-context`, `terminal-3d`, `transform3d-showcase` |
 | Full Compositions | 1 | `feature-showcase` |
 
 Browse them in the [catalog](https://hyperbits.dev/docs/bits-catalog).
+
+### Motion loops
+
+Seamless 12-second motion graphics backgrounds in four families: depth, lines, dots and shapes. Frame 12s equals frame 0, so they loop with no seam, and each one is restyled with three palette tokens: `background`, `foreground` and `accent`.
+
+```bash
+npx hyperbits find --tag loop --tag dots
+npx hyperbits add halftone-sweep --into compositions/
+```
+
+```html
+<div
+  data-composition-id="backdrop"
+  data-composition-src="compositions/halftone-sweep.html"
+  data-start="0"
+  data-duration="12"
+  data-variable-values='{"background":"#0b1020","foreground":"#e8ecff","accent":"#5b7cfa"}'
+></div>
+```
+
+The gallery and the rules for designing new loops are on the [Motion Loops page](https://hyperbits.dev/docs/motion-loops). The set was inspired by the looks in [Scenario's motion backgrounds teaser](https://x.com/emmanuel_2m/status/2112203052488769629). That library is not public, so these loops are original code written for hyperbits.
 
 ## Docs
 
