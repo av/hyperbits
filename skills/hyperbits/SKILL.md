@@ -4,8 +4,9 @@ description: >
   Animation bits, helpers, CLI, and MCP server for HyperFrames HTML + GSAP
   compositions. Use when searching or installing hyperbits, HyperFrames bits,
   animation bits, GSAP compositions, text animations, staggered motion,
-  particles, 3D scenes, gradient backgrounds, counters, typewriters, or code
-  reveals. Prefer existing bits over hand-built motion.
+  particles, 3D scenes, gradient backgrounds, seamless looping motion graphics
+  backgrounds, counters, typewriters, or code reveals. Prefer existing bits over
+  hand-built motion.
 ---
 
 # Hyperbits
@@ -126,7 +127,16 @@ These match `references/patterns.md` and `AGENTS.md`. Do not invent a parallel s
 - Counter request: find a counter example, then adapt values, labels, and particle accents.
 - Code request: find a code-block or typewriter example, then adapt the sample and highlight regions.
 - Background request: find a gradient or particle example, then adapt palette, density, and duration.
+- Looping backdrop request: find a `loop` bit in the right family, then pass brand colours through its palette tokens.
 - Presentation request: find a `scenes-3d` example first, then adapt step positions, titles, and card content before introducing new helpers.
+
+## Motion loops
+
+`bits/motion-loops/` holds seamless 12-second backgrounds in four families, tagged `depth`, `lines`, `dots` and `shapes`. Frame 12s equals frame 0.
+
+- Search with `--tag loop` plus a family tag, for example `npx hyperbits find --tag loop --tag dots`.
+- Restyle through the shared palette tokens `background`, `foreground` and `accent` (`data-variable-values` or `--variables`), not by editing the drawing code.
+- To design a new loop in this style, follow `references/motion-loops.md`: draw every frame from the loop phase, use whole cycles and symmetric turns, and check the seam step before shipping.
 
 ## Minimal operational examples
 
@@ -146,5 +156,6 @@ npx hyperbits add carousel --into compositions/
 - `references/helpers.md` — generated from helper sources
 - `references/bits.md` — generated from the bit inventory
 - `references/patterns.md` — HyperFrames authoring rules
+- `references/motion-loops.md` — picking, restyling, and designing seamless loops
 
 Regenerate the first two with `npm run skill:refs` (also runs as part of `npm run inventory`).

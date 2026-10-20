@@ -22,7 +22,7 @@ Keep going until the query is completely resolved before yielding. Do not guess 
 
 Generated output lives in `dist/`. Do not commit `dist/`, `node_modules/`, `coverage/`, or `*.tgz`. Inventory and registry generators write under `src/catalog/` and the repo root; those files are committed when they exist. Skill reference markdown under `skills/hyperbits/references/bits.md` and `helpers.md` is generated and committed.
 
-Bits live in `bits/<category>/<name>/` (`index.html`, `bit.json`, optional `preview.png`). Categories: `text-animations`, `staggered-motion`, `background-effects`, `particles`, `scenes-3d`, `full-compositions`.
+Bits live in `bits/<category>/<name>/` (`index.html`, `bit.json`, optional `preview.png`). Categories: `text-animations`, `staggered-motion`, `background-effects`, `motion-loops`, `particles`, `scenes-3d`, `full-compositions`. Motion loops follow `skills/hyperbits/references/motion-loops.md`.
 
 Bits load GSAP themselves from `https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js` (`HYPERBITS_GSAP_CDN`). HyperFrames does not inject it.
 
