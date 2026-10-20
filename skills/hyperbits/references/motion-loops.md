@@ -56,7 +56,7 @@ Style rules that keep the set coherent:
 
 ## Verify
 
-1. `npm run lint:bits` and `npm test` (the `motion-loops` test checks the 12-second duration, the palette tokens, that 0s and 12s draw the same frame, and that the foreground and accent tokens reach the canvas).
+1. `npm run lint:bits` and `npm test` (the `motion-loops` test checks the 12-second duration, the palette tokens, that 0s and 12s draw the same frame, and that changing the foreground or accent token repaints the frame).
 2. Check the seam on real pixels. With the bit open in a browser:
 
 ```js
