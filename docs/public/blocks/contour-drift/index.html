@@ -97,7 +97,7 @@
         const cell = view.vmin * 1.6;
         const columns = Math.ceil(view.width / cell) + 1;
         const rows = Math.ceil(view.height / cell) + 1;
-        const waves = Array.from({ length: 7 }, (_, index) => {
+        const waves = [...Array(7).keys()].map((index) => {
           const key = "contour-" + seed + "-" + index;
           const direction = hyperbits.randomFloat(key + "-dir", 0, turn);
           const frequency = hyperbits.randomFloat(key + "-freq", 0.6, 1.7) / (view.vmin * 100);

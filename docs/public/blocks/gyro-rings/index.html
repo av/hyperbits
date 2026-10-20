@@ -99,7 +99,7 @@
         const unit = view.vmin * 42;
         const camera = 3.2;
         const segments = 160;
-        const rings = Array.from({ length: count }, (_, ring) => {
+        const rings = [...Array(count).keys()].map((ring) => {
           const key = "gyro-" + seed + "-" + ring;
           return {
             radius: 0.62 + (ring / Math.max(count - 1, 1)) * 0.5,

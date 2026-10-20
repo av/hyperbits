@@ -94,7 +94,7 @@
         const accent = channels(vars.accent);
         const rays = Math.max(8, Math.round(Number(vars.rays) || 64));
         const seed = Number(vars.seed) || 0;
-        const lengths = Array.from({ length: rays }, (_, ray) => hyperbits.randomFloat("burst-" + seed + "-" + ray, 0.5, 1));
+        const lengths = [...Array(rays).keys()].map((ray) => hyperbits.randomFloat("burst-" + seed + "-" + ray, 0.5, 1));
         const centerX = view.width / 2;
         const centerY = view.height / 2;
         function draw(phase) {

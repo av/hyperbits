@@ -99,7 +99,7 @@
         const muted = mix(accent, background, 0.35);
         const count = Math.max(1, Math.round(Number(vars.streaks) || 70));
         const seed = Number(vars.seed) || 0;
-        const streaks = Array.from({ length: count }, (_, index) => {
+        const streaks = [...Array(count).keys()].map((index) => {
           const key = "streak-" + seed + "-" + index;
           const layer = hyperbits.random(key + "-layer");
           const tone = hyperbits.random(key + "-tone");

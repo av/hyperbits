@@ -100,7 +100,7 @@
         const seed = Number(vars.seed) || 0;
         const symmetry = { circle: 0, ring: 0, triangle: 3, square: 4, plus: 4, half: 1, diamond: 2 };
         const kinds = Object.keys(symmetry);
-        const shapes = Array.from({ length: count }, (_, index) => {
+        const shapes = [...Array(count).keys()].map((index) => {
           const key = "float-" + seed + "-" + index;
           const layer = index < 3 ? 0.85 + 0.05 * index : hyperbits.random(key + "-layer");
           const tone = hyperbits.random(key + "-tone");
