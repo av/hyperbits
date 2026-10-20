@@ -1,8 +1,22 @@
 ---
 import { Badge } from '@astrojs/starlight/components';
-import { docsBits } from '../lib/bits.generated';
+import { docsBits as allBits } from '../lib/bits.generated';
 
-const tags = Array.from(new Set(docsBits.flatMap((bit) => bit.tags))).sort((left, right) =>
+interface Props {
+  category?: string;
+  groups?: string[];
+}
+
+const { category, groups } = Astro.props;
+const groupIndex = (tags: string[]) => {
+  const index = (groups ?? []).findIndex((group) => tags.includes(group));
+  return index === -1 ? Number.MAX_SAFE_INTEGER : index;
+};
+const docsBits = (category ? allBits.filter((bit) => bit.category === category) : allBits)
+  .map((bit, order) => ({ bit, order }))
+  .sort((left, right) => groupIndex(left.bit.tags) - groupIndex(right.bit.tags) || left.order - right.order)
+  .map(({ bit }) => bit);
+const tags = groups ?? Array.from(new Set(docsBits.flatMap((bit) => bit.tags))).sort((left, right) =>
   left.localeCompare(right),
 );
 const total = docsBits.length;
@@ -44,6 +58,14 @@ const total = docsBits.length;
           }
           data-preview-host
         >
+          {bit.previewImage && (
+            <img
+              src={bit.previewImage}
+              alt=""
+              loading="lazy"
+              class="block h-full w-full object-cover"
+            />
+          )}
         </div>
         <div class="text-base font-semibold text-white">
           {bit.name}

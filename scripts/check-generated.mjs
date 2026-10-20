@@ -23,6 +23,7 @@ export const GENERATED_PATHS = [
   "docs/src/lib/bits.generated.ts",
   "docs/src/content/docs/bits",
   "docs/public/bits",
+  "docs/public/previews",
 ];
 
 export const regenerateAll = async () => {

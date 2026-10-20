@@ -15,6 +15,7 @@ import {
   CATEGORY_LABELS,
   GSAP_CDN,
   bitHtmlPath,
+  fileExists,
   listBitJsonFiles,
   projectRoot,
   readBitManifest,
@@ -26,6 +27,7 @@ const docsRoot = path.join(projectRoot, "docs");
 const bitsMdxDir = path.join(docsRoot, "src", "content", "docs", "bits");
 const publicBitsDir = path.join(docsRoot, "public", "bits");
 const publicVendorDir = path.join(docsRoot, "public", "vendor");
+const publicPreviewsDir = path.join(docsRoot, "public", "previews");
 const generatedCatalogPath = path.join(
   docsRoot,
   "src",
@@ -119,7 +121,7 @@ const copyVendorFiles = async () => {
 };
 
 const pruneGeneratedBits = async (keepIds) => {
-  for (const dirPath of [bitsMdxDir, publicBitsDir]) {
+  for (const dirPath of [bitsMdxDir, publicBitsDir, publicPreviewsDir]) {
     let entries;
     try {
       entries = await readdir(dirPath, { withFileTypes: true });
@@ -134,7 +136,7 @@ const pruneGeneratedBits = async (keepIds) => {
       if (!entry.isFile()) {
         continue;
       }
-      const id = entry.name.replace(/\.(mdx|html)$/, "");
+      const id = entry.name.replace(/\.(mdx|html|png)$/, "");
       if (!keepIds.has(id)) {
         await rm(path.join(dirPath, entry.name), { force: true });
       }
@@ -160,6 +162,7 @@ export type DocsBit = {
   height: number;
   helpers: string[];
   htmlPath: string;
+  previewImage: string | null;
 };
 
 export const docsBits: DocsBit[] = ${serialized};
@@ -176,6 +179,7 @@ export const generateDocs = async () => {
 
   await mkdir(bitsMdxDir, { recursive: true });
   await mkdir(publicBitsDir, { recursive: true });
+  await mkdir(publicPreviewsDir, { recursive: true });
   await mkdir(path.dirname(generatedCatalogPath), { recursive: true });
 
   for (const bitJsonPath of bitFiles) {
@@ -184,6 +188,8 @@ export const generateDocs = async () => {
     const category = path.basename(path.dirname(bitDir));
     const categoryLabel = CATEGORY_LABELS[category] ?? category;
     const html = await readFile(bitHtmlPath(bitJsonPath), "utf8");
+    const previewPath = path.join(bitDir, "preview.png");
+    const hasPreview = await fileExists(previewPath);
 
     const bit = {
       id: manifest.name,
@@ -198,6 +204,7 @@ export const generateDocs = async () => {
       height: manifest.height,
       helpers: [...(manifest.helpers ?? [])],
       htmlPath: `/bits/${manifest.name}.html`,
+      previewImage: hasPreview ? `/previews/${manifest.name}.png` : null,
     };
     bits.push(bit);
 
@@ -206,6 +213,12 @@ export const generateDocs = async () => {
       path.join(publicBitsDir, `${bit.id}.html`),
       preparePlaygroundHtml(html),
     );
+    if (hasPreview) {
+      await copyFile(
+        previewPath,
+        path.join(publicPreviewsDir, `${bit.id}.png`),
+      );
+    }
   }
 
   await pruneGeneratedBits(new Set(bits.map((bit) => bit.id)));

@@ -14,6 +14,7 @@ export type DocsBit = {
   height: number;
   helpers: string[];
   htmlPath: string;
+  previewImage: string | null;
 };
 
 export const docsBits: DocsBit[] = [
@@ -36,7 +37,8 @@ export const docsBits: DocsBit[] = [
     "helpers": [
       "gradient"
     ],
-    "htmlPath": "/bits/conic-gradient.html"
+    "htmlPath": "/bits/conic-gradient.html",
+    "previewImage": null
   },
   {
     "id": "linear-gradient",
@@ -56,7 +58,8 @@ export const docsBits: DocsBit[] = [
     "helpers": [
       "gradient"
     ],
-    "htmlPath": "/bits/linear-gradient.html"
+    "htmlPath": "/bits/linear-gradient.html",
+    "previewImage": null
   },
   {
     "id": "radial-gradient",
@@ -76,7 +79,8 @@ export const docsBits: DocsBit[] = [
     "helpers": [
       "gradient"
     ],
-    "htmlPath": "/bits/radial-gradient.html"
+    "htmlPath": "/bits/radial-gradient.html",
+    "previewImage": null
   },
   {
     "id": "feature-showcase",
@@ -104,7 +108,8 @@ export const docsBits: DocsBit[] = [
       "text",
       "viewport"
     ],
-    "htmlPath": "/bits/feature-showcase.html"
+    "htmlPath": "/bits/feature-showcase.html",
+    "previewImage": null
   },
   {
     "id": "fireflies",
@@ -126,7 +131,8 @@ export const docsBits: DocsBit[] = [
       "particles",
       "viewport"
     ],
-    "htmlPath": "/bits/fireflies.html"
+    "htmlPath": "/bits/fireflies.html",
+    "previewImage": null
   },
   {
     "id": "particles-fountain",
@@ -147,7 +153,8 @@ export const docsBits: DocsBit[] = [
       "particles",
       "viewport"
     ],
-    "htmlPath": "/bits/particles-fountain.html"
+    "htmlPath": "/bits/particles-fountain.html",
+    "previewImage": null
   },
   {
     "id": "particles-grid",
@@ -168,7 +175,8 @@ export const docsBits: DocsBit[] = [
       "particles",
       "viewport"
     ],
-    "htmlPath": "/bits/particles-grid.html"
+    "htmlPath": "/bits/particles-grid.html",
+    "previewImage": null
   },
   {
     "id": "particles-snow",
@@ -189,7 +197,8 @@ export const docsBits: DocsBit[] = [
       "particles",
       "viewport"
     ],
-    "htmlPath": "/bits/particles-snow.html"
+    "htmlPath": "/bits/particles-snow.html",
+    "previewImage": null
   },
   {
     "id": "scrolling-columns",
@@ -212,7 +221,8 @@ export const docsBits: DocsBit[] = [
       "scene3d",
       "viewport"
     ],
-    "htmlPath": "/bits/scrolling-columns.html"
+    "htmlPath": "/bits/scrolling-columns.html",
+    "previewImage": null
   },
   {
     "id": "3d-basic",
@@ -234,7 +244,8 @@ export const docsBits: DocsBit[] = [
       "scene3d",
       "viewport"
     ],
-    "htmlPath": "/bits/3d-basic.html"
+    "htmlPath": "/bits/3d-basic.html",
+    "previewImage": null
   },
   {
     "id": "3d-elements",
@@ -258,7 +269,8 @@ export const docsBits: DocsBit[] = [
       "scene3d",
       "viewport"
     ],
-    "htmlPath": "/bits/3d-elements.html"
+    "htmlPath": "/bits/3d-elements.html",
+    "previewImage": null
   },
   {
     "id": "carousel",
@@ -280,7 +292,8 @@ export const docsBits: DocsBit[] = [
       "scene3d",
       "viewport"
     ],
-    "htmlPath": "/bits/carousel.html"
+    "htmlPath": "/bits/carousel.html",
+    "previewImage": null
   },
   {
     "id": "cube-navigation",
@@ -303,7 +316,8 @@ export const docsBits: DocsBit[] = [
       "scene3d",
       "viewport"
     ],
-    "htmlPath": "/bits/cube-navigation.html"
+    "htmlPath": "/bits/cube-navigation.html",
+    "previewImage": null
   },
   {
     "id": "cursor-flyover",
@@ -327,7 +341,8 @@ export const docsBits: DocsBit[] = [
       "scene3d",
       "viewport"
     ],
-    "htmlPath": "/bits/cursor-flyover.html"
+    "htmlPath": "/bits/cursor-flyover.html",
+    "previewImage": null
   },
   {
     "id": "flying-through-words",
@@ -350,7 +365,8 @@ export const docsBits: DocsBit[] = [
       "particles",
       "viewport"
     ],
-    "htmlPath": "/bits/flying-through-words.html"
+    "htmlPath": "/bits/flying-through-words.html",
+    "previewImage": null
   },
   {
     "id": "ken-burns",
@@ -372,7 +388,8 @@ export const docsBits: DocsBit[] = [
       "scene3d",
       "viewport"
     ],
-    "htmlPath": "/bits/ken-burns.html"
+    "htmlPath": "/bits/ken-burns.html",
+    "previewImage": null
   },
   {
     "id": "step-timing-context",
@@ -395,7 +412,8 @@ export const docsBits: DocsBit[] = [
       "stagger",
       "viewport"
     ],
-    "htmlPath": "/bits/step-timing-context.html"
+    "htmlPath": "/bits/step-timing-context.html",
+    "previewImage": null
   },
   {
     "id": "terminal-3d",
@@ -418,7 +436,8 @@ export const docsBits: DocsBit[] = [
       "scene3d",
       "viewport"
     ],
-    "htmlPath": "/bits/terminal-3d.html"
+    "htmlPath": "/bits/terminal-3d.html",
+    "previewImage": null
   },
   {
     "id": "transform3d-showcase",
@@ -442,7 +461,8 @@ export const docsBits: DocsBit[] = [
       "scene3d",
       "viewport"
     ],
-    "htmlPath": "/bits/transform3d-showcase.html"
+    "htmlPath": "/bits/transform3d-showcase.html",
+    "previewImage": null
   },
   {
     "id": "card-stack",
@@ -464,7 +484,8 @@ export const docsBits: DocsBit[] = [
       "stagger",
       "viewport"
     ],
-    "htmlPath": "/bits/card-stack.html"
+    "htmlPath": "/bits/card-stack.html",
+    "previewImage": null
   },
   {
     "id": "chat-conversation",
@@ -487,7 +508,8 @@ export const docsBits: DocsBit[] = [
       "interpolate",
       "viewport"
     ],
-    "htmlPath": "/bits/chat-conversation.html"
+    "htmlPath": "/bits/chat-conversation.html",
+    "previewImage": null
   },
   {
     "id": "easings-visualizer",
@@ -508,7 +530,8 @@ export const docsBits: DocsBit[] = [
       "interpolate",
       "viewport"
     ],
-    "htmlPath": "/bits/easings-visualizer.html"
+    "htmlPath": "/bits/easings-visualizer.html",
+    "previewImage": null
   },
   {
     "id": "fracture-reassemble",
@@ -532,7 +555,8 @@ export const docsBits: DocsBit[] = [
       "random",
       "viewport"
     ],
-    "htmlPath": "/bits/fracture-reassemble.html"
+    "htmlPath": "/bits/fracture-reassemble.html",
+    "previewImage": null
   },
   {
     "id": "grid-stagger",
@@ -554,7 +578,8 @@ export const docsBits: DocsBit[] = [
       "stagger",
       "viewport"
     ],
-    "htmlPath": "/bits/grid-stagger.html"
+    "htmlPath": "/bits/grid-stagger.html",
+    "previewImage": null
   },
   {
     "id": "list-reveal",
@@ -577,7 +602,8 @@ export const docsBits: DocsBit[] = [
       "stagger",
       "viewport"
     ],
-    "htmlPath": "/bits/list-reveal.html"
+    "htmlPath": "/bits/list-reveal.html",
+    "previewImage": null
   },
   {
     "id": "lower-third",
@@ -601,7 +627,8 @@ export const docsBits: DocsBit[] = [
       "interpolate",
       "viewport"
     ],
-    "htmlPath": "/bits/lower-third.html"
+    "htmlPath": "/bits/lower-third.html",
+    "previewImage": null
   },
   {
     "id": "mosaic-reframe",
@@ -624,7 +651,8 @@ export const docsBits: DocsBit[] = [
       "interpolate",
       "viewport"
     ],
-    "htmlPath": "/bits/mosaic-reframe.html"
+    "htmlPath": "/bits/mosaic-reframe.html",
+    "previewImage": null
   },
   {
     "id": "slide-from-left",
@@ -645,7 +673,8 @@ export const docsBits: DocsBit[] = [
       "interpolate",
       "viewport"
     ],
-    "htmlPath": "/bits/slide-from-left.html"
+    "htmlPath": "/bits/slide-from-left.html",
+    "previewImage": null
   },
   {
     "id": "staggered-fade-in",
@@ -666,7 +695,8 @@ export const docsBits: DocsBit[] = [
       "stagger",
       "viewport"
     ],
-    "htmlPath": "/bits/staggered-fade-in.html"
+    "htmlPath": "/bits/staggered-fade-in.html",
+    "previewImage": null
   },
   {
     "id": "bar-chart",
@@ -691,7 +721,8 @@ export const docsBits: DocsBit[] = [
       "interpolate",
       "viewport"
     ],
-    "htmlPath": "/bits/bar-chart.html"
+    "htmlPath": "/bits/bar-chart.html",
+    "previewImage": null
   },
   {
     "id": "basic-code-block",
@@ -712,7 +743,8 @@ export const docsBits: DocsBit[] = [
       "code",
       "viewport"
     ],
-    "htmlPath": "/bits/basic-code-block.html"
+    "htmlPath": "/bits/basic-code-block.html",
+    "previewImage": null
   },
   {
     "id": "basic-counter",
@@ -734,7 +766,8 @@ export const docsBits: DocsBit[] = [
       "interpolate",
       "viewport"
     ],
-    "htmlPath": "/bits/basic-counter.html"
+    "htmlPath": "/bits/basic-counter.html",
+    "previewImage": null
   },
   {
     "id": "basic-typewriter",
@@ -754,7 +787,8 @@ export const docsBits: DocsBit[] = [
     "helpers": [
       "viewport"
     ],
-    "htmlPath": "/bits/basic-typewriter.html"
+    "htmlPath": "/bits/basic-typewriter.html",
+    "previewImage": null
   },
   {
     "id": "blur-slide-word",
@@ -778,7 +812,8 @@ export const docsBits: DocsBit[] = [
       "stagger",
       "viewport"
     ],
-    "htmlPath": "/bits/blur-slide-word.html"
+    "htmlPath": "/bits/blur-slide-word.html",
+    "previewImage": null
   },
   {
     "id": "char-by-char",
@@ -800,7 +835,8 @@ export const docsBits: DocsBit[] = [
       "stagger",
       "viewport"
     ],
-    "htmlPath": "/bits/char-by-char.html"
+    "htmlPath": "/bits/char-by-char.html",
+    "previewImage": null
   },
   {
     "id": "cli-simulation",
@@ -821,7 +857,8 @@ export const docsBits: DocsBit[] = [
     "helpers": [
       "viewport"
     ],
-    "htmlPath": "/bits/cli-simulation.html"
+    "htmlPath": "/bits/cli-simulation.html",
+    "previewImage": null
   },
   {
     "id": "counter-confetti",
@@ -845,7 +882,8 @@ export const docsBits: DocsBit[] = [
       "particles",
       "viewport"
     ],
-    "htmlPath": "/bits/counter-confetti.html"
+    "htmlPath": "/bits/counter-confetti.html",
+    "previewImage": null
   },
   {
     "id": "fade-in",
@@ -865,7 +903,8 @@ export const docsBits: DocsBit[] = [
     "helpers": [
       "viewport"
     ],
-    "htmlPath": "/bits/fade-in.html"
+    "htmlPath": "/bits/fade-in.html",
+    "previewImage": null
   },
   {
     "id": "glitch-cycle",
@@ -887,7 +926,8 @@ export const docsBits: DocsBit[] = [
       "random",
       "viewport"
     ],
-    "htmlPath": "/bits/glitch-cycle.html"
+    "htmlPath": "/bits/glitch-cycle.html",
+    "previewImage": null
   },
   {
     "id": "glitch-in",
@@ -909,7 +949,8 @@ export const docsBits: DocsBit[] = [
       "random",
       "viewport"
     ],
-    "htmlPath": "/bits/glitch-in.html"
+    "htmlPath": "/bits/glitch-in.html",
+    "previewImage": null
   },
   {
     "id": "matrix-rain",
@@ -931,7 +972,8 @@ export const docsBits: DocsBit[] = [
       "random",
       "viewport"
     ],
-    "htmlPath": "/bits/matrix-rain.html"
+    "htmlPath": "/bits/matrix-rain.html",
+    "previewImage": null
   },
   {
     "id": "multi-text-typewriter",
@@ -952,7 +994,8 @@ export const docsBits: DocsBit[] = [
     "helpers": [
       "viewport"
     ],
-    "htmlPath": "/bits/multi-text-typewriter.html"
+    "htmlPath": "/bits/multi-text-typewriter.html",
+    "previewImage": null
   },
   {
     "id": "stat-rings",
@@ -979,7 +1022,8 @@ export const docsBits: DocsBit[] = [
       "interpolate",
       "viewport"
     ],
-    "htmlPath": "/bits/stat-rings.html"
+    "htmlPath": "/bits/stat-rings.html",
+    "previewImage": null
   },
   {
     "id": "typing-code-block",
@@ -1001,7 +1045,8 @@ export const docsBits: DocsBit[] = [
       "code",
       "viewport"
     ],
-    "htmlPath": "/bits/typing-code-block.html"
+    "htmlPath": "/bits/typing-code-block.html",
+    "previewImage": null
   },
   {
     "id": "variable-speed-typewriter",
@@ -1024,7 +1069,8 @@ export const docsBits: DocsBit[] = [
       "random",
       "viewport"
     ],
-    "htmlPath": "/bits/variable-speed-typewriter.html"
+    "htmlPath": "/bits/variable-speed-typewriter.html",
+    "previewImage": null
   },
   {
     "id": "word-by-word",
@@ -1046,7 +1092,8 @@ export const docsBits: DocsBit[] = [
       "stagger",
       "viewport"
     ],
-    "htmlPath": "/bits/word-by-word.html"
+    "htmlPath": "/bits/word-by-word.html",
+    "previewImage": null
   }
 ];
 

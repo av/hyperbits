@@ -20,6 +20,7 @@ docs/dist/
 docs/.astro/
 docs/public/vendor/hyperbits.iife.js
 docs/public/bits/
+docs/public/previews/
 demo/node_modules/
 demo/out/
 demo/renders/
