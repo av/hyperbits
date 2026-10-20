@@ -97,8 +97,9 @@
         const accent = channels(vars.accent);
         const shade = mix(accent, channels(vars.background), 0.3);
         const columns = Math.max(2, Math.round(Number(vars.columns) || 7));
-        const size = view.width / columns;
-        const rows = Math.ceil(view.height / size);
+        const rows = Math.max(1, Math.round(view.height / (view.width / columns)));
+        const size = Math.min(view.width / columns, view.height / rows);
+        const marginX = (view.width - columns * size) / 2;
         const marginY = (view.height - rows * size) / 2;
         const ease = hyperbits.Easing.easeInOutCubic;
         function blade(half) {
@@ -112,7 +113,7 @@
         function draw(phase) {
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
-          const half = size * 0.44;
+          const half = size * 0.38;
           for (let row = 0; row < rows; row += 1) {
             for (let column = 0; column < columns; column += 1) {
               const direction = (row + column) % 2 === 0 ? 1 : -1;
@@ -120,13 +121,10 @@
               const beat = phase * 2 - delay;
               const whole = Math.floor(beat);
               const local = Math.min(Math.max((beat - whole) / 0.45, 0), 1);
-              const eased = ease(local);
-              const angle = direction * (Math.PI / 2) * (whole + eased);
-              const squeeze = 1 - 0.18 * Math.sin(Math.PI * local);
+              const angle = direction * (Math.PI / 2) * (whole + ease(local));
               context.save();
-              context.translate(column * size + size / 2, marginY + row * size + size / 2);
+              context.translate(marginX + column * size + size / 2, marginY + row * size + size / 2);
               context.rotate(angle);
-              context.scale(squeeze, squeeze);
               for (let quarter = 0; quarter < 4; quarter += 1) {
                 context.fillStyle = rgba(quarter % 2 === 0 ? accent : shade, 1);
                 blade(half);

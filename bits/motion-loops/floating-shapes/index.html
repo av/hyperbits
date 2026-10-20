@@ -98,7 +98,7 @@
         const muted = mix(accent, channels(vars.background), 0.55);
         const count = Math.max(1, Math.round(Number(vars.shapes) || 16));
         const seed = Number(vars.seed) || 0;
-        const symmetry = { circle: 0, ring: 0, triangle: 3, square: 4, plus: 4, half: 1, diamond: 2 };
+        const symmetry = { circle: 0, ring: 0, triangle: 3, square: 4, plus: 4, diamond: 2 };
         const kinds = Object.keys(symmetry);
         const shapes = [...Array(count).keys()].map((index) => {
           const key = "float-" + seed + "-" + index;
@@ -109,17 +109,17 @@
           return {
             kind,
             layer,
-            size: view.vmin * (6 + 22 * layer * layer),
-            homeX: hyperbits.randomFloat(key + "-x", 0.08, 0.92) * view.width,
-            homeY: hyperbits.random(key + "-y"),
+            size: view.vmin * (9 + 20 * layer * layer),
+            homeX: (((index * 7) % count) + hyperbits.randomFloat(key + "-x", 0.25, 0.75)) / count * view.width,
+            homeY: (index * 0.618034 + hyperbits.randomFloat(key + "-y", 0, 0.08)) % 1,
             swayX: view.vmin * (1.5 + 3 * layer),
             swayFrequency: hyperbits.pick(key + "-fx", [1, 2]),
             swayShift: hyperbits.random(key + "-sx"),
             rise: layer > 0.55 ? 2 : 1,
             tilt: hyperbits.randomFloat(key + "-tilt", 0, turn),
-            spin: order === 0 ? 0 : (turn / order) * hyperbits.pick(key + "-spin", [-1, 1]) * (order === 1 ? 1 : 2),
+            spin: order === 0 ? 0 : (turn / order) * hyperbits.pick(key + "-spin", [-1, 1]) * 2,
             color: tone > 0.72 ? foreground : tone > 0.22 ? accent : muted,
-            outline: index >= 3 && hyperbits.random(key + "-outline") > 0.75,
+            outline: index >= 3 && layer > 0.4 && hyperbits.random(key + "-outline") > 0.6,
           };
         }).sort((left, right) => left.layer - right.layer);
         function path(kind, size) {
@@ -139,8 +139,6 @@
             const arm = half * 0.32;
             context.rect(-half, -arm, size, arm * 2);
             context.rect(-arm, -half, arm * 2, size);
-          } else if (kind === "half") {
-            context.arc(0, half * 0.25, half, Math.PI, turn);
           } else {
             context.moveTo(0, -half);
             context.lineTo(half * 0.62, 0);
