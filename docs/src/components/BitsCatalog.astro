@@ -38,7 +38,7 @@ const total = docsBits.length;
     {total} bit{total === 1 ? '' : 's'}
   </div>
 
-  <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+  <div class:list={['grid gap-4 sm:grid-cols-2', !groups && 'xl:grid-cols-3']}>
     {docsBits.map((bit) => (
       <a
         href={`/docs/bits/${bit.id}`}
