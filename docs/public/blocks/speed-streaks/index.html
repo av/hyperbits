@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#f2652a"},{"id":"streaks","type":"number","label":"Streaks","default":110},{"id":"seed","type":"number","label":"Seed","default":9}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #100f0f;
+        --fg: #f2f0e5;
+        --accent: #f2652a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #100f0f;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="speed-streaks"
+      data-start="0"
+      data-duration="12"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="12" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <canvas id="stage" class="clip" data-start="0" data-duration="12"></canvas>
+    </div>
+    <script>
+      (function () {
+
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+
+
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const canvas = document.getElementById("stage");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        canvas.width = view.width;
+        canvas.height = view.height;
+        const context = canvas.getContext("2d");
+        const loop = 12;
+        const turn = Math.PI * 2;
+        function channels(color) {
+          const parts = hyperbits.mixOklch(String(color), String(color), 0, "rgb(0, 0, 0)").match(/[0-9.]+/g) || [0, 0, 0];
+          return parts.slice(0, 3).map(Number);
+        }
+        function rgba(rgb, alpha) {
+          return "rgba(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
+        }
+        function mix(from, to, amount) {
+          return from.map((value, index) => Math.round(value + (to[index] - value) * amount));
+        }
+        const background = channels(vars.background);
+        const foreground = channels(vars.foreground);
+        const accent = channels(vars.accent);
+        const muted = mix(accent, background, 0.5);
+        const count = Math.max(1, Math.round(Number(vars.streaks) || 110));
+        const seed = Number(vars.seed) || 0;
+        const streaks = Array.from({ length: count }, (_, index) => {
+          const key = "streak-" + seed + "-" + index;
+          const layer = hyperbits.random(key + "-layer");
+          const tone = hyperbits.random(key + "-tone");
+          return {
+            lane: hyperbits.randomFloat(key + "-lane", 0.04, 0.96) * view.height,
+            length: view.vw * (6 + 30 * layer) * hyperbits.randomFloat(key + "-len", 0.6, 1.2),
+            thickness: view.vmin * (0.14 + 0.7 * layer * layer),
+            laps: 1 + Math.floor(layer * 5),
+            offset: hyperbits.random(key + "-offset"),
+            color: tone > 0.88 ? foreground : tone > 0.3 ? accent : muted,
+            alpha: 0.6 + 0.4 * layer,
+          };
+        }).sort((left, right) => left.thickness - right.thickness);
+        function draw(phase) {
+          if (!context || typeof context.stroke !== "function") return;
+          context.clearRect(0, 0, view.width, view.height);
+          context.lineCap = "round";
+          for (const streak of streaks) {
+            const span = view.width + streak.length * 2;
+            const progress = (((streak.offset + phase * streak.laps) % 1) + 1) % 1;
+            const head = progress * span - streak.length * 0.5;
+            const tail = head - streak.length;
+            const gradient = context.createLinearGradient(tail, 0, head, 0);
+            gradient.addColorStop(0, rgba(streak.color, 0));
+            gradient.addColorStop(0.85, rgba(streak.color, streak.alpha * 0.8));
+            gradient.addColorStop(1, rgba(streak.color, streak.alpha));
+            context.strokeStyle = gradient;
+            context.lineWidth = streak.thickness;
+            context.beginPath();
+            context.moveTo(tail, streak.lane);
+            context.lineTo(head, streak.lane);
+            context.stroke();
+          }
+          const edges = context.createLinearGradient(0, 0, view.width, 0);
+          edges.addColorStop(0, rgba(background, 0.75));
+          edges.addColorStop(0.08, rgba(background, 0));
+          edges.addColorStop(0.92, rgba(background, 0));
+          edges.addColorStop(1, rgba(background, 0.75));
+          context.fillStyle = edges;
+          context.fillRect(0, 0, view.width, view.height);
+        }
+        const proxy = { time: 0 };
+        const timeline = gsap.timeline({ paused: true });
+        timeline.to(proxy, { time: loop, duration: loop, ease: "none", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);
+        draw(0);
+        registerTimeline("speed-streaks", timeline);
+
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#9d8af0"},{"id":"columns","type":"number","label":"Columns","default":8},{"id":"seed","type":"number","label":"Seed","default":11}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #100f0f;
+        --fg: #f2f0e5;
+        --accent: #9d8af0;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #100f0f;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="bauhaus-tiles"
+      data-start="0"
+      data-duration="12"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="12" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <canvas id="stage" class="clip" data-start="0" data-duration="12"></canvas>
+    </div>
+    <script>
+      (function () {
+
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+
+
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const canvas = document.getElementById("stage");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        canvas.width = view.width;
+        canvas.height = view.height;
+        const context = canvas.getContext("2d");
+        const loop = 12;
+        const turn = Math.PI * 2;
+        function channels(color) {
+          const parts = hyperbits.mixOklch(String(color), String(color), 0, "rgb(0, 0, 0)").match(/[0-9.]+/g) || [0, 0, 0];
+          return parts.slice(0, 3).map(Number);
+        }
+        function rgba(rgb, alpha) {
+          return "rgba(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
+        }
+        function mix(from, to, amount) {
+          return from.map((value, index) => Math.round(value + (to[index] - value) * amount));
+        }
+        const background = channels(vars.background);
+        const foreground = channels(vars.foreground);
+        const accent = channels(vars.accent);
+        const deep = mix(accent, background, 0.6);
+        const columns = Math.max(2, Math.round(Number(vars.columns) || 8));
+        const seed = Number(vars.seed) || 0;
+        const size = view.width / columns;
+        const rows = Math.ceil(view.height / size);
+        const marginY = (view.height - rows * size) / 2;
+        const ease = hyperbits.Easing.easeInOutCubic;
+        const pairs = [
+          [background, accent],
+          [accent, background],
+          [deep, foreground],
+          [accent, foreground],
+          [foreground, accent],
+          [background, foreground],
+          [deep, accent],
+        ];
+        const motifs = ["quarter", "half", "circle", "leaf", "triangle", "corners"];
+        const tiles = [];
+        for (let row = 0; row < rows; row += 1) {
+          for (let column = 0; column < columns; column += 1) {
+            const key = "bauhaus-" + seed + "-" + row + "-" + column;
+            const pair = hyperbits.pick(key + "-pair", pairs);
+            tiles.push({
+              left: column * size,
+              top: marginY + row * size,
+              base: pair[0],
+              ink: pair[1],
+              motif: hyperbits.pick(key + "-motif", motifs),
+              start: hyperbits.randomInt(key + "-start", 0, 3),
+              delay: (column + row) / (columns + rows) + hyperbits.randomFloat(key + "-jitter", 0, 0.08),
+            });
+          }
+        }
+        function motif(kind) {
+          const half = size / 2;
+          context.beginPath();
+          if (kind === "quarter") {
+            context.moveTo(-half, -half);
+            context.arc(-half, -half, size, 0, Math.PI / 2);
+          } else if (kind === "half") {
+            context.arc(0, half, half, Math.PI, turn);
+          } else if (kind === "circle") {
+            context.arc(0, 0, size * 0.34, 0, turn);
+          } else if (kind === "leaf") {
+            context.arc(-half, half, size, -Math.PI / 2, 0);
+            context.arc(half, -half, size, Math.PI / 2, Math.PI);
+          } else if (kind === "triangle") {
+            context.moveTo(-half, -half);
+            context.lineTo(half, -half);
+            context.lineTo(-half, half);
+          } else {
+            context.moveTo(-half, -half);
+            context.arc(-half, -half, half, 0, Math.PI / 2);
+            context.moveTo(half, half);
+            context.arc(half, half, half, Math.PI, Math.PI * 1.5);
+          }
+          context.closePath();
+          context.fill();
+        }
+        function draw(phase) {
+          if (!context || typeof context.stroke !== "function") return;
+          context.clearRect(0, 0, view.width, view.height);
+          for (const tile of tiles) {
+            const beat = phase * 4 - tile.delay;
+            const whole = Math.floor(beat);
+            const local = Math.min(Math.max((beat - whole) / 0.42, 0), 1);
+            const angle = (Math.PI / 2) * (tile.start + whole + ease(local));
+            context.save();
+            context.beginPath();
+            context.rect(tile.left, tile.top, size, size);
+            context.clip();
+            context.fillStyle = rgba(tile.base, 1);
+            context.fillRect(tile.left, tile.top, size, size);
+            context.translate(tile.left + size / 2, tile.top + size / 2);
+            context.rotate(angle);
+            context.fillStyle = rgba(tile.ink, 1);
+            motif(tile.motif);
+            context.restore();
+          }
+          context.strokeStyle = rgba(background, 1);
+          context.lineWidth = view.vmin * 0.25;
+          context.beginPath();
+          for (let column = 1; column < columns; column += 1) {
+            context.moveTo(column * size, 0);
+            context.lineTo(column * size, view.height);
+          }
+          for (let row = 0; row <= rows; row += 1) {
+            context.moveTo(0, marginY + row * size);
+            context.lineTo(view.width, marginY + row * size);
+          }
+          context.stroke();
+        }
+        const proxy = { time: 0 };
+        const timeline = gsap.timeline({ paused: true });
+        timeline.to(proxy, { time: loop, duration: loop, ease: "none", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);
+        draw(0);
+        registerTimeline("bauhaus-tiles", timeline);
+
+      })();
+    </script>
+  </body>
+</html>

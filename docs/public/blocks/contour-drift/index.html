@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#f2652a"},{"id":"levels","type":"number","label":"Contour levels","default":18},{"id":"seed","type":"number","label":"Seed","default":4}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #100f0f;
+        --fg: #f2f0e5;
+        --accent: #f2652a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #100f0f;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="contour-drift"
+      data-start="0"
+      data-duration="12"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="12" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <canvas id="stage" class="clip" data-start="0" data-duration="12"></canvas>
+    </div>
+    <script>
+      (function () {
+
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+
+
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const canvas = document.getElementById("stage");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        canvas.width = view.width;
+        canvas.height = view.height;
+        const context = canvas.getContext("2d");
+        const loop = 12;
+        const turn = Math.PI * 2;
+        function channels(color) {
+          const parts = hyperbits.mixOklch(String(color), String(color), 0, "rgb(0, 0, 0)").match(/[0-9.]+/g) || [0, 0, 0];
+          return parts.slice(0, 3).map(Number);
+        }
+        function rgba(rgb, alpha) {
+          return "rgba(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
+        }
+        const foreground = channels(vars.foreground);
+        const accent = channels(vars.accent);
+        const levels = Math.max(3, Math.round(Number(vars.levels) || 18));
+        const seed = Number(vars.seed) || 0;
+        const cell = view.vmin * 1.6;
+        const columns = Math.ceil(view.width / cell) + 1;
+        const rows = Math.ceil(view.height / cell) + 1;
+        const waves = Array.from({ length: 7 }, (_, index) => {
+          const key = "contour-" + seed + "-" + index;
+          const direction = hyperbits.randomFloat(key + "-dir", 0, turn);
+          const frequency = hyperbits.randomFloat(key + "-freq", 1.2, 3.4) / (view.vmin * 100);
+          return {
+            stepX: Math.cos(direction) * frequency * turn,
+            stepY: Math.sin(direction) * frequency * turn,
+            speed: hyperbits.pick(key + "-speed", [-1, 1, -2, 1]),
+            shift: hyperbits.randomFloat(key + "-shift", 0, turn),
+            weight: 1 / (1 + index * 0.35),
+          };
+        });
+        const total = waves.reduce((sum, wave) => sum + wave.weight, 0);
+        const field = new Float32Array(columns * rows);
+        function sample(phase) {
+          for (let row = 0; row < rows; row += 1) {
+            for (let column = 0; column < columns; column += 1) {
+              const pointX = column * cell;
+              const pointY = row * cell;
+              let value = 0;
+              for (const wave of waves) {
+                value += wave.weight * Math.sin(pointX * wave.stepX + pointY * wave.stepY + wave.shift + turn * phase * wave.speed);
+              }
+              field[row * columns + column] = value / total;
+            }
+          }
+        }
+        function edge(threshold, first, second, firstX, firstY, secondX, secondY) {
+          const mix = (threshold - first) / (second - first);
+          return [firstX + (secondX - firstX) * mix, firstY + (secondY - firstY) * mix];
+        }
+        function contour(threshold) {
+          context.beginPath();
+          for (let row = 0; row < rows - 1; row += 1) {
+            for (let column = 0; column < columns - 1; column += 1) {
+              const topLeft = field[row * columns + column];
+              const topRight = field[row * columns + column + 1];
+              const bottomRight = field[(row + 1) * columns + column + 1];
+              const bottomLeft = field[(row + 1) * columns + column];
+              const left = column * cell;
+              const top = row * cell;
+              const right = left + cell;
+              const bottom = top + cell;
+              const crossings = [];
+              if (topLeft < threshold !== topRight < threshold) crossings.push(edge(threshold, topLeft, topRight, left, top, right, top));
+              if (topRight < threshold !== bottomRight < threshold) crossings.push(edge(threshold, topRight, bottomRight, right, top, right, bottom));
+              if (bottomRight < threshold !== bottomLeft < threshold) crossings.push(edge(threshold, bottomRight, bottomLeft, right, bottom, left, bottom));
+              if (bottomLeft < threshold !== topLeft < threshold) crossings.push(edge(threshold, bottomLeft, topLeft, left, bottom, left, top));
+              for (let pair = 0; pair + 1 < crossings.length; pair += 2) {
+                context.moveTo(crossings[pair][0], crossings[pair][1]);
+                context.lineTo(crossings[pair + 1][0], crossings[pair + 1][1]);
+              }
+            }
+          }
+          context.stroke();
+        }
+        function draw(phase) {
+          if (!context || typeof context.stroke !== "function") return;
+          context.clearRect(0, 0, view.width, view.height);
+          sample(phase);
+          context.lineCap = "round";
+          for (let level = 0; level < levels; level += 1) {
+            const threshold = -0.78 + (1.56 * (level + 0.5)) / levels;
+            const isMajor = level % 5 === 2;
+            context.strokeStyle = isMajor ? rgba(foreground, 0.7) : rgba(accent, 0.35 + 0.5 * (level / levels));
+            context.lineWidth = view.vmin * (isMajor ? 0.2 : 0.13);
+            contour(threshold);
+          }
+        }
+        const proxy = { time: 0 };
+        const timeline = gsap.timeline({ paused: true });
+        timeline.to(proxy, { time: loop, duration: loop, ease: "none", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);
+        draw(0);
+        registerTimeline("contour-drift", timeline);
+
+      })();
+    </script>
+  </body>
+</html>

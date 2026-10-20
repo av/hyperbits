@@ -1,0 +1,49 @@
+{
+  "name": "contour-drift",
+  "title": "Contour Drift",
+  "description": "Seamless 12-second loop of topographic contour lines flowing over a shifting terrain",
+  "tags": [
+    "loop",
+    "background",
+    "lines",
+    "contours",
+    "topographic"
+  ],
+  "duration": 12,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "color",
+    "random",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "contour-drift",
+    "type": "hyperframes:block",
+    "title": "Contour Drift",
+    "description": "Seamless 12-second loop of topographic contour lines flowing over a shifting terrain",
+    "tags": [
+      "loop",
+      "background",
+      "lines",
+      "contours",
+      "topographic"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 12,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/contour-drift.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

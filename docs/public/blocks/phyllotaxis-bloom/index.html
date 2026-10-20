@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#ef5da8"},{"id":"dots","type":"number","label":"Dots","default":1400}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #100f0f;
+        --fg: #f2f0e5;
+        --accent: #ef5da8;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #100f0f;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="phyllotaxis-bloom"
+      data-start="0"
+      data-duration="12"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="12" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <canvas id="stage" class="clip" data-start="0" data-duration="12"></canvas>
+    </div>
+    <script>
+      (function () {
+
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+
+
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const canvas = document.getElementById("stage");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        canvas.width = view.width;
+        canvas.height = view.height;
+        const context = canvas.getContext("2d");
+        const loop = 12;
+        const turn = Math.PI * 2;
+        function channels(color) {
+          const parts = hyperbits.mixOklch(String(color), String(color), 0, "rgb(0, 0, 0)").match(/[0-9.]+/g) || [0, 0, 0];
+          return parts.slice(0, 3).map(Number);
+        }
+        function rgba(rgb, alpha) {
+          return "rgba(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
+        }
+        const background = channels(vars.background);
+        const foreground = channels(vars.foreground);
+        const accent = channels(vars.accent);
+        const count = Math.max(100, Math.round(Number(vars.dots) || 1400));
+        const centerX = view.width / 2;
+        const centerY = view.height / 2;
+        const golden = Math.PI * (3 - Math.sqrt(5));
+        const spread = (Math.hypot(view.width, view.height) * 0.55) / Math.sqrt(count);
+        const arm = 21;
+        const perLoop = arm * 2;
+        function draw(phase) {
+          if (!context || typeof context.stroke !== "function") return;
+          context.clearRect(0, 0, view.width, view.height);
+          const flow = phase * perLoop;
+          const passed = Math.floor(flow);
+          const fraction = flow - passed;
+          for (let slot = 0; slot < count; slot += 1) {
+            const index = slot + fraction;
+            const identity = slot - passed;
+            const radius = spread * Math.sqrt(index);
+            const angle = index * golden;
+            const share = index / count;
+            const grow = Math.min(1, index / 6);
+            const pulse = 0.72 + 0.28 * Math.sin(turn * (phase * 3 - Math.sqrt(index) / 6));
+            const size = view.vmin * (0.3 + 0.95 * Math.sqrt(share)) * pulse * grow;
+            const alpha = Math.min(1, (1 - share) * 8);
+            const highlighted = ((identity % arm) + arm) % arm === 0;
+            context.fillStyle = rgba(highlighted ? foreground : accent, alpha);
+            context.beginPath();
+            context.arc(centerX + Math.cos(angle) * radius, centerY + Math.sin(angle) * radius, size, 0, turn);
+            context.fill();
+          }
+          const core = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, view.vmin * 9);
+          core.addColorStop(0, rgba(background, 0.35));
+          core.addColorStop(1, rgba(background, 0));
+          context.fillStyle = core;
+          context.fillRect(centerX - view.vmin * 9, centerY - view.vmin * 9, view.vmin * 18, view.vmin * 18);
+        }
+        const proxy = { time: 0 };
+        const timeline = gsap.timeline({ paused: true });
+        timeline.to(proxy, { time: loop, duration: loop, ease: "none", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);
+        draw(0);
+        registerTimeline("phyllotaxis-bloom", timeline);
+
+      })();
+    </script>
+  </body>
+</html>

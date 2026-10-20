@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#ef5da8"},{"id":"pitch","type":"number","label":"Dot pitch (vmin)","default":2.6}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #100f0f;
+        --fg: #f2f0e5;
+        --accent: #ef5da8;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #100f0f;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="halftone-sweep"
+      data-start="0"
+      data-duration="12"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="12" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <canvas id="stage" class="clip" data-start="0" data-duration="12"></canvas>
+    </div>
+    <script>
+      (function () {
+
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+
+
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const canvas = document.getElementById("stage");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        canvas.width = view.width;
+        canvas.height = view.height;
+        const context = canvas.getContext("2d");
+        const loop = 12;
+        const turn = Math.PI * 2;
+        function channels(color) {
+          const parts = hyperbits.mixOklch(String(color), String(color), 0, "rgb(0, 0, 0)").match(/[0-9.]+/g) || [0, 0, 0];
+          return parts.slice(0, 3).map(Number);
+        }
+        function rgba(rgb, alpha) {
+          return "rgba(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
+        }
+        const foreground = channels(vars.foreground);
+        const accent = channels(vars.accent);
+        const pitch = view.vmin * Math.max(1, Number(vars.pitch) || 2.6);
+        const rowHeight = pitch * 0.866;
+        const columns = Math.ceil(view.width / pitch) + 2;
+        const rows = Math.ceil(view.height / rowHeight) + 2;
+        const angle = -0.62;
+        const band = view.vmax * 34;
+        function draw(phase) {
+          if (!context || typeof context.stroke !== "function") return;
+          context.clearRect(0, 0, view.width, view.height);
+          const accentFill = rgba(accent, 1);
+          const dustFill = rgba(foreground, 0.16);
+          for (let row = 0; row < rows; row += 1) {
+            const dotY = row * rowHeight - rowHeight * 0.5;
+            const shift = row % 2 === 0 ? 0 : pitch * 0.5;
+            for (let column = 0; column < columns; column += 1) {
+              const dotX = column * pitch + shift - pitch * 0.5;
+              const along = (dotX * Math.cos(angle) + dotY * Math.sin(angle)) / band;
+              const across = (-dotX * Math.sin(angle) + dotY * Math.cos(angle)) / band;
+              const main = Math.pow(0.5 + 0.5 * Math.cos(turn * (along - phase * 2)), 3.2);
+              const cross = 0.5 + 0.5 * Math.cos(turn * (across * 1.4 + along * 0.3 + phase));
+              const amount = main * (0.55 + 0.45 * cross);
+              const radius = Math.max(pitch * 0.5 * amount, view.vmin * 0.12);
+              context.fillStyle = radius > view.vmin * 0.2 ? accentFill : dustFill;
+              context.beginPath();
+              context.arc(dotX, dotY, radius, 0, turn);
+              context.fill();
+            }
+          }
+        }
+        const proxy = { time: 0 };
+        const timeline = gsap.timeline({ paused: true });
+        timeline.to(proxy, { time: loop, duration: loop, ease: "none", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);
+        draw(0);
+        registerTimeline("halftone-sweep", timeline);
+
+      })();
+    </script>
+  </body>
+</html>

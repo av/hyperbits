@@ -20,6 +20,70 @@
       "type": "hyperframes:block"
     },
     {
+      "name": "bauhaus-tiles",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "contour-drift",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "dot-ripple",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "dot-tunnel",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "floating-shapes",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "gyro-rings",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "halftone-sweep",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "horizon-grid",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "phyllotaxis-bloom",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "pinwheel-grid",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "pixel-rain",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "ray-burst",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "speed-streaks",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "truchet-weave",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "wave-stack",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "zoom-polygons",
+      "type": "hyperframes:block"
+    },
+    {
       "name": "fireflies",
       "type": "hyperframes:block"
     },

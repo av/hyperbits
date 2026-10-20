@@ -1,0 +1,49 @@
+{
+  "name": "ray-burst",
+  "title": "Ray Burst",
+  "description": "Seamless 12-second loop of radial lines breathing around a pulsing centre",
+  "tags": [
+    "loop",
+    "background",
+    "lines",
+    "radial",
+    "burst"
+  ],
+  "duration": 12,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "color",
+    "random",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "ray-burst",
+    "type": "hyperframes:block",
+    "title": "Ray Burst",
+    "description": "Seamless 12-second loop of radial lines breathing around a pulsing centre",
+    "tags": [
+      "loop",
+      "background",
+      "lines",
+      "radial",
+      "burst"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 12,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/ray-burst.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

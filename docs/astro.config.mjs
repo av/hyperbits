@@ -50,6 +50,7 @@ function getBitsSidebar() {
         'Staggered Motion',
         'Text Animations',
         'Background Effects',
+        'Motion Loops',
         'Particles',
         '3D Scenes',
     ];

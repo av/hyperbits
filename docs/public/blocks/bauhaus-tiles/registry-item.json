@@ -1,0 +1,27 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "bauhaus-tiles",
+  "type": "hyperframes:block",
+  "title": "Bauhaus Tiles",
+  "description": "Seamless 12-second loop of geometric Bauhaus tiles turning in a diagonal wave",
+  "tags": [
+    "loop",
+    "background",
+    "shapes",
+    "geometric",
+    "tiles"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 12,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/bauhaus-tiles.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "gyro-rings",
+  "type": "hyperframes:block",
+  "title": "Gyro Rings",
+  "description": "Seamless 12-second loop of wireframe rings tumbling in 3D around a glowing core",
+  "tags": [
+    "loop",
+    "background",
+    "depth",
+    "rings",
+    "orbit"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 12,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/gyro-rings.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

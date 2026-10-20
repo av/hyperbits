@@ -2,6 +2,7 @@ export const BIT_CATEGORIES = [
   "text-animations",
   "staggered-motion",
   "background-effects",
+  "motion-loops",
   "particles",
   "scenes-3d",
   "full-compositions",

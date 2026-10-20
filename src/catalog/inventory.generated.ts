@@ -232,6 +232,954 @@ export const sharedBitInventory: SharedBitInventoryEntry[] = [
     }
   },
   {
+    "exportName": "BauhausTiles",
+    "id": "bauhaus-tiles",
+    "name": "Bauhaus Tiles",
+    "description": "Seamless 12-second loop of geometric Bauhaus tiles turning in a diagonal wave",
+    "tags": [
+      "loop",
+      "background",
+      "shapes",
+      "geometric",
+      "tiles"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "sourcePath": "bits/motion-loops/bauhaus-tiles/index.html",
+    "componentNames": [
+      "color",
+      "interpolate",
+      "random",
+      "viewport"
+    ],
+    "registryDependencies": [
+      "color",
+      "interpolate",
+      "random",
+      "viewport"
+    ],
+    "helpers": [
+      "color",
+      "interpolate",
+      "random",
+      "viewport"
+    ],
+    "sourceCode": "<!doctype html>\n<html lang=\"en\" data-composition-variables='[{\"id\":\"background\",\"type\":\"color\",\"label\":\"Background\",\"default\":\"#100f0f\"},{\"id\":\"foreground\",\"type\":\"color\",\"label\":\"Foreground\",\"default\":\"#f2f0e5\"},{\"id\":\"accent\",\"type\":\"color\",\"label\":\"Accent\",\"default\":\"#9d8af0\"},{\"id\":\"columns\",\"type\":\"number\",\"label\":\"Columns\",\"default\":8},{\"id\":\"seed\",\"type\":\"number\",\"label\":\"Seed\",\"default\":11}]'>\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=1920, height=1080\" />\n    <script src=\"https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js\"></script>\n    <script src=\"hyperbits.iife.js\" data-hyperbits-src=\"https://unpkg.com/hyperbits/dist/hyperbits.iife.js\" data-hyperbits-local=\"../../../dist/hyperbits.iife.js\"></script>\n    <style>\n      :root {\n        --bg: #100f0f;\n        --fg: #f2f0e5;\n        --accent: #9d8af0;\n      }\n      * {\n        margin: 0;\n        padding: 0;\n        box-sizing: border-box;\n      }\n      html,\n      body {\n        margin: 0;\n        width: 1920px;\n        height: 1080px;\n        overflow: hidden;\n        background-color: #100f0f;\n      }\n      #root {\n        width: 100%;\n        height: 100%;\n        position: relative;\n        overflow: hidden;\n      }\n      #stage {\n        position: absolute;\n        inset: 0;\n        width: 100%;\n        height: 100%;\n        z-index: 1;\n      }\n    </style>\n  </head>\n  <body>\n    <div\n      id=\"root\"\n      class=\"clip\"\n      data-composition-id=\"bauhaus-tiles\"\n      data-start=\"0\"\n      data-duration=\"12\"\n      data-width=\"1920\"\n      data-height=\"1080\"\n    >\n      <div id=\"bg\" class=\"clip\" data-start=\"0\" data-duration=\"12\" style=\"position:absolute;inset:0;background-color:#100f0f\"></div>\n      <canvas id=\"stage\" class=\"clip\" data-start=\"0\" data-duration=\"12\"></canvas>\n    </div>\n    <script>\n      (function () {\n\n        function bitVars() {\n          if (window.__hyperframes && typeof window.__hyperframes.getVariables === \"function\") {\n            return window.__hyperframes.getVariables();\n          }\n          const raw = document.documentElement.getAttribute(\"data-composition-variables\") || \"[]\";\n          const decls = JSON.parse(raw);\n          const values = {};\n          for (const entry of decls) values[entry.id] = entry.default;\n          return values;\n        }\n        function registerTimeline(compositionId, timeline) {\n          window.__timelines = window.__timelines || {};\n          window.__timelines[compositionId] = timeline;\n          timeline.seek(0);\n        }\n\n\n        const vars = bitVars();\n        const root = document.getElementById(\"root\");\n        const bg = document.getElementById(\"bg\");\n        const canvas = document.getElementById(\"stage\");\n        const view = hyperbits.viewport(root);\n        bg.style.backgroundColor = vars.background;\n        canvas.width = view.width;\n        canvas.height = view.height;\n        const context = canvas.getContext(\"2d\");\n        const loop = 12;\n        const turn = Math.PI * 2;\n        function channels(color) {\n          const parts = hyperbits.mixOklch(String(color), String(color), 0, \"rgb(0, 0, 0)\").match(/[0-9.]+/g) || [0, 0, 0];\n          return parts.slice(0, 3).map(Number);\n        }\n        function rgba(rgb, alpha) {\n          return \"rgba(\" + rgb[0] + \", \" + rgb[1] + \", \" + rgb[2] + \", \" + Math.min(Math.max(alpha, 0), 1) + \")\";\n        }\n        function mix(from, to, amount) {\n          return from.map((value, index) => Math.round(value + (to[index] - value) * amount));\n        }\n        const background = channels(vars.background);\n        const foreground = channels(vars.foreground);\n        const accent = channels(vars.accent);\n        const deep = mix(accent, background, 0.6);\n        const columns = Math.max(2, Math.round(Number(vars.columns) || 8));\n        const seed = Number(vars.seed) || 0;\n        const size = view.width / columns;\n        const rows = Math.ceil(view.height / size);\n        const marginY = (view.height - rows * size) / 2;\n        const ease = hyperbits.Easing.easeInOutCubic;\n        const pairs = [\n          [background, accent],\n          [accent, background],\n          [deep, foreground],\n          [accent, foreground],\n          [foreground, accent],\n          [background, foreground],\n          [deep, accent],\n        ];\n        const motifs = [\"quarter\", \"half\", \"circle\", \"leaf\", \"triangle\", \"corners\"];\n        const tiles = [];\n        for (let row = 0; row < rows; row += 1) {\n          for (let column = 0; column < columns; column += 1) {\n            const key = \"bauhaus-\" + seed + \"-\" + row + \"-\" + column;\n            const pair = hyperbits.pick(key + \"-pair\", pairs);\n            tiles.push({\n              left: column * size,\n              top: marginY + row * size,\n              base: pair[0],\n              ink: pair[1],\n              motif: hyperbits.pick(key + \"-motif\", motifs),\n              start: hyperbits.randomInt(key + \"-start\", 0, 3),\n              delay: (column + row) / (columns + rows) + hyperbits.randomFloat(key + \"-jitter\", 0, 0.08),\n            });\n          }\n        }\n        function motif(kind) {\n          const half = size / 2;\n          context.beginPath();\n          if (kind === \"quarter\") {\n            context.moveTo(-half, -half);\n            context.arc(-half, -half, size, 0, Math.PI / 2);\n          } else if (kind === \"half\") {\n            context.arc(0, half, half, Math.PI, turn);\n          } else if (kind === \"circle\") {\n            context.arc(0, 0, size * 0.34, 0, turn);\n          } else if (kind === \"leaf\") {\n            context.arc(-half, half, size, -Math.PI / 2, 0);\n            context.arc(half, -half, size, Math.PI / 2, Math.PI);\n          } else if (kind === \"triangle\") {\n            context.moveTo(-half, -half);\n            context.lineTo(half, -half);\n            context.lineTo(-half, half);\n          } else {\n            context.moveTo(-half, -half);\n            context.arc(-half, -half, half, 0, Math.PI / 2);\n            context.moveTo(half, half);\n            context.arc(half, half, half, Math.PI, Math.PI * 1.5);\n          }\n          context.closePath();\n          context.fill();\n        }\n        function draw(phase) {\n          if (!context || typeof context.stroke !== \"function\") return;\n          context.clearRect(0, 0, view.width, view.height);\n          for (const tile of tiles) {\n            const beat = phase * 4 - tile.delay;\n            const whole = Math.floor(beat);\n            const local = Math.min(Math.max((beat - whole) / 0.42, 0), 1);\n            const angle = (Math.PI / 2) * (tile.start + whole + ease(local));\n            context.save();\n            context.beginPath();\n            context.rect(tile.left, tile.top, size, size);\n            context.clip();\n            context.fillStyle = rgba(tile.base, 1);\n            context.fillRect(tile.left, tile.top, size, size);\n            context.translate(tile.left + size / 2, tile.top + size / 2);\n            context.rotate(angle);\n            context.fillStyle = rgba(tile.ink, 1);\n            motif(tile.motif);\n            context.restore();\n          }\n          context.strokeStyle = rgba(background, 1);\n          context.lineWidth = view.vmin * 0.25;\n          context.beginPath();\n          for (let column = 1; column < columns; column += 1) {\n            context.moveTo(column * size, 0);\n            context.lineTo(column * size, view.height);\n          }\n          for (let row = 0; row <= rows; row += 1) {\n            context.moveTo(0, marginY + row * size);\n            context.lineTo(view.width, marginY + row * size);\n          }\n          context.stroke();\n        }\n        const proxy = { time: 0 };\n        const timeline = gsap.timeline({ paused: true });\n        timeline.to(proxy, { time: loop, duration: loop, ease: \"none\", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);\n        draw(0);\n        registerTimeline(\"bauhaus-tiles\", timeline);\n\n      })();\n    </script>\n  </body>\n</html>\n",
+    "registry": {
+      "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+      "name": "bauhaus-tiles",
+      "type": "hyperframes:block",
+      "title": "Bauhaus Tiles",
+      "description": "Seamless 12-second loop of geometric Bauhaus tiles turning in a diagonal wave",
+      "tags": [
+        "loop",
+        "background",
+        "shapes",
+        "geometric",
+        "tiles"
+      ],
+      "license": "MIT",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "duration": 12,
+      "files": [
+        {
+          "path": "index.html",
+          "target": "compositions/bauhaus-tiles.html",
+          "type": "hyperframes:composition"
+        }
+      ]
+    }
+  },
+  {
+    "exportName": "ContourDrift",
+    "id": "contour-drift",
+    "name": "Contour Drift",
+    "description": "Seamless 12-second loop of topographic contour lines flowing over a shifting terrain",
+    "tags": [
+      "loop",
+      "background",
+      "lines",
+      "contours",
+      "topographic"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "sourcePath": "bits/motion-loops/contour-drift/index.html",
+    "componentNames": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "registryDependencies": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "sourceCode": "<!doctype html>\n<html lang=\"en\" data-composition-variables='[{\"id\":\"background\",\"type\":\"color\",\"label\":\"Background\",\"default\":\"#100f0f\"},{\"id\":\"foreground\",\"type\":\"color\",\"label\":\"Foreground\",\"default\":\"#f2f0e5\"},{\"id\":\"accent\",\"type\":\"color\",\"label\":\"Accent\",\"default\":\"#f2652a\"},{\"id\":\"levels\",\"type\":\"number\",\"label\":\"Contour levels\",\"default\":18},{\"id\":\"seed\",\"type\":\"number\",\"label\":\"Seed\",\"default\":4}]'>\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=1920, height=1080\" />\n    <script src=\"https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js\"></script>\n    <script src=\"hyperbits.iife.js\" data-hyperbits-src=\"https://unpkg.com/hyperbits/dist/hyperbits.iife.js\" data-hyperbits-local=\"../../../dist/hyperbits.iife.js\"></script>\n    <style>\n      :root {\n        --bg: #100f0f;\n        --fg: #f2f0e5;\n        --accent: #f2652a;\n      }\n      * {\n        margin: 0;\n        padding: 0;\n        box-sizing: border-box;\n      }\n      html,\n      body {\n        margin: 0;\n        width: 1920px;\n        height: 1080px;\n        overflow: hidden;\n        background-color: #100f0f;\n      }\n      #root {\n        width: 100%;\n        height: 100%;\n        position: relative;\n        overflow: hidden;\n      }\n      #stage {\n        position: absolute;\n        inset: 0;\n        width: 100%;\n        height: 100%;\n        z-index: 1;\n      }\n    </style>\n  </head>\n  <body>\n    <div\n      id=\"root\"\n      class=\"clip\"\n      data-composition-id=\"contour-drift\"\n      data-start=\"0\"\n      data-duration=\"12\"\n      data-width=\"1920\"\n      data-height=\"1080\"\n    >\n      <div id=\"bg\" class=\"clip\" data-start=\"0\" data-duration=\"12\" style=\"position:absolute;inset:0;background-color:#100f0f\"></div>\n      <canvas id=\"stage\" class=\"clip\" data-start=\"0\" data-duration=\"12\"></canvas>\n    </div>\n    <script>\n      (function () {\n\n        function bitVars() {\n          if (window.__hyperframes && typeof window.__hyperframes.getVariables === \"function\") {\n            return window.__hyperframes.getVariables();\n          }\n          const raw = document.documentElement.getAttribute(\"data-composition-variables\") || \"[]\";\n          const decls = JSON.parse(raw);\n          const values = {};\n          for (const entry of decls) values[entry.id] = entry.default;\n          return values;\n        }\n        function registerTimeline(compositionId, timeline) {\n          window.__timelines = window.__timelines || {};\n          window.__timelines[compositionId] = timeline;\n          timeline.seek(0);\n        }\n\n\n        const vars = bitVars();\n        const root = document.getElementById(\"root\");\n        const bg = document.getElementById(\"bg\");\n        const canvas = document.getElementById(\"stage\");\n        const view = hyperbits.viewport(root);\n        bg.style.backgroundColor = vars.background;\n        canvas.width = view.width;\n        canvas.height = view.height;\n        const context = canvas.getContext(\"2d\");\n        const loop = 12;\n        const turn = Math.PI * 2;\n        function channels(color) {\n          const parts = hyperbits.mixOklch(String(color), String(color), 0, \"rgb(0, 0, 0)\").match(/[0-9.]+/g) || [0, 0, 0];\n          return parts.slice(0, 3).map(Number);\n        }\n        function rgba(rgb, alpha) {\n          return \"rgba(\" + rgb[0] + \", \" + rgb[1] + \", \" + rgb[2] + \", \" + Math.min(Math.max(alpha, 0), 1) + \")\";\n        }\n        const foreground = channels(vars.foreground);\n        const accent = channels(vars.accent);\n        const levels = Math.max(3, Math.round(Number(vars.levels) || 18));\n        const seed = Number(vars.seed) || 0;\n        const cell = view.vmin * 1.6;\n        const columns = Math.ceil(view.width / cell) + 1;\n        const rows = Math.ceil(view.height / cell) + 1;\n        const waves = Array.from({ length: 7 }, (_, index) => {\n          const key = \"contour-\" + seed + \"-\" + index;\n          const direction = hyperbits.randomFloat(key + \"-dir\", 0, turn);\n          const frequency = hyperbits.randomFloat(key + \"-freq\", 1.2, 3.4) / (view.vmin * 100);\n          return {\n            stepX: Math.cos(direction) * frequency * turn,\n            stepY: Math.sin(direction) * frequency * turn,\n            speed: hyperbits.pick(key + \"-speed\", [-1, 1, -2, 1]),\n            shift: hyperbits.randomFloat(key + \"-shift\", 0, turn),\n            weight: 1 / (1 + index * 0.35),\n          };\n        });\n        const total = waves.reduce((sum, wave) => sum + wave.weight, 0);\n        const field = new Float32Array(columns * rows);\n        function sample(phase) {\n          for (let row = 0; row < rows; row += 1) {\n            for (let column = 0; column < columns; column += 1) {\n              const pointX = column * cell;\n              const pointY = row * cell;\n              let value = 0;\n              for (const wave of waves) {\n                value += wave.weight * Math.sin(pointX * wave.stepX + pointY * wave.stepY + wave.shift + turn * phase * wave.speed);\n              }\n              field[row * columns + column] = value / total;\n            }\n          }\n        }\n        function edge(threshold, first, second, firstX, firstY, secondX, secondY) {\n          const mix = (threshold - first) / (second - first);\n          return [firstX + (secondX - firstX) * mix, firstY + (secondY - firstY) * mix];\n        }\n        function contour(threshold) {\n          context.beginPath();\n          for (let row = 0; row < rows - 1; row += 1) {\n            for (let column = 0; column < columns - 1; column += 1) {\n              const topLeft = field[row * columns + column];\n              const topRight = field[row * columns + column + 1];\n              const bottomRight = field[(row + 1) * columns + column + 1];\n              const bottomLeft = field[(row + 1) * columns + column];\n              const left = column * cell;\n              const top = row * cell;\n              const right = left + cell;\n              const bottom = top + cell;\n              const crossings = [];\n              if (topLeft < threshold !== topRight < threshold) crossings.push(edge(threshold, topLeft, topRight, left, top, right, top));\n              if (topRight < threshold !== bottomRight < threshold) crossings.push(edge(threshold, topRight, bottomRight, right, top, right, bottom));\n              if (bottomRight < threshold !== bottomLeft < threshold) crossings.push(edge(threshold, bottomRight, bottomLeft, right, bottom, left, bottom));\n              if (bottomLeft < threshold !== topLeft < threshold) crossings.push(edge(threshold, bottomLeft, topLeft, left, bottom, left, top));\n              for (let pair = 0; pair + 1 < crossings.length; pair += 2) {\n                context.moveTo(crossings[pair][0], crossings[pair][1]);\n                context.lineTo(crossings[pair + 1][0], crossings[pair + 1][1]);\n              }\n            }\n          }\n          context.stroke();\n        }\n        function draw(phase) {\n          if (!context || typeof context.stroke !== \"function\") return;\n          context.clearRect(0, 0, view.width, view.height);\n          sample(phase);\n          context.lineCap = \"round\";\n          for (let level = 0; level < levels; level += 1) {\n            const threshold = -0.78 + (1.56 * (level + 0.5)) / levels;\n            const isMajor = level % 5 === 2;\n            context.strokeStyle = isMajor ? rgba(foreground, 0.7) : rgba(accent, 0.35 + 0.5 * (level / levels));\n            context.lineWidth = view.vmin * (isMajor ? 0.2 : 0.13);\n            contour(threshold);\n          }\n        }\n        const proxy = { time: 0 };\n        const timeline = gsap.timeline({ paused: true });\n        timeline.to(proxy, { time: loop, duration: loop, ease: \"none\", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);\n        draw(0);\n        registerTimeline(\"contour-drift\", timeline);\n\n      })();\n    </script>\n  </body>\n</html>\n",
+    "registry": {
+      "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+      "name": "contour-drift",
+      "type": "hyperframes:block",
+      "title": "Contour Drift",
+      "description": "Seamless 12-second loop of topographic contour lines flowing over a shifting terrain",
+      "tags": [
+        "loop",
+        "background",
+        "lines",
+        "contours",
+        "topographic"
+      ],
+      "license": "MIT",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "duration": 12,
+      "files": [
+        {
+          "path": "index.html",
+          "target": "compositions/contour-drift.html",
+          "type": "hyperframes:composition"
+        }
+      ]
+    }
+  },
+  {
+    "exportName": "DotRipple",
+    "id": "dot-ripple",
+    "name": "Dot Ripple",
+    "description": "Seamless 12-second loop of ripples rolling through a fine dot grid like drops on water",
+    "tags": [
+      "loop",
+      "background",
+      "dots",
+      "ripple",
+      "grid"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "sourcePath": "bits/motion-loops/dot-ripple/index.html",
+    "componentNames": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "registryDependencies": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "sourceCode": "<!doctype html>\n<html lang=\"en\" data-composition-variables='[{\"id\":\"background\",\"type\":\"color\",\"label\":\"Background\",\"default\":\"#f2f0e5\"},{\"id\":\"foreground\",\"type\":\"color\",\"label\":\"Foreground\",\"default\":\"#100f0f\"},{\"id\":\"accent\",\"type\":\"color\",\"label\":\"Accent\",\"default\":\"#ef5da8\"},{\"id\":\"drops\",\"type\":\"number\",\"label\":\"Drops per loop\",\"default\":6},{\"id\":\"seed\",\"type\":\"number\",\"label\":\"Seed\",\"default\":5}]'>\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=1920, height=1080\" />\n    <script src=\"https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js\"></script>\n    <script src=\"hyperbits.iife.js\" data-hyperbits-src=\"https://unpkg.com/hyperbits/dist/hyperbits.iife.js\" data-hyperbits-local=\"../../../dist/hyperbits.iife.js\"></script>\n    <style>\n      :root {\n        --bg: #f2f0e5;\n        --fg: #100f0f;\n        --accent: #ef5da8;\n      }\n      * {\n        margin: 0;\n        padding: 0;\n        box-sizing: border-box;\n      }\n      html,\n      body {\n        margin: 0;\n        width: 1920px;\n        height: 1080px;\n        overflow: hidden;\n        background-color: #f2f0e5;\n      }\n      #root {\n        width: 100%;\n        height: 100%;\n        position: relative;\n        overflow: hidden;\n      }\n      #stage {\n        position: absolute;\n        inset: 0;\n        width: 100%;\n        height: 100%;\n        z-index: 1;\n      }\n    </style>\n  </head>\n  <body>\n    <div\n      id=\"root\"\n      class=\"clip\"\n      data-composition-id=\"dot-ripple\"\n      data-start=\"0\"\n      data-duration=\"12\"\n      data-width=\"1920\"\n      data-height=\"1080\"\n    >\n      <div id=\"bg\" class=\"clip\" data-start=\"0\" data-duration=\"12\" style=\"position:absolute;inset:0;background-color:#f2f0e5\"></div>\n      <canvas id=\"stage\" class=\"clip\" data-start=\"0\" data-duration=\"12\"></canvas>\n    </div>\n    <script>\n      (function () {\n\n        function bitVars() {\n          if (window.__hyperframes && typeof window.__hyperframes.getVariables === \"function\") {\n            return window.__hyperframes.getVariables();\n          }\n          const raw = document.documentElement.getAttribute(\"data-composition-variables\") || \"[]\";\n          const decls = JSON.parse(raw);\n          const values = {};\n          for (const entry of decls) values[entry.id] = entry.default;\n          return values;\n        }\n        function registerTimeline(compositionId, timeline) {\n          window.__timelines = window.__timelines || {};\n          window.__timelines[compositionId] = timeline;\n          timeline.seek(0);\n        }\n\n\n        const vars = bitVars();\n        const root = document.getElementById(\"root\");\n        const bg = document.getElementById(\"bg\");\n        const canvas = document.getElementById(\"stage\");\n        const view = hyperbits.viewport(root);\n        bg.style.backgroundColor = vars.background;\n        canvas.width = view.width;\n        canvas.height = view.height;\n        const context = canvas.getContext(\"2d\");\n        const loop = 12;\n        const turn = Math.PI * 2;\n        function channels(color) {\n          const parts = hyperbits.mixOklch(String(color), String(color), 0, \"rgb(0, 0, 0)\").match(/[0-9.]+/g) || [0, 0, 0];\n          return parts.slice(0, 3).map(Number);\n        }\n        function rgba(rgb, alpha) {\n          return \"rgba(\" + rgb[0] + \", \" + rgb[1] + \", \" + rgb[2] + \", \" + Math.min(Math.max(alpha, 0), 1) + \")\";\n        }\n        const foreground = channels(vars.foreground);\n        const accent = channels(vars.accent);\n        const count = Math.max(1, Math.round(Number(vars.drops) || 6));\n        const seed = Number(vars.seed) || 0;\n        const pitch = view.vmin * 2.4;\n        const columns = Math.ceil(view.width / pitch);\n        const rows = Math.ceil(view.height / pitch);\n        const marginX = (view.width - (columns - 1) * pitch) / 2;\n        const marginY = (view.height - (rows - 1) * pitch) / 2;\n        const dotRadius = view.vmin * 0.22;\n        const speed = view.vmin * 16;\n        const width = view.vmin * 7;\n        const drops = Array.from({ length: count }, (_, index) => {\n          const key = \"ripple-\" + seed + \"-\" + index;\n          return {\n            dropX: hyperbits.randomFloat(key + \"-x\", 0.12, 0.88) * view.width,\n            dropY: hyperbits.randomFloat(key + \"-y\", 0.15, 0.85) * view.height,\n            start: (index + hyperbits.randomFloat(key + \"-t\", 0, 0.6)) / count,\n          };\n        });\n        function envelope(age) {\n          if (age < 0.35) return age / 0.35;\n          return Math.exp(-(age - 0.35) * 0.45);\n        }\n        function draw(phase) {\n          if (!context || typeof context.stroke !== \"function\") return;\n          context.clearRect(0, 0, view.width, view.height);\n          const active = drops.map((drop) => {\n            const age = ((((phase - drop.start) % 1) + 1) % 1) * loop;\n            return { drop, front: age * speed, strength: envelope(age) };\n          });\n          for (let row = 0; row < rows; row += 1) {\n            for (let column = 0; column < columns; column += 1) {\n              const homeX = marginX + column * pitch;\n              const homeY = marginY + row * pitch;\n              let pushX = 0;\n              let pushY = 0;\n              let energy = 0;\n              for (const wave of active) {\n                const deltaX = homeX - wave.drop.dropX;\n                const deltaY = homeY - wave.drop.dropY;\n                const distance = Math.hypot(deltaX, deltaY) || 1;\n                const offset = (distance - wave.front) / width;\n                const crest = Math.exp(-offset * offset) * wave.strength;\n                pushX += (deltaX / distance) * crest * pitch * 0.8;\n                pushY += (deltaY / distance) * crest * pitch * 0.8;\n                energy += crest;\n              }\n              const glow = Math.min(energy, 1);\n              const dotX = homeX + pushX;\n              const dotY = homeY + pushY;\n              context.fillStyle = rgba(foreground, 0.45 + 0.55 * glow);\n              context.beginPath();\n              context.arc(dotX, dotY, dotRadius * (1 + 2.2 * glow), 0, turn);\n              context.fill();\n              if (glow > 0.05) {\n                context.fillStyle = rgba(accent, glow);\n                context.beginPath();\n                context.arc(dotX, dotY, dotRadius * (1 + 2.2 * glow), 0, turn);\n                context.fill();\n              }\n            }\n          }\n          for (const wave of active) {\n            const pop = wave.strength * Math.max(0, 1 - wave.front / (view.vmin * 40));\n            if (pop < 0.01) continue;\n            context.fillStyle = rgba(accent, 1);\n            context.beginPath();\n            context.arc(wave.drop.dropX, wave.drop.dropY, view.vmin * 1.1 * pop, 0, turn);\n            context.fill();\n          }\n        }\n        const proxy = { time: 0 };\n        const timeline = gsap.timeline({ paused: true });\n        timeline.to(proxy, { time: loop, duration: loop, ease: \"none\", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);\n        draw(0);\n        registerTimeline(\"dot-ripple\", timeline);\n\n      })();\n    </script>\n  </body>\n</html>\n",
+    "registry": {
+      "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+      "name": "dot-ripple",
+      "type": "hyperframes:block",
+      "title": "Dot Ripple",
+      "description": "Seamless 12-second loop of ripples rolling through a fine dot grid like drops on water",
+      "tags": [
+        "loop",
+        "background",
+        "dots",
+        "ripple",
+        "grid"
+      ],
+      "license": "MIT",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "duration": 12,
+      "files": [
+        {
+          "path": "index.html",
+          "target": "compositions/dot-ripple.html",
+          "type": "hyperframes:composition"
+        }
+      ]
+    }
+  },
+  {
+    "exportName": "DotTunnel",
+    "id": "dot-tunnel",
+    "name": "Dot Tunnel",
+    "description": "Seamless 12-second loop of dotted rings flying out of a curving tunnel",
+    "tags": [
+      "loop",
+      "background",
+      "depth",
+      "tunnel",
+      "dotted"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "sourcePath": "bits/motion-loops/dot-tunnel/index.html",
+    "componentNames": [
+      "color",
+      "viewport"
+    ],
+    "registryDependencies": [
+      "color",
+      "viewport"
+    ],
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "sourceCode": "<!doctype html>\n<html lang=\"en\" data-composition-variables='[{\"id\":\"background\",\"type\":\"color\",\"label\":\"Background\",\"default\":\"#100f0f\"},{\"id\":\"foreground\",\"type\":\"color\",\"label\":\"Foreground\",\"default\":\"#f2f0e5\"},{\"id\":\"accent\",\"type\":\"color\",\"label\":\"Accent\",\"default\":\"#4fb6ec\"},{\"id\":\"rings\",\"type\":\"number\",\"label\":\"Rings\",\"default\":28},{\"id\":\"dots\",\"type\":\"number\",\"label\":\"Dots per ring\",\"default\":48}]'>\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=1920, height=1080\" />\n    <script src=\"https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js\"></script>\n    <script src=\"hyperbits.iife.js\" data-hyperbits-src=\"https://unpkg.com/hyperbits/dist/hyperbits.iife.js\" data-hyperbits-local=\"../../../dist/hyperbits.iife.js\"></script>\n    <style>\n      :root {\n        --bg: #100f0f;\n        --fg: #f2f0e5;\n        --accent: #4fb6ec;\n      }\n      * {\n        margin: 0;\n        padding: 0;\n        box-sizing: border-box;\n      }\n      html,\n      body {\n        margin: 0;\n        width: 1920px;\n        height: 1080px;\n        overflow: hidden;\n        background-color: #100f0f;\n      }\n      #root {\n        width: 100%;\n        height: 100%;\n        position: relative;\n        overflow: hidden;\n      }\n      #stage {\n        position: absolute;\n        inset: 0;\n        width: 100%;\n        height: 100%;\n        z-index: 1;\n      }\n    </style>\n  </head>\n  <body>\n    <div\n      id=\"root\"\n      class=\"clip\"\n      data-composition-id=\"dot-tunnel\"\n      data-start=\"0\"\n      data-duration=\"12\"\n      data-width=\"1920\"\n      data-height=\"1080\"\n    >\n      <div id=\"bg\" class=\"clip\" data-start=\"0\" data-duration=\"12\" style=\"position:absolute;inset:0;background-color:#100f0f\"></div>\n      <canvas id=\"stage\" class=\"clip\" data-start=\"0\" data-duration=\"12\"></canvas>\n    </div>\n    <script>\n      (function () {\n\n        function bitVars() {\n          if (window.__hyperframes && typeof window.__hyperframes.getVariables === \"function\") {\n            return window.__hyperframes.getVariables();\n          }\n          const raw = document.documentElement.getAttribute(\"data-composition-variables\") || \"[]\";\n          const decls = JSON.parse(raw);\n          const values = {};\n          for (const entry of decls) values[entry.id] = entry.default;\n          return values;\n        }\n        function registerTimeline(compositionId, timeline) {\n          window.__timelines = window.__timelines || {};\n          window.__timelines[compositionId] = timeline;\n          timeline.seek(0);\n        }\n\n\n        const vars = bitVars();\n        const root = document.getElementById(\"root\");\n        const bg = document.getElementById(\"bg\");\n        const canvas = document.getElementById(\"stage\");\n        const view = hyperbits.viewport(root);\n        bg.style.backgroundColor = vars.background;\n        canvas.width = view.width;\n        canvas.height = view.height;\n        const context = canvas.getContext(\"2d\");\n        const loop = 12;\n        const turn = Math.PI * 2;\n        function channels(color) {\n          const parts = hyperbits.mixOklch(String(color), String(color), 0, \"rgb(0, 0, 0)\").match(/[0-9.]+/g) || [0, 0, 0];\n          return parts.slice(0, 3).map(Number);\n        }\n        function rgba(rgb, alpha) {\n          return \"rgba(\" + rgb[0] + \", \" + rgb[1] + \", \" + rgb[2] + \", \" + Math.min(Math.max(alpha, 0), 1) + \")\";\n        }\n        const foreground = channels(vars.foreground);\n        const accent = channels(vars.accent);\n        const rings = Math.max(8, Math.round((Number(vars.rings) || 28) / 4) * 4);\n        const dots = Math.max(8, Math.round(Number(vars.dots) || 48));\n        const centerX = view.width / 2;\n        const centerY = view.height / 2;\n        const focal = view.vmin * 42;\n        const near = 0.28;\n        const far = 16;\n        const spacing = (far - near) / rings;\n        const ringsPerLoop = 8;\n        function draw(phase) {\n          if (!context || typeof context.stroke !== \"function\") return;\n          context.clearRect(0, 0, view.width, view.height);\n          const vanishX = centerX + Math.sin(turn * phase + far * 0.32) * view.vw * 13;\n          const vanishY = centerY + Math.cos(turn * phase * 2 + far * 0.21) * view.vh * 9;\n          const core = context.createRadialGradient(vanishX, vanishY, 0, vanishX, vanishY, view.vmin * 26);\n          core.addColorStop(0, rgba(accent, 0.22));\n          core.addColorStop(1, rgba(accent, 0));\n          context.fillStyle = core;\n          context.fillRect(0, 0, view.width, view.height);\n          for (let ring = rings - 1; ring >= 0; ring -= 1) {\n            const slot = (((ring - phase * ringsPerLoop) % rings) + rings) % rings;\n            const depth = near + slot * spacing;\n            const distance = (depth - near) / (far - near);\n            const alpha = Math.pow(1 - distance, 1.25) * Math.min(1, slot * 1.5);\n            if (alpha <= 0.002) continue;\n            const bend = Math.min(depth / far, 1);\n            const offsetX = Math.sin(turn * phase + depth * 0.32) * view.vw * 13 * bend;\n            const offsetY = Math.cos(turn * phase * 2 + depth * 0.21) * view.vh * 9 * bend;\n            const ringX = centerX + offsetX;\n            const ringY = centerY + offsetY;\n            const radius = focal / depth;\n            const twist = depth * 0.18 + (turn / dots) * phase * 3;\n            const dotRadius = Math.max(view.vmin * 0.12, (view.vmin * 0.75) / depth);\n            const isBright = Math.round(ring) % 4 === 0;\n            context.fillStyle = rgba(isBright ? foreground : accent, alpha);\n            context.beginPath();\n            for (let dot = 0; dot < dots; dot += 1) {\n              const angle = (turn * dot) / dots + twist;\n              const dotX = ringX + Math.cos(angle) * radius;\n              const dotY = ringY + Math.sin(angle) * radius;\n              context.moveTo(dotX + dotRadius, dotY);\n              context.arc(dotX, dotY, dotRadius, 0, turn);\n            }\n            context.fill();\n          }\n        }\n        const proxy = { time: 0 };\n        const timeline = gsap.timeline({ paused: true });\n        timeline.to(proxy, { time: loop, duration: loop, ease: \"none\", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);\n        draw(0);\n        registerTimeline(\"dot-tunnel\", timeline);\n\n      })();\n    </script>\n  </body>\n</html>\n",
+    "registry": {
+      "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+      "name": "dot-tunnel",
+      "type": "hyperframes:block",
+      "title": "Dot Tunnel",
+      "description": "Seamless 12-second loop of dotted rings flying out of a curving tunnel",
+      "tags": [
+        "loop",
+        "background",
+        "depth",
+        "tunnel",
+        "dotted"
+      ],
+      "license": "MIT",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "duration": 12,
+      "files": [
+        {
+          "path": "index.html",
+          "target": "compositions/dot-tunnel.html",
+          "type": "hyperframes:composition"
+        }
+      ]
+    }
+  },
+  {
+    "exportName": "FloatingShapes",
+    "id": "floating-shapes",
+    "name": "Floating Shapes",
+    "description": "Seamless 12-second loop of flat geometric shapes drifting upward in layered parallax",
+    "tags": [
+      "loop",
+      "background",
+      "shapes",
+      "geometric",
+      "ambient"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "sourcePath": "bits/motion-loops/floating-shapes/index.html",
+    "componentNames": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "registryDependencies": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "sourceCode": "<!doctype html>\n<html lang=\"en\" data-composition-variables='[{\"id\":\"background\",\"type\":\"color\",\"label\":\"Background\",\"default\":\"#100f0f\"},{\"id\":\"foreground\",\"type\":\"color\",\"label\":\"Foreground\",\"default\":\"#f2f0e5\"},{\"id\":\"accent\",\"type\":\"color\",\"label\":\"Accent\",\"default\":\"#9d8af0\"},{\"id\":\"shapes\",\"type\":\"number\",\"label\":\"Shapes\",\"default\":48},{\"id\":\"seed\",\"type\":\"number\",\"label\":\"Seed\",\"default\":8}]'>\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=1920, height=1080\" />\n    <script src=\"https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js\"></script>\n    <script src=\"hyperbits.iife.js\" data-hyperbits-src=\"https://unpkg.com/hyperbits/dist/hyperbits.iife.js\" data-hyperbits-local=\"../../../dist/hyperbits.iife.js\"></script>\n    <style>\n      :root {\n        --bg: #100f0f;\n        --fg: #f2f0e5;\n        --accent: #9d8af0;\n      }\n      * {\n        margin: 0;\n        padding: 0;\n        box-sizing: border-box;\n      }\n      html,\n      body {\n        margin: 0;\n        width: 1920px;\n        height: 1080px;\n        overflow: hidden;\n        background-color: #100f0f;\n      }\n      #root {\n        width: 100%;\n        height: 100%;\n        position: relative;\n        overflow: hidden;\n      }\n      #stage {\n        position: absolute;\n        inset: 0;\n        width: 100%;\n        height: 100%;\n        z-index: 1;\n      }\n    </style>\n  </head>\n  <body>\n    <div\n      id=\"root\"\n      class=\"clip\"\n      data-composition-id=\"floating-shapes\"\n      data-start=\"0\"\n      data-duration=\"12\"\n      data-width=\"1920\"\n      data-height=\"1080\"\n    >\n      <div id=\"bg\" class=\"clip\" data-start=\"0\" data-duration=\"12\" style=\"position:absolute;inset:0;background-color:#100f0f\"></div>\n      <canvas id=\"stage\" class=\"clip\" data-start=\"0\" data-duration=\"12\"></canvas>\n    </div>\n    <script>\n      (function () {\n\n        function bitVars() {\n          if (window.__hyperframes && typeof window.__hyperframes.getVariables === \"function\") {\n            return window.__hyperframes.getVariables();\n          }\n          const raw = document.documentElement.getAttribute(\"data-composition-variables\") || \"[]\";\n          const decls = JSON.parse(raw);\n          const values = {};\n          for (const entry of decls) values[entry.id] = entry.default;\n          return values;\n        }\n        function registerTimeline(compositionId, timeline) {\n          window.__timelines = window.__timelines || {};\n          window.__timelines[compositionId] = timeline;\n          timeline.seek(0);\n        }\n\n\n        const vars = bitVars();\n        const root = document.getElementById(\"root\");\n        const bg = document.getElementById(\"bg\");\n        const canvas = document.getElementById(\"stage\");\n        const view = hyperbits.viewport(root);\n        bg.style.backgroundColor = vars.background;\n        canvas.width = view.width;\n        canvas.height = view.height;\n        const context = canvas.getContext(\"2d\");\n        const loop = 12;\n        const turn = Math.PI * 2;\n        function channels(color) {\n          const parts = hyperbits.mixOklch(String(color), String(color), 0, \"rgb(0, 0, 0)\").match(/[0-9.]+/g) || [0, 0, 0];\n          return parts.slice(0, 3).map(Number);\n        }\n        function rgba(rgb, alpha) {\n          return \"rgba(\" + rgb[0] + \", \" + rgb[1] + \", \" + rgb[2] + \", \" + Math.min(Math.max(alpha, 0), 1) + \")\";\n        }\n        function mix(from, to, amount) {\n          return from.map((value, index) => Math.round(value + (to[index] - value) * amount));\n        }\n        const foreground = channels(vars.foreground);\n        const accent = channels(vars.accent);\n        const muted = mix(accent, channels(vars.background), 0.55);\n        const count = Math.max(1, Math.round(Number(vars.shapes) || 48));\n        const seed = Number(vars.seed) || 0;\n        const symmetry = { circle: 0, ring: 0, triangle: 3, square: 4, plus: 4, half: 1, diamond: 2 };\n        const kinds = Object.keys(symmetry);\n        const shapes = Array.from({ length: count }, (_, index) => {\n          const key = \"float-\" + seed + \"-\" + index;\n          const layer = hyperbits.random(key + \"-layer\");\n          const tone = hyperbits.random(key + \"-tone\");\n          const kind = hyperbits.pick(key + \"-kind\", kinds);\n          const order = symmetry[kind];\n          return {\n            kind,\n            layer,\n            size: view.vmin * (2.6 + 9 * layer * layer),\n            homeX: hyperbits.random(key + \"-x\") * view.width,\n            homeY: hyperbits.random(key + \"-y\"),\n            swayX: view.vmin * (1.5 + 4 * layer),\n            swayFrequency: hyperbits.pick(key + \"-fx\", [1, 2]),\n            swayShift: hyperbits.random(key + \"-sx\"),\n            rise: layer > 0.55 ? 2 : 1,\n            tilt: hyperbits.randomFloat(key + \"-tilt\", 0, turn),\n            spin: order === 0 ? 0 : (turn / order) * hyperbits.pick(key + \"-spin\", [-1, 1]) * (order === 1 ? 1 : 2),\n            color: tone > 0.72 ? foreground : tone > 0.22 ? accent : muted,\n            outline: hyperbits.random(key + \"-outline\") > 0.7,\n          };\n        }).sort((left, right) => left.layer - right.layer);\n        function path(kind, size) {\n          const half = size / 2;\n          context.beginPath();\n          if (kind === \"circle\" || kind === \"ring\") {\n            context.arc(0, 0, half, 0, turn);\n          } else if (kind === \"triangle\") {\n            for (let corner = 0; corner < 3; corner += 1) {\n              const angle = (turn * corner) / 3 - Math.PI / 2;\n              if (corner === 0) context.moveTo(Math.cos(angle) * half, Math.sin(angle) * half);\n              else context.lineTo(Math.cos(angle) * half, Math.sin(angle) * half);\n            }\n          } else if (kind === \"square\") {\n            context.rect(-half * 0.8, -half * 0.8, half * 1.6, half * 1.6);\n          } else if (kind === \"plus\") {\n            const arm = half * 0.32;\n            context.rect(-half, -arm, size, arm * 2);\n            context.rect(-arm, -half, arm * 2, size);\n          } else if (kind === \"half\") {\n            context.arc(0, half * 0.25, half, Math.PI, turn);\n          } else {\n            context.moveTo(0, -half);\n            context.lineTo(half * 0.62, 0);\n            context.lineTo(0, half);\n            context.lineTo(-half * 0.62, 0);\n          }\n          context.closePath();\n        }\n        function draw(phase) {\n          if (!context || typeof context.stroke !== \"function\") return;\n          context.clearRect(0, 0, view.width, view.height);\n          context.lineJoin = \"round\";\n          for (const shape of shapes) {\n            const margin = shape.size * 1.2;\n            const span = view.height + margin * 2;\n            const progress = (((shape.homeY - phase * shape.rise) % 1) + 1) % 1;\n            const shapeY = progress * span - margin;\n            const shapeX = shape.homeX + Math.sin(turn * (phase * shape.swayFrequency + shape.swayShift)) * shape.swayX;\n            context.save();\n            context.translate(shapeX, shapeY);\n            context.rotate(shape.tilt + shape.spin * phase);\n            context.globalAlpha = 0.55 + 0.45 * shape.layer;\n            path(shape.kind, shape.size);\n            if (shape.kind === \"ring\" || shape.outline) {\n              context.strokeStyle = rgba(shape.color, 1);\n              context.lineWidth = Math.max(view.vmin * 0.2, shape.size * 0.09);\n              context.stroke();\n            } else {\n              context.fillStyle = rgba(shape.color, 1);\n              context.fill();\n            }\n            context.restore();\n          }\n          context.globalAlpha = 1;\n        }\n        const proxy = { time: 0 };\n        const timeline = gsap.timeline({ paused: true });\n        timeline.to(proxy, { time: loop, duration: loop, ease: \"none\", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);\n        draw(0);\n        registerTimeline(\"floating-shapes\", timeline);\n\n      })();\n    </script>\n  </body>\n</html>\n",
+    "registry": {
+      "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+      "name": "floating-shapes",
+      "type": "hyperframes:block",
+      "title": "Floating Shapes",
+      "description": "Seamless 12-second loop of flat geometric shapes drifting upward in layered parallax",
+      "tags": [
+        "loop",
+        "background",
+        "shapes",
+        "geometric",
+        "ambient"
+      ],
+      "license": "MIT",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "duration": 12,
+      "files": [
+        {
+          "path": "index.html",
+          "target": "compositions/floating-shapes.html",
+          "type": "hyperframes:composition"
+        }
+      ]
+    }
+  },
+  {
+    "exportName": "GyroRings",
+    "id": "gyro-rings",
+    "name": "Gyro Rings",
+    "description": "Seamless 12-second loop of wireframe rings tumbling in 3D around a glowing core",
+    "tags": [
+      "loop",
+      "background",
+      "depth",
+      "rings",
+      "orbit"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "sourcePath": "bits/motion-loops/gyro-rings/index.html",
+    "componentNames": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "registryDependencies": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "sourceCode": "<!doctype html>\n<html lang=\"en\" data-composition-variables='[{\"id\":\"background\",\"type\":\"color\",\"label\":\"Background\",\"default\":\"#100f0f\"},{\"id\":\"foreground\",\"type\":\"color\",\"label\":\"Foreground\",\"default\":\"#f2f0e5\"},{\"id\":\"accent\",\"type\":\"color\",\"label\":\"Accent\",\"default\":\"#4fb6ec\"},{\"id\":\"rings\",\"type\":\"number\",\"label\":\"Rings\",\"default\":6},{\"id\":\"seed\",\"type\":\"number\",\"label\":\"Seed\",\"default\":3}]'>\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=1920, height=1080\" />\n    <script src=\"https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js\"></script>\n    <script src=\"hyperbits.iife.js\" data-hyperbits-src=\"https://unpkg.com/hyperbits/dist/hyperbits.iife.js\" data-hyperbits-local=\"../../../dist/hyperbits.iife.js\"></script>\n    <style>\n      :root {\n        --bg: #100f0f;\n        --fg: #f2f0e5;\n        --accent: #4fb6ec;\n      }\n      * {\n        margin: 0;\n        padding: 0;\n        box-sizing: border-box;\n      }\n      html,\n      body {\n        margin: 0;\n        width: 1920px;\n        height: 1080px;\n        overflow: hidden;\n        background-color: #100f0f;\n      }\n      #root {\n        width: 100%;\n        height: 100%;\n        position: relative;\n        overflow: hidden;\n      }\n      #stage {\n        position: absolute;\n        inset: 0;\n        width: 100%;\n        height: 100%;\n        z-index: 1;\n      }\n    </style>\n  </head>\n  <body>\n    <div\n      id=\"root\"\n      class=\"clip\"\n      data-composition-id=\"gyro-rings\"\n      data-start=\"0\"\n      data-duration=\"12\"\n      data-width=\"1920\"\n      data-height=\"1080\"\n    >\n      <div id=\"bg\" class=\"clip\" data-start=\"0\" data-duration=\"12\" style=\"position:absolute;inset:0;background-color:#100f0f\"></div>\n      <canvas id=\"stage\" class=\"clip\" data-start=\"0\" data-duration=\"12\"></canvas>\n    </div>\n    <script>\n      (function () {\n\n        function bitVars() {\n          if (window.__hyperframes && typeof window.__hyperframes.getVariables === \"function\") {\n            return window.__hyperframes.getVariables();\n          }\n          const raw = document.documentElement.getAttribute(\"data-composition-variables\") || \"[]\";\n          const decls = JSON.parse(raw);\n          const values = {};\n          for (const entry of decls) values[entry.id] = entry.default;\n          return values;\n        }\n        function registerTimeline(compositionId, timeline) {\n          window.__timelines = window.__timelines || {};\n          window.__timelines[compositionId] = timeline;\n          timeline.seek(0);\n        }\n\n\n        const vars = bitVars();\n        const root = document.getElementById(\"root\");\n        const bg = document.getElementById(\"bg\");\n        const canvas = document.getElementById(\"stage\");\n        const view = hyperbits.viewport(root);\n        bg.style.backgroundColor = vars.background;\n        canvas.width = view.width;\n        canvas.height = view.height;\n        const context = canvas.getContext(\"2d\");\n        const loop = 12;\n        const turn = Math.PI * 2;\n        function channels(color) {\n          const parts = hyperbits.mixOklch(String(color), String(color), 0, \"rgb(0, 0, 0)\").match(/[0-9.]+/g) || [0, 0, 0];\n          return parts.slice(0, 3).map(Number);\n        }\n        function rgba(rgb, alpha) {\n          return \"rgba(\" + rgb[0] + \", \" + rgb[1] + \", \" + rgb[2] + \", \" + Math.min(Math.max(alpha, 0), 1) + \")\";\n        }\n        const foreground = channels(vars.foreground);\n        const accent = channels(vars.accent);\n        const count = Math.max(1, Math.round(Number(vars.rings) || 6));\n        const seed = Number(vars.seed) || 0;\n        const centerX = view.width / 2;\n        const centerY = view.height / 2;\n        const unit = view.vmin * 36;\n        const camera = 3.2;\n        const segments = 160;\n        const rings = Array.from({ length: count }, (_, ring) => {\n          const key = \"gyro-\" + seed + \"-\" + ring;\n          return {\n            radius: 0.62 + (ring / Math.max(count - 1, 1)) * 0.5,\n            tiltX: hyperbits.randomFloat(key + \"-tx\", 0, turn),\n            tiltY: hyperbits.randomFloat(key + \"-ty\", 0, turn),\n            spinX: hyperbits.pick(key + \"-sx\", [-1, 1]),\n            spinY: hyperbits.pick(key + \"-sy\", [-1, 0, 1]),\n            bead: hyperbits.randomFloat(key + \"-b\", 0, 1),\n            beadLaps: hyperbits.pick(key + \"-bl\", [1, 2, -1, -2]),\n            bright: ring === count - 1,\n          };\n        });\n        function project(ring, angle, phase) {\n          const rotateX = ring.tiltX + turn * phase * ring.spinX;\n          const rotateY = ring.tiltY + turn * phase * ring.spinY;\n          const baseX = Math.cos(angle) * ring.radius;\n          const baseY = Math.sin(angle) * ring.radius;\n          const tiltedY = baseY * Math.cos(rotateX);\n          const tiltedZ = baseY * Math.sin(rotateX);\n          const finalX = baseX * Math.cos(rotateY) + tiltedZ * Math.sin(rotateY);\n          const finalZ = -baseX * Math.sin(rotateY) + tiltedZ * Math.cos(rotateY);\n          const scale = camera / (camera + finalZ);\n          return { screenX: centerX + finalX * unit * scale, screenY: centerY + tiltedY * unit * scale, depth: finalZ, scale };\n        }\n        function draw(phase) {\n          if (!context || typeof context.stroke !== \"function\") return;\n          context.clearRect(0, 0, view.width, view.height);\n          const halo = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, view.vmin * 48);\n          halo.addColorStop(0, rgba(accent, 0.18));\n          halo.addColorStop(1, rgba(accent, 0));\n          context.fillStyle = halo;\n          context.fillRect(0, 0, view.width, view.height);\n          context.strokeStyle = rgba(foreground, 0.08);\n          context.lineWidth = view.vmin * 0.08;\n          context.setLineDash([view.vmin * 0.4, view.vmin * 1.2]);\n          context.lineDashOffset = -phase * view.vmin * 1.6 * 24;\n          context.beginPath();\n          context.arc(centerX, centerY, unit * 1.42, 0, turn);\n          context.stroke();\n          context.setLineDash([]);\n          context.lineCap = \"round\";\n          for (const ring of rings) {\n            const color = ring.bright ? foreground : accent;\n            let previous = project(ring, 0, phase);\n            for (let segment = 1; segment <= segments; segment += 1) {\n              const point = project(ring, (turn * segment) / segments, phase);\n              const facing = 0.5 - (previous.depth + point.depth) / (4 * ring.radius);\n              context.strokeStyle = rgba(color, 0.18 + 0.82 * facing);\n              context.lineWidth = view.vmin * (0.12 + 0.22 * facing) * point.scale;\n              context.beginPath();\n              context.moveTo(previous.screenX, previous.screenY);\n              context.lineTo(point.screenX, point.screenY);\n              context.stroke();\n              previous = point;\n            }\n            const bead = project(ring, turn * (ring.bead + phase * ring.beadLaps), phase);\n            const beadRadius = view.vmin * 0.75 * bead.scale;\n            const glow = context.createRadialGradient(bead.screenX, bead.screenY, 0, bead.screenX, bead.screenY, beadRadius * 5);\n            glow.addColorStop(0, rgba(color, 0.55));\n            glow.addColorStop(1, rgba(color, 0));\n            context.fillStyle = glow;\n            context.fillRect(bead.screenX - beadRadius * 5, bead.screenY - beadRadius * 5, beadRadius * 10, beadRadius * 10);\n            context.fillStyle = rgba(foreground, 1);\n            context.beginPath();\n            context.arc(bead.screenX, bead.screenY, beadRadius, 0, turn);\n            context.fill();\n          }\n          context.fillStyle = rgba(foreground, 1);\n          context.beginPath();\n          context.arc(centerX, centerY, view.vmin * 0.9, 0, turn);\n          context.fill();\n        }\n        const proxy = { time: 0 };\n        const timeline = gsap.timeline({ paused: true });\n        timeline.to(proxy, { time: loop, duration: loop, ease: \"none\", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);\n        draw(0);\n        registerTimeline(\"gyro-rings\", timeline);\n\n      })();\n    </script>\n  </body>\n</html>\n",
+    "registry": {
+      "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+      "name": "gyro-rings",
+      "type": "hyperframes:block",
+      "title": "Gyro Rings",
+      "description": "Seamless 12-second loop of wireframe rings tumbling in 3D around a glowing core",
+      "tags": [
+        "loop",
+        "background",
+        "depth",
+        "rings",
+        "orbit"
+      ],
+      "license": "MIT",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "duration": 12,
+      "files": [
+        {
+          "path": "index.html",
+          "target": "compositions/gyro-rings.html",
+          "type": "hyperframes:composition"
+        }
+      ]
+    }
+  },
+  {
+    "exportName": "HalftoneSweep",
+    "id": "halftone-sweep",
+    "name": "Halftone Sweep",
+    "description": "Seamless 12-second loop of halftone dots swelling as soft diagonal bands sweep across",
+    "tags": [
+      "loop",
+      "background",
+      "dots",
+      "halftone",
+      "waves"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "sourcePath": "bits/motion-loops/halftone-sweep/index.html",
+    "componentNames": [
+      "color",
+      "viewport"
+    ],
+    "registryDependencies": [
+      "color",
+      "viewport"
+    ],
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "sourceCode": "<!doctype html>\n<html lang=\"en\" data-composition-variables='[{\"id\":\"background\",\"type\":\"color\",\"label\":\"Background\",\"default\":\"#100f0f\"},{\"id\":\"foreground\",\"type\":\"color\",\"label\":\"Foreground\",\"default\":\"#f2f0e5\"},{\"id\":\"accent\",\"type\":\"color\",\"label\":\"Accent\",\"default\":\"#ef5da8\"},{\"id\":\"pitch\",\"type\":\"number\",\"label\":\"Dot pitch (vmin)\",\"default\":2.6}]'>\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=1920, height=1080\" />\n    <script src=\"https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js\"></script>\n    <script src=\"hyperbits.iife.js\" data-hyperbits-src=\"https://unpkg.com/hyperbits/dist/hyperbits.iife.js\" data-hyperbits-local=\"../../../dist/hyperbits.iife.js\"></script>\n    <style>\n      :root {\n        --bg: #100f0f;\n        --fg: #f2f0e5;\n        --accent: #ef5da8;\n      }\n      * {\n        margin: 0;\n        padding: 0;\n        box-sizing: border-box;\n      }\n      html,\n      body {\n        margin: 0;\n        width: 1920px;\n        height: 1080px;\n        overflow: hidden;\n        background-color: #100f0f;\n      }\n      #root {\n        width: 100%;\n        height: 100%;\n        position: relative;\n        overflow: hidden;\n      }\n      #stage {\n        position: absolute;\n        inset: 0;\n        width: 100%;\n        height: 100%;\n        z-index: 1;\n      }\n    </style>\n  </head>\n  <body>\n    <div\n      id=\"root\"\n      class=\"clip\"\n      data-composition-id=\"halftone-sweep\"\n      data-start=\"0\"\n      data-duration=\"12\"\n      data-width=\"1920\"\n      data-height=\"1080\"\n    >\n      <div id=\"bg\" class=\"clip\" data-start=\"0\" data-duration=\"12\" style=\"position:absolute;inset:0;background-color:#100f0f\"></div>\n      <canvas id=\"stage\" class=\"clip\" data-start=\"0\" data-duration=\"12\"></canvas>\n    </div>\n    <script>\n      (function () {\n\n        function bitVars() {\n          if (window.__hyperframes && typeof window.__hyperframes.getVariables === \"function\") {\n            return window.__hyperframes.getVariables();\n          }\n          const raw = document.documentElement.getAttribute(\"data-composition-variables\") || \"[]\";\n          const decls = JSON.parse(raw);\n          const values = {};\n          for (const entry of decls) values[entry.id] = entry.default;\n          return values;\n        }\n        function registerTimeline(compositionId, timeline) {\n          window.__timelines = window.__timelines || {};\n          window.__timelines[compositionId] = timeline;\n          timeline.seek(0);\n        }\n\n\n        const vars = bitVars();\n        const root = document.getElementById(\"root\");\n        const bg = document.getElementById(\"bg\");\n        const canvas = document.getElementById(\"stage\");\n        const view = hyperbits.viewport(root);\n        bg.style.backgroundColor = vars.background;\n        canvas.width = view.width;\n        canvas.height = view.height;\n        const context = canvas.getContext(\"2d\");\n        const loop = 12;\n        const turn = Math.PI * 2;\n        function channels(color) {\n          const parts = hyperbits.mixOklch(String(color), String(color), 0, \"rgb(0, 0, 0)\").match(/[0-9.]+/g) || [0, 0, 0];\n          return parts.slice(0, 3).map(Number);\n        }\n        function rgba(rgb, alpha) {\n          return \"rgba(\" + rgb[0] + \", \" + rgb[1] + \", \" + rgb[2] + \", \" + Math.min(Math.max(alpha, 0), 1) + \")\";\n        }\n        const foreground = channels(vars.foreground);\n        const accent = channels(vars.accent);\n        const pitch = view.vmin * Math.max(1, Number(vars.pitch) || 2.6);\n        const rowHeight = pitch * 0.866;\n        const columns = Math.ceil(view.width / pitch) + 2;\n        const rows = Math.ceil(view.height / rowHeight) + 2;\n        const angle = -0.62;\n        const band = view.vmax * 34;\n        function draw(phase) {\n          if (!context || typeof context.stroke !== \"function\") return;\n          context.clearRect(0, 0, view.width, view.height);\n          const accentFill = rgba(accent, 1);\n          const dustFill = rgba(foreground, 0.16);\n          for (let row = 0; row < rows; row += 1) {\n            const dotY = row * rowHeight - rowHeight * 0.5;\n            const shift = row % 2 === 0 ? 0 : pitch * 0.5;\n            for (let column = 0; column < columns; column += 1) {\n              const dotX = column * pitch + shift - pitch * 0.5;\n              const along = (dotX * Math.cos(angle) + dotY * Math.sin(angle)) / band;\n              const across = (-dotX * Math.sin(angle) + dotY * Math.cos(angle)) / band;\n              const main = Math.pow(0.5 + 0.5 * Math.cos(turn * (along - phase * 2)), 3.2);\n              const cross = 0.5 + 0.5 * Math.cos(turn * (across * 1.4 + along * 0.3 + phase));\n              const amount = main * (0.55 + 0.45 * cross);\n              const radius = Math.max(pitch * 0.5 * amount, view.vmin * 0.12);\n              context.fillStyle = radius > view.vmin * 0.2 ? accentFill : dustFill;\n              context.beginPath();\n              context.arc(dotX, dotY, radius, 0, turn);\n              context.fill();\n            }\n          }\n        }\n        const proxy = { time: 0 };\n        const timeline = gsap.timeline({ paused: true });\n        timeline.to(proxy, { time: loop, duration: loop, ease: \"none\", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);\n        draw(0);\n        registerTimeline(\"halftone-sweep\", timeline);\n\n      })();\n    </script>\n  </body>\n</html>\n",
+    "registry": {
+      "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+      "name": "halftone-sweep",
+      "type": "hyperframes:block",
+      "title": "Halftone Sweep",
+      "description": "Seamless 12-second loop of halftone dots swelling as soft diagonal bands sweep across",
+      "tags": [
+        "loop",
+        "background",
+        "dots",
+        "halftone",
+        "waves"
+      ],
+      "license": "MIT",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "duration": 12,
+      "files": [
+        {
+          "path": "index.html",
+          "target": "compositions/halftone-sweep.html",
+          "type": "hyperframes:composition"
+        }
+      ]
+    }
+  },
+  {
+    "exportName": "HorizonGrid",
+    "id": "horizon-grid",
+    "name": "Horizon Grid",
+    "description": "Seamless 12-second loop of a mirrored perspective grid streaming toward a glowing horizon",
+    "tags": [
+      "loop",
+      "background",
+      "depth",
+      "grid",
+      "perspective"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "sourcePath": "bits/motion-loops/horizon-grid/index.html",
+    "componentNames": [
+      "color",
+      "viewport"
+    ],
+    "registryDependencies": [
+      "color",
+      "viewport"
+    ],
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "sourceCode": "<!doctype html>\n<html lang=\"en\" data-composition-variables='[{\"id\":\"background\",\"type\":\"color\",\"label\":\"Background\",\"default\":\"#100f0f\"},{\"id\":\"foreground\",\"type\":\"color\",\"label\":\"Foreground\",\"default\":\"#f2f0e5\"},{\"id\":\"accent\",\"type\":\"color\",\"label\":\"Accent\",\"default\":\"#4fb6ec\"},{\"id\":\"columns\",\"type\":\"number\",\"label\":\"Grid columns\",\"default\":24}]'>\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=1920, height=1080\" />\n    <script src=\"https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js\"></script>\n    <script src=\"hyperbits.iife.js\" data-hyperbits-src=\"https://unpkg.com/hyperbits/dist/hyperbits.iife.js\" data-hyperbits-local=\"../../../dist/hyperbits.iife.js\"></script>\n    <style>\n      :root {\n        --bg: #100f0f;\n        --fg: #f2f0e5;\n        --accent: #4fb6ec;\n      }\n      * {\n        margin: 0;\n        padding: 0;\n        box-sizing: border-box;\n      }\n      html,\n      body {\n        margin: 0;\n        width: 1920px;\n        height: 1080px;\n        overflow: hidden;\n        background-color: #100f0f;\n      }\n      #root {\n        width: 100%;\n        height: 100%;\n        position: relative;\n        overflow: hidden;\n      }\n      #stage {\n        position: absolute;\n        inset: 0;\n        width: 100%;\n        height: 100%;\n        z-index: 1;\n      }\n    </style>\n  </head>\n  <body>\n    <div\n      id=\"root\"\n      class=\"clip\"\n      data-composition-id=\"horizon-grid\"\n      data-start=\"0\"\n      data-duration=\"12\"\n      data-width=\"1920\"\n      data-height=\"1080\"\n    >\n      <div id=\"bg\" class=\"clip\" data-start=\"0\" data-duration=\"12\" style=\"position:absolute;inset:0;background-color:#100f0f\"></div>\n      <canvas id=\"stage\" class=\"clip\" data-start=\"0\" data-duration=\"12\"></canvas>\n    </div>\n    <script>\n      (function () {\n\n        function bitVars() {\n          if (window.__hyperframes && typeof window.__hyperframes.getVariables === \"function\") {\n            return window.__hyperframes.getVariables();\n          }\n          const raw = document.documentElement.getAttribute(\"data-composition-variables\") || \"[]\";\n          const decls = JSON.parse(raw);\n          const values = {};\n          for (const entry of decls) values[entry.id] = entry.default;\n          return values;\n        }\n        function registerTimeline(compositionId, timeline) {\n          window.__timelines = window.__timelines || {};\n          window.__timelines[compositionId] = timeline;\n          timeline.seek(0);\n        }\n\n\n        const vars = bitVars();\n        const root = document.getElementById(\"root\");\n        const bg = document.getElementById(\"bg\");\n        const canvas = document.getElementById(\"stage\");\n        const view = hyperbits.viewport(root);\n        bg.style.backgroundColor = vars.background;\n        canvas.width = view.width;\n        canvas.height = view.height;\n        const context = canvas.getContext(\"2d\");\n        const loop = 12;\n        const turn = Math.PI * 2;\n        function channels(color) {\n          const parts = hyperbits.mixOklch(String(color), String(color), 0, \"rgb(0, 0, 0)\").match(/[0-9.]+/g) || [0, 0, 0];\n          return parts.slice(0, 3).map(Number);\n        }\n        function rgba(rgb, alpha) {\n          return \"rgba(\" + rgb[0] + \", \" + rgb[1] + \", \" + rgb[2] + \", \" + Math.min(Math.max(alpha, 0), 1) + \")\";\n        }\n        const background = channels(vars.background);\n        const foreground = channels(vars.foreground);\n        const accent = channels(vars.accent);\n        const columns = Math.max(6, Math.round(Number(vars.columns) || 24));\n        const centerX = view.width / 2;\n        const horizon = view.height / 2;\n        const focal = view.height * 0.42;\n        const near = 0.12;\n        const far = 32;\n        const rowsPerLoop = 18;\n        function fade(depth) {\n          const distance = Math.min(Math.max((depth - near) / (far - near), 0), 1);\n          return Math.pow(1 - distance, 1.5);\n        }\n        function draw(phase) {\n          if (!context || typeof context.stroke !== \"function\") return;\n          context.clearRect(0, 0, view.width, view.height);\n          const travel = (phase * rowsPerLoop) % 1;\n          const sway = Math.sin(turn * phase) * 0.7;\n          const glow = context.createLinearGradient(0, horizon - view.vh * 18, 0, horizon + view.vh * 18);\n          glow.addColorStop(0, rgba(accent, 0));\n          glow.addColorStop(0.5, rgba(accent, 0.38));\n          glow.addColorStop(1, rgba(accent, 0));\n          context.fillStyle = glow;\n          context.fillRect(0, horizon - view.vh * 18, view.width, view.vh * 36);\n          context.lineCap = \"round\";\n          for (const side of [1, -1]) {\n            const strength = side > 0 ? 1 : 0.45;\n            for (let row = 0; row <= far + 1; row += 1) {\n              const depth = row + 1 - travel;\n              if (depth < near || depth > far) continue;\n              const lineY = horizon + (side * focal) / depth;\n              context.strokeStyle = rgba(accent, fade(depth) * strength);\n              context.lineWidth = Math.max(view.vmin * 0.09, (view.vmin * 0.6) / depth);\n              context.beginPath();\n              context.moveTo(0, lineY);\n              context.lineTo(view.width, lineY);\n              context.stroke();\n            }\n            for (let column = 0; column <= columns; column += 1) {\n              const worldX = column - columns / 2 - sway;\n              const nearX = centerX + (worldX * focal) / near;\n              const nearY = horizon + (side * focal) / near;\n              const farX = centerX + (worldX * focal) / far;\n              const farY = horizon + (side * focal) / far;\n              const gradient = context.createLinearGradient(nearX, nearY, farX, farY);\n              for (let stop = 0; stop <= 8; stop += 1) {\n                const progress = stop / 8;\n                const depth = 1 / (1 / near + (1 / far - 1 / near) * progress);\n                gradient.addColorStop(progress, rgba(accent, fade(depth) * strength));\n              }\n              context.strokeStyle = gradient;\n              context.lineWidth = view.vmin * 0.22;\n              context.beginPath();\n              context.moveTo(nearX, nearY);\n              context.lineTo(farX, farY);\n              context.stroke();\n            }\n          }\n          context.fillStyle = rgba(foreground, 0.55);\n          context.fillRect(0, horizon - view.vmin * 0.06, view.width, view.vmin * 0.12);\n          const vignette = context.createRadialGradient(centerX, horizon, 0, centerX, horizon, view.vmax * 62);\n          vignette.addColorStop(0, rgba(background, 0));\n          vignette.addColorStop(0.55, rgba(background, 0));\n          vignette.addColorStop(1, rgba(background, 0.7));\n          context.fillStyle = vignette;\n          context.fillRect(0, 0, view.width, view.height);\n        }\n        const proxy = { time: 0 };\n        const timeline = gsap.timeline({ paused: true });\n        timeline.to(proxy, { time: loop, duration: loop, ease: \"none\", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);\n        draw(0);\n        registerTimeline(\"horizon-grid\", timeline);\n\n      })();\n    </script>\n  </body>\n</html>\n",
+    "registry": {
+      "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+      "name": "horizon-grid",
+      "type": "hyperframes:block",
+      "title": "Horizon Grid",
+      "description": "Seamless 12-second loop of a mirrored perspective grid streaming toward a glowing horizon",
+      "tags": [
+        "loop",
+        "background",
+        "depth",
+        "grid",
+        "perspective"
+      ],
+      "license": "MIT",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "duration": 12,
+      "files": [
+        {
+          "path": "index.html",
+          "target": "compositions/horizon-grid.html",
+          "type": "hyperframes:composition"
+        }
+      ]
+    }
+  },
+  {
+    "exportName": "PhyllotaxisBloom",
+    "id": "phyllotaxis-bloom",
+    "name": "Phyllotaxis Bloom",
+    "description": "Seamless 12-second loop of dots spiralling out of a sunflower pattern with travelling pulses",
+    "tags": [
+      "loop",
+      "background",
+      "dots",
+      "spiral",
+      "organic"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "sourcePath": "bits/motion-loops/phyllotaxis-bloom/index.html",
+    "componentNames": [
+      "color",
+      "viewport"
+    ],
+    "registryDependencies": [
+      "color",
+      "viewport"
+    ],
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "sourceCode": "<!doctype html>\n<html lang=\"en\" data-composition-variables='[{\"id\":\"background\",\"type\":\"color\",\"label\":\"Background\",\"default\":\"#100f0f\"},{\"id\":\"foreground\",\"type\":\"color\",\"label\":\"Foreground\",\"default\":\"#f2f0e5\"},{\"id\":\"accent\",\"type\":\"color\",\"label\":\"Accent\",\"default\":\"#ef5da8\"},{\"id\":\"dots\",\"type\":\"number\",\"label\":\"Dots\",\"default\":1400}]'>\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=1920, height=1080\" />\n    <script src=\"https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js\"></script>\n    <script src=\"hyperbits.iife.js\" data-hyperbits-src=\"https://unpkg.com/hyperbits/dist/hyperbits.iife.js\" data-hyperbits-local=\"../../../dist/hyperbits.iife.js\"></script>\n    <style>\n      :root {\n        --bg: #100f0f;\n        --fg: #f2f0e5;\n        --accent: #ef5da8;\n      }\n      * {\n        margin: 0;\n        padding: 0;\n        box-sizing: border-box;\n      }\n      html,\n      body {\n        margin: 0;\n        width: 1920px;\n        height: 1080px;\n        overflow: hidden;\n        background-color: #100f0f;\n      }\n      #root {\n        width: 100%;\n        height: 100%;\n        position: relative;\n        overflow: hidden;\n      }\n      #stage {\n        position: absolute;\n        inset: 0;\n        width: 100%;\n        height: 100%;\n        z-index: 1;\n      }\n    </style>\n  </head>\n  <body>\n    <div\n      id=\"root\"\n      class=\"clip\"\n      data-composition-id=\"phyllotaxis-bloom\"\n      data-start=\"0\"\n      data-duration=\"12\"\n      data-width=\"1920\"\n      data-height=\"1080\"\n    >\n      <div id=\"bg\" class=\"clip\" data-start=\"0\" data-duration=\"12\" style=\"position:absolute;inset:0;background-color:#100f0f\"></div>\n      <canvas id=\"stage\" class=\"clip\" data-start=\"0\" data-duration=\"12\"></canvas>\n    </div>\n    <script>\n      (function () {\n\n        function bitVars() {\n          if (window.__hyperframes && typeof window.__hyperframes.getVariables === \"function\") {\n            return window.__hyperframes.getVariables();\n          }\n          const raw = document.documentElement.getAttribute(\"data-composition-variables\") || \"[]\";\n          const decls = JSON.parse(raw);\n          const values = {};\n          for (const entry of decls) values[entry.id] = entry.default;\n          return values;\n        }\n        function registerTimeline(compositionId, timeline) {\n          window.__timelines = window.__timelines || {};\n          window.__timelines[compositionId] = timeline;\n          timeline.seek(0);\n        }\n\n\n        const vars = bitVars();\n        const root = document.getElementById(\"root\");\n        const bg = document.getElementById(\"bg\");\n        const canvas = document.getElementById(\"stage\");\n        const view = hyperbits.viewport(root);\n        bg.style.backgroundColor = vars.background;\n        canvas.width = view.width;\n        canvas.height = view.height;\n        const context = canvas.getContext(\"2d\");\n        const loop = 12;\n        const turn = Math.PI * 2;\n        function channels(color) {\n          const parts = hyperbits.mixOklch(String(color), String(color), 0, \"rgb(0, 0, 0)\").match(/[0-9.]+/g) || [0, 0, 0];\n          return parts.slice(0, 3).map(Number);\n        }\n        function rgba(rgb, alpha) {\n          return \"rgba(\" + rgb[0] + \", \" + rgb[1] + \", \" + rgb[2] + \", \" + Math.min(Math.max(alpha, 0), 1) + \")\";\n        }\n        const background = channels(vars.background);\n        const foreground = channels(vars.foreground);\n        const accent = channels(vars.accent);\n        const count = Math.max(100, Math.round(Number(vars.dots) || 1400));\n        const centerX = view.width / 2;\n        const centerY = view.height / 2;\n        const golden = Math.PI * (3 - Math.sqrt(5));\n        const spread = (Math.hypot(view.width, view.height) * 0.55) / Math.sqrt(count);\n        const arm = 21;\n        const perLoop = arm * 2;\n        function draw(phase) {\n          if (!context || typeof context.stroke !== \"function\") return;\n          context.clearRect(0, 0, view.width, view.height);\n          const flow = phase * perLoop;\n          const passed = Math.floor(flow);\n          const fraction = flow - passed;\n          for (let slot = 0; slot < count; slot += 1) {\n            const index = slot + fraction;\n            const identity = slot - passed;\n            const radius = spread * Math.sqrt(index);\n            const angle = index * golden;\n            const share = index / count;\n            const grow = Math.min(1, index / 6);\n            const pulse = 0.72 + 0.28 * Math.sin(turn * (phase * 3 - Math.sqrt(index) / 6));\n            const size = view.vmin * (0.3 + 0.95 * Math.sqrt(share)) * pulse * grow;\n            const alpha = Math.min(1, (1 - share) * 8);\n            const highlighted = ((identity % arm) + arm) % arm === 0;\n            context.fillStyle = rgba(highlighted ? foreground : accent, alpha);\n            context.beginPath();\n            context.arc(centerX + Math.cos(angle) * radius, centerY + Math.sin(angle) * radius, size, 0, turn);\n            context.fill();\n          }\n          const core = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, view.vmin * 9);\n          core.addColorStop(0, rgba(background, 0.35));\n          core.addColorStop(1, rgba(background, 0));\n          context.fillStyle = core;\n          context.fillRect(centerX - view.vmin * 9, centerY - view.vmin * 9, view.vmin * 18, view.vmin * 18);\n        }\n        const proxy = { time: 0 };\n        const timeline = gsap.timeline({ paused: true });\n        timeline.to(proxy, { time: loop, duration: loop, ease: \"none\", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);\n        draw(0);\n        registerTimeline(\"phyllotaxis-bloom\", timeline);\n\n      })();\n    </script>\n  </body>\n</html>\n",
+    "registry": {
+      "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+      "name": "phyllotaxis-bloom",
+      "type": "hyperframes:block",
+      "title": "Phyllotaxis Bloom",
+      "description": "Seamless 12-second loop of dots spiralling out of a sunflower pattern with travelling pulses",
+      "tags": [
+        "loop",
+        "background",
+        "dots",
+        "spiral",
+        "organic"
+      ],
+      "license": "MIT",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "duration": 12,
+      "files": [
+        {
+          "path": "index.html",
+          "target": "compositions/phyllotaxis-bloom.html",
+          "type": "hyperframes:composition"
+        }
+      ]
+    }
+  },
+  {
+    "exportName": "PinwheelGrid",
+    "id": "pinwheel-grid",
+    "name": "Pinwheel Grid",
+    "description": "Seamless 12-second loop of a pinwheel grid snapping through counter-rotating quarter turns",
+    "tags": [
+      "loop",
+      "background",
+      "shapes",
+      "pinwheel",
+      "grid"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "sourcePath": "bits/motion-loops/pinwheel-grid/index.html",
+    "componentNames": [
+      "color",
+      "interpolate",
+      "viewport"
+    ],
+    "registryDependencies": [
+      "color",
+      "interpolate",
+      "viewport"
+    ],
+    "helpers": [
+      "color",
+      "interpolate",
+      "viewport"
+    ],
+    "sourceCode": "<!doctype html>\n<html lang=\"en\" data-composition-variables='[{\"id\":\"background\",\"type\":\"color\",\"label\":\"Background\",\"default\":\"#100f0f\"},{\"id\":\"foreground\",\"type\":\"color\",\"label\":\"Foreground\",\"default\":\"#f2f0e5\"},{\"id\":\"accent\",\"type\":\"color\",\"label\":\"Accent\",\"default\":\"#9d8af0\"},{\"id\":\"columns\",\"type\":\"number\",\"label\":\"Columns\",\"default\":10}]'>\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=1920, height=1080\" />\n    <script src=\"https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js\"></script>\n    <script src=\"hyperbits.iife.js\" data-hyperbits-src=\"https://unpkg.com/hyperbits/dist/hyperbits.iife.js\" data-hyperbits-local=\"../../../dist/hyperbits.iife.js\"></script>\n    <style>\n      :root {\n        --bg: #100f0f;\n        --fg: #f2f0e5;\n        --accent: #9d8af0;\n      }\n      * {\n        margin: 0;\n        padding: 0;\n        box-sizing: border-box;\n      }\n      html,\n      body {\n        margin: 0;\n        width: 1920px;\n        height: 1080px;\n        overflow: hidden;\n        background-color: #100f0f;\n      }\n      #root {\n        width: 100%;\n        height: 100%;\n        position: relative;\n        overflow: hidden;\n      }\n      #stage {\n        position: absolute;\n        inset: 0;\n        width: 100%;\n        height: 100%;\n        z-index: 1;\n      }\n    </style>\n  </head>\n  <body>\n    <div\n      id=\"root\"\n      class=\"clip\"\n      data-composition-id=\"pinwheel-grid\"\n      data-start=\"0\"\n      data-duration=\"12\"\n      data-width=\"1920\"\n      data-height=\"1080\"\n    >\n      <div id=\"bg\" class=\"clip\" data-start=\"0\" data-duration=\"12\" style=\"position:absolute;inset:0;background-color:#100f0f\"></div>\n      <canvas id=\"stage\" class=\"clip\" data-start=\"0\" data-duration=\"12\"></canvas>\n    </div>\n    <script>\n      (function () {\n\n        function bitVars() {\n          if (window.__hyperframes && typeof window.__hyperframes.getVariables === \"function\") {\n            return window.__hyperframes.getVariables();\n          }\n          const raw = document.documentElement.getAttribute(\"data-composition-variables\") || \"[]\";\n          const decls = JSON.parse(raw);\n          const values = {};\n          for (const entry of decls) values[entry.id] = entry.default;\n          return values;\n        }\n        function registerTimeline(compositionId, timeline) {\n          window.__timelines = window.__timelines || {};\n          window.__timelines[compositionId] = timeline;\n          timeline.seek(0);\n        }\n\n\n        const vars = bitVars();\n        const root = document.getElementById(\"root\");\n        const bg = document.getElementById(\"bg\");\n        const canvas = document.getElementById(\"stage\");\n        const view = hyperbits.viewport(root);\n        bg.style.backgroundColor = vars.background;\n        canvas.width = view.width;\n        canvas.height = view.height;\n        const context = canvas.getContext(\"2d\");\n        const loop = 12;\n        const turn = Math.PI * 2;\n        function channels(color) {\n          const parts = hyperbits.mixOklch(String(color), String(color), 0, \"rgb(0, 0, 0)\").match(/[0-9.]+/g) || [0, 0, 0];\n          return parts.slice(0, 3).map(Number);\n        }\n        function rgba(rgb, alpha) {\n          return \"rgba(\" + rgb[0] + \", \" + rgb[1] + \", \" + rgb[2] + \", \" + Math.min(Math.max(alpha, 0), 1) + \")\";\n        }\n        function mix(from, to, amount) {\n          return from.map((value, index) => Math.round(value + (to[index] - value) * amount));\n        }\n        const foreground = channels(vars.foreground);\n        const accent = channels(vars.accent);\n        const shade = mix(accent, channels(vars.background), 0.5);\n        const columns = Math.max(2, Math.round(Number(vars.columns) || 10));\n        const size = view.width / columns;\n        const rows = Math.ceil(view.height / size);\n        const marginY = (view.height - rows * size) / 2;\n        const ease = hyperbits.Easing.easeInOutCubic;\n        function blade(half) {\n          context.beginPath();\n          context.moveTo(0, 0);\n          context.lineTo(0, -half);\n          context.lineTo(half, -half);\n          context.closePath();\n          context.fill();\n        }\n        function draw(phase) {\n          if (!context || typeof context.stroke !== \"function\") return;\n          context.clearRect(0, 0, view.width, view.height);\n          const half = size * 0.44;\n          for (let row = 0; row < rows; row += 1) {\n            for (let column = 0; column < columns; column += 1) {\n              const direction = (row + column) % 2 === 0 ? 1 : -1;\n              const delay = (column / columns) * 0.35 + (row / rows) * 0.2;\n              const beat = phase * 2 - delay;\n              const whole = Math.floor(beat);\n              const local = Math.min(Math.max((beat - whole) / 0.45, 0), 1);\n              const eased = ease(local);\n              const angle = direction * (Math.PI / 2) * (whole + eased);\n              const squeeze = 1 - 0.18 * Math.sin(Math.PI * local);\n              context.save();\n              context.translate(column * size + size / 2, marginY + row * size + size / 2);\n              context.rotate(angle);\n              context.scale(squeeze, squeeze);\n              for (let quarter = 0; quarter < 4; quarter += 1) {\n                context.fillStyle = rgba(quarter % 2 === 0 ? accent : shade, 1);\n                blade(half);\n                context.rotate(Math.PI / 2);\n              }\n              context.fillStyle = rgba(foreground, 1);\n              context.beginPath();\n              context.arc(0, 0, size * 0.035, 0, turn);\n              context.fill();\n              context.restore();\n            }\n          }\n        }\n        const proxy = { time: 0 };\n        const timeline = gsap.timeline({ paused: true });\n        timeline.to(proxy, { time: loop, duration: loop, ease: \"none\", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);\n        draw(0);\n        registerTimeline(\"pinwheel-grid\", timeline);\n\n      })();\n    </script>\n  </body>\n</html>\n",
+    "registry": {
+      "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+      "name": "pinwheel-grid",
+      "type": "hyperframes:block",
+      "title": "Pinwheel Grid",
+      "description": "Seamless 12-second loop of a pinwheel grid snapping through counter-rotating quarter turns",
+      "tags": [
+        "loop",
+        "background",
+        "shapes",
+        "pinwheel",
+        "grid"
+      ],
+      "license": "MIT",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "duration": 12,
+      "files": [
+        {
+          "path": "index.html",
+          "target": "compositions/pinwheel-grid.html",
+          "type": "hyperframes:composition"
+        }
+      ]
+    }
+  },
+  {
+    "exportName": "PixelRain",
+    "id": "pixel-rain",
+    "name": "Pixel Rain",
+    "description": "Seamless 12-second loop of stepped pixel trails falling down a dotted grid",
+    "tags": [
+      "loop",
+      "background",
+      "dots",
+      "pixel",
+      "rain"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "sourcePath": "bits/motion-loops/pixel-rain/index.html",
+    "componentNames": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "registryDependencies": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "sourceCode": "<!doctype html>\n<html lang=\"en\" data-composition-variables='[{\"id\":\"background\",\"type\":\"color\",\"label\":\"Background\",\"default\":\"#f2f0e5\"},{\"id\":\"foreground\",\"type\":\"color\",\"label\":\"Foreground\",\"default\":\"#100f0f\"},{\"id\":\"accent\",\"type\":\"color\",\"label\":\"Accent\",\"default\":\"#ef5da8\"},{\"id\":\"columns\",\"type\":\"number\",\"label\":\"Columns\",\"default\":64},{\"id\":\"seed\",\"type\":\"number\",\"label\":\"Seed\",\"default\":2}]'>\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=1920, height=1080\" />\n    <script src=\"https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js\"></script>\n    <script src=\"hyperbits.iife.js\" data-hyperbits-src=\"https://unpkg.com/hyperbits/dist/hyperbits.iife.js\" data-hyperbits-local=\"../../../dist/hyperbits.iife.js\"></script>\n    <style>\n      :root {\n        --bg: #f2f0e5;\n        --fg: #100f0f;\n        --accent: #ef5da8;\n      }\n      * {\n        margin: 0;\n        padding: 0;\n        box-sizing: border-box;\n      }\n      html,\n      body {\n        margin: 0;\n        width: 1920px;\n        height: 1080px;\n        overflow: hidden;\n        background-color: #f2f0e5;\n      }\n      #root {\n        width: 100%;\n        height: 100%;\n        position: relative;\n        overflow: hidden;\n      }\n      #stage {\n        position: absolute;\n        inset: 0;\n        width: 100%;\n        height: 100%;\n        z-index: 1;\n      }\n    </style>\n  </head>\n  <body>\n    <div\n      id=\"root\"\n      class=\"clip\"\n      data-composition-id=\"pixel-rain\"\n      data-start=\"0\"\n      data-duration=\"12\"\n      data-width=\"1920\"\n      data-height=\"1080\"\n    >\n      <div id=\"bg\" class=\"clip\" data-start=\"0\" data-duration=\"12\" style=\"position:absolute;inset:0;background-color:#f2f0e5\"></div>\n      <canvas id=\"stage\" class=\"clip\" data-start=\"0\" data-duration=\"12\"></canvas>\n    </div>\n    <script>\n      (function () {\n\n        function bitVars() {\n          if (window.__hyperframes && typeof window.__hyperframes.getVariables === \"function\") {\n            return window.__hyperframes.getVariables();\n          }\n          const raw = document.documentElement.getAttribute(\"data-composition-variables\") || \"[]\";\n          const decls = JSON.parse(raw);\n          const values = {};\n          for (const entry of decls) values[entry.id] = entry.default;\n          return values;\n        }\n        function registerTimeline(compositionId, timeline) {\n          window.__timelines = window.__timelines || {};\n          window.__timelines[compositionId] = timeline;\n          timeline.seek(0);\n        }\n\n\n        const vars = bitVars();\n        const root = document.getElementById(\"root\");\n        const bg = document.getElementById(\"bg\");\n        const canvas = document.getElementById(\"stage\");\n        const view = hyperbits.viewport(root);\n        bg.style.backgroundColor = vars.background;\n        canvas.width = view.width;\n        canvas.height = view.height;\n        const context = canvas.getContext(\"2d\");\n        const loop = 12;\n        const turn = Math.PI * 2;\n        function channels(color) {\n          const parts = hyperbits.mixOklch(String(color), String(color), 0, \"rgb(0, 0, 0)\").match(/[0-9.]+/g) || [0, 0, 0];\n          return parts.slice(0, 3).map(Number);\n        }\n        function rgba(rgb, alpha) {\n          return \"rgba(\" + rgb[0] + \", \" + rgb[1] + \", \" + rgb[2] + \", \" + Math.min(Math.max(alpha, 0), 1) + \")\";\n        }\n        const foreground = channels(vars.foreground);\n        const accent = channels(vars.accent);\n        const columns = Math.max(8, Math.round(Number(vars.columns) || 64));\n        const seed = Number(vars.seed) || 0;\n        const cell = view.width / columns;\n        const rows = Math.ceil(view.height / cell);\n        const marginY = (view.height - rows * cell) / 2;\n        const block = cell * 0.78;\n        const drops = [];\n        for (let column = 0; column < columns; column += 1) {\n          const streams = hyperbits.pick(\"rain-\" + seed + \"-\" + column, [1, 1, 2]);\n          for (let stream = 0; stream < streams; stream += 1) {\n            const key = \"rain-\" + seed + \"-\" + column + \"-\" + stream;\n            drops.push({\n              column,\n              offset: hyperbits.random(key + \"-offset\"),\n              laps: hyperbits.pick(key + \"-laps\", [1, 1, 2, 2, 3]),\n              trail: Math.round(hyperbits.randomFloat(key + \"-trail\", 4, 15)),\n            });\n          }\n        }\n        function draw(phase) {\n          if (!context || typeof context.stroke !== \"function\") return;\n          context.clearRect(0, 0, view.width, view.height);\n          context.fillStyle = rgba(foreground, 0.16);\n          for (let row = 0; row < rows; row += 1) {\n            for (let column = 0; column < columns; column += 1) {\n              const dotX = column * cell + cell / 2;\n              const dotY = marginY + row * cell + cell / 2;\n              context.fillRect(dotX - cell * 0.05, dotY - cell * 0.05, cell * 0.1, cell * 0.1);\n            }\n          }\n          for (const drop of drops) {\n            const travel = rows + drop.trail;\n            const progress = (((drop.offset + phase * drop.laps) % 1) + 1) % 1;\n            const head = Math.floor(progress * travel);\n            const left = drop.column * cell + (cell - block) / 2;\n            for (let step = 0; step < drop.trail; step += 1) {\n              const row = head - step;\n              if (row < 0 || row >= rows) continue;\n              const top = marginY + row * cell + (cell - block) / 2;\n              const fade = Math.pow(1 - step / drop.trail, 1.4);\n              context.fillStyle = step === 0 ? rgba(accent, 1) : rgba(foreground, fade);\n              context.fillRect(left, top, block, block);\n            }\n          }\n        }\n        const proxy = { time: 0 };\n        const timeline = gsap.timeline({ paused: true });\n        timeline.to(proxy, { time: loop, duration: loop, ease: \"none\", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);\n        draw(0);\n        registerTimeline(\"pixel-rain\", timeline);\n\n      })();\n    </script>\n  </body>\n</html>\n",
+    "registry": {
+      "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+      "name": "pixel-rain",
+      "type": "hyperframes:block",
+      "title": "Pixel Rain",
+      "description": "Seamless 12-second loop of stepped pixel trails falling down a dotted grid",
+      "tags": [
+        "loop",
+        "background",
+        "dots",
+        "pixel",
+        "rain"
+      ],
+      "license": "MIT",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "duration": 12,
+      "files": [
+        {
+          "path": "index.html",
+          "target": "compositions/pixel-rain.html",
+          "type": "hyperframes:composition"
+        }
+      ]
+    }
+  },
+  {
+    "exportName": "RayBurst",
+    "id": "ray-burst",
+    "name": "Ray Burst",
+    "description": "Seamless 12-second loop of radial lines breathing around a pulsing centre",
+    "tags": [
+      "loop",
+      "background",
+      "lines",
+      "radial",
+      "burst"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "sourcePath": "bits/motion-loops/ray-burst/index.html",
+    "componentNames": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "registryDependencies": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "sourceCode": "<!doctype html>\n<html lang=\"en\" data-composition-variables='[{\"id\":\"background\",\"type\":\"color\",\"label\":\"Background\",\"default\":\"#f2f0e5\"},{\"id\":\"foreground\",\"type\":\"color\",\"label\":\"Foreground\",\"default\":\"#100f0f\"},{\"id\":\"accent\",\"type\":\"color\",\"label\":\"Accent\",\"default\":\"#f2652a\"},{\"id\":\"rays\",\"type\":\"number\",\"label\":\"Rays\",\"default\":96},{\"id\":\"seed\",\"type\":\"number\",\"label\":\"Seed\",\"default\":12}]'>\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=1920, height=1080\" />\n    <script src=\"https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js\"></script>\n    <script src=\"hyperbits.iife.js\" data-hyperbits-src=\"https://unpkg.com/hyperbits/dist/hyperbits.iife.js\" data-hyperbits-local=\"../../../dist/hyperbits.iife.js\"></script>\n    <style>\n      :root {\n        --bg: #f2f0e5;\n        --fg: #100f0f;\n        --accent: #f2652a;\n      }\n      * {\n        margin: 0;\n        padding: 0;\n        box-sizing: border-box;\n      }\n      html,\n      body {\n        margin: 0;\n        width: 1920px;\n        height: 1080px;\n        overflow: hidden;\n        background-color: #f2f0e5;\n      }\n      #root {\n        width: 100%;\n        height: 100%;\n        position: relative;\n        overflow: hidden;\n      }\n      #stage {\n        position: absolute;\n        inset: 0;\n        width: 100%;\n        height: 100%;\n        z-index: 1;\n      }\n    </style>\n  </head>\n  <body>\n    <div\n      id=\"root\"\n      class=\"clip\"\n      data-composition-id=\"ray-burst\"\n      data-start=\"0\"\n      data-duration=\"12\"\n      data-width=\"1920\"\n      data-height=\"1080\"\n    >\n      <div id=\"bg\" class=\"clip\" data-start=\"0\" data-duration=\"12\" style=\"position:absolute;inset:0;background-color:#f2f0e5\"></div>\n      <canvas id=\"stage\" class=\"clip\" data-start=\"0\" data-duration=\"12\"></canvas>\n    </div>\n    <script>\n      (function () {\n\n        function bitVars() {\n          if (window.__hyperframes && typeof window.__hyperframes.getVariables === \"function\") {\n            return window.__hyperframes.getVariables();\n          }\n          const raw = document.documentElement.getAttribute(\"data-composition-variables\") || \"[]\";\n          const decls = JSON.parse(raw);\n          const values = {};\n          for (const entry of decls) values[entry.id] = entry.default;\n          return values;\n        }\n        function registerTimeline(compositionId, timeline) {\n          window.__timelines = window.__timelines || {};\n          window.__timelines[compositionId] = timeline;\n          timeline.seek(0);\n        }\n\n\n        const vars = bitVars();\n        const root = document.getElementById(\"root\");\n        const bg = document.getElementById(\"bg\");\n        const canvas = document.getElementById(\"stage\");\n        const view = hyperbits.viewport(root);\n        bg.style.backgroundColor = vars.background;\n        canvas.width = view.width;\n        canvas.height = view.height;\n        const context = canvas.getContext(\"2d\");\n        const loop = 12;\n        const turn = Math.PI * 2;\n        function channels(color) {\n          const parts = hyperbits.mixOklch(String(color), String(color), 0, \"rgb(0, 0, 0)\").match(/[0-9.]+/g) || [0, 0, 0];\n          return parts.slice(0, 3).map(Number);\n        }\n        function rgba(rgb, alpha) {\n          return \"rgba(\" + rgb[0] + \", \" + rgb[1] + \", \" + rgb[2] + \", \" + Math.min(Math.max(alpha, 0), 1) + \")\";\n        }\n        const foreground = channels(vars.foreground);\n        const accent = channels(vars.accent);\n        const rays = Math.max(8, Math.round(Number(vars.rays) || 96));\n        const seed = Number(vars.seed) || 0;\n        const lengths = Array.from({ length: rays }, (_, ray) => hyperbits.randomFloat(\"burst-\" + seed + \"-\" + ray, 0.45, 1));\n        const centerX = view.width / 2;\n        const centerY = view.height / 2;\n        function draw(phase) {\n          if (!context || typeof context.stroke !== \"function\") return;\n          context.clearRect(0, 0, view.width, view.height);\n          context.lineCap = \"round\";\n          for (let ray = 0; ray < rays; ray += 1) {\n            const angle = (turn * ray) / rays;\n            const breath = 0.82 + 0.1 * Math.sin(3 * angle - turn * phase) + 0.08 * Math.sin(turn * (phase * 2 + ray * 0.37));\n            const reach = 11 + 52 * lengths[ray] * breath;\n            const inner = 8.5 + 0.5 * Math.sin(turn * (phase * 2 + ray / rays));\n            const startX = centerX + Math.cos(angle) * view.vmin * inner;\n            const startY = centerY + Math.sin(angle) * view.vmin * inner;\n            const endX = centerX + Math.cos(angle) * view.vmin * reach;\n            const endY = centerY + Math.sin(angle) * view.vmin * reach;\n            context.strokeStyle = rgba(foreground, 1);\n            context.lineWidth = view.vmin * 0.2;\n            context.beginPath();\n            context.moveTo(startX, startY);\n            context.lineTo(endX, endY);\n            context.stroke();\n            context.fillStyle = rgba(foreground, 1);\n            context.beginPath();\n            context.arc(endX, endY, view.vmin * 0.38, 0, turn);\n            context.fill();\n          }\n          context.strokeStyle = rgba(foreground, 0.85);\n          context.lineWidth = view.vmin * 0.16;\n          context.setLineDash([view.vmin * 0.5, view.vmin * 0.9]);\n          context.lineDashOffset = phase * view.vmin * 1.4 * 10;\n          context.beginPath();\n          context.arc(centerX, centerY, view.vmin * 6.2, 0, turn);\n          context.stroke();\n          context.setLineDash([]);\n          const pulse = 0.5 + 0.5 * Math.sin(turn * phase * 4);\n          context.strokeStyle = rgba(accent, 0.25 + 0.5 * (1 - pulse));\n          context.lineWidth = view.vmin * 0.3;\n          context.beginPath();\n          context.arc(centerX, centerY, view.vmin * (2.6 + 1.6 * pulse), 0, turn);\n          context.stroke();\n          context.fillStyle = rgba(accent, 1);\n          context.beginPath();\n          context.arc(centerX, centerY, view.vmin * 1.8, 0, turn);\n          context.fill();\n        }\n        const proxy = { time: 0 };\n        const timeline = gsap.timeline({ paused: true });\n        timeline.to(proxy, { time: loop, duration: loop, ease: \"none\", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);\n        draw(0);\n        registerTimeline(\"ray-burst\", timeline);\n\n      })();\n    </script>\n  </body>\n</html>\n",
+    "registry": {
+      "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+      "name": "ray-burst",
+      "type": "hyperframes:block",
+      "title": "Ray Burst",
+      "description": "Seamless 12-second loop of radial lines breathing around a pulsing centre",
+      "tags": [
+        "loop",
+        "background",
+        "lines",
+        "radial",
+        "burst"
+      ],
+      "license": "MIT",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "duration": 12,
+      "files": [
+        {
+          "path": "index.html",
+          "target": "compositions/ray-burst.html",
+          "type": "hyperframes:composition"
+        }
+      ]
+    }
+  },
+  {
+    "exportName": "SpeedStreaks",
+    "id": "speed-streaks",
+    "name": "Speed Streaks",
+    "description": "Seamless 12-second loop of light streaks racing across the frame in parallax lanes",
+    "tags": [
+      "loop",
+      "background",
+      "lines",
+      "speed",
+      "streaks"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "sourcePath": "bits/motion-loops/speed-streaks/index.html",
+    "componentNames": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "registryDependencies": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "sourceCode": "<!doctype html>\n<html lang=\"en\" data-composition-variables='[{\"id\":\"background\",\"type\":\"color\",\"label\":\"Background\",\"default\":\"#100f0f\"},{\"id\":\"foreground\",\"type\":\"color\",\"label\":\"Foreground\",\"default\":\"#f2f0e5\"},{\"id\":\"accent\",\"type\":\"color\",\"label\":\"Accent\",\"default\":\"#f2652a\"},{\"id\":\"streaks\",\"type\":\"number\",\"label\":\"Streaks\",\"default\":110},{\"id\":\"seed\",\"type\":\"number\",\"label\":\"Seed\",\"default\":9}]'>\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=1920, height=1080\" />\n    <script src=\"https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js\"></script>\n    <script src=\"hyperbits.iife.js\" data-hyperbits-src=\"https://unpkg.com/hyperbits/dist/hyperbits.iife.js\" data-hyperbits-local=\"../../../dist/hyperbits.iife.js\"></script>\n    <style>\n      :root {\n        --bg: #100f0f;\n        --fg: #f2f0e5;\n        --accent: #f2652a;\n      }\n      * {\n        margin: 0;\n        padding: 0;\n        box-sizing: border-box;\n      }\n      html,\n      body {\n        margin: 0;\n        width: 1920px;\n        height: 1080px;\n        overflow: hidden;\n        background-color: #100f0f;\n      }\n      #root {\n        width: 100%;\n        height: 100%;\n        position: relative;\n        overflow: hidden;\n      }\n      #stage {\n        position: absolute;\n        inset: 0;\n        width: 100%;\n        height: 100%;\n        z-index: 1;\n      }\n    </style>\n  </head>\n  <body>\n    <div\n      id=\"root\"\n      class=\"clip\"\n      data-composition-id=\"speed-streaks\"\n      data-start=\"0\"\n      data-duration=\"12\"\n      data-width=\"1920\"\n      data-height=\"1080\"\n    >\n      <div id=\"bg\" class=\"clip\" data-start=\"0\" data-duration=\"12\" style=\"position:absolute;inset:0;background-color:#100f0f\"></div>\n      <canvas id=\"stage\" class=\"clip\" data-start=\"0\" data-duration=\"12\"></canvas>\n    </div>\n    <script>\n      (function () {\n\n        function bitVars() {\n          if (window.__hyperframes && typeof window.__hyperframes.getVariables === \"function\") {\n            return window.__hyperframes.getVariables();\n          }\n          const raw = document.documentElement.getAttribute(\"data-composition-variables\") || \"[]\";\n          const decls = JSON.parse(raw);\n          const values = {};\n          for (const entry of decls) values[entry.id] = entry.default;\n          return values;\n        }\n        function registerTimeline(compositionId, timeline) {\n          window.__timelines = window.__timelines || {};\n          window.__timelines[compositionId] = timeline;\n          timeline.seek(0);\n        }\n\n\n        const vars = bitVars();\n        const root = document.getElementById(\"root\");\n        const bg = document.getElementById(\"bg\");\n        const canvas = document.getElementById(\"stage\");\n        const view = hyperbits.viewport(root);\n        bg.style.backgroundColor = vars.background;\n        canvas.width = view.width;\n        canvas.height = view.height;\n        const context = canvas.getContext(\"2d\");\n        const loop = 12;\n        const turn = Math.PI * 2;\n        function channels(color) {\n          const parts = hyperbits.mixOklch(String(color), String(color), 0, \"rgb(0, 0, 0)\").match(/[0-9.]+/g) || [0, 0, 0];\n          return parts.slice(0, 3).map(Number);\n        }\n        function rgba(rgb, alpha) {\n          return \"rgba(\" + rgb[0] + \", \" + rgb[1] + \", \" + rgb[2] + \", \" + Math.min(Math.max(alpha, 0), 1) + \")\";\n        }\n        function mix(from, to, amount) {\n          return from.map((value, index) => Math.round(value + (to[index] - value) * amount));\n        }\n        const background = channels(vars.background);\n        const foreground = channels(vars.foreground);\n        const accent = channels(vars.accent);\n        const muted = mix(accent, background, 0.5);\n        const count = Math.max(1, Math.round(Number(vars.streaks) || 110));\n        const seed = Number(vars.seed) || 0;\n        const streaks = Array.from({ length: count }, (_, index) => {\n          const key = \"streak-\" + seed + \"-\" + index;\n          const layer = hyperbits.random(key + \"-layer\");\n          const tone = hyperbits.random(key + \"-tone\");\n          return {\n            lane: hyperbits.randomFloat(key + \"-lane\", 0.04, 0.96) * view.height,\n            length: view.vw * (6 + 30 * layer) * hyperbits.randomFloat(key + \"-len\", 0.6, 1.2),\n            thickness: view.vmin * (0.14 + 0.7 * layer * layer),\n            laps: 1 + Math.floor(layer * 5),\n            offset: hyperbits.random(key + \"-offset\"),\n            color: tone > 0.88 ? foreground : tone > 0.3 ? accent : muted,\n            alpha: 0.6 + 0.4 * layer,\n          };\n        }).sort((left, right) => left.thickness - right.thickness);\n        function draw(phase) {\n          if (!context || typeof context.stroke !== \"function\") return;\n          context.clearRect(0, 0, view.width, view.height);\n          context.lineCap = \"round\";\n          for (const streak of streaks) {\n            const span = view.width + streak.length * 2;\n            const progress = (((streak.offset + phase * streak.laps) % 1) + 1) % 1;\n            const head = progress * span - streak.length * 0.5;\n            const tail = head - streak.length;\n            const gradient = context.createLinearGradient(tail, 0, head, 0);\n            gradient.addColorStop(0, rgba(streak.color, 0));\n            gradient.addColorStop(0.85, rgba(streak.color, streak.alpha * 0.8));\n            gradient.addColorStop(1, rgba(streak.color, streak.alpha));\n            context.strokeStyle = gradient;\n            context.lineWidth = streak.thickness;\n            context.beginPath();\n            context.moveTo(tail, streak.lane);\n            context.lineTo(head, streak.lane);\n            context.stroke();\n          }\n          const edges = context.createLinearGradient(0, 0, view.width, 0);\n          edges.addColorStop(0, rgba(background, 0.75));\n          edges.addColorStop(0.08, rgba(background, 0));\n          edges.addColorStop(0.92, rgba(background, 0));\n          edges.addColorStop(1, rgba(background, 0.75));\n          context.fillStyle = edges;\n          context.fillRect(0, 0, view.width, view.height);\n        }\n        const proxy = { time: 0 };\n        const timeline = gsap.timeline({ paused: true });\n        timeline.to(proxy, { time: loop, duration: loop, ease: \"none\", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);\n        draw(0);\n        registerTimeline(\"speed-streaks\", timeline);\n\n      })();\n    </script>\n  </body>\n</html>\n",
+    "registry": {
+      "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+      "name": "speed-streaks",
+      "type": "hyperframes:block",
+      "title": "Speed Streaks",
+      "description": "Seamless 12-second loop of light streaks racing across the frame in parallax lanes",
+      "tags": [
+        "loop",
+        "background",
+        "lines",
+        "speed",
+        "streaks"
+      ],
+      "license": "MIT",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "duration": 12,
+      "files": [
+        {
+          "path": "index.html",
+          "target": "compositions/speed-streaks.html",
+          "type": "hyperframes:composition"
+        }
+      ]
+    }
+  },
+  {
+    "exportName": "TruchetWeave",
+    "id": "truchet-weave",
+    "name": "Truchet Weave",
+    "description": "Seamless 12-second loop of Truchet arc tiles flipping in a ripple to rewire one continuous maze",
+    "tags": [
+      "loop",
+      "background",
+      "shapes",
+      "truchet",
+      "pattern"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "sourcePath": "bits/motion-loops/truchet-weave/index.html",
+    "componentNames": [
+      "color",
+      "interpolate",
+      "random",
+      "viewport"
+    ],
+    "registryDependencies": [
+      "color",
+      "interpolate",
+      "random",
+      "viewport"
+    ],
+    "helpers": [
+      "color",
+      "interpolate",
+      "random",
+      "viewport"
+    ],
+    "sourceCode": "<!doctype html>\n<html lang=\"en\" data-composition-variables='[{\"id\":\"background\",\"type\":\"color\",\"label\":\"Background\",\"default\":\"#9d8af0\"},{\"id\":\"foreground\",\"type\":\"color\",\"label\":\"Foreground\",\"default\":\"#100f0f\"},{\"id\":\"accent\",\"type\":\"color\",\"label\":\"Accent\",\"default\":\"#f2f0e5\"},{\"id\":\"columns\",\"type\":\"number\",\"label\":\"Columns\",\"default\":16},{\"id\":\"seed\",\"type\":\"number\",\"label\":\"Seed\",\"default\":6}]'>\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=1920, height=1080\" />\n    <script src=\"https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js\"></script>\n    <script src=\"hyperbits.iife.js\" data-hyperbits-src=\"https://unpkg.com/hyperbits/dist/hyperbits.iife.js\" data-hyperbits-local=\"../../../dist/hyperbits.iife.js\"></script>\n    <style>\n      :root {\n        --bg: #9d8af0;\n        --fg: #100f0f;\n        --accent: #f2f0e5;\n      }\n      * {\n        margin: 0;\n        padding: 0;\n        box-sizing: border-box;\n      }\n      html,\n      body {\n        margin: 0;\n        width: 1920px;\n        height: 1080px;\n        overflow: hidden;\n        background-color: #9d8af0;\n      }\n      #root {\n        width: 100%;\n        height: 100%;\n        position: relative;\n        overflow: hidden;\n      }\n      #stage {\n        position: absolute;\n        inset: 0;\n        width: 100%;\n        height: 100%;\n        z-index: 1;\n      }\n    </style>\n  </head>\n  <body>\n    <div\n      id=\"root\"\n      class=\"clip\"\n      data-composition-id=\"truchet-weave\"\n      data-start=\"0\"\n      data-duration=\"12\"\n      data-width=\"1920\"\n      data-height=\"1080\"\n    >\n      <div id=\"bg\" class=\"clip\" data-start=\"0\" data-duration=\"12\" style=\"position:absolute;inset:0;background-color:#9d8af0\"></div>\n      <canvas id=\"stage\" class=\"clip\" data-start=\"0\" data-duration=\"12\"></canvas>\n    </div>\n    <script>\n      (function () {\n\n        function bitVars() {\n          if (window.__hyperframes && typeof window.__hyperframes.getVariables === \"function\") {\n            return window.__hyperframes.getVariables();\n          }\n          const raw = document.documentElement.getAttribute(\"data-composition-variables\") || \"[]\";\n          const decls = JSON.parse(raw);\n          const values = {};\n          for (const entry of decls) values[entry.id] = entry.default;\n          return values;\n        }\n        function registerTimeline(compositionId, timeline) {\n          window.__timelines = window.__timelines || {};\n          window.__timelines[compositionId] = timeline;\n          timeline.seek(0);\n        }\n\n\n        const vars = bitVars();\n        const root = document.getElementById(\"root\");\n        const bg = document.getElementById(\"bg\");\n        const canvas = document.getElementById(\"stage\");\n        const view = hyperbits.viewport(root);\n        bg.style.backgroundColor = vars.background;\n        canvas.width = view.width;\n        canvas.height = view.height;\n        const context = canvas.getContext(\"2d\");\n        const loop = 12;\n        const turn = Math.PI * 2;\n        function channels(color) {\n          const parts = hyperbits.mixOklch(String(color), String(color), 0, \"rgb(0, 0, 0)\").match(/[0-9.]+/g) || [0, 0, 0];\n          return parts.slice(0, 3).map(Number);\n        }\n        function rgba(rgb, alpha) {\n          return \"rgba(\" + rgb[0] + \", \" + rgb[1] + \", \" + rgb[2] + \", \" + Math.min(Math.max(alpha, 0), 1) + \")\";\n        }\n        const foreground = channels(vars.foreground);\n        const accent = channels(vars.accent);\n        const columns = Math.max(2, Math.round(Number(vars.columns) || 16));\n        const seed = Number(vars.seed) || 0;\n        const size = view.width / columns;\n        const rows = Math.ceil(view.height / size) + 1;\n        const marginY = (view.height - rows * size) / 2;\n        const ease = hyperbits.Easing.easeInOutCubic;\n        const centerX = view.width / 2;\n        const centerY = view.height / 2;\n        const reach = Math.hypot(centerX, centerY);\n        const tiles = [];\n        for (let row = 0; row < rows; row += 1) {\n          for (let column = 0; column < columns; column += 1) {\n            const key = \"truchet-\" + seed + \"-\" + row + \"-\" + column;\n            const tileX = column * size + size / 2;\n            const tileY = marginY + row * size + size / 2;\n            tiles.push({\n              tileX,\n              tileY,\n              flipped: hyperbits.random(key + \"-flip\") > 0.5,\n              lit: hyperbits.random(key + \"-lit\") > 0.94,\n              delay: (Math.hypot(tileX - centerX, tileY - centerY) / reach) * 0.25,\n            });\n          }\n        }\n        function draw(phase) {\n          if (!context || typeof context.stroke !== \"function\") return;\n          context.clearRect(0, 0, view.width, view.height);\n          context.lineCap = \"butt\";\n          context.lineWidth = size * 0.2;\n          const half = size / 2;\n          for (const pass of [false, true]) {\n            for (const tile of tiles) {\n              if (tile.lit !== pass) continue;\n              const beat = phase * 2 - tile.delay;\n              const whole = Math.floor(beat);\n              const local = Math.min(Math.max((beat - whole) / 0.3, 0), 1);\n              const angle = (Math.PI / 2) * ((tile.flipped ? 1 : 0) + whole + ease(local));\n              context.save();\n              context.translate(tile.tileX, tile.tileY);\n              context.rotate(angle);\n              context.strokeStyle = rgba(tile.lit ? accent : foreground, 1);\n              context.beginPath();\n              context.arc(-half, -half, half, 0, Math.PI / 2);\n              context.moveTo(half, 0);\n              context.arc(half, half, half, Math.PI * 1.5, Math.PI, true);\n              context.stroke();\n              context.restore();\n            }\n          }\n        }\n        const proxy = { time: 0 };\n        const timeline = gsap.timeline({ paused: true });\n        timeline.to(proxy, { time: loop, duration: loop, ease: \"none\", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);\n        draw(0);\n        registerTimeline(\"truchet-weave\", timeline);\n\n      })();\n    </script>\n  </body>\n</html>\n",
+    "registry": {
+      "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+      "name": "truchet-weave",
+      "type": "hyperframes:block",
+      "title": "Truchet Weave",
+      "description": "Seamless 12-second loop of Truchet arc tiles flipping in a ripple to rewire one continuous maze",
+      "tags": [
+        "loop",
+        "background",
+        "shapes",
+        "truchet",
+        "pattern"
+      ],
+      "license": "MIT",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "duration": 12,
+      "files": [
+        {
+          "path": "index.html",
+          "target": "compositions/truchet-weave.html",
+          "type": "hyperframes:composition"
+        }
+      ]
+    }
+  },
+  {
+    "exportName": "WaveStack",
+    "id": "wave-stack",
+    "name": "Wave Stack",
+    "description": "Seamless 12-second loop of stacked sine lines rolling over a bold colour field",
+    "tags": [
+      "loop",
+      "background",
+      "lines",
+      "waves",
+      "sine"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "sourcePath": "bits/motion-loops/wave-stack/index.html",
+    "componentNames": [
+      "color",
+      "viewport"
+    ],
+    "registryDependencies": [
+      "color",
+      "viewport"
+    ],
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "sourceCode": "<!doctype html>\n<html lang=\"en\" data-composition-variables='[{\"id\":\"background\",\"type\":\"color\",\"label\":\"Background\",\"default\":\"#f2652a\"},{\"id\":\"foreground\",\"type\":\"color\",\"label\":\"Foreground\",\"default\":\"#100f0f\"},{\"id\":\"accent\",\"type\":\"color\",\"label\":\"Accent\",\"default\":\"#f2f0e5\"},{\"id\":\"lines\",\"type\":\"number\",\"label\":\"Lines\",\"default\":30}]'>\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=1920, height=1080\" />\n    <script src=\"https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js\"></script>\n    <script src=\"hyperbits.iife.js\" data-hyperbits-src=\"https://unpkg.com/hyperbits/dist/hyperbits.iife.js\" data-hyperbits-local=\"../../../dist/hyperbits.iife.js\"></script>\n    <style>\n      :root {\n        --bg: #f2652a;\n        --fg: #100f0f;\n        --accent: #f2f0e5;\n      }\n      * {\n        margin: 0;\n        padding: 0;\n        box-sizing: border-box;\n      }\n      html,\n      body {\n        margin: 0;\n        width: 1920px;\n        height: 1080px;\n        overflow: hidden;\n        background-color: #f2652a;\n      }\n      #root {\n        width: 100%;\n        height: 100%;\n        position: relative;\n        overflow: hidden;\n      }\n      #stage {\n        position: absolute;\n        inset: 0;\n        width: 100%;\n        height: 100%;\n        z-index: 1;\n      }\n    </style>\n  </head>\n  <body>\n    <div\n      id=\"root\"\n      class=\"clip\"\n      data-composition-id=\"wave-stack\"\n      data-start=\"0\"\n      data-duration=\"12\"\n      data-width=\"1920\"\n      data-height=\"1080\"\n    >\n      <div id=\"bg\" class=\"clip\" data-start=\"0\" data-duration=\"12\" style=\"position:absolute;inset:0;background-color:#f2652a\"></div>\n      <canvas id=\"stage\" class=\"clip\" data-start=\"0\" data-duration=\"12\"></canvas>\n    </div>\n    <script>\n      (function () {\n\n        function bitVars() {\n          if (window.__hyperframes && typeof window.__hyperframes.getVariables === \"function\") {\n            return window.__hyperframes.getVariables();\n          }\n          const raw = document.documentElement.getAttribute(\"data-composition-variables\") || \"[]\";\n          const decls = JSON.parse(raw);\n          const values = {};\n          for (const entry of decls) values[entry.id] = entry.default;\n          return values;\n        }\n        function registerTimeline(compositionId, timeline) {\n          window.__timelines = window.__timelines || {};\n          window.__timelines[compositionId] = timeline;\n          timeline.seek(0);\n        }\n\n\n        const vars = bitVars();\n        const root = document.getElementById(\"root\");\n        const bg = document.getElementById(\"bg\");\n        const canvas = document.getElementById(\"stage\");\n        const view = hyperbits.viewport(root);\n        bg.style.backgroundColor = vars.background;\n        canvas.width = view.width;\n        canvas.height = view.height;\n        const context = canvas.getContext(\"2d\");\n        const loop = 12;\n        const turn = Math.PI * 2;\n        function channels(color) {\n          const parts = hyperbits.mixOklch(String(color), String(color), 0, \"rgb(0, 0, 0)\").match(/[0-9.]+/g) || [0, 0, 0];\n          return parts.slice(0, 3).map(Number);\n        }\n        function rgba(rgb, alpha) {\n          return \"rgba(\" + rgb[0] + \", \" + rgb[1] + \", \" + rgb[2] + \", \" + Math.min(Math.max(alpha, 0), 1) + \")\";\n        }\n        const foreground = channels(vars.foreground);\n        const accent = channels(vars.accent);\n        const lines = Math.max(4, Math.round(Number(vars.lines) || 30));\n        const highlight = Math.round(lines * 0.58);\n        const steps = 160;\n        function lineY(line, progress, phase) {\n          const base = (-0.18 + (1.36 * line) / (lines - 1)) * view.height;\n          const sweep = Math.sin(turn * (progress * 0.9 + phase) + line * 0.11);\n          const ripple = Math.sin(turn * (progress * 2.1 - phase * 2) + line * 0.23);\n          const swell = Math.sin(turn * (progress * 0.4 + line / lines - phase));\n          return base + view.vh * (12 * sweep + 3.5 * ripple) * (0.65 + 0.35 * swell) - view.vh * 22 * (progress - 0.5);\n        }\n        function draw(phase) {\n          if (!context || typeof context.stroke !== \"function\") return;\n          context.clearRect(0, 0, view.width, view.height);\n          context.lineCap = \"round\";\n          context.lineJoin = \"round\";\n          for (let line = 0; line < lines; line += 1) {\n            const isHighlight = line === highlight;\n            context.strokeStyle = rgba(isHighlight ? accent : foreground, 1);\n            context.lineWidth = view.vmin * (isHighlight ? 0.55 : 0.32);\n            context.beginPath();\n            for (let step = 0; step <= steps; step += 1) {\n              const progress = step / steps;\n              const pointX = -view.vw * 2 + progress * view.vw * 104;\n              const pointY = lineY(line, progress, phase);\n              if (step === 0) context.moveTo(pointX, pointY);\n              else context.lineTo(pointX, pointY);\n            }\n            context.stroke();\n          }\n        }\n        const proxy = { time: 0 };\n        const timeline = gsap.timeline({ paused: true });\n        timeline.to(proxy, { time: loop, duration: loop, ease: \"none\", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);\n        draw(0);\n        registerTimeline(\"wave-stack\", timeline);\n\n      })();\n    </script>\n  </body>\n</html>\n",
+    "registry": {
+      "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+      "name": "wave-stack",
+      "type": "hyperframes:block",
+      "title": "Wave Stack",
+      "description": "Seamless 12-second loop of stacked sine lines rolling over a bold colour field",
+      "tags": [
+        "loop",
+        "background",
+        "lines",
+        "waves",
+        "sine"
+      ],
+      "license": "MIT",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "duration": 12,
+      "files": [
+        {
+          "path": "index.html",
+          "target": "compositions/wave-stack.html",
+          "type": "hyperframes:composition"
+        }
+      ]
+    }
+  },
+  {
+    "exportName": "ZoomPolygons",
+    "id": "zoom-polygons",
+    "name": "Zoom Polygons",
+    "description": "Seamless 12-second loop of nested twisting polygons zooming in forever",
+    "tags": [
+      "loop",
+      "background",
+      "depth",
+      "zoom",
+      "spiral"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "sourcePath": "bits/motion-loops/zoom-polygons/index.html",
+    "componentNames": [
+      "color",
+      "viewport"
+    ],
+    "registryDependencies": [
+      "color",
+      "viewport"
+    ],
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "sourceCode": "<!doctype html>\n<html lang=\"en\" data-composition-variables='[{\"id\":\"background\",\"type\":\"color\",\"label\":\"Background\",\"default\":\"#100f0f\"},{\"id\":\"foreground\",\"type\":\"color\",\"label\":\"Foreground\",\"default\":\"#f2f0e5\"},{\"id\":\"accent\",\"type\":\"color\",\"label\":\"Accent\",\"default\":\"#4fb6ec\"},{\"id\":\"sides\",\"type\":\"number\",\"label\":\"Polygon sides\",\"default\":4},{\"id\":\"twist\",\"type\":\"number\",\"label\":\"Twist per layer (degrees)\",\"default\":7}]'>\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=1920, height=1080\" />\n    <script src=\"https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js\"></script>\n    <script src=\"hyperbits.iife.js\" data-hyperbits-src=\"https://unpkg.com/hyperbits/dist/hyperbits.iife.js\" data-hyperbits-local=\"../../../dist/hyperbits.iife.js\"></script>\n    <style>\n      :root {\n        --bg: #100f0f;\n        --fg: #f2f0e5;\n        --accent: #4fb6ec;\n      }\n      * {\n        margin: 0;\n        padding: 0;\n        box-sizing: border-box;\n      }\n      html,\n      body {\n        margin: 0;\n        width: 1920px;\n        height: 1080px;\n        overflow: hidden;\n        background-color: #100f0f;\n      }\n      #root {\n        width: 100%;\n        height: 100%;\n        position: relative;\n        overflow: hidden;\n      }\n      #stage {\n        position: absolute;\n        inset: 0;\n        width: 100%;\n        height: 100%;\n        z-index: 1;\n      }\n    </style>\n  </head>\n  <body>\n    <div\n      id=\"root\"\n      class=\"clip\"\n      data-composition-id=\"zoom-polygons\"\n      data-start=\"0\"\n      data-duration=\"12\"\n      data-width=\"1920\"\n      data-height=\"1080\"\n    >\n      <div id=\"bg\" class=\"clip\" data-start=\"0\" data-duration=\"12\" style=\"position:absolute;inset:0;background-color:#100f0f\"></div>\n      <canvas id=\"stage\" class=\"clip\" data-start=\"0\" data-duration=\"12\"></canvas>\n    </div>\n    <script>\n      (function () {\n\n        function bitVars() {\n          if (window.__hyperframes && typeof window.__hyperframes.getVariables === \"function\") {\n            return window.__hyperframes.getVariables();\n          }\n          const raw = document.documentElement.getAttribute(\"data-composition-variables\") || \"[]\";\n          const decls = JSON.parse(raw);\n          const values = {};\n          for (const entry of decls) values[entry.id] = entry.default;\n          return values;\n        }\n        function registerTimeline(compositionId, timeline) {\n          window.__timelines = window.__timelines || {};\n          window.__timelines[compositionId] = timeline;\n          timeline.seek(0);\n        }\n\n\n        const vars = bitVars();\n        const root = document.getElementById(\"root\");\n        const bg = document.getElementById(\"bg\");\n        const canvas = document.getElementById(\"stage\");\n        const view = hyperbits.viewport(root);\n        bg.style.backgroundColor = vars.background;\n        canvas.width = view.width;\n        canvas.height = view.height;\n        const context = canvas.getContext(\"2d\");\n        const loop = 12;\n        const turn = Math.PI * 2;\n        function channels(color) {\n          const parts = hyperbits.mixOklch(String(color), String(color), 0, \"rgb(0, 0, 0)\").match(/[0-9.]+/g) || [0, 0, 0];\n          return parts.slice(0, 3).map(Number);\n        }\n        function rgba(rgb, alpha) {\n          return \"rgba(\" + rgb[0] + \", \" + rgb[1] + \", \" + rgb[2] + \", \" + Math.min(Math.max(alpha, 0), 1) + \")\";\n        }\n        const background = channels(vars.background);\n        const foreground = channels(vars.foreground);\n        const accent = channels(vars.accent);\n        const sides = Math.max(3, Math.round(Number(vars.sides) || 4));\n        const twist = ((Number(vars.twist) || 0) * Math.PI) / 180;\n        const centerX = view.width / 2;\n        const centerY = view.height / 2;\n        const ratio = 0.84;\n        const layersPerLoop = 8;\n        const base = view.vmin * 40;\n        const largest = Math.log((Math.hypot(view.width, view.height) * 1.6) / base) / Math.log(ratio);\n        const smallest = Math.log((view.vmin * 0.2) / base) / Math.log(ratio);\n        function polygon(radius, angle) {\n          context.beginPath();\n          for (let corner = 0; corner <= sides; corner += 1) {\n            const theta = angle + (turn * corner) / sides - Math.PI / 2;\n            const pointX = centerX + Math.cos(theta) * radius;\n            const pointY = centerY + Math.sin(theta) * radius;\n            if (corner === 0) context.moveTo(pointX, pointY);\n            else context.lineTo(pointX, pointY);\n          }\n          context.closePath();\n        }\n        function draw(phase) {\n          if (!context || typeof context.stroke !== \"function\") return;\n          context.clearRect(0, 0, view.width, view.height);\n          const zoom = phase * layersPerLoop;\n          const first = Math.ceil(largest + zoom);\n          const last = Math.floor(smallest + zoom);\n          context.lineJoin = \"round\";\n          for (let layer = first; layer <= last; layer += 1) {\n            const level = layer - zoom;\n            const radius = base * Math.pow(ratio, level);\n            const angle = level * twist;\n            const depth = Math.min(Math.max((level - largest) / (smallest - largest), 0), 1);\n            polygon(radius, angle);\n            context.fillStyle = layer % 2 === 0 ? rgba(accent, 1) : rgba(background, 1);\n            context.fill();\n            context.strokeStyle = rgba(foreground, 0.35 * (1 - depth));\n            context.lineWidth = Math.max(view.vmin * 0.05, radius * 0.006);\n            context.stroke();\n          }\n          const shade = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, view.vmin * 30);\n          shade.addColorStop(0, rgba(background, 0.92));\n          shade.addColorStop(0.35, rgba(background, 0.45));\n          shade.addColorStop(1, rgba(background, 0));\n          context.fillStyle = shade;\n          context.fillRect(0, 0, view.width, view.height);\n        }\n        const proxy = { time: 0 };\n        const timeline = gsap.timeline({ paused: true });\n        timeline.to(proxy, { time: loop, duration: loop, ease: \"none\", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);\n        draw(0);\n        registerTimeline(\"zoom-polygons\", timeline);\n\n      })();\n    </script>\n  </body>\n</html>\n",
+    "registry": {
+      "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+      "name": "zoom-polygons",
+      "type": "hyperframes:block",
+      "title": "Zoom Polygons",
+      "description": "Seamless 12-second loop of nested twisting polygons zooming in forever",
+      "tags": [
+        "loop",
+        "background",
+        "depth",
+        "zoom",
+        "spiral"
+      ],
+      "license": "MIT",
+      "dimensions": {
+        "width": 1920,
+        "height": 1080
+      },
+      "duration": 12,
+      "files": [
+        {
+          "path": "index.html",
+          "target": "compositions/zoom-polygons.html",
+          "type": "hyperframes:composition"
+        }
+      ]
+    }
+  },
+  {
     "exportName": "Fireflies",
     "id": "fireflies",
     "name": "Fireflies",

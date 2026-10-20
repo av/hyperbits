@@ -14,6 +14,7 @@ export const CATEGORY_ORDER = [
   "text-animations",
   "staggered-motion",
   "background-effects",
+  "motion-loops",
   "particles",
   "scenes-3d",
   "full-compositions",
@@ -24,6 +25,7 @@ export const CATEGORY_LABELS = {
   "staggered-motion": "Staggered Motion",
   "text-animations": "Text Animations",
   "background-effects": "Background Effects",
+  "motion-loops": "Motion Loops",
   particles: "Particles",
   "scenes-3d": "3D Scenes",
 };

@@ -1,0 +1,48 @@
+{
+  "name": "dot-tunnel",
+  "title": "Dot Tunnel",
+  "description": "Seamless 12-second loop of dotted rings flying out of a curving tunnel",
+  "tags": [
+    "loop",
+    "background",
+    "depth",
+    "tunnel",
+    "dotted"
+  ],
+  "duration": 12,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "color",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "dot-tunnel",
+    "type": "hyperframes:block",
+    "title": "Dot Tunnel",
+    "description": "Seamless 12-second loop of dotted rings flying out of a curving tunnel",
+    "tags": [
+      "loop",
+      "background",
+      "depth",
+      "tunnel",
+      "dotted"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 12,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/dot-tunnel.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

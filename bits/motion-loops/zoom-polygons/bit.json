@@ -1,0 +1,48 @@
+{
+  "name": "zoom-polygons",
+  "title": "Zoom Polygons",
+  "description": "Seamless 12-second loop of nested twisting polygons zooming in forever",
+  "tags": [
+    "loop",
+    "background",
+    "depth",
+    "zoom",
+    "spiral"
+  ],
+  "duration": 12,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "color",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "zoom-polygons",
+    "type": "hyperframes:block",
+    "title": "Zoom Polygons",
+    "description": "Seamless 12-second loop of nested twisting polygons zooming in forever",
+    "tags": [
+      "loop",
+      "background",
+      "depth",
+      "zoom",
+      "spiral"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 12,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/zoom-polygons.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "speed-streaks",
+  "type": "hyperframes:block",
+  "title": "Speed Streaks",
+  "description": "Seamless 12-second loop of light streaks racing across the frame in parallax lanes",
+  "tags": [
+    "loop",
+    "background",
+    "lines",
+    "speed",
+    "streaks"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 12,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/speed-streaks.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

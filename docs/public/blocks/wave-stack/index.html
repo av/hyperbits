@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#f2652a"},{"id":"foreground","type":"color","label":"Foreground","default":"#100f0f"},{"id":"accent","type":"color","label":"Accent","default":"#f2f0e5"},{"id":"lines","type":"number","label":"Lines","default":30}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #f2652a;
+        --fg: #100f0f;
+        --accent: #f2f0e5;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #f2652a;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="wave-stack"
+      data-start="0"
+      data-duration="12"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="12" style="position:absolute;inset:0;background-color:#f2652a"></div>
+      <canvas id="stage" class="clip" data-start="0" data-duration="12"></canvas>
+    </div>
+    <script>
+      (function () {
+
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+
+
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const canvas = document.getElementById("stage");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        canvas.width = view.width;
+        canvas.height = view.height;
+        const context = canvas.getContext("2d");
+        const loop = 12;
+        const turn = Math.PI * 2;
+        function channels(color) {
+          const parts = hyperbits.mixOklch(String(color), String(color), 0, "rgb(0, 0, 0)").match(/[0-9.]+/g) || [0, 0, 0];
+          return parts.slice(0, 3).map(Number);
+        }
+        function rgba(rgb, alpha) {
+          return "rgba(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
+        }
+        const foreground = channels(vars.foreground);
+        const accent = channels(vars.accent);
+        const lines = Math.max(4, Math.round(Number(vars.lines) || 30));
+        const highlight = Math.round(lines * 0.58);
+        const steps = 160;
+        function lineY(line, progress, phase) {
+          const base = (-0.18 + (1.36 * line) / (lines - 1)) * view.height;
+          const sweep = Math.sin(turn * (progress * 0.9 + phase) + line * 0.11);
+          const ripple = Math.sin(turn * (progress * 2.1 - phase * 2) + line * 0.23);
+          const swell = Math.sin(turn * (progress * 0.4 + line / lines - phase));
+          return base + view.vh * (12 * sweep + 3.5 * ripple) * (0.65 + 0.35 * swell) - view.vh * 22 * (progress - 0.5);
+        }
+        function draw(phase) {
+          if (!context || typeof context.stroke !== "function") return;
+          context.clearRect(0, 0, view.width, view.height);
+          context.lineCap = "round";
+          context.lineJoin = "round";
+          for (let line = 0; line < lines; line += 1) {
+            const isHighlight = line === highlight;
+            context.strokeStyle = rgba(isHighlight ? accent : foreground, 1);
+            context.lineWidth = view.vmin * (isHighlight ? 0.55 : 0.32);
+            context.beginPath();
+            for (let step = 0; step <= steps; step += 1) {
+              const progress = step / steps;
+              const pointX = -view.vw * 2 + progress * view.vw * 104;
+              const pointY = lineY(line, progress, phase);
+              if (step === 0) context.moveTo(pointX, pointY);
+              else context.lineTo(pointX, pointY);
+            }
+            context.stroke();
+          }
+        }
+        const proxy = { time: 0 };
+        const timeline = gsap.timeline({ paused: true });
+        timeline.to(proxy, { time: loop, duration: loop, ease: "none", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);
+        draw(0);
+        registerTimeline("wave-stack", timeline);
+
+      })();
+    </script>
+  </body>
+</html>

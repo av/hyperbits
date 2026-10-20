@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#f2f0e5"},{"id":"foreground","type":"color","label":"Foreground","default":"#100f0f"},{"id":"accent","type":"color","label":"Accent","default":"#ef5da8"},{"id":"drops","type":"number","label":"Drops per loop","default":6},{"id":"seed","type":"number","label":"Seed","default":5}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #f2f0e5;
+        --fg: #100f0f;
+        --accent: #ef5da8;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #f2f0e5;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="dot-ripple"
+      data-start="0"
+      data-duration="12"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="12" style="position:absolute;inset:0;background-color:#f2f0e5"></div>
+      <canvas id="stage" class="clip" data-start="0" data-duration="12"></canvas>
+    </div>
+    <script>
+      (function () {
+
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+
+
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const canvas = document.getElementById("stage");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        canvas.width = view.width;
+        canvas.height = view.height;
+        const context = canvas.getContext("2d");
+        const loop = 12;
+        const turn = Math.PI * 2;
+        function channels(color) {
+          const parts = hyperbits.mixOklch(String(color), String(color), 0, "rgb(0, 0, 0)").match(/[0-9.]+/g) || [0, 0, 0];
+          return parts.slice(0, 3).map(Number);
+        }
+        function rgba(rgb, alpha) {
+          return "rgba(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
+        }
+        const foreground = channels(vars.foreground);
+        const accent = channels(vars.accent);
+        const count = Math.max(1, Math.round(Number(vars.drops) || 6));
+        const seed = Number(vars.seed) || 0;
+        const pitch = view.vmin * 2.4;
+        const columns = Math.ceil(view.width / pitch);
+        const rows = Math.ceil(view.height / pitch);
+        const marginX = (view.width - (columns - 1) * pitch) / 2;
+        const marginY = (view.height - (rows - 1) * pitch) / 2;
+        const dotRadius = view.vmin * 0.22;
+        const speed = view.vmin * 16;
+        const width = view.vmin * 7;
+        const drops = Array.from({ length: count }, (_, index) => {
+          const key = "ripple-" + seed + "-" + index;
+          return {
+            dropX: hyperbits.randomFloat(key + "-x", 0.12, 0.88) * view.width,
+            dropY: hyperbits.randomFloat(key + "-y", 0.15, 0.85) * view.height,
+            start: (index + hyperbits.randomFloat(key + "-t", 0, 0.6)) / count,
+          };
+        });
+        function envelope(age) {
+          if (age < 0.35) return age / 0.35;
+          return Math.exp(-(age - 0.35) * 0.45);
+        }
+        function draw(phase) {
+          if (!context || typeof context.stroke !== "function") return;
+          context.clearRect(0, 0, view.width, view.height);
+          const active = drops.map((drop) => {
+            const age = ((((phase - drop.start) % 1) + 1) % 1) * loop;
+            return { drop, front: age * speed, strength: envelope(age) };
+          });
+          for (let row = 0; row < rows; row += 1) {
+            for (let column = 0; column < columns; column += 1) {
+              const homeX = marginX + column * pitch;
+              const homeY = marginY + row * pitch;
+              let pushX = 0;
+              let pushY = 0;
+              let energy = 0;
+              for (const wave of active) {
+                const deltaX = homeX - wave.drop.dropX;
+                const deltaY = homeY - wave.drop.dropY;
+                const distance = Math.hypot(deltaX, deltaY) || 1;
+                const offset = (distance - wave.front) / width;
+                const crest = Math.exp(-offset * offset) * wave.strength;
+                pushX += (deltaX / distance) * crest * pitch * 0.8;
+                pushY += (deltaY / distance) * crest * pitch * 0.8;
+                energy += crest;
+              }
+              const glow = Math.min(energy, 1);
+              const dotX = homeX + pushX;
+              const dotY = homeY + pushY;
+              context.fillStyle = rgba(foreground, 0.45 + 0.55 * glow);
+              context.beginPath();
+              context.arc(dotX, dotY, dotRadius * (1 + 2.2 * glow), 0, turn);
+              context.fill();
+              if (glow > 0.05) {
+                context.fillStyle = rgba(accent, glow);
+                context.beginPath();
+                context.arc(dotX, dotY, dotRadius * (1 + 2.2 * glow), 0, turn);
+                context.fill();
+              }
+            }
+          }
+          for (const wave of active) {
+            const pop = wave.strength * Math.max(0, 1 - wave.front / (view.vmin * 40));
+            if (pop < 0.01) continue;
+            context.fillStyle = rgba(accent, 1);
+            context.beginPath();
+            context.arc(wave.drop.dropX, wave.drop.dropY, view.vmin * 1.1 * pop, 0, turn);
+            context.fill();
+          }
+        }
+        const proxy = { time: 0 };
+        const timeline = gsap.timeline({ paused: true });
+        timeline.to(proxy, { time: loop, duration: loop, ease: "none", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);
+        draw(0);
+        registerTimeline("dot-ripple", timeline);
+
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#f2f0e5"},{"id":"foreground","type":"color","label":"Foreground","default":"#100f0f"},{"id":"accent","type":"color","label":"Accent","default":"#ef5da8"},{"id":"columns","type":"number","label":"Columns","default":64},{"id":"seed","type":"number","label":"Seed","default":2}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #f2f0e5;
+        --fg: #100f0f;
+        --accent: #ef5da8;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #f2f0e5;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="pixel-rain"
+      data-start="0"
+      data-duration="12"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="12" style="position:absolute;inset:0;background-color:#f2f0e5"></div>
+      <canvas id="stage" class="clip" data-start="0" data-duration="12"></canvas>
+    </div>
+    <script>
+      (function () {
+
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+
+
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const canvas = document.getElementById("stage");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        canvas.width = view.width;
+        canvas.height = view.height;
+        const context = canvas.getContext("2d");
+        const loop = 12;
+        const turn = Math.PI * 2;
+        function channels(color) {
+          const parts = hyperbits.mixOklch(String(color), String(color), 0, "rgb(0, 0, 0)").match(/[0-9.]+/g) || [0, 0, 0];
+          return parts.slice(0, 3).map(Number);
+        }
+        function rgba(rgb, alpha) {
+          return "rgba(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
+        }
+        const foreground = channels(vars.foreground);
+        const accent = channels(vars.accent);
+        const columns = Math.max(8, Math.round(Number(vars.columns) || 64));
+        const seed = Number(vars.seed) || 0;
+        const cell = view.width / columns;
+        const rows = Math.ceil(view.height / cell);
+        const marginY = (view.height - rows * cell) / 2;
+        const block = cell * 0.78;
+        const drops = [];
+        for (let column = 0; column < columns; column += 1) {
+          const streams = hyperbits.pick("rain-" + seed + "-" + column, [1, 1, 2]);
+          for (let stream = 0; stream < streams; stream += 1) {
+            const key = "rain-" + seed + "-" + column + "-" + stream;
+            drops.push({
+              column,
+              offset: hyperbits.random(key + "-offset"),
+              laps: hyperbits.pick(key + "-laps", [1, 1, 2, 2, 3]),
+              trail: Math.round(hyperbits.randomFloat(key + "-trail", 4, 15)),
+            });
+          }
+        }
+        function draw(phase) {
+          if (!context || typeof context.stroke !== "function") return;
+          context.clearRect(0, 0, view.width, view.height);
+          context.fillStyle = rgba(foreground, 0.16);
+          for (let row = 0; row < rows; row += 1) {
+            for (let column = 0; column < columns; column += 1) {
+              const dotX = column * cell + cell / 2;
+              const dotY = marginY + row * cell + cell / 2;
+              context.fillRect(dotX - cell * 0.05, dotY - cell * 0.05, cell * 0.1, cell * 0.1);
+            }
+          }
+          for (const drop of drops) {
+            const travel = rows + drop.trail;
+            const progress = (((drop.offset + phase * drop.laps) % 1) + 1) % 1;
+            const head = Math.floor(progress * travel);
+            const left = drop.column * cell + (cell - block) / 2;
+            for (let step = 0; step < drop.trail; step += 1) {
+              const row = head - step;
+              if (row < 0 || row >= rows) continue;
+              const top = marginY + row * cell + (cell - block) / 2;
+              const fade = Math.pow(1 - step / drop.trail, 1.4);
+              context.fillStyle = step === 0 ? rgba(accent, 1) : rgba(foreground, fade);
+              context.fillRect(left, top, block, block);
+            }
+          }
+        }
+        const proxy = { time: 0 };
+        const timeline = gsap.timeline({ paused: true });
+        timeline.to(proxy, { time: loop, duration: loop, ease: "none", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);
+        draw(0);
+        registerTimeline("pixel-rain", timeline);
+
+      })();
+    </script>
+  </body>
+</html>

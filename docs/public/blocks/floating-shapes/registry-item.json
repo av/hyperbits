@@ -1,0 +1,27 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "floating-shapes",
+  "type": "hyperframes:block",
+  "title": "Floating Shapes",
+  "description": "Seamless 12-second loop of flat geometric shapes drifting upward in layered parallax",
+  "tags": [
+    "loop",
+    "background",
+    "shapes",
+    "geometric",
+    "ambient"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 12,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/floating-shapes.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

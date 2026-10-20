@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#9d8af0"},{"id":"foreground","type":"color","label":"Foreground","default":"#100f0f"},{"id":"accent","type":"color","label":"Accent","default":"#f2f0e5"},{"id":"columns","type":"number","label":"Columns","default":16},{"id":"seed","type":"number","label":"Seed","default":6}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #9d8af0;
+        --fg: #100f0f;
+        --accent: #f2f0e5;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #9d8af0;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="truchet-weave"
+      data-start="0"
+      data-duration="12"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="12" style="position:absolute;inset:0;background-color:#9d8af0"></div>
+      <canvas id="stage" class="clip" data-start="0" data-duration="12"></canvas>
+    </div>
+    <script>
+      (function () {
+
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+
+
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const canvas = document.getElementById("stage");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        canvas.width = view.width;
+        canvas.height = view.height;
+        const context = canvas.getContext("2d");
+        const loop = 12;
+        const turn = Math.PI * 2;
+        function channels(color) {
+          const parts = hyperbits.mixOklch(String(color), String(color), 0, "rgb(0, 0, 0)").match(/[0-9.]+/g) || [0, 0, 0];
+          return parts.slice(0, 3).map(Number);
+        }
+        function rgba(rgb, alpha) {
+          return "rgba(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
+        }
+        const foreground = channels(vars.foreground);
+        const accent = channels(vars.accent);
+        const columns = Math.max(2, Math.round(Number(vars.columns) || 16));
+        const seed = Number(vars.seed) || 0;
+        const size = view.width / columns;
+        const rows = Math.ceil(view.height / size) + 1;
+        const marginY = (view.height - rows * size) / 2;
+        const ease = hyperbits.Easing.easeInOutCubic;
+        const centerX = view.width / 2;
+        const centerY = view.height / 2;
+        const reach = Math.hypot(centerX, centerY);
+        const tiles = [];
+        for (let row = 0; row < rows; row += 1) {
+          for (let column = 0; column < columns; column += 1) {
+            const key = "truchet-" + seed + "-" + row + "-" + column;
+            const tileX = column * size + size / 2;
+            const tileY = marginY + row * size + size / 2;
+            tiles.push({
+              tileX,
+              tileY,
+              flipped: hyperbits.random(key + "-flip") > 0.5,
+              lit: hyperbits.random(key + "-lit") > 0.94,
+              delay: (Math.hypot(tileX - centerX, tileY - centerY) / reach) * 0.25,
+            });
+          }
+        }
+        function draw(phase) {
+          if (!context || typeof context.stroke !== "function") return;
+          context.clearRect(0, 0, view.width, view.height);
+          context.lineCap = "butt";
+          context.lineWidth = size * 0.2;
+          const half = size / 2;
+          for (const pass of [false, true]) {
+            for (const tile of tiles) {
+              if (tile.lit !== pass) continue;
+              const beat = phase * 2 - tile.delay;
+              const whole = Math.floor(beat);
+              const local = Math.min(Math.max((beat - whole) / 0.3, 0), 1);
+              const angle = (Math.PI / 2) * ((tile.flipped ? 1 : 0) + whole + ease(local));
+              context.save();
+              context.translate(tile.tileX, tile.tileY);
+              context.rotate(angle);
+              context.strokeStyle = rgba(tile.lit ? accent : foreground, 1);
+              context.beginPath();
+              context.arc(-half, -half, half, 0, Math.PI / 2);
+              context.moveTo(half, 0);
+              context.arc(half, half, half, Math.PI * 1.5, Math.PI, true);
+              context.stroke();
+              context.restore();
+            }
+          }
+        }
+        const proxy = { time: 0 };
+        const timeline = gsap.timeline({ paused: true });
+        timeline.to(proxy, { time: loop, duration: loop, ease: "none", onUpdate: () => draw((proxy.time % loop) / loop) }, 0);
+        draw(0);
+        registerTimeline("truchet-weave", timeline);
+
+      })();
+    </script>
+  </body>
+</html>

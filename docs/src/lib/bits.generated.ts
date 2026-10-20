@@ -112,6 +112,402 @@ export const docsBits: DocsBit[] = [
     "previewImage": null
   },
   {
+    "id": "bauhaus-tiles",
+    "name": "Bauhaus Tiles",
+    "title": "Bauhaus Tiles",
+    "description": "Seamless 12-second loop of geometric Bauhaus tiles turning in a diagonal wave",
+    "category": "motion-loops",
+    "categoryLabel": "Motion Loops",
+    "tags": [
+      "loop",
+      "background",
+      "shapes",
+      "geometric",
+      "tiles"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "interpolate",
+      "random",
+      "viewport"
+    ],
+    "htmlPath": "/bits/bauhaus-tiles.html",
+    "previewImage": "/previews/bauhaus-tiles.png"
+  },
+  {
+    "id": "contour-drift",
+    "name": "Contour Drift",
+    "title": "Contour Drift",
+    "description": "Seamless 12-second loop of topographic contour lines flowing over a shifting terrain",
+    "category": "motion-loops",
+    "categoryLabel": "Motion Loops",
+    "tags": [
+      "loop",
+      "background",
+      "lines",
+      "contours",
+      "topographic"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "htmlPath": "/bits/contour-drift.html",
+    "previewImage": "/previews/contour-drift.png"
+  },
+  {
+    "id": "dot-ripple",
+    "name": "Dot Ripple",
+    "title": "Dot Ripple",
+    "description": "Seamless 12-second loop of ripples rolling through a fine dot grid like drops on water",
+    "category": "motion-loops",
+    "categoryLabel": "Motion Loops",
+    "tags": [
+      "loop",
+      "background",
+      "dots",
+      "ripple",
+      "grid"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "htmlPath": "/bits/dot-ripple.html",
+    "previewImage": "/previews/dot-ripple.png"
+  },
+  {
+    "id": "dot-tunnel",
+    "name": "Dot Tunnel",
+    "title": "Dot Tunnel",
+    "description": "Seamless 12-second loop of dotted rings flying out of a curving tunnel",
+    "category": "motion-loops",
+    "categoryLabel": "Motion Loops",
+    "tags": [
+      "loop",
+      "background",
+      "depth",
+      "tunnel",
+      "dotted"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "htmlPath": "/bits/dot-tunnel.html",
+    "previewImage": "/previews/dot-tunnel.png"
+  },
+  {
+    "id": "floating-shapes",
+    "name": "Floating Shapes",
+    "title": "Floating Shapes",
+    "description": "Seamless 12-second loop of flat geometric shapes drifting upward in layered parallax",
+    "category": "motion-loops",
+    "categoryLabel": "Motion Loops",
+    "tags": [
+      "loop",
+      "background",
+      "shapes",
+      "geometric",
+      "ambient"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "htmlPath": "/bits/floating-shapes.html",
+    "previewImage": "/previews/floating-shapes.png"
+  },
+  {
+    "id": "gyro-rings",
+    "name": "Gyro Rings",
+    "title": "Gyro Rings",
+    "description": "Seamless 12-second loop of wireframe rings tumbling in 3D around a glowing core",
+    "category": "motion-loops",
+    "categoryLabel": "Motion Loops",
+    "tags": [
+      "loop",
+      "background",
+      "depth",
+      "rings",
+      "orbit"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "htmlPath": "/bits/gyro-rings.html",
+    "previewImage": "/previews/gyro-rings.png"
+  },
+  {
+    "id": "halftone-sweep",
+    "name": "Halftone Sweep",
+    "title": "Halftone Sweep",
+    "description": "Seamless 12-second loop of halftone dots swelling as soft diagonal bands sweep across",
+    "category": "motion-loops",
+    "categoryLabel": "Motion Loops",
+    "tags": [
+      "loop",
+      "background",
+      "dots",
+      "halftone",
+      "waves"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "htmlPath": "/bits/halftone-sweep.html",
+    "previewImage": "/previews/halftone-sweep.png"
+  },
+  {
+    "id": "horizon-grid",
+    "name": "Horizon Grid",
+    "title": "Horizon Grid",
+    "description": "Seamless 12-second loop of a mirrored perspective grid streaming toward a glowing horizon",
+    "category": "motion-loops",
+    "categoryLabel": "Motion Loops",
+    "tags": [
+      "loop",
+      "background",
+      "depth",
+      "grid",
+      "perspective"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "htmlPath": "/bits/horizon-grid.html",
+    "previewImage": "/previews/horizon-grid.png"
+  },
+  {
+    "id": "phyllotaxis-bloom",
+    "name": "Phyllotaxis Bloom",
+    "title": "Phyllotaxis Bloom",
+    "description": "Seamless 12-second loop of dots spiralling out of a sunflower pattern with travelling pulses",
+    "category": "motion-loops",
+    "categoryLabel": "Motion Loops",
+    "tags": [
+      "loop",
+      "background",
+      "dots",
+      "spiral",
+      "organic"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "htmlPath": "/bits/phyllotaxis-bloom.html",
+    "previewImage": "/previews/phyllotaxis-bloom.png"
+  },
+  {
+    "id": "pinwheel-grid",
+    "name": "Pinwheel Grid",
+    "title": "Pinwheel Grid",
+    "description": "Seamless 12-second loop of a pinwheel grid snapping through counter-rotating quarter turns",
+    "category": "motion-loops",
+    "categoryLabel": "Motion Loops",
+    "tags": [
+      "loop",
+      "background",
+      "shapes",
+      "pinwheel",
+      "grid"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "interpolate",
+      "viewport"
+    ],
+    "htmlPath": "/bits/pinwheel-grid.html",
+    "previewImage": "/previews/pinwheel-grid.png"
+  },
+  {
+    "id": "pixel-rain",
+    "name": "Pixel Rain",
+    "title": "Pixel Rain",
+    "description": "Seamless 12-second loop of stepped pixel trails falling down a dotted grid",
+    "category": "motion-loops",
+    "categoryLabel": "Motion Loops",
+    "tags": [
+      "loop",
+      "background",
+      "dots",
+      "pixel",
+      "rain"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "htmlPath": "/bits/pixel-rain.html",
+    "previewImage": "/previews/pixel-rain.png"
+  },
+  {
+    "id": "ray-burst",
+    "name": "Ray Burst",
+    "title": "Ray Burst",
+    "description": "Seamless 12-second loop of radial lines breathing around a pulsing centre",
+    "category": "motion-loops",
+    "categoryLabel": "Motion Loops",
+    "tags": [
+      "loop",
+      "background",
+      "lines",
+      "radial",
+      "burst"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "htmlPath": "/bits/ray-burst.html",
+    "previewImage": "/previews/ray-burst.png"
+  },
+  {
+    "id": "speed-streaks",
+    "name": "Speed Streaks",
+    "title": "Speed Streaks",
+    "description": "Seamless 12-second loop of light streaks racing across the frame in parallax lanes",
+    "category": "motion-loops",
+    "categoryLabel": "Motion Loops",
+    "tags": [
+      "loop",
+      "background",
+      "lines",
+      "speed",
+      "streaks"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "htmlPath": "/bits/speed-streaks.html",
+    "previewImage": "/previews/speed-streaks.png"
+  },
+  {
+    "id": "truchet-weave",
+    "name": "Truchet Weave",
+    "title": "Truchet Weave",
+    "description": "Seamless 12-second loop of Truchet arc tiles flipping in a ripple to rewire one continuous maze",
+    "category": "motion-loops",
+    "categoryLabel": "Motion Loops",
+    "tags": [
+      "loop",
+      "background",
+      "shapes",
+      "truchet",
+      "pattern"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "interpolate",
+      "random",
+      "viewport"
+    ],
+    "htmlPath": "/bits/truchet-weave.html",
+    "previewImage": "/previews/truchet-weave.png"
+  },
+  {
+    "id": "wave-stack",
+    "name": "Wave Stack",
+    "title": "Wave Stack",
+    "description": "Seamless 12-second loop of stacked sine lines rolling over a bold colour field",
+    "category": "motion-loops",
+    "categoryLabel": "Motion Loops",
+    "tags": [
+      "loop",
+      "background",
+      "lines",
+      "waves",
+      "sine"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "htmlPath": "/bits/wave-stack.html",
+    "previewImage": "/previews/wave-stack.png"
+  },
+  {
+    "id": "zoom-polygons",
+    "name": "Zoom Polygons",
+    "title": "Zoom Polygons",
+    "description": "Seamless 12-second loop of nested twisting polygons zooming in forever",
+    "category": "motion-loops",
+    "categoryLabel": "Motion Loops",
+    "tags": [
+      "loop",
+      "background",
+      "depth",
+      "zoom",
+      "spiral"
+    ],
+    "duration": 12,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "htmlPath": "/bits/zoom-polygons.html",
+    "previewImage": "/previews/zoom-polygons.png"
+  },
+  {
     "id": "fireflies",
     "name": "Fireflies",
     "title": "Fireflies",

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "pixel-rain",
+  "type": "hyperframes:block",
+  "title": "Pixel Rain",
+  "description": "Seamless 12-second loop of stepped pixel trails falling down a dotted grid",
+  "tags": [
+    "loop",
+    "background",
+    "dots",
+    "pixel",
+    "rain"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 12,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/pixel-rain.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}
