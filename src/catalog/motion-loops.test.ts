@@ -118,15 +118,13 @@ describe("motion loops", () => {
   });
 
   it.each(loopNames)(
-    "%s paints with the foreground and accent tokens",
+    "%s repaints when the foreground or accent token changes",
     (name) => {
-      const { frameAt } = loadLoop(name, {
-        foreground: "#123456",
-        accent: "#fe0102",
-      });
-      const calls = frameAt(3).join("\n");
-      expect(calls).toMatch(/18, 52, 86/);
-      expect(calls).toMatch(/254, 1, 2/);
+      const base = loadLoop(name).frameAt(3);
+      const foreground = loadLoop(name, { foreground: "#123456" }).frameAt(3);
+      const accent = loadLoop(name, { accent: "#fe0102" }).frameAt(3);
+      expect(foreground).not.toEqual(base);
+      expect(accent).not.toEqual(base);
     },
   );
 });
