@@ -2,14 +2,14 @@
   "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
   "name": "bauhaus-tiles",
   "type": "hyperframes:block",
-  "title": "Bauhaus Rows",
-  "description": "Rows of small Bauhaus motifs in soft tones gliding slowly past each other in opposite directions, like a moving frieze",
+  "title": "Bauhaus Poster",
+  "description": "An asymmetric Bauhaus poster whose circle, half-disc, bars and triangle trade places in four eased beats",
   "tags": [
     "loop",
     "background",
     "shapes",
     "geometric",
-    "frieze"
+    "poster"
   ],
   "license": "MIT",
   "dimensions": {

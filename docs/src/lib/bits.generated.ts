@@ -113,9 +113,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "bauhaus-tiles",
-    "name": "Bauhaus Rows",
-    "title": "Bauhaus Rows",
-    "description": "Rows of small Bauhaus motifs in soft tones gliding slowly past each other in opposite directions, like a moving frieze",
+    "name": "Bauhaus Poster",
+    "title": "Bauhaus Poster",
+    "description": "An asymmetric Bauhaus poster whose circle, half-disc, bars and triangle trade places in four eased beats",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -123,14 +123,14 @@ export const docsBits: DocsBit[] = [
       "background",
       "shapes",
       "geometric",
-      "frieze"
+      "poster"
     ],
     "duration": 12,
     "width": 1920,
     "height": 1080,
     "helpers": [
       "color",
-      "random",
+      "interpolate",
       "viewport"
     ],
     "htmlPath": "/bits/bauhaus-tiles.html",

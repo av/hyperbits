@@ -410,17 +410,17 @@ Smooth transition between radial gradients
 
 ### `bauhaus-tiles`
 
-Rows of small Bauhaus motifs in soft tones gliding slowly past each other in opposite directions, like a moving frieze
+An asymmetric Bauhaus poster whose circle, half-disc, bars and triangle trade places in four eased beats
 
 - Path: `bits/motion-loops/bauhaus-tiles/index.html`
-- Title: Bauhaus Rows
+- Title: Bauhaus Poster
 - Size: 1920x1080, duration 12s
-- Helpers: `color`, `random`, `viewport`
+- Helpers: `color`, `interpolate`, `viewport`
 - Knobs (`data-composition-variables`):
   - `background` (color, default "#f2f0e5") — Background
   - `foreground` (color, default "#100f0f") — Foreground
   - `accent` (color, default "#9d8af0") — Accent
-  - `size` (number, default 9) — Motif size (vmin)
+  - `beat` (number, default 0.45) — Beat hold (0-1)
 
 ### `contour-drift`
 
