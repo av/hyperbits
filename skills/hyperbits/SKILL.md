@@ -132,7 +132,7 @@ These match `references/patterns.md` and `AGENTS.md`. Do not invent a parallel s
 
 ## Motion loops
 
-`bits/motion-loops/` holds seamless 12-second backgrounds in four families, tagged `depth`, `lines`, `dots` and `shapes`. Frame 12s equals frame 0.
+`bits/motion-loops/` holds seamless 12-second backgrounds in four families, tagged `depth`, `lines`, `dots` and `shapes`. Frame 12s equals frame 0. Titles: Horizon Ridges, Dot Helix Tube, Polygon Procession, Orrery Rings (depth); Light Trails, Twisting Ribbon, Sunburst Horizon, Terraced Island (lines); Halftone Orbs, Ripple Drum, Phyllotaxis Bloom, Pixel Rain (dots); Bauhaus Poster, Truchet Mandala, Shape Mobile, Pinwheel Garden (shapes). `references/motion-loops.md` maps each title to its id and structural knobs.
 
 - Search with `--tag loop` plus a family tag, for example `npx hyperbits find --tag loop --tag dots`.
 - Restyle through the shared palette tokens `background`, `foreground` and `accent` (`data-variable-values` or `--variables`), not by editing the drawing code.

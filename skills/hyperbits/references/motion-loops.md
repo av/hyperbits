@@ -6,12 +6,26 @@ Seamless 12-second motion graphics backgrounds: flat, graphic, one canvas, resty
 
 Bits live in `bits/motion-loops/`. Each is tagged `loop`, `background` and one family:
 
-| Family | Bits |
-| --- | --- |
-| `depth` | `horizon-grid`, `dot-tunnel`, `zoom-polygons`, `gyro-rings` |
-| `lines` | `speed-streaks`, `wave-stack`, `ray-burst`, `contour-drift` |
-| `dots` | `halftone-sweep`, `dot-ripple`, `phyllotaxis-bloom`, `pixel-rain` |
-| `shapes` | `bauhaus-tiles`, `truchet-weave`, `floating-shapes`, `pinwheel-grid` |
+| Family | Bit (title) | Structural knobs |
+| --- | --- | --- |
+| `depth` | `horizon-grid` (Horizon Ridges): wireframe ridgelines rolling toward a striped sun | `ridges` |
+| `depth` | `dot-tunnel` (Dot Helix Tube): a dotted tube seen from the side, rings spinning into helix stripes | `frames` (rings), `dots` |
+| `depth` | `zoom-polygons` (Polygon Procession): hexagon panels stepping forward in a diagonal procession | `sides`, `twist` (card tilt) |
+| `depth` | `gyro-rings` (Orrery Rings): tilted planetary orbits around an off-centre sun | `rings`, `seed` |
+| `lines` | `speed-streaks` (Light Trails): a few long-exposure light trails tracing looping paths | `streaks`, `seed` |
+| `lines` | `wave-stack` (Twisting Ribbon): one striped ribbon twisting across a dark field | `lines` (stripes) |
+| `lines` | `ray-burst` (Sunburst Horizon): retro sunburst wedges above a striped half-sun | `rays` (wedges) |
+| `lines` | `contour-drift` (Terraced Island): a single island of stacked contour terraces | `levels`, `seed` |
+| `dots` | `halftone-sweep` (Halftone Orbs): a square halftone screen forming three orbiting orbs | `pitch` |
+| `dots` | `dot-ripple` (Ripple Drum): a tilted drumhead of polar dot rings struck off-centre | `wavelength` |
+| `dots` | `phyllotaxis-bloom` (Phyllotaxis Bloom): flower heads whose petals open in waves | `dots` (florets) |
+| `dots` | `pixel-rain` (Pixel Rain): night rain falling into a pixel lake and splashing | `columns`, `seed` |
+| `shapes` | `bauhaus-tiles` (Bauhaus Poster): large shapes trading places on four eased beats | `beat` (hold) |
+| `shapes` | `truchet-weave` (Truchet Mandala): Truchet arcs on the rings of a round medallion | `rings`, `seed` |
+| `shapes` | `floating-shapes` (Shape Mobile): a hanging mobile of balanced arms and cutouts | `sway` |
+| `shapes` | `pinwheel-grid` (Pinwheel Garden): paper pinwheels on stems spinning in gusts | `pinwheels`, `seed` |
+
+Ids are stable; titles describe the current design.
 
 ```bash
 npx hyperbits find --tag loop --tag lines --json
@@ -26,9 +40,9 @@ Every loop declares the same palette tokens in `data-composition-variables`, in 
 - `foreground`: ink for the main marks or a highlight
 - `accent`: the brand colour that carries the motion
 
-Pass brand colours on the embed with `data-variable-values`, or on `hyperframes render` with `--variables`. Do not edit the drawing code to recolour a loop. Dark, light and saturated fields all work: put the brand colour in `background` for a bold field (`wave-stack`, `truchet-weave` default to this) or in `accent` on a dark or paper field.
+Pass brand colours on the embed with `data-variable-values`, or on `hyperframes render` with `--variables`. Do not edit the drawing code to recolour a loop. Dark, light and saturated fields all work. Most loops default to a dark field; `ray-burst`, `phyllotaxis-bloom`, `bauhaus-tiles` and `floating-shapes` default to paper. Put the brand colour in `background` for a bold field, or in `accent` on a dark or paper field.
 
-Structural knobs (`columns`, `rings`, `dots`, `seed`) change density or the random layout. Keep them as numbers; loops round them where the seam depends on a whole count.
+Structural knobs (see the table: for example `ridges`, `rings`, `sway`, `pinwheels`, `seed`) change density, layout or motion range. Keep them as numbers; loops round them where the seam depends on a whole count.
 
 A loop lasts 12 seconds. For longer backgrounds, place copies back to back (`data-start` 0, 12, 24). Frame 12s equals frame 0, so the joins are invisible.
 
