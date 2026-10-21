@@ -19,7 +19,7 @@ Bits live in `bits/motion-loops/`. Each is tagged `loop`, `background` and one f
 | `dots` | `halftone-sweep` (Halftone Clouds): a halftone screen with soft clouds of larger dots drifting | `pitch` |
 | `dots` | `dot-ripple` (Ripple Plane): a gently tilted plane of dots filling the frame, lifted by slow ripples | `wavelength` |
 | `dots` | `phyllotaxis-bloom` (Bloom Wallpaper): a wallpaper of small flower heads opening in a travelling wave | `dots` (florets) |
-| `dots` | `pixel-rain` (Pixel Rain): night pixel rain falling into a shimmering pixel lake | `columns`, `seed` |
+| `dots` | `pixel-rain` (Pixel Rain): slanting pixel rain landing and splashing at different depths across the frame | `columns`, `seed` |
 | `shapes` | `bauhaus-tiles` (Bauhaus Rows): rows of soft Bauhaus motifs gliding slowly past each other | `size` |
 | `shapes` | `truchet-weave` (Truchet Arcs): gently curving bands of Truchet arcs, neighbouring bands gliding in opposite directions | `rings` (bands), `seed` |
 | `shapes` | `floating-shapes` (Hanging Garlands): garlands of paper cutouts hanging from the top edge | `sway` |
