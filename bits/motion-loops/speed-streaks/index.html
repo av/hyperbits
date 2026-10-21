@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#f2652a"},{"id":"streaks","type":"number","label":"Streaks","default":70},{"id":"seed","type":"number","label":"Seed","default":9}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#f2652a"},{"id":"streaks","type":"number","label":"Trails","default":6},{"id":"seed","type":"number","label":"Seed","default":9}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -93,53 +93,63 @@
         function mix(from, to, amount) {
           return from.map((value, index) => Math.round(value + (to[index] - value) * amount));
         }
-        const background = channels(vars.background);
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const muted = mix(accent, background, 0.35);
-        const count = Math.max(1, Math.round(Number(vars.streaks) || 70));
+        const warm = mix(accent, foreground, 0.45);
+        const count = Math.max(1, Math.round(Number(vars.streaks) || 6));
         const seed = Number(vars.seed) || 0;
-        const streaks = [...Array(count).keys()].map((index) => {
-          const key = "streak-" + seed + "-" + index;
-          const layer = hyperbits.random(key + "-layer");
-          const tone = hyperbits.random(key + "-tone");
+        const tones = [accent, warm, foreground, accent];
+        const trails = [...Array(count).keys()].map((index) => {
+          const key = "trail-" + seed + "-" + index;
           return {
-            lane: hyperbits.randomFloat(key + "-lane", 0.04, 0.96) * view.height,
-            length: view.vw * (6 + 30 * layer) * hyperbits.randomFloat(key + "-len", 0.6, 1.2),
-            thickness: view.vmin * (0.4 + 1.6 * layer * layer),
-            laps: 1 + Math.floor(layer * 5),
-            offset: hyperbits.random(key + "-offset"),
-            color: tone > 0.82 ? foreground : tone > 0.3 ? accent : muted,
-            alpha: 0.85 + 0.15 * layer,
+            rateX: hyperbits.pick(key + "-fx", [1, 2]),
+            rateY: hyperbits.pick(key + "-fy", [2, 3]),
+            shiftX: hyperbits.random(key + "-sx"),
+            shiftY: hyperbits.random(key + "-sy"),
+            reachX: hyperbits.randomFloat(key + "-ax", 0.32, 0.48),
+            reachY: hyperbits.randomFloat(key + "-ay", 0.25, 0.4),
+            width: view.vmin * hyperbits.randomFloat(key + "-w", 0.35, 0.9),
+            length: hyperbits.randomFloat(key + "-l", 0.18, 0.3),
+            color: tones[index % tones.length],
           };
-        }).sort((left, right) => left.thickness - right.thickness);
+        });
+        function position(trail, time) {
+          return [
+            view.width * (0.5 + trail.reachX * Math.sin(turn * (time * trail.rateX + trail.shiftX))),
+            view.height * (0.5 + trail.reachY * Math.sin(turn * (time * trail.rateY + trail.shiftY))),
+          ];
+        }
         function draw(phase) {
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
           context.lineCap = "round";
-          for (const streak of streaks) {
-            const span = view.width + streak.length * 2;
-            const progress = (((streak.offset + phase * streak.laps) % 1) + 1) % 1;
-            const head = progress * span - streak.length * 0.5;
-            const tail = head - streak.length;
-            const gradient = context.createLinearGradient(tail, 0, head, 0);
-            gradient.addColorStop(0, rgba(streak.color, 0));
-            gradient.addColorStop(0.85, rgba(streak.color, streak.alpha * 0.8));
-            gradient.addColorStop(1, rgba(streak.color, streak.alpha));
-            context.strokeStyle = gradient;
-            context.lineWidth = streak.thickness;
+          context.globalCompositeOperation = "lighter";
+          const pieces = 90;
+          for (const trail of trails) {
+            let previous = position(trail, phase - trail.length);
+            for (let piece = 1; piece <= pieces; piece += 1) {
+              const share = piece / pieces;
+              const current = position(trail, phase - trail.length * (1 - share));
+              context.strokeStyle = rgba(trail.color, Math.pow(share, 2.2) * 0.9);
+              context.lineWidth = trail.width * (0.25 + 0.75 * share);
+              context.beginPath();
+              context.moveTo(previous[0], previous[1]);
+              context.lineTo(current[0], current[1]);
+              context.stroke();
+              previous = current;
+            }
+            const [headX, headY] = position(trail, phase);
+            const glow = context.createRadialGradient(headX, headY, 0, headX, headY, trail.width * 9);
+            glow.addColorStop(0, rgba(trail.color, 0.6));
+            glow.addColorStop(1, rgba(trail.color, 0));
+            context.fillStyle = glow;
+            context.fillRect(headX - trail.width * 9, headY - trail.width * 9, trail.width * 18, trail.width * 18);
+            context.fillStyle = rgba(foreground, 1);
             context.beginPath();
-            context.moveTo(tail, streak.lane);
-            context.lineTo(head, streak.lane);
-            context.stroke();
+            context.arc(headX, headY, trail.width * 0.9, 0, turn);
+            context.fill();
           }
-          const edges = context.createLinearGradient(0, 0, view.width, 0);
-          edges.addColorStop(0, rgba(background, 0.75));
-          edges.addColorStop(0.08, rgba(background, 0));
-          edges.addColorStop(0.92, rgba(background, 0));
-          edges.addColorStop(1, rgba(background, 0.75));
-          context.fillStyle = edges;
-          context.fillRect(0, 0, view.width, view.height);
+          context.globalCompositeOperation = "source-over";
         }
         const proxy = { time: 0 };
         const timeline = gsap.timeline({ paused: true });

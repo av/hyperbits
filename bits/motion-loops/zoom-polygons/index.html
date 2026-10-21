@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#4fb6ec"},{"id":"sides","type":"number","label":"Polygon sides","default":4},{"id":"twist","type":"number","label":"Twist per layer (degrees)","default":7}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#4fb6ec"},{"id":"sides","type":"number","label":"Polygon sides","default":6},{"id":"twist","type":"number","label":"Card tilt (degrees)","default":8}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -90,19 +90,20 @@
         function rgba(rgb, alpha) {
           return "rgba(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
         }
+        function mix(from, to, amount) {
+          return from.map((value, index) => Math.round(value + (to[index] - value) * amount));
+        }
         const background = channels(vars.background);
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const sides = Math.max(3, Math.round(Number(vars.sides) || 4));
-        const twist = ((Number(vars.twist) || 0) * Math.PI) / 180;
-        const centerX = view.width / 2;
-        const centerY = view.height / 2;
-        const ratio = 0.84;
-        const layersPerLoop = 8;
-        const base = view.vmin * 40;
-        const largest = Math.log((Math.hypot(view.width, view.height) * 1.6) / base) / Math.log(ratio);
-        const smallest = Math.log((view.vmin * 0.2) / base) / Math.log(ratio);
-        function polygon(radius, angle) {
+        const panel = mix(background, accent, 0.12);
+        const sides = Math.max(3, Math.round(Number(vars.sides) || 6));
+        const tilt = ((Number(vars.twist) || 0) * Math.PI) / 180;
+        const ease = hyperbits.Easing.easeInOutCubic;
+        const cards = 12;
+        const stepsPerLoop = 6;
+        const focal = view.vmin * 90;
+        function polygon(centerX, centerY, radius, angle) {
           context.beginPath();
           for (let corner = 0; corner <= sides; corner += 1) {
             const theta = angle + (turn * corner) / sides - Math.PI / 2;
@@ -116,28 +117,38 @@
         function draw(phase) {
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
-          const zoom = phase * layersPerLoop;
-          const first = Math.ceil(largest + zoom);
-          const last = Math.floor(smallest + zoom);
-          context.lineJoin = "round";
-          for (let layer = first; layer <= last; layer += 1) {
-            const level = layer - zoom;
-            const radius = base * Math.pow(ratio, level);
-            const angle = level * twist;
-            const depth = Math.min(Math.max((level - largest) / (smallest - largest), 0), 1);
-            polygon(radius, angle);
-            context.fillStyle = layer % 2 === 0 ? rgba(accent, 1) : rgba(background, 1);
+          const beat = phase * stepsPerLoop;
+          const whole = Math.floor(beat);
+          const step = whole + ease(Math.min(Math.max((beat - whole) / 0.55, 0), 1));
+          const order = [];
+          for (let card = 0; card < cards; card += 1) {
+            order.push({ card, slot: card - (step % cards) });
+          }
+          for (const entry of order) {
+            if (entry.slot < -1) entry.slot += cards;
+          }
+          order.sort((left, right) => right.slot - left.slot);
+          for (const { card, slot } of order) {
+            const depth = 1.2 + slot * 0.9;
+            if (depth <= 0.35) continue;
+            const scale = focal / (focal + depth * view.vmin * 40);
+            const centerX = view.width * (0.22 + slot * 0.085);
+            const centerY = view.height * (0.62 - slot * 0.035);
+            const radius = view.vmin * 30 * scale;
+            const fade = Math.min(1, (slot + 1) * 1.2, (cards - 1 - slot) * 0.5);
+            if (fade <= 0) continue;
+            const spin = (turn / sides) * (card + step);
+            polygon(centerX, centerY, radius, tilt);
+            context.fillStyle = rgba(panel, 0.92 * fade);
             context.fill();
-            context.strokeStyle = rgba(foreground, 0.35 * (1 - depth));
-            context.lineWidth = Math.max(view.vmin * 0.05, radius * 0.006);
+            context.strokeStyle = rgba(foreground, 0.85 * fade);
+            context.lineWidth = Math.max(view.vmin * 0.1, radius * 0.02);
+            context.stroke();
+            polygon(centerX, centerY, radius * 0.55, spin);
+            context.strokeStyle = rgba(card % 3 === 0 ? accent : foreground, (card % 3 === 0 ? 1 : 0.5) * fade);
+            context.lineWidth = Math.max(view.vmin * 0.12, radius * (card % 3 === 0 ? 0.06 : 0.025));
             context.stroke();
           }
-          const shade = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, view.vmin * 30);
-          shade.addColorStop(0, rgba(background, 0.92));
-          shade.addColorStop(0.35, rgba(background, 0.45));
-          shade.addColorStop(1, rgba(background, 0));
-          context.fillStyle = shade;
-          context.fillRect(0, 0, view.width, view.height);
         }
         const proxy = { time: 0 };
         const timeline = gsap.timeline({ paused: true });

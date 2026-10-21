@@ -2,14 +2,14 @@
   "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
   "name": "dot-ripple",
   "type": "hyperframes:block",
-  "title": "Dot Ripple",
-  "description": "Ripples rolling through a fine dot grid like drops on water",
+  "title": "Ripple Drum",
+  "description": "A tilted drumhead of polar dot rings, struck off-centre so ripples lift the dots into rolling 3D waves",
   "tags": [
     "loop",
     "background",
     "dots",
     "ripple",
-    "grid"
+    "drum"
   ],
   "license": "MIT",
   "dimensions": {

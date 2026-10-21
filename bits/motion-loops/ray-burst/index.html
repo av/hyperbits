@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#f2f0e5"},{"id":"foreground","type":"color","label":"Foreground","default":"#100f0f"},{"id":"accent","type":"color","label":"Accent","default":"#f2652a"},{"id":"rays","type":"number","label":"Rays","default":64},{"id":"seed","type":"number","label":"Seed","default":12}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#f2f0e5"},{"id":"foreground","type":"color","label":"Foreground","default":"#100f0f"},{"id":"accent","type":"color","label":"Accent","default":"#f2652a"},{"id":"rays","type":"number","label":"Wedges","default":32}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -90,52 +90,60 @@
         function rgba(rgb, alpha) {
           return "rgba(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
         }
+        function mix(from, to, amount) {
+          return from.map((value, index) => Math.round(value + (to[index] - value) * amount));
+        }
+        const background = channels(vars.background);
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const rays = Math.max(8, Math.round(Number(vars.rays) || 64));
-        const seed = Number(vars.seed) || 0;
-        const lengths = [...Array(rays).keys()].map((ray) => hyperbits.randomFloat("burst-" + seed + "-" + ray, 0.5, 1));
-        const centerX = view.width / 2;
-        const centerY = view.height / 2;
+        const pale = mix(background, accent, 0.18);
+        const wedges = Math.max(4, Math.round((Number(vars.rays) || 32) / 2) * 2);
+        const originX = view.width * 0.5;
+        const originY = view.height * 1.04;
+        const reach = Math.hypot(view.width, view.height);
+        const sunRadius = view.vmin * 30;
         function draw(phase) {
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
-          context.lineCap = "round";
-          for (let ray = 0; ray < rays; ray += 1) {
-            const angle = (turn * ray) / rays;
-            const breath = 0.82 + 0.1 * Math.sin(3 * angle - turn * phase) + 0.08 * Math.sin(turn * (phase * 2 + ray * 0.37));
-            const reach = 16 + 74 * lengths[ray] * breath;
-            const inner = 8.5 + 0.5 * Math.sin(turn * (phase * 2 + ray / rays));
-            const startX = centerX + Math.cos(angle) * view.vmin * inner;
-            const startY = centerY + Math.sin(angle) * view.vmin * inner;
-            const endX = centerX + Math.cos(angle) * view.vmin * reach;
-            const endY = centerY + Math.sin(angle) * view.vmin * reach;
-            context.strokeStyle = rgba(foreground, 1);
-            context.lineWidth = view.vmin * 0.42;
+          const width = turn / wedges;
+          const rotation = phase * width * 2;
+          for (let wedge = 0; wedge < wedges; wedge += 1) {
+            const start = Math.PI + wedge * width + rotation;
+            context.fillStyle = rgba(wedge % 2 === 0 ? pale : background, 1);
             context.beginPath();
-            context.moveTo(startX, startY);
-            context.lineTo(endX, endY);
-            context.stroke();
-            context.fillStyle = rgba(foreground, 1);
-            context.beginPath();
-            context.arc(endX, endY, view.vmin * 0.55, 0, turn);
+            context.moveTo(originX, originY);
+            context.arc(originX, originY, reach, start, start + width);
+            context.closePath();
             context.fill();
           }
-          context.strokeStyle = rgba(foreground, 1);
-          context.lineWidth = view.vmin * 0.3;
+          context.lineWidth = view.vmin * 0.22;
+          const spacing = view.vmin * 9;
+          const drift = (phase * 3) % 1;
+          for (let ring = 0; ring < 12; ring += 1) {
+            const radius = sunRadius + (ring + drift) * spacing;
+            context.strokeStyle = rgba(foreground, 0.55 * (1 - (ring + drift) / 12));
+            context.beginPath();
+            context.arc(originX, originY, radius, Math.PI, turn);
+            context.stroke();
+          }
+          context.save();
           context.beginPath();
-          context.arc(centerX, centerY, view.vmin * 6.2, 0, turn);
-          context.stroke();
-          const pulse = 0.5 + 0.5 * Math.sin(turn * phase * 4);
-          context.strokeStyle = rgba(accent, 0.25 + 0.5 * (1 - pulse));
-          context.lineWidth = view.vmin * 0.3;
-          context.beginPath();
-          context.arc(centerX, centerY, view.vmin * (2.6 + 1.6 * pulse), 0, turn);
-          context.stroke();
+          context.arc(originX, originY, sunRadius, Math.PI, turn);
+          context.closePath();
+          context.clip();
           context.fillStyle = rgba(accent, 1);
-          context.beginPath();
-          context.arc(centerX, centerY, view.vmin * 1.8, 0, turn);
-          context.fill();
+          context.fillRect(originX - sunRadius, originY - sunRadius, sunRadius * 2, sunRadius);
+          context.fillStyle = rgba(background, 1);
+          const band = sunRadius / 7;
+          const slide = (phase * 2) % 1;
+          for (let stripe = -1; stripe < 8; stripe += 1) {
+            const level = (stripe + slide) / 7;
+            const thickness = band * Math.max(0, 0.6 * level - 0.05);
+            context.fillRect(originX - sunRadius, originY - sunRadius + (stripe + slide) * band, sunRadius * 2, thickness);
+          }
+          context.restore();
+          context.fillStyle = rgba(foreground, 1);
+          context.fillRect(0, view.height - view.vmin * 1.2, view.width, view.vmin * 1.2);
         }
         const proxy = { time: 0 };
         const timeline = gsap.timeline({ paused: true });

@@ -2,8 +2,8 @@
   "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
   "name": "floating-shapes",
   "type": "hyperframes:block",
-  "title": "Floating Shapes",
-  "description": "Flat geometric shapes drifting upward in layered parallax",
+  "title": "Shape Mobile",
+  "description": "A hanging mobile of balanced arms and cutout shapes, swaying and turning slowly on its threads",
   "tags": [
     "loop",
     "background",

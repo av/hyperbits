@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#9d8af0"},{"id":"shapes","type":"number","label":"Shapes","default":16},{"id":"seed","type":"number","label":"Seed","default":8}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#f2f0e5"},{"id":"foreground","type":"color","label":"Foreground","default":"#100f0f"},{"id":"accent","type":"color","label":"Accent","default":"#9d8af0"},{"id":"sway","type":"number","label":"Sway (degrees)","default":9}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -7,8 +7,8 @@
     <script src="hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
-        --bg: #100f0f;
-        --fg: #f2f0e5;
+        --bg: #f2f0e5;
+        --fg: #100f0f;
         --accent: #9d8af0;
       }
       * {
@@ -22,7 +22,7 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background-color: #100f0f;
+        background-color: #f2f0e5;
       }
       #root {
         width: 100%;
@@ -49,7 +49,7 @@
       data-width="1920"
       data-height="1080"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="12" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <div id="bg" class="clip" data-start="0" data-duration="12" style="position:absolute;inset:0;background-color:#f2f0e5"></div>
       <canvas id="stage" class="clip" data-start="0" data-duration="12"></canvas>
     </div>
     <script>
@@ -93,86 +93,89 @@
         function mix(from, to, amount) {
           return from.map((value, index) => Math.round(value + (to[index] - value) * amount));
         }
+        const background = channels(vars.background);
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const muted = mix(accent, channels(vars.background), 0.55);
-        const count = Math.max(1, Math.round(Number(vars.shapes) || 16));
-        const seed = Number(vars.seed) || 0;
-        const symmetry = { circle: 0, ring: 0, triangle: 3, square: 4, plus: 4, diamond: 2 };
-        const kinds = Object.keys(symmetry);
-        const shapes = [...Array(count).keys()].map((index) => {
-          const key = "float-" + seed + "-" + index;
-          const layer = index < 3 ? 0.85 + 0.05 * index : hyperbits.random(key + "-layer");
-          const tone = hyperbits.random(key + "-tone");
-          const kind = index < 3 ? ["circle", "triangle", "square"][index] : hyperbits.pick(key + "-kind", kinds);
-          const order = symmetry[kind];
-          return {
-            kind,
-            layer,
-            size: view.vmin * (9 + 20 * layer * layer),
-            homeX: (((index * 7) % count) + hyperbits.randomFloat(key + "-x", 0.25, 0.75)) / count * view.width,
-            homeY: (index * 0.618034 + hyperbits.randomFloat(key + "-y", 0, 0.08)) % 1,
-            swayX: view.vmin * (1.5 + 3 * layer),
-            swayFrequency: hyperbits.pick(key + "-fx", [1, 2]),
-            swayShift: hyperbits.random(key + "-sx"),
-            rise: layer > 0.55 ? 2 : 1,
-            tilt: hyperbits.randomFloat(key + "-tilt", 0, turn),
-            spin: order === 0 ? 0 : (turn / order) * hyperbits.pick(key + "-spin", [-1, 1]) * 2,
-            color: tone > 0.72 ? foreground : tone > 0.22 ? accent : muted,
-            outline: index >= 3 && layer > 0.4 && hyperbits.random(key + "-outline") > 0.6,
-          };
-        }).sort((left, right) => left.layer - right.layer);
-        function path(kind, size) {
-          const half = size / 2;
+        const light = mix(accent, background, 0.45);
+        const sway = ((Number(vars.sway) || 9) * Math.PI) / 180;
+        const unit = view.vmin;
+        const mobile = {
+          drop: 16, half: 34, rate: 1, shift: 0, spin: 1,
+          left: { drop: 14, shape: "circle", size: 11, color: accent },
+          right: {
+            drop: 12, half: 24, rate: 2, shift: 0.3, spin: -1,
+            left: { drop: 18, shape: "half", size: 10, color: foreground },
+            right: {
+              drop: 10, half: 16, rate: 1, shift: 0.6, spin: 2,
+              left: { drop: 12, shape: "triangle", size: 9, color: light },
+              right: {
+                drop: 9, half: 11, rate: 3, shift: 0.15, spin: -1,
+                left: { drop: 8, shape: "ring", size: 6, color: foreground },
+                right: { drop: 14, shape: "square", size: 6, color: accent },
+              },
+            },
+          },
+        };
+        function shape(kind, size, color) {
+          context.fillStyle = rgba(color, 1);
           context.beginPath();
-          if (kind === "circle" || kind === "ring") {
-            context.arc(0, 0, half, 0, turn);
+          if (kind === "circle") {
+            context.arc(0, size, size, 0, turn);
+          } else if (kind === "half") {
+            context.arc(0, 0, size, 0, Math.PI);
           } else if (kind === "triangle") {
-            for (let corner = 0; corner < 3; corner += 1) {
-              const angle = (turn * corner) / 3 - Math.PI / 2;
-              if (corner === 0) context.moveTo(Math.cos(angle) * half, Math.sin(angle) * half);
-              else context.lineTo(Math.cos(angle) * half, Math.sin(angle) * half);
-            }
-          } else if (kind === "square") {
-            context.rect(-half * 0.8, -half * 0.8, half * 1.6, half * 1.6);
-          } else if (kind === "plus") {
-            const arm = half * 0.32;
-            context.rect(-half, -arm, size, arm * 2);
-            context.rect(-arm, -half, arm * 2, size);
+            context.moveTo(0, 0);
+            context.lineTo(size, size * 1.6);
+            context.lineTo(-size, size * 1.6);
+          } else if (kind === "ring") {
+            context.arc(0, size, size, 0, turn);
+            context.arc(0, size, size * 0.55, 0, turn, true);
           } else {
-            context.moveTo(0, -half);
-            context.lineTo(half * 0.62, 0);
-            context.lineTo(0, half);
-            context.lineTo(-half * 0.62, 0);
+            context.rect(-size, 0, size * 2, size * 2);
           }
           context.closePath();
+          context.fill("evenodd");
+        }
+        function hang(node, phase) {
+          context.strokeStyle = rgba(foreground, 0.8);
+          context.lineWidth = unit * 0.16;
+          context.beginPath();
+          context.moveTo(0, 0);
+          context.lineTo(0, node.drop * unit);
+          context.stroke();
+          context.translate(0, node.drop * unit);
+          if (node.shape) {
+            context.rotate(0.12 * Math.sin(turn * (phase * 2 + node.size * 0.1)));
+            shape(node.shape, node.size * unit, node.color);
+            return;
+          }
+          context.rotate(sway * Math.sin(turn * (phase * node.rate + node.shift)));
+          const reach = node.half * unit * Math.cos(turn * (phase * node.spin + node.shift) * 0.5) ** 2 * 0.35 + node.half * unit * 0.65;
+          context.strokeStyle = rgba(foreground, 1);
+          context.lineWidth = unit * 0.45;
+          context.beginPath();
+          context.moveTo(-reach, 0);
+          context.lineTo(reach, 0);
+          context.stroke();
+          context.fillStyle = rgba(foreground, 1);
+          context.beginPath();
+          context.arc(0, 0, unit * 0.7, 0, turn);
+          context.fill();
+          for (const [side, child] of [[-1, node.left], [1, node.right]]) {
+            context.save();
+            context.translate(side * reach, 0);
+            context.rotate(-sway * 0.6 * Math.sin(turn * (phase * node.rate + node.shift)));
+            hang(child, phase);
+            context.restore();
+          }
         }
         function draw(phase) {
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
-          context.lineJoin = "round";
-          for (const shape of shapes) {
-            const margin = shape.size * 1.2;
-            const span = view.height + margin * 2;
-            const progress = (((shape.homeY - phase * shape.rise) % 1) + 1) % 1;
-            const shapeY = progress * span - margin;
-            const shapeX = shape.homeX + Math.sin(turn * (phase * shape.swayFrequency + shape.swayShift)) * shape.swayX;
-            context.save();
-            context.translate(shapeX, shapeY);
-            context.rotate(shape.tilt + shape.spin * phase);
-            context.globalAlpha = 0.55 + 0.45 * shape.layer;
-            path(shape.kind, shape.size);
-            if (shape.kind === "ring" || shape.outline) {
-              context.strokeStyle = rgba(shape.color, 1);
-              context.lineWidth = Math.max(view.vmin * 0.2, shape.size * 0.09);
-              context.stroke();
-            } else {
-              context.fillStyle = rgba(shape.color, 1);
-              context.fill();
-            }
-            context.restore();
-          }
-          context.globalAlpha = 1;
+          context.save();
+          context.translate(view.width * 0.46, 0);
+          hang(mobile, phase);
+          context.restore();
         }
         const proxy = { time: 0 };
         const timeline = gsap.timeline({ paused: true });

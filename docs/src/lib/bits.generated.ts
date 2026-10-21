@@ -113,9 +113,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "bauhaus-tiles",
-    "name": "Bauhaus Tiles",
-    "title": "Bauhaus Tiles",
-    "description": "Geometric Bauhaus tiles turning in a diagonal wave",
+    "name": "Bauhaus Poster",
+    "title": "Bauhaus Poster",
+    "description": "An asymmetric Bauhaus poster whose circle, half-disc, bars and triangle trade places in four eased beats",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -123,7 +123,7 @@ export const docsBits: DocsBit[] = [
       "background",
       "shapes",
       "geometric",
-      "tiles"
+      "poster"
     ],
     "duration": 12,
     "width": 1920,
@@ -131,7 +131,6 @@ export const docsBits: DocsBit[] = [
     "helpers": [
       "color",
       "interpolate",
-      "random",
       "viewport"
     ],
     "htmlPath": "/bits/bauhaus-tiles.html",
@@ -139,9 +138,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "contour-drift",
-    "name": "Contour Drift",
-    "title": "Contour Drift",
-    "description": "Topographic contour lines flowing over a shifting terrain",
+    "name": "Terraced Island",
+    "title": "Terraced Island",
+    "description": "A single island built from stacked contour terraces, like a laser-cut relief, reshaping as its layers breathe",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -164,9 +163,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "dot-ripple",
-    "name": "Dot Ripple",
-    "title": "Dot Ripple",
-    "description": "Ripples rolling through a fine dot grid like drops on water",
+    "name": "Ripple Drum",
+    "title": "Ripple Drum",
+    "description": "A tilted drumhead of polar dot rings, struck off-centre so ripples lift the dots into rolling 3D waves",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -174,14 +173,13 @@ export const docsBits: DocsBit[] = [
       "background",
       "dots",
       "ripple",
-      "grid"
+      "drum"
     ],
     "duration": 12,
     "width": 1920,
     "height": 1080,
     "helpers": [
       "color",
-      "random",
       "viewport"
     ],
     "htmlPath": "/bits/dot-ripple.html",
@@ -189,9 +187,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "dot-tunnel",
-    "name": "Dot Tunnel",
-    "title": "Dot Tunnel",
-    "description": "Dotted rings flying out of a curving tunnel",
+    "name": "Dot Helix Tube",
+    "title": "Dot Helix Tube",
+    "description": "A dotted tube seen from the side, its rings spinning into helix stripes while a bulge travels along it",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -213,9 +211,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "floating-shapes",
-    "name": "Floating Shapes",
-    "title": "Floating Shapes",
-    "description": "Flat geometric shapes drifting upward in layered parallax",
+    "name": "Shape Mobile",
+    "title": "Shape Mobile",
+    "description": "A hanging mobile of balanced arms and cutout shapes, swaying and turning slowly on its threads",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -230,7 +228,6 @@ export const docsBits: DocsBit[] = [
     "height": 1080,
     "helpers": [
       "color",
-      "random",
       "viewport"
     ],
     "htmlPath": "/bits/floating-shapes.html",
@@ -238,9 +235,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "gyro-rings",
-    "name": "Gyro Rings",
-    "title": "Gyro Rings",
-    "description": "Wireframe rings tumbling in 3D around a glowing core",
+    "name": "Orrery Rings",
+    "title": "Orrery Rings",
+    "description": "Tilted planetary orbits around an off-centre sun, planets trailing light at whole-number periods",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -263,9 +260,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "halftone-sweep",
-    "name": "Halftone Sweep",
-    "title": "Halftone Sweep",
-    "description": "Halftone dots swelling as soft diagonal bands sweep across",
+    "name": "Halftone Orbs",
+    "title": "Halftone Orbs",
+    "description": "A square halftone screen swelling into three orbiting orbs, a solid one, a ring and a soft cloud",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -273,7 +270,7 @@ export const docsBits: DocsBit[] = [
       "background",
       "dots",
       "halftone",
-      "waves"
+      "orbs"
     ],
     "duration": 12,
     "width": 1920,
@@ -287,16 +284,16 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "horizon-grid",
-    "name": "Horizon Grid",
-    "title": "Horizon Grid",
-    "description": "Mirrored perspective grid streaming toward a glowing horizon",
+    "name": "Horizon Ridges",
+    "title": "Horizon Ridges",
+    "description": "Wireframe ridgelines rolling toward a striped sun on the horizon",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
       "loop",
       "background",
       "depth",
-      "grid",
+      "terrain",
       "perspective"
     ],
     "duration": 12,
@@ -313,7 +310,7 @@ export const docsBits: DocsBit[] = [
     "id": "phyllotaxis-bloom",
     "name": "Phyllotaxis Bloom",
     "title": "Phyllotaxis Bloom",
-    "description": "Dots spiralling out of a sunflower pattern with travelling pulses",
+    "description": "Paper flower heads whose phyllotaxis petals open and close in waves rolling out from the seed centres",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -328,6 +325,7 @@ export const docsBits: DocsBit[] = [
     "height": 1080,
     "helpers": [
       "color",
+      "interpolate",
       "viewport"
     ],
     "htmlPath": "/bits/phyllotaxis-bloom.html",
@@ -335,9 +333,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "pinwheel-grid",
-    "name": "Pinwheel Grid",
-    "title": "Pinwheel Grid",
-    "description": "Pinwheel grid snapping through counter-rotating quarter turns",
+    "name": "Pinwheel Garden",
+    "title": "Pinwheel Garden",
+    "description": "Paper pinwheels on swaying stems of different heights, spinning up as gusts of wind roll across the garden",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -345,14 +343,14 @@ export const docsBits: DocsBit[] = [
       "background",
       "shapes",
       "pinwheel",
-      "grid"
+      "garden"
     ],
     "duration": 12,
     "width": 1920,
     "height": 1080,
     "helpers": [
       "color",
-      "interpolate",
+      "random",
       "viewport"
     ],
     "htmlPath": "/bits/pinwheel-grid.html",
@@ -362,7 +360,7 @@ export const docsBits: DocsBit[] = [
     "id": "pixel-rain",
     "name": "Pixel Rain",
     "title": "Pixel Rain",
-    "description": "Stepped pixel trails falling down a dotted grid",
+    "description": "Night-time pixel rain slanting into a still pixel lake, each drop splashing rings across the surface",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -385,9 +383,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "ray-burst",
-    "name": "Ray Burst",
-    "title": "Ray Burst",
-    "description": "Radial lines breathing around a pulsing centre",
+    "name": "Sunburst Horizon",
+    "title": "Sunburst Horizon",
+    "description": "Retro sunburst wedges turning above a striped half-sun, with rings rippling out from the horizon",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -402,7 +400,6 @@ export const docsBits: DocsBit[] = [
     "height": 1080,
     "helpers": [
       "color",
-      "random",
       "viewport"
     ],
     "htmlPath": "/bits/ray-burst.html",
@@ -410,9 +407,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "speed-streaks",
-    "name": "Speed Streaks",
-    "title": "Speed Streaks",
-    "description": "Light streaks racing across the frame in parallax lanes",
+    "name": "Light Trails",
+    "title": "Light Trails",
+    "description": "A few long-exposure light trails tracing looping paths across the frame, their tails fading behind glowing heads",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -420,7 +417,7 @@ export const docsBits: DocsBit[] = [
       "background",
       "lines",
       "speed",
-      "streaks"
+      "trails"
     ],
     "duration": 12,
     "width": 1920,
@@ -435,9 +432,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "truchet-weave",
-    "name": "Truchet Weave",
-    "title": "Truchet Weave",
-    "description": "Truchet arc tiles flipping in a ripple to rewire one continuous maze",
+    "name": "Truchet Mandala",
+    "title": "Truchet Mandala",
+    "description": "Truchet arcs laid on concentric rings of a medallion, each ring clicking round a quarter turn so the strands rewire",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -445,7 +442,7 @@ export const docsBits: DocsBit[] = [
       "background",
       "shapes",
       "truchet",
-      "pattern"
+      "mandala"
     ],
     "duration": 12,
     "width": 1920,
@@ -461,9 +458,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "wave-stack",
-    "name": "Wave Stack",
-    "title": "Wave Stack",
-    "description": "Stacked sine lines rolling over a bold colour field",
+    "name": "Twisting Ribbon",
+    "title": "Twisting Ribbon",
+    "description": "A wide striped ribbon twisting across a dark field, its back face flashing as the fold travels",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -471,7 +468,7 @@ export const docsBits: DocsBit[] = [
       "background",
       "lines",
       "waves",
-      "sine"
+      "ribbon"
     ],
     "duration": 12,
     "width": 1920,
@@ -485,23 +482,24 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "zoom-polygons",
-    "name": "Zoom Polygons",
-    "title": "Zoom Polygons",
-    "description": "Nested twisting polygons zooming in forever",
+    "name": "Polygon Procession",
+    "title": "Polygon Procession",
+    "description": "Hexagon panels stepping forward in a diagonal procession, each inner shape clicking round a sixth turn per step",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
       "loop",
       "background",
       "depth",
-      "zoom",
-      "spiral"
+      "polygons",
+      "cards"
     ],
     "duration": 12,
     "width": 1920,
     "height": 1080,
     "helpers": [
       "color",
+      "interpolate",
       "viewport"
     ],
     "htmlPath": "/bits/zoom-polygons.html",

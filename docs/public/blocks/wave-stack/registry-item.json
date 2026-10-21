@@ -2,14 +2,14 @@
   "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
   "name": "wave-stack",
   "type": "hyperframes:block",
-  "title": "Wave Stack",
-  "description": "Stacked sine lines rolling over a bold colour field",
+  "title": "Twisting Ribbon",
+  "description": "A wide striped ribbon twisting across a dark field, its back face flashing as the fold travels",
   "tags": [
     "loop",
     "background",
     "lines",
     "waves",
-    "sine"
+    "ribbon"
   ],
   "license": "MIT",
   "dimensions": {

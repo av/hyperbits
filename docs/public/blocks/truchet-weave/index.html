@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#9d8af0"},{"id":"foreground","type":"color","label":"Foreground","default":"#100f0f"},{"id":"accent","type":"color","label":"Accent","default":"#f2f0e5"},{"id":"columns","type":"number","label":"Columns","default":16},{"id":"seed","type":"number","label":"Seed","default":6}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#9d8af0"},{"id":"rings","type":"number","label":"Rings","default":7},{"id":"seed","type":"number","label":"Seed","default":6}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -7,9 +7,9 @@
     <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
-        --bg: #9d8af0;
-        --fg: #100f0f;
-        --accent: #f2f0e5;
+        --bg: #100f0f;
+        --fg: #f2f0e5;
+        --accent: #9d8af0;
       }
       * {
         margin: 0;
@@ -22,7 +22,7 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background-color: #9d8af0;
+        background-color: #100f0f;
       }
       #root {
         width: 100%;
@@ -49,7 +49,7 @@
       data-width="1920"
       data-height="1080"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="12" style="position:absolute;inset:0;background-color:#9d8af0"></div>
+      <div id="bg" class="clip" data-start="0" data-duration="12" style="position:absolute;inset:0;background-color:#100f0f"></div>
       <canvas id="stage" class="clip" data-start="0" data-duration="12"></canvas>
     </div>
     <script>
@@ -90,56 +90,71 @@
         function rgba(rgb, alpha) {
           return "rgba(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
         }
-        function mix(from, to, amount) {
-          return from.map((value, index) => Math.round(value + (to[index] - value) * amount));
-        }
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const columns = Math.max(2, Math.round(Number(vars.columns) || 16));
+        const rings = Math.max(2, Math.round(Number(vars.rings) || 7));
         const seed = Number(vars.seed) || 0;
-        const size = view.width / columns;
-        const rows = Math.ceil(view.height / size) + 1;
-        const marginY = (view.height - rows * size) / 2;
+        const sectors = 32;
         const ease = hyperbits.Easing.easeInOutCubic;
-        const centerX = view.width / 2;
-        const centerY = view.height / 2;
-        const reach = Math.hypot(centerX, centerY);
-        const tiles = [];
-        for (let row = 0; row < rows; row += 1) {
-          for (let column = 0; column < columns; column += 1) {
-            const key = "truchet-" + seed + "-" + row + "-" + column;
-            const tileX = column * size + size / 2;
-            const tileY = marginY + row * size + size / 2;
-            tiles.push({
-              tileX,
-              tileY,
-              flipped: hyperbits.random(key + "-flip") > 0.5,
-              delay: (Math.hypot(tileX - centerX, tileY - centerY) / reach) * 0.25,
-            });
+        const centerX = view.width * 0.5;
+        const centerY = view.height * 0.5;
+        const outer = view.vmin * 48;
+        const inner = view.vmin * 7;
+        const band = (outer - inner) / rings;
+        const flips = [];
+        for (let ring = 0; ring < rings; ring += 1) {
+          for (let sector = 0; sector < sectors; sector += 1) {
+            flips.push(hyperbits.random("mandala-" + seed + "-" + ring + "-" + sector) > 0.5);
           }
+        }
+        function polar(distance, angle) {
+          return [centerX + Math.cos(angle) * distance, centerY + Math.sin(angle) * distance];
+        }
+        function curve(fromDistance, fromAngle, cornerDistance, cornerAngle, toDistance, toAngle) {
+          const [startX, startY] = polar(fromDistance, fromAngle);
+          const [controlX, controlY] = polar(cornerDistance, cornerAngle);
+          const [endX, endY] = polar(toDistance, toAngle);
+          context.moveTo(startX, startY);
+          context.quadraticCurveTo(controlX, controlY, endX, endY);
         }
         function draw(phase) {
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
-          context.lineCap = "butt";
-          context.lineWidth = size * 0.28;
-          const half = size / 2;
-          for (const tile of tiles) {
-            const beat = phase * 2 - tile.delay;
+          const width = turn / sectors;
+          context.lineCap = "round";
+          for (let ring = 0; ring < rings; ring += 1) {
+            const beat = phase * 4 - ring * 0.07;
             const whole = Math.floor(beat);
-            const local = Math.min(Math.max((beat - whole) / 0.3, 0), 1);
-            const angle = (Math.PI / 2) * ((tile.flipped ? 1 : 0) + whole + ease(local));
-            context.save();
-            context.translate(tile.tileX, tile.tileY);
-            context.rotate(angle);
-            context.strokeStyle = rgba(mix(foreground, accent, Math.sin(Math.PI * local)), 1);
+            const offset = (ring % 2 === 0 ? 1 : -1) * (Math.PI / 2) * (whole + ease(Math.min(Math.max((beat - whole) / 0.45, 0), 1)));
+            const low = inner + ring * band;
+            const high = low + band;
+            const middle = (low + high) / 2;
+            context.strokeStyle = rgba(ring % 3 === 1 ? accent : foreground, 1);
+            context.lineWidth = band * 0.2;
             context.beginPath();
-            context.arc(-half, -half, half, 0, Math.PI / 2);
-            context.moveTo(half, 0);
-            context.arc(half, half, half, Math.PI * 1.5, Math.PI, true);
+            for (let sector = 0; sector < sectors; sector += 1) {
+              const start = sector * width + offset;
+              const end = start + width;
+              const center = start + width / 2;
+              if (flips[ring * sectors + sector]) {
+                curve(low, center, low, start, middle, start);
+                curve(high, center, high, end, middle, end);
+              } else {
+                curve(low, center, low, end, middle, end);
+                curve(high, center, high, start, middle, start);
+              }
+            }
             context.stroke();
-            context.restore();
           }
+          context.fillStyle = rgba(accent, 1);
+          context.beginPath();
+          context.arc(centerX, centerY, inner * 0.55, 0, turn);
+          context.fill();
+          context.strokeStyle = rgba(foreground, 0.35);
+          context.lineWidth = view.vmin * 0.2;
+          context.beginPath();
+          context.arc(centerX, centerY, outer + band * 0.35, 0, turn);
+          context.stroke();
         }
         const proxy = { time: 0 };
         const timeline = gsap.timeline({ paused: true });

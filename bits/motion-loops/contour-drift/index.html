@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#f2652a"},{"id":"levels","type":"number","label":"Contour levels","default":14},{"id":"seed","type":"number","label":"Seed","default":4}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#f2652a"},{"id":"levels","type":"number","label":"Terraces","default":11},{"id":"seed","type":"number","label":"Seed","default":4}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -90,45 +90,52 @@
         function rgba(rgb, alpha) {
           return "rgba(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
         }
+        function mix(from, to, amount) {
+          return from.map((value, index) => Math.round(value + (to[index] - value) * amount));
+        }
+        const background = channels(vars.background);
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const levels = Math.max(3, Math.round(Number(vars.levels) || 14));
+        const levels = Math.max(3, Math.round(Number(vars.levels) || 11));
         const seed = Number(vars.seed) || 0;
-        const cell = view.vmin * 1.6;
+        const cell = view.vmin * 1.2;
         const columns = Math.ceil(view.width / cell) + 1;
         const rows = Math.ceil(view.height / cell) + 1;
-        const waves = [...Array(7).keys()].map((index) => {
-          const key = "contour-" + seed + "-" + index;
+        const waves = [...Array(5).keys()].map((index) => {
+          const key = "island-" + seed + "-" + index;
           const direction = hyperbits.randomFloat(key + "-dir", 0, turn);
-          const frequency = hyperbits.randomFloat(key + "-freq", 0.6, 1.7) / (view.vmin * 100);
+          const frequency = hyperbits.randomFloat(key + "-freq", 1.2, 2.6) / (view.vmin * 100);
           return {
             stepX: Math.cos(direction) * frequency * turn,
             stepY: Math.sin(direction) * frequency * turn,
-            speed: hyperbits.pick(key + "-speed", [-1, 1, -2, 1]),
+            speed: hyperbits.pick(key + "-speed", [-1, 1, 2]),
             shift: hyperbits.randomFloat(key + "-shift", 0, turn),
-            weight: 1 / (1 + index * 0.35),
+            weight: 0.07 / (1 + index * 0.5),
           };
         });
-        const total = waves.reduce((sum, wave) => sum + wave.weight, 0);
+        const tints = [...Array(levels + 1).keys()].map((level) => rgba(mix(mix(background, accent, 0.25), accent, level / levels), 1));
         const field = new Float32Array(columns * rows);
         function sample(phase) {
+          const centerX = view.width * 0.5;
+          const centerY = view.height * 0.56;
           for (let row = 0; row < rows; row += 1) {
             for (let column = 0; column < columns; column += 1) {
               const pointX = column * cell;
               const pointY = row * cell;
-              let value = 0;
+              const distance = Math.hypot((pointX - centerX) / (view.vmin * 44), (pointY - centerY) / (view.vmin * 30));
+              let value = Math.exp(-distance * distance * 1.6);
               for (const wave of waves) {
                 value += wave.weight * Math.sin(pointX * wave.stepX + pointY * wave.stepY + wave.shift + turn * phase * wave.speed);
               }
-              field[row * columns + column] = value / total;
+              field[row * columns + column] = value;
             }
           }
         }
         function edge(threshold, first, second, firstX, firstY, secondX, secondY) {
-          const mix = (threshold - first) / (second - first);
-          return [firstX + (secondX - firstX) * mix, firstY + (secondY - firstY) * mix];
+          const amount = (threshold - first) / (second - first);
+          return [firstX + (secondX - firstX) * amount, firstY + (secondY - firstY) * amount];
         }
-        function contour(threshold) {
+        function outline(threshold, lift) {
           context.beginPath();
           for (let row = 0; row < rows - 1; row += 1) {
             for (let column = 0; column < columns - 1; column += 1) {
@@ -137,14 +144,12 @@
               const bottomRight = field[(row + 1) * columns + column + 1];
               const bottomLeft = field[(row + 1) * columns + column];
               const left = column * cell;
-              const top = row * cell;
-              const right = left + cell;
-              const bottom = top + cell;
+              const top = row * cell - lift;
               const crossings = [];
-              if (topLeft < threshold !== topRight < threshold) crossings.push(edge(threshold, topLeft, topRight, left, top, right, top));
-              if (topRight < threshold !== bottomRight < threshold) crossings.push(edge(threshold, topRight, bottomRight, right, top, right, bottom));
-              if (bottomRight < threshold !== bottomLeft < threshold) crossings.push(edge(threshold, bottomRight, bottomLeft, right, bottom, left, bottom));
-              if (bottomLeft < threshold !== topLeft < threshold) crossings.push(edge(threshold, bottomLeft, topLeft, left, bottom, left, top));
+              if (topLeft < threshold !== topRight < threshold) crossings.push(edge(threshold, topLeft, topRight, left, top, left + cell, top));
+              if (topRight < threshold !== bottomRight < threshold) crossings.push(edge(threshold, topRight, bottomRight, left + cell, top, left + cell, top + cell));
+              if (bottomRight < threshold !== bottomLeft < threshold) crossings.push(edge(threshold, bottomRight, bottomLeft, left + cell, top + cell, left, top + cell));
+              if (bottomLeft < threshold !== topLeft < threshold) crossings.push(edge(threshold, bottomLeft, topLeft, left, top + cell, left, top));
               for (let pair = 0; pair + 1 < crossings.length; pair += 2) {
                 context.moveTo(crossings[pair][0], crossings[pair][1]);
                 context.lineTo(crossings[pair + 1][0], crossings[pair + 1][1]);
@@ -157,13 +162,22 @@
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
           sample(phase);
-          context.lineCap = "round";
+          const step = view.vmin * (1.5 + 0.35 * Math.sin(turn * phase));
+          context.lineJoin = "round";
           for (let level = 0; level < levels; level += 1) {
-            const threshold = -0.78 + (1.56 * (level + 0.5)) / levels;
-            const isMajor = level % 5 === 2;
-            context.strokeStyle = isMajor ? rgba(foreground, 0.9) : rgba(accent, 0.7 + 0.3 * (level / levels));
-            context.lineWidth = view.vmin * (isMajor ? 0.42 : 0.3);
-            contour(threshold);
+            const threshold = 0.2 + (0.9 * level) / levels;
+            const lift = level * step;
+            context.fillStyle = tints[level];
+            context.beginPath();
+            for (let row = 0; row < rows; row += 1) {
+              for (let column = 0; column < columns; column += 1) {
+                if (field[row * columns + column] >= threshold) context.rect(column * cell - cell / 2, row * cell - cell / 2 - lift, cell + 0.6, cell + 0.6);
+              }
+            }
+            context.fill();
+            context.strokeStyle = rgba(foreground, level % 3 === 0 ? 0.9 : 0.55);
+            context.lineWidth = view.vmin * (level % 3 === 0 ? 0.22 : 0.12);
+            outline(threshold, lift);
           }
         }
         const proxy = { time: 0 };

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#f2f0e5"},{"id":"foreground","type":"color","label":"Foreground","default":"#100f0f"},{"id":"accent","type":"color","label":"Accent","default":"#ef5da8"},{"id":"drops","type":"number","label":"Drops per loop","default":6},{"id":"seed","type":"number","label":"Seed","default":5}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#ef5da8"},{"id":"wavelength","type":"number","label":"Wavelength (vmin)","default":12}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -7,8 +7,8 @@
     <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
-        --bg: #f2f0e5;
-        --fg: #100f0f;
+        --bg: #100f0f;
+        --fg: #f2f0e5;
         --accent: #ef5da8;
       }
       * {
@@ -22,7 +22,7 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background-color: #f2f0e5;
+        background-color: #100f0f;
       }
       #root {
         width: 100%;
@@ -49,7 +49,7 @@
       data-width="1920"
       data-height="1080"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="12" style="position:absolute;inset:0;background-color:#f2f0e5"></div>
+      <div id="bg" class="clip" data-start="0" data-duration="12" style="position:absolute;inset:0;background-color:#100f0f"></div>
       <canvas id="stage" class="clip" data-start="0" data-duration="12"></canvas>
     </div>
     <script>
@@ -92,75 +92,49 @@
         }
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const count = Math.max(1, Math.round(Number(vars.drops) || 6));
-        const seed = Number(vars.seed) || 0;
-        const pitch = view.vmin * 4.2;
-        const columns = Math.ceil(view.width / pitch);
-        const rows = Math.ceil(view.height / pitch);
-        const marginX = (view.width - (columns - 1) * pitch) / 2;
-        const marginY = (view.height - (rows - 1) * pitch) / 2;
-        const dotRadius = view.vmin * 0.5;
-        const speed = view.vmin * 16;
-        const width = view.vmin * 7;
-        const drops = [...Array(count).keys()].map((index) => {
-          const key = "ripple-" + seed + "-" + index;
-          return {
-            dropX: hyperbits.randomFloat(key + "-x", 0.12, 0.88) * view.width,
-            dropY: hyperbits.randomFloat(key + "-y", 0.15, 0.85) * view.height,
-            start: (index + hyperbits.randomFloat(key + "-t", 0, 0.6)) / count,
-          };
-        });
-        function envelope(age) {
-          if (age < 0.35) return age / 0.35;
-          return Math.exp(-(age - 0.35) * 0.45);
+        const wavelength = view.vmin * Math.max(3, Number(vars.wavelength) || 12);
+        const centerX = view.width * 0.5;
+        const centerY = view.height * 0.58;
+        const radius = view.vmin * 62;
+        const pitch = view.vmin * 2.6;
+        const tilt = 1.0;
+        const lift = view.vmin * 5.5;
+        const dots = [];
+        for (let ring = 1; ring * pitch <= radius; ring += 1) {
+          const count = Math.round((turn * ring * pitch) / pitch);
+          for (let index = 0; index < count; index += 1) {
+            const angle = (turn * index) / count;
+            dots.push({ flatX: Math.cos(angle) * ring * pitch, flatY: Math.sin(angle) * ring * pitch, share: (ring * pitch) / radius });
+          }
         }
         function draw(phase) {
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
-          const active = drops.map((drop) => {
-            const age = ((((phase - drop.start) % 1) + 1) % 1) * loop;
-            return { drop, front: age * speed, strength: envelope(age) };
+          const strikeX = radius * 0.32 * Math.cos(turn * phase);
+          const strikeY = radius * 0.32 * Math.sin(turn * phase);
+          const projected = dots.map((dot) => {
+            const distance = Math.hypot(dot.flatX - strikeX, dot.flatY - strikeY);
+            const height = Math.sin(turn * (distance / wavelength - phase * 5)) * Math.exp(-distance / (radius * 0.75)) * (1 - Math.pow(dot.share, 6));
+            return {
+              pointX: centerX + dot.flatX,
+              pointY: centerY + dot.flatY * Math.cos(tilt) - height * lift,
+              height,
+              back: dot.flatY,
+            };
           });
-          for (let row = 0; row < rows; row += 1) {
-            for (let column = 0; column < columns; column += 1) {
-              const homeX = marginX + column * pitch;
-              const homeY = marginY + row * pitch;
-              let pushX = 0;
-              let pushY = 0;
-              let energy = 0;
-              for (const wave of active) {
-                const deltaX = homeX - wave.drop.dropX;
-                const deltaY = homeY - wave.drop.dropY;
-                const distance = Math.hypot(deltaX, deltaY) || 1;
-                const offset = (distance - wave.front) / width;
-                const crest = Math.exp(-offset * offset) * wave.strength;
-                pushX += (deltaX / distance) * crest * pitch * 1.1;
-                pushY += (deltaY / distance) * crest * pitch * 1.1;
-                energy += crest;
-              }
-              const glow = Math.min(energy, 1);
-              const dotX = homeX + pushX;
-              const dotY = homeY + pushY;
-              context.fillStyle = rgba(foreground, 0.85 + 0.15 * glow);
-              context.beginPath();
-              context.arc(dotX, dotY, dotRadius * (1 + 2.2 * glow), 0, turn);
-              context.fill();
-              if (glow > 0.05) {
-                context.fillStyle = rgba(accent, glow);
-                context.beginPath();
-                context.arc(dotX, dotY, dotRadius * (1 + 2.2 * glow), 0, turn);
-                context.fill();
-              }
-            }
-          }
-          for (const wave of active) {
-            const pop = wave.strength * Math.max(0, 1 - wave.front / (view.vmin * 40));
-            if (pop < 0.01) continue;
-            context.fillStyle = rgba(accent, 1);
+          projected.sort((left, right) => left.back - right.back);
+          for (const point of projected) {
+            const crest = Math.max(0, point.height);
+            context.fillStyle = rgba(crest > 0.35 ? accent : foreground, crest > 0.35 ? 0.6 + 0.4 * crest : 0.28 + 0.4 * (point.height + 1) / 2);
             context.beginPath();
-            context.arc(wave.drop.dropX, wave.drop.dropY, view.vmin * 1.1 * pop, 0, turn);
+            context.arc(point.pointX, point.pointY, view.vmin * (0.22 + 0.38 * (point.height + 1) / 2), 0, turn);
             context.fill();
           }
+          context.strokeStyle = rgba(foreground, 0.5);
+          context.lineWidth = view.vmin * 0.25;
+          context.beginPath();
+          context.ellipse(centerX, centerY, radius + pitch, (radius + pitch) * Math.cos(tilt), 0, 0, turn);
+          context.stroke();
         }
         const proxy = { time: 0 };
         const timeline = gsap.timeline({ paused: true });

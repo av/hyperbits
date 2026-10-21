@@ -1,19 +1,20 @@
 {
   "name": "zoom-polygons",
-  "title": "Zoom Polygons",
-  "description": "Nested twisting polygons zooming in forever",
+  "title": "Polygon Procession",
+  "description": "Hexagon panels stepping forward in a diagonal procession, each inner shape clicking round a sixth turn per step",
   "tags": [
     "loop",
     "background",
     "depth",
-    "zoom",
-    "spiral"
+    "polygons",
+    "cards"
   ],
   "duration": 12,
   "width": 1920,
   "height": 1080,
   "helpers": [
     "color",
+    "interpolate",
     "viewport"
   ],
   "iifeLocal": "../../../dist/hyperbits.iife.js",
@@ -22,14 +23,14 @@
     "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
     "name": "zoom-polygons",
     "type": "hyperframes:block",
-    "title": "Zoom Polygons",
-    "description": "Nested twisting polygons zooming in forever",
+    "title": "Polygon Procession",
+    "description": "Hexagon panels stepping forward in a diagonal procession, each inner shape clicking round a sixth turn per step",
     "tags": [
       "loop",
       "background",
       "depth",
-      "zoom",
-      "spiral"
+      "polygons",
+      "cards"
     ],
     "license": "MIT",
     "dimensions": {

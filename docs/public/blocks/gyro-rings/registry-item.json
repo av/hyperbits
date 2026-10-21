@@ -2,8 +2,8 @@
   "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
   "name": "gyro-rings",
   "type": "hyperframes:block",
-  "title": "Gyro Rings",
-  "description": "Wireframe rings tumbling in 3D around a glowing core",
+  "title": "Orrery Rings",
+  "description": "Tilted planetary orbits around an off-centre sun, planets trailing light at whole-number periods",
   "tags": [
     "loop",
     "background",

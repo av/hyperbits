@@ -2,14 +2,14 @@
   "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
   "name": "pinwheel-grid",
   "type": "hyperframes:block",
-  "title": "Pinwheel Grid",
-  "description": "Pinwheel grid snapping through counter-rotating quarter turns",
+  "title": "Pinwheel Garden",
+  "description": "Paper pinwheels on swaying stems of different heights, spinning up as gusts of wind roll across the garden",
   "tags": [
     "loop",
     "background",
     "shapes",
     "pinwheel",
-    "grid"
+    "garden"
   ],
   "license": "MIT",
   "dimensions": {

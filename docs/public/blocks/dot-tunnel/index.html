@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#4fb6ec"},{"id":"rings","type":"number","label":"Rings","default":28},{"id":"dots","type":"number","label":"Dots per ring","default":48}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#4fb6ec"},{"id":"frames","type":"number","label":"Rings","default":46},{"id":"dots","type":"number","label":"Dots per ring","default":18}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -92,49 +92,46 @@
         }
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const rings = Math.max(8, Math.round((Number(vars.rings) || 28) / 4) * 4);
-        const dots = Math.max(8, Math.round(Number(vars.dots) || 48));
-        const centerX = view.width / 2;
-        const centerY = view.height / 2;
-        const focal = view.vmin * 30;
-        const near = 0.28;
-        const far = 12;
-        const spacing = (far - near) / rings;
-        const ringsPerLoop = 8;
+        const rings = Math.max(8, Math.round(Number(vars.frames) || 46));
+        const dots = Math.max(6, Math.round(Number(vars.dots) || 18));
+        const span = view.width * 1.2;
+        const gap = span / rings;
+        const radius = view.vmin * 19;
+        const camera = view.vmin * 120;
+        const tilt = -0.12;
         function draw(phase) {
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
-          const vanishX = centerX + Math.sin(turn * phase + far * 0.32) * view.vw * 13;
-          const vanishY = centerY + Math.cos(turn * phase * 2 + far * 0.21) * view.vh * 9;
-          const core = context.createRadialGradient(vanishX, vanishY, 0, vanishX, vanishY, view.vmin * 26);
-          core.addColorStop(0, rgba(accent, 0.22));
-          core.addColorStop(1, rgba(accent, 0));
-          context.fillStyle = core;
-          context.fillRect(0, 0, view.width, view.height);
-          for (let ring = rings - 1; ring >= 0; ring -= 1) {
-            const slot = (((ring - phase * ringsPerLoop) % rings) + rings) % rings;
-            const depth = near + slot * spacing;
-            const distance = (depth - near) / (far - near);
-            const alpha = Math.pow(1 - distance, 0.7) * Math.min(1, slot * 1.5);
-            if (alpha <= 0.002) continue;
-            const bend = Math.min(depth / far, 1);
-            const offsetX = Math.sin(turn * phase + depth * 0.32) * view.vw * 13 * bend;
-            const offsetY = Math.cos(turn * phase * 2 + depth * 0.21) * view.vh * 9 * bend;
-            const ringX = centerX + offsetX;
-            const ringY = centerY + offsetY;
-            const radius = focal / depth;
-            const twist = depth * 0.18 + (turn / dots) * phase * 3;
-            const dotRadius = Math.max(view.vmin * 0.16, (view.vmin * 0.95) / depth);
-            const isBright = Math.round(ring) % 4 === 0;
-            context.fillStyle = rgba(isBright ? foreground : accent, alpha);
-            context.beginPath();
+          const points = [];
+          for (let ring = 0; ring < rings; ring += 1) {
+            const along = ((((ring - phase * 6) % rings) + rings) % rings) * gap - span / 2;
+            const share = along / span + 0.5;
+            const swell = 1 + 0.35 * Math.pow(0.5 + 0.5 * Math.cos(turn * (share - phase * 2)), 4);
+            const edgeFade = Math.min(1, share * 6, (1 - share) * 6);
             for (let dot = 0; dot < dots; dot += 1) {
-              const angle = (turn * dot) / dots + twist;
-              const dotX = ringX + Math.cos(angle) * radius;
-              const dotY = ringY + Math.sin(angle) * radius;
-              context.moveTo(dotX + dotRadius, dotY);
-              context.arc(dotX, dotY, dotRadius, 0, turn);
+              const theta = (turn * dot) / dots + share * 5.5 + (turn / dots) * phase * 4;
+              const across = Math.cos(theta) * radius * swell;
+              const depth = Math.sin(theta) * radius * swell;
+              const scale = camera / (camera - depth);
+              const baseX = along * scale;
+              const baseY = across * scale;
+              points.push({
+                pointX: view.width / 2 + baseX * Math.cos(tilt) - baseY * Math.sin(tilt),
+                pointY: view.height / 2 + baseX * Math.sin(tilt) + baseY * Math.cos(tilt),
+                depth,
+                scale,
+                fade: edgeFade,
+                stripe: Math.sin(theta * 2 - share * 3),
+              });
             }
+          }
+          points.sort((left, right) => left.depth - right.depth);
+          for (const point of points) {
+            const front = (point.depth / radius + 1) / 2;
+            const lit = point.stripe > 0.75;
+            context.fillStyle = rgba(lit ? accent : foreground, point.fade * (0.25 + 0.75 * front));
+            context.beginPath();
+            context.arc(point.pointX, point.pointY, view.vmin * (0.22 + 0.42 * front) * point.scale * (lit ? 1.25 : 1), 0, turn);
             context.fill();
           }
         }

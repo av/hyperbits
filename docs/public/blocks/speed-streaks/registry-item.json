@@ -2,14 +2,14 @@
   "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
   "name": "speed-streaks",
   "type": "hyperframes:block",
-  "title": "Speed Streaks",
-  "description": "Light streaks racing across the frame in parallax lanes",
+  "title": "Light Trails",
+  "description": "A few long-exposure light trails tracing looping paths across the frame, their tails fading behind glowing heads",
   "tags": [
     "loop",
     "background",
     "lines",
     "speed",
-    "streaks"
+    "trails"
   ],
   "license": "MIT",
   "dimensions": {

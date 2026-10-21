@@ -1,13 +1,13 @@
 {
   "name": "halftone-sweep",
-  "title": "Halftone Sweep",
-  "description": "Halftone dots swelling as soft diagonal bands sweep across",
+  "title": "Halftone Orbs",
+  "description": "A square halftone screen swelling into three orbiting orbs, a solid one, a ring and a soft cloud",
   "tags": [
     "loop",
     "background",
     "dots",
     "halftone",
-    "waves"
+    "orbs"
   ],
   "duration": 12,
   "width": 1920,
@@ -22,14 +22,14 @@
     "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
     "name": "halftone-sweep",
     "type": "hyperframes:block",
-    "title": "Halftone Sweep",
-    "description": "Halftone dots swelling as soft diagonal bands sweep across",
+    "title": "Halftone Orbs",
+    "description": "A square halftone screen swelling into three orbiting orbs, a solid one, a ring and a soft cloud",
     "tags": [
       "loop",
       "background",
       "dots",
       "halftone",
-      "waves"
+      "orbs"
     ],
     "license": "MIT",
     "dimensions": {

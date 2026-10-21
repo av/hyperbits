@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#f2652a"},{"id":"foreground","type":"color","label":"Foreground","default":"#100f0f"},{"id":"accent","type":"color","label":"Accent","default":"#f2f0e5"},{"id":"lines","type":"number","label":"Lines","default":30}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#f2652a"},{"id":"lines","type":"number","label":"Stripes","default":18}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -7,9 +7,9 @@
     <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
-        --bg: #f2652a;
-        --fg: #100f0f;
-        --accent: #f2f0e5;
+        --bg: #100f0f;
+        --fg: #f2f0e5;
+        --accent: #f2652a;
       }
       * {
         margin: 0;
@@ -22,7 +22,7 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background-color: #f2652a;
+        background-color: #100f0f;
       }
       #root {
         width: 100%;
@@ -49,7 +49,7 @@
       data-width="1920"
       data-height="1080"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="12" style="position:absolute;inset:0;background-color:#f2652a"></div>
+      <div id="bg" class="clip" data-start="0" data-duration="12" style="position:absolute;inset:0;background-color:#100f0f"></div>
       <canvas id="stage" class="clip" data-start="0" data-duration="12"></canvas>
     </div>
     <script>
@@ -90,35 +90,64 @@
         function rgba(rgb, alpha) {
           return "rgba(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
         }
+        function mix(from, to, amount) {
+          return from.map((value, index) => Math.round(value + (to[index] - value) * amount));
+        }
+        const background = channels(vars.background);
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const lines = Math.max(4, Math.round(Number(vars.lines) || 30));
-        const highlight = Math.round(lines * 0.58);
-        const steps = 160;
-        function lineY(line, progress, phase) {
-          const base = (-0.18 + (1.36 * line) / (lines - 1)) * view.height;
-          const sweep = Math.sin(turn * (progress * 0.9 + phase) + line * 0.11);
-          const ripple = Math.sin(turn * (progress * 2.1 - phase * 2) + line * 0.23);
-          const swell = Math.sin(turn * (progress * 0.4 + line / lines - phase));
-          return base + view.vh * (12 * sweep + 3.5 * ripple) * (0.65 + 0.35 * swell) - view.vh * 22 * (progress - 0.5);
+        const shade = mix(accent, background, 0.45);
+        const backFace = mix(foreground, accent, 0.35);
+        const stripes = Math.max(2, Math.round(Number(vars.lines) || 18));
+        const slices = 120;
+        const ribbonWidth = view.vh * 34;
+        function frame(progress, phase) {
+          const centerY = view.height * (0.72 - 0.44 * progress) + view.vh * 9 * Math.sin(turn * (progress * 1.2 - phase));
+          const twist = turn * (progress * 0.85 - phase) ;
+          return { centerY, twist };
         }
         function draw(phase) {
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
-          context.lineCap = "round";
-          context.lineJoin = "round";
-          for (let line = 0; line < lines; line += 1) {
-            const isHighlight = line === highlight;
-            context.strokeStyle = rgba(isHighlight ? accent : foreground, 1);
-            context.lineWidth = view.vmin * (isHighlight ? 0.55 : 0.32);
-            context.beginPath();
-            for (let step = 0; step <= steps; step += 1) {
-              const progress = step / steps;
-              const pointX = -view.vw * 2 + progress * view.vw * 104;
-              const pointY = lineY(line, progress, phase);
-              if (step === 0) context.moveTo(pointX, pointY);
-              else context.lineTo(pointX, pointY);
+          const columns = [];
+          for (let slice = 0; slice <= slices; slice += 1) {
+            const progress = slice / slices;
+            const sliceX = -view.vw * 4 + progress * view.vw * 108;
+            columns.push({ sliceX, ...frame(progress, phase) });
+          }
+          for (let slice = 0; slice < slices; slice += 1) {
+            const left = columns[slice];
+            const right = columns[slice + 1];
+            const facing = Math.cos(left.twist);
+            const light = 0.5 + 0.5 * Math.sin(left.twist);
+            for (let stripe = 0; stripe < stripes; stripe += 1) {
+              const top = -0.5 + stripe / stripes;
+              const bottom = top + 1 / stripes;
+              const leftTop = left.centerY + top * ribbonWidth * Math.cos(left.twist);
+              const leftBottom = left.centerY + bottom * ribbonWidth * Math.cos(left.twist);
+              const rightTop = right.centerY + top * ribbonWidth * Math.cos(right.twist);
+              const rightBottom = right.centerY + bottom * ribbonWidth * Math.cos(right.twist);
+              const even = stripe % 2 === 0;
+              const tone = facing >= 0 ? (even ? accent : shade) : (even ? backFace : mix(backFace, background, 0.35));
+              context.fillStyle = rgba(mix(tone, background, 0.35 * (1 - light)), 1);
+              context.beginPath();
+              context.moveTo(left.sliceX, leftTop);
+              context.lineTo(right.sliceX + 0.6, rightTop);
+              context.lineTo(right.sliceX + 0.6, rightBottom);
+              context.lineTo(left.sliceX, leftBottom);
+              context.closePath();
+              context.fill();
             }
+          }
+          context.strokeStyle = rgba(foreground, 0.9);
+          context.lineWidth = view.vmin * 0.22;
+          for (const edge of [-0.5, 0.5]) {
+            context.beginPath();
+            columns.forEach((column, index) => {
+              const edgeY = column.centerY + edge * ribbonWidth * Math.cos(column.twist);
+              if (index === 0) context.moveTo(column.sliceX, edgeY);
+              else context.lineTo(column.sliceX, edgeY);
+            });
             context.stroke();
           }
         }

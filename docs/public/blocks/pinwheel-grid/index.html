@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#9d8af0"},{"id":"columns","type":"number","label":"Columns","default":7}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#9d8af0"},{"id":"pinwheels","type":"number","label":"Pinwheels","default":9},{"id":"seed","type":"number","label":"Seed","default":5}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -93,49 +93,73 @@
         function mix(from, to, amount) {
           return from.map((value, index) => Math.round(value + (to[index] - value) * amount));
         }
+        const background = channels(vars.background);
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const shade = mix(accent, channels(vars.background), 0.3);
-        const columns = Math.max(2, Math.round(Number(vars.columns) || 7));
-        const rows = Math.max(1, Math.round(view.height / (view.width / columns)));
-        const size = Math.min(view.width / columns, view.height / rows);
-        const marginX = (view.width - columns * size) / 2;
-        const marginY = (view.height - rows * size) / 2;
-        const ease = hyperbits.Easing.easeInOutCubic;
-        function blade(half) {
-          context.beginPath();
-          context.moveTo(0, 0);
-          context.lineTo(0, -half);
-          context.lineTo(half, -half);
-          context.closePath();
-          context.fill();
+        const fold = mix(accent, background, 0.4);
+        const paleFold = mix(foreground, background, 0.35);
+        const count = Math.max(1, Math.round(Number(vars.pinwheels) || 9));
+        const seed = Number(vars.seed) || 0;
+        const ground = view.height * 0.9;
+        const plants = [...Array(count).keys()].map((index) => {
+          const key = "garden-" + seed + "-" + index;
+          return {
+            baseX: view.width * ((index + hyperbits.randomFloat(key + "-x", 0.3, 0.7)) / count),
+            height: view.height * hyperbits.randomFloat(key + "-h", 0.3, 0.7),
+            radius: view.vmin * hyperbits.randomFloat(key + "-r", 5, 10),
+            spins: hyperbits.pick(key + "-s", [2, 3, 3, 4]),
+            pale: index % 3 === 1,
+          };
+        });
+        function wheel(radius, pale) {
+          for (let blade = 0; blade < 4; blade += 1) {
+            context.fillStyle = rgba(pale ? foreground : accent, 1);
+            context.beginPath();
+            context.moveTo(0, 0);
+            context.lineTo(radius, 0);
+            context.lineTo(radius, -radius);
+            context.closePath();
+            context.fill();
+            context.fillStyle = rgba(pale ? paleFold : fold, 1);
+            context.beginPath();
+            context.moveTo(0, 0);
+            context.lineTo(radius, -radius);
+            context.lineTo(radius * 0.25, -radius * 0.55);
+            context.closePath();
+            context.fill();
+            context.rotate(Math.PI / 2);
+          }
         }
         function draw(phase) {
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
-          const half = size * 0.38;
-          for (let row = 0; row < rows; row += 1) {
-            for (let column = 0; column < columns; column += 1) {
-              const direction = (row + column) % 2 === 0 ? 1 : -1;
-              const delay = (column / columns) * 0.35 + (row / rows) * 0.2;
-              const beat = phase * 2 - delay;
-              const whole = Math.floor(beat);
-              const local = Math.min(Math.max((beat - whole) / 0.45, 0), 1);
-              const angle = direction * (Math.PI / 2) * (whole + ease(local));
-              context.save();
-              context.translate(marginX + column * size + size / 2, marginY + row * size + size / 2);
-              context.rotate(angle);
-              for (let quarter = 0; quarter < 4; quarter += 1) {
-                context.fillStyle = rgba(quarter % 2 === 0 ? accent : shade, 1);
-                blade(half);
-                context.rotate(Math.PI / 2);
-              }
-              context.fillStyle = rgba(foreground, 1);
-              context.beginPath();
-              context.arc(0, 0, size * 0.035, 0, turn);
-              context.fill();
-              context.restore();
-            }
+          context.strokeStyle = rgba(foreground, 0.4);
+          context.lineWidth = view.vmin * 0.3;
+          context.beginPath();
+          context.moveTo(0, ground);
+          context.lineTo(view.width, ground);
+          context.stroke();
+          for (const plant of plants) {
+            const gust = Math.pow(0.5 + 0.5 * Math.cos(turn * (phase * 2 - plant.baseX / view.width)), 3);
+            const bend = view.vmin * (2 + 7 * gust);
+            const tipX = plant.baseX + bend;
+            const tipY = ground - plant.height;
+            context.strokeStyle = rgba(foreground, 0.85);
+            context.lineWidth = view.vmin * 0.4;
+            context.beginPath();
+            context.moveTo(plant.baseX, ground);
+            context.quadraticCurveTo(plant.baseX, ground - plant.height * 0.55, tipX, tipY);
+            context.stroke();
+            const angle = turn * phase * plant.spins + 1.2 * Math.sin(turn * (phase * 2 - plant.baseX / view.width));
+            context.save();
+            context.translate(tipX, tipY);
+            context.rotate(angle);
+            wheel(plant.radius, plant.pale);
+            context.fillStyle = rgba(foreground, 1);
+            context.beginPath();
+            context.arc(0, 0, view.vmin * 0.6, 0, turn);
+            context.fill();
+            context.restore();
           }
         }
         const proxy = { time: 0 };

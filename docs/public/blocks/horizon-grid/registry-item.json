@@ -2,13 +2,13 @@
   "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
   "name": "horizon-grid",
   "type": "hyperframes:block",
-  "title": "Horizon Grid",
-  "description": "Mirrored perspective grid streaming toward a glowing horizon",
+  "title": "Horizon Ridges",
+  "description": "Wireframe ridgelines rolling toward a striped sun on the horizon",
   "tags": [
     "loop",
     "background",
     "depth",
-    "grid",
+    "terrain",
     "perspective"
   ],
   "license": "MIT",

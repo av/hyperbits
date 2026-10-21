@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#ef5da8"},{"id":"pitch","type":"number","label":"Dot pitch (vmin)","default":2.6}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#ef5da8"},{"id":"pitch","type":"number","label":"Dot pitch (vmin)","default":2.3}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -92,31 +92,47 @@
         }
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const pitch = view.vmin * Math.max(1, Number(vars.pitch) || 2.6);
-        const rowHeight = pitch * 0.866;
-        const columns = Math.ceil(view.width / pitch) + 2;
-        const rows = Math.ceil(view.height / rowHeight) + 2;
-        const angle = -0.62;
-        const band = view.vmax * 60;
+        const pitch = view.vmin * Math.max(1, Number(vars.pitch) || 2.3);
+        const columns = Math.ceil(view.width / pitch) + 1;
+        const rows = Math.ceil(view.height / pitch) + 1;
+        const orbs = [
+          { kind: "solid", radius: view.vmin * 22, pathX: 0.3, pathY: 0.26, speedX: 1, speedY: 2, shift: 0 },
+          { kind: "ring", radius: view.vmin * 26, pathX: 0.26, pathY: 0.22, speedX: -1, speedY: 1, shift: 0.33 },
+          { kind: "cloud", radius: view.vmin * 34, pathX: 0.2, pathY: 0.3, speedX: 2, speedY: -1, shift: 0.66 },
+        ];
         function draw(phase) {
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
-          const accentFill = rgba(accent, 1);
-          const dustFill = rgba(foreground, 0.16);
+          const centers = orbs.map((orb) => ({
+            orb,
+            orbX: view.width * (0.5 + orb.pathX * Math.sin(turn * (phase * orb.speedX + orb.shift))),
+            orbY: view.height * (0.5 + orb.pathY * Math.cos(turn * (phase * orb.speedY + orb.shift))),
+          }));
+          const dotFill = rgba(accent, 1);
+          const coreFill = rgba(foreground, 1);
           for (let row = 0; row < rows; row += 1) {
-            const dotY = row * rowHeight - rowHeight * 0.5;
-            const shift = row % 2 === 0 ? 0 : pitch * 0.5;
             for (let column = 0; column < columns; column += 1) {
-              const dotX = column * pitch + shift - pitch * 0.5;
-              const along = (dotX * Math.cos(angle) + dotY * Math.sin(angle)) / band;
-              const across = (-dotX * Math.sin(angle) + dotY * Math.cos(angle)) / band;
-              const main = Math.pow(0.5 + 0.5 * Math.cos(turn * (along - phase * 2)), 1.8);
-              const cross = 0.5 + 0.5 * Math.cos(turn * (across * 1.4 + along * 0.3 + phase));
-              const amount = main * (0.75 + 0.25 * cross);
-              const radius = Math.max(pitch * 0.5 * amount, view.vmin * 0.12);
-              context.fillStyle = radius > view.vmin * 0.2 ? accentFill : dustFill;
+              const dotX = column * pitch;
+              const dotY = row * pitch;
+              let amount = 0;
+              let core = 0;
+              for (const { orb, orbX, orbY } of centers) {
+                const distance = Math.hypot(dotX - orbX, dotY - orbY) / orb.radius;
+                if (orb.kind === "solid") {
+                  const value = Math.max(0, 1 - Math.pow(distance, 3));
+                  amount += value;
+                  core = Math.max(core, value);
+                } else if (orb.kind === "ring") {
+                  amount += Math.exp(-Math.pow((distance - 0.8) / 0.16, 2));
+                } else {
+                  amount += 0.75 * Math.exp(-distance * distance * 2.2);
+                }
+              }
+              amount = Math.min(amount, 1);
+              if (amount < 0.06) continue;
+              context.fillStyle = core > 0.85 ? coreFill : dotFill;
               context.beginPath();
-              context.arc(dotX, dotY, radius, 0, turn);
+              context.arc(dotX, dotY, pitch * 0.5 * amount, 0, turn);
               context.fill();
             }
           }

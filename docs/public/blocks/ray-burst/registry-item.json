@@ -2,8 +2,8 @@
   "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
   "name": "ray-burst",
   "type": "hyperframes:block",
-  "title": "Ray Burst",
-  "description": "Radial lines breathing around a pulsing centre",
+  "title": "Sunburst Horizon",
+  "description": "Retro sunburst wedges turning above a striped half-sun, with rings rippling out from the horizon",
   "tags": [
     "loop",
     "background",

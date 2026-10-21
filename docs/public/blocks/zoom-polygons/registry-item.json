@@ -2,14 +2,14 @@
   "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
   "name": "zoom-polygons",
   "type": "hyperframes:block",
-  "title": "Zoom Polygons",
-  "description": "Nested twisting polygons zooming in forever",
+  "title": "Polygon Procession",
+  "description": "Hexagon panels stepping forward in a diagonal procession, each inner shape clicking round a sixth turn per step",
   "tags": [
     "loop",
     "background",
     "depth",
-    "zoom",
-    "spiral"
+    "polygons",
+    "cards"
   ],
   "license": "MIT",
   "dimensions": {

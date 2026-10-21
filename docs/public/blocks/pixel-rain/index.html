@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#f2f0e5"},{"id":"foreground","type":"color","label":"Foreground","default":"#100f0f"},{"id":"accent","type":"color","label":"Accent","default":"#ef5da8"},{"id":"columns","type":"number","label":"Columns","default":40},{"id":"seed","type":"number","label":"Seed","default":2}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#ef5da8"},{"id":"columns","type":"number","label":"Columns","default":96},{"id":"seed","type":"number","label":"Seed","default":2}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -7,8 +7,8 @@
     <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
     <style>
       :root {
-        --bg: #f2f0e5;
-        --fg: #100f0f;
+        --bg: #100f0f;
+        --fg: #f2f0e5;
         --accent: #ef5da8;
       }
       * {
@@ -22,7 +22,7 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background-color: #f2f0e5;
+        background-color: #100f0f;
       }
       #root {
         width: 100%;
@@ -49,7 +49,7 @@
       data-width="1920"
       data-height="1080"
     >
-      <div id="bg" class="clip" data-start="0" data-duration="12" style="position:absolute;inset:0;background-color:#f2f0e5"></div>
+      <div id="bg" class="clip" data-start="0" data-duration="12" style="position:absolute;inset:0;background-color:#100f0f"></div>
       <canvas id="stage" class="clip" data-start="0" data-duration="12"></canvas>
     </div>
     <script>
@@ -90,49 +90,64 @@
         function rgba(rgb, alpha) {
           return "rgba(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
         }
+        function mix(from, to, amount) {
+          return from.map((value, index) => Math.round(value + (to[index] - value) * amount));
+        }
+        const background = channels(vars.background);
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const columns = Math.max(8, Math.round(Number(vars.columns) || 40));
+        const water = mix(accent, background, 0.55);
+        const columns = Math.max(16, Math.round(Number(vars.columns) || 96));
         const seed = Number(vars.seed) || 0;
         const cell = view.width / columns;
         const rows = Math.ceil(view.height / cell);
-        const marginY = (view.height - rows * cell) / 2;
-        const block = cell * 0.7;
-        const drops = [];
-        for (let column = 0; column < columns; column += 1) {
-          const streams = hyperbits.pick("rain-" + seed + "-" + column, [1, 1, 2]);
-          for (let stream = 0; stream < streams; stream += 1) {
-            const key = "rain-" + seed + "-" + column + "-" + stream;
-            drops.push({
-              column,
-              offset: hyperbits.random(key + "-offset"),
-              laps: hyperbits.pick(key + "-laps", [1, 1, 2, 2, 3]),
-              trail: Math.round(hyperbits.randomFloat(key + "-trail", 3, 11)),
-            });
-          }
+        const surface = Math.round(rows * 0.7);
+        const block = cell * 0.86;
+        const drops = [...Array(Math.round(columns * 1.1)).keys()].map((index) => {
+          const key = "drop-" + seed + "-" + index;
+          return {
+            column: hyperbits.randomInt(key + "-c", 0, columns - 1),
+            start: hyperbits.randomInt(key + "-s", -16, -2),
+            offset: hyperbits.random(key + "-o"),
+            laps: hyperbits.pick(key + "-l", [1, 2, 2, 3]),
+            bright: hyperbits.random(key + "-b") > 0.7,
+          };
+        });
+        function pixel(column, row, color, alpha) {
+          if (row < 0 || row >= rows || alpha <= 0.01) return;
+          const wrapped = ((column % columns) + columns) % columns;
+          context.fillStyle = rgba(color, alpha);
+          context.fillRect(wrapped * cell + (cell - block) / 2, row * cell + (cell - block) / 2, block, block);
         }
         function draw(phase) {
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
-          context.fillStyle = rgba(foreground, 0.12);
-          for (let row = 0; row < rows; row += 1) {
+          for (let row = surface; row < rows; row += 1) {
             for (let column = 0; column < columns; column += 1) {
-              const dotX = column * cell + cell / 2;
-              const dotY = marginY + row * cell + cell / 2;
-              context.fillRect(dotX - cell * 0.05, dotY - cell * 0.05, cell * 0.1, cell * 0.1);
+              const shimmer = 0.5 + 0.5 * Math.sin(turn * (phase * 2 + column * 0.11 + (row - surface) * 0.35));
+              pixel(column, row, water, (0.3 + 0.7 * shimmer) * (1 - 0.7 * (row - surface) / (rows - surface)));
             }
           }
           for (const drop of drops) {
-            const travel = rows + drop.trail;
             const progress = (((drop.offset + phase * drop.laps) % 1) + 1) % 1;
-            const head = Math.floor(progress * travel);
-            const left = drop.column * cell + (cell - block) / 2;
-            for (let step = 0; step < drop.trail; step += 1) {
-              const row = head - step;
-              if (row < 0 || row >= rows) continue;
-              const top = marginY + row * cell + (cell - block) / 2;
-              context.fillStyle = step === 0 ? rgba(accent, 1) : rgba(foreground, step > drop.trail - 3 ? 0.35 : 1);
-              context.fillRect(left, top, block, block);
+            const color = drop.bright ? accent : foreground;
+            if (progress < 0.62) {
+              const fall = Math.pow(progress / 0.62, 2);
+              const row = Math.floor(drop.start + (surface - drop.start) * fall);
+              const drift = Math.floor((row - drop.start) * 0.35);
+              pixel(drop.column + drift, row, color, 1);
+              pixel(drop.column + drift, row - 1, color, 0.6);
+              pixel(drop.column + drift - 1, row - 2, color, 0.3);
+            } else {
+              const splash = (progress - 0.62) / 0.38;
+              const drift = Math.floor((surface - drop.start) * 0.35);
+              const reach = Math.floor(splash * 7);
+              const alpha = Math.pow(1 - splash, 1.5);
+              pixel(drop.column + drift - reach, surface, color, alpha);
+              pixel(drop.column + drift + reach, surface, color, alpha);
+              if (splash < 0.35) pixel(drop.column + drift, surface - 1 - Math.floor(splash * 6), color, 1 - splash / 0.35);
+              pixel(drop.column + drift - Math.floor(reach / 2), surface + 1, accent, alpha * 0.6);
+              pixel(drop.column + drift + Math.floor(reach / 2), surface + 1, accent, alpha * 0.6);
             }
           }
         }

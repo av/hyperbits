@@ -2,8 +2,8 @@
   "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
   "name": "dot-tunnel",
   "type": "hyperframes:block",
-  "title": "Dot Tunnel",
-  "description": "Dotted rings flying out of a curving tunnel",
+  "title": "Dot Helix Tube",
+  "description": "A dotted tube seen from the side, its rings spinning into helix stripes while a bulge travels along it",
   "tags": [
     "loop",
     "background",

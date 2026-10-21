@@ -1,13 +1,13 @@
 {
   "name": "truchet-weave",
-  "title": "Truchet Weave",
-  "description": "Truchet arc tiles flipping in a ripple to rewire one continuous maze",
+  "title": "Truchet Mandala",
+  "description": "Truchet arcs laid on concentric rings of a medallion, each ring clicking round a quarter turn so the strands rewire",
   "tags": [
     "loop",
     "background",
     "shapes",
     "truchet",
-    "pattern"
+    "mandala"
   ],
   "duration": 12,
   "width": 1920,
@@ -24,14 +24,14 @@
     "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
     "name": "truchet-weave",
     "type": "hyperframes:block",
-    "title": "Truchet Weave",
-    "description": "Truchet arc tiles flipping in a ripple to rewire one continuous maze",
+    "title": "Truchet Mandala",
+    "description": "Truchet arcs laid on concentric rings of a medallion, each ring clicking round a quarter turn so the strands rewire",
     "tags": [
       "loop",
       "background",
       "shapes",
       "truchet",
-      "pattern"
+      "mandala"
     ],
     "license": "MIT",
     "dimensions": {
