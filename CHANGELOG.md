@@ -1,6 +1,7 @@
-### Unreleased
+### v0.2.0
 
-- 16 Motion Loops bits in a new `motion-loops` category: seamless 12-second backgrounds in four families (depth, lines, dots, shapes), each restyled with `background`, `foreground` and `accent` palette tokens and shipped with a `preview.png`
+- 16 Motion Loops bits in a new `motion-loops` category: seamless 12-second loops in four families (depth, lines, dots, shapes), each restyled with `background`, `foreground` and `accent` palette tokens and shipped with a `preview.png`. Fifteen are calm backgrounds for text and UI; Bauhaus Poster is a standalone composition.
+- Agent skill: a Motion loops section in `SKILL.md` and `references/motion-loops.md` covering picking, restyling, the seam rules and the background rules for designing new loops
 - Docs: Motion Loops page with a family-filtered live gallery and design rules; catalog cards show `preview.png` posters before the live player mounts
 
 ### v0.1.0

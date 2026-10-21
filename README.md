@@ -12,7 +12,7 @@ Ready-made animation bits for [HyperFrames](https://github.com/heygen-com/hyperf
 
 ## Status
 
-0.1.0: helpers, 46 bits, CLI, MCP server, docs site, demo reel and agent skill. Unreleased on `master`: 16 seamless motion loops.
+0.2.0: helpers, 62 bits including 16 seamless motion loops, CLI, MCP server, docs site, demo reel and agent skill.
 
 ## Single-step usage
 
