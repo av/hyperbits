@@ -20,7 +20,7 @@ Bits live in `bits/motion-loops/`. Each is tagged `loop`, `background` and one f
 | `dots` | `dot-ripple` (Ripple Plane): a gently tilted plane of dots filling the frame, lifted by slow ripples | `wavelength` |
 | `dots` | `phyllotaxis-bloom` (Bloom Wallpaper): a wallpaper of small flower heads opening in a travelling wave | `dots` (florets) |
 | `dots` | `pixel-rain` (Pixel Rain): slanting pixel rain landing and splashing at different depths across the frame | `columns`, `seed` |
-| `shapes` | `bauhaus-tiles` (Bauhaus Rows): rows of soft Bauhaus motifs gliding slowly past each other | `size` |
+| `shapes` | `bauhaus-tiles` (Bauhaus Poster): an asymmetric Bauhaus poster whose large shapes trade places on four eased beats; the one composition-style loop, not a background | `beat` (hold) |
 | `shapes` | `truchet-weave` (Truchet Arcs): gently curving bands of Truchet arcs, neighbouring bands gliding in opposite directions | `rings` (bands), `seed` |
 | `shapes` | `floating-shapes` (Hanging Garlands): garlands of paper cutouts hanging from the top edge | `sway` |
 | `shapes` | `pinwheel-grid` (Pinwheel Meadow): a meadow of small pinwheels in receding rows | `pinwheels`, `seed` |
@@ -61,7 +61,7 @@ The seam rules:
 7. Randomness is seeded and drawn once at setup (`hyperbits.random`, `randomFloat`, `pick`), keyed by a `seed` knob.
 8. Tints come from the tokens: mix the accent toward the background for a muted tone. Interpolate channels in sRGB for these mixes; Oklch hue interpolation between a chromatic and a near-neutral colour drifts toward unrelated hues.
 
-Background rules: a loop sits behind text and UI, so it must not compete with it.
+Background rules: a loop sits behind text and UI, so it must not compete with it. Fifteen loops follow these; Bauhaus Poster is the deliberate exception, a standalone composition.
 
 - No single focal point or hero object; spread the marks so visual weight is even across the frame.
 - Keep contrast muted: tint marks toward the background or draw them at partial opacity.

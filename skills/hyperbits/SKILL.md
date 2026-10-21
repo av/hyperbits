@@ -132,7 +132,7 @@ These match `references/patterns.md` and `AGENTS.md`. Do not invent a parallel s
 
 ## Motion loops
 
-`bits/motion-loops/` holds seamless 12-second backgrounds in four families, tagged `depth`, `lines`, `dots` and `shapes`. Frame 12s equals frame 0. They are backgrounds for text and UI: even, muted and slow, with no focal object. Titles: Ridgeline Field, Helix Field, Polygon Drift, Orbit Arcs (depth); Light Trails, Ribbon Field, Sunburst Wash, Terraced Relief (lines); Halftone Clouds, Ripple Plane, Bloom Wallpaper, Pixel Rain (dots); Bauhaus Rows, Truchet Arcs, Hanging Garlands, Pinwheel Meadow (shapes). `references/motion-loops.md` maps each title to its id and structural knobs.
+`bits/motion-loops/` holds seamless 12-second backgrounds in four families, tagged `depth`, `lines`, `dots` and `shapes`. Frame 12s equals frame 0. Fifteen are backgrounds for text and UI: even, muted and slow, with no focal object. Bauhaus Poster is a standalone composition. Titles: Ridgeline Field, Helix Field, Polygon Drift, Orbit Arcs (depth); Light Trails, Ribbon Field, Sunburst Wash, Terraced Relief (lines); Halftone Clouds, Ripple Plane, Bloom Wallpaper, Pixel Rain (dots); Bauhaus Poster, Truchet Arcs, Hanging Garlands, Pinwheel Meadow (shapes). `references/motion-loops.md` maps each title to its id and structural knobs.
 
 - Search with `--tag loop` plus a family tag, for example `npx hyperbits find --tag loop --tag dots`.
 - Restyle through the shared palette tokens `background`, `foreground` and `accent` (`data-variable-values` or `--variables`), not by editing the drawing code.
