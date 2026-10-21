@@ -8,24 +8,24 @@ Bits live in `bits/motion-loops/`. Each is tagged `loop`, `background` and one f
 
 | Family | Bit (title) | Structural knobs |
 | --- | --- | --- |
-| `depth` | `horizon-grid` (Horizon Ridges): wireframe ridgelines rolling toward a striped sun | `ridges` |
-| `depth` | `dot-tunnel` (Dot Helix Tube): a dotted tube seen from the side, rings spinning into helix stripes | `frames` (rings), `dots` |
-| `depth` | `zoom-polygons` (Polygon Procession): hexagon panels stepping forward in a diagonal procession | `sides`, `twist` (card tilt) |
-| `depth` | `gyro-rings` (Orrery Rings): tilted planetary orbits around an off-centre sun | `rings`, `seed` |
-| `lines` | `speed-streaks` (Light Trails): a few long-exposure light trails tracing looping paths | `streaks`, `seed` |
-| `lines` | `wave-stack` (Twisting Ribbon): one striped ribbon twisting across a dark field | `lines` (stripes) |
-| `lines` | `ray-burst` (Sunburst Horizon): retro sunburst wedges above a striped half-sun | `rays` (wedges) |
-| `lines` | `contour-drift` (Terraced Island): a single island of stacked contour terraces | `levels`, `seed` |
-| `dots` | `halftone-sweep` (Halftone Orbs): a square halftone screen forming three orbiting orbs | `pitch` |
-| `dots` | `dot-ripple` (Ripple Drum): a tilted drumhead of polar dot rings struck off-centre | `wavelength` |
-| `dots` | `phyllotaxis-bloom` (Phyllotaxis Bloom): flower heads whose petals open in waves | `dots` (florets) |
-| `dots` | `pixel-rain` (Pixel Rain): night rain falling into a pixel lake and splashing | `columns`, `seed` |
-| `shapes` | `bauhaus-tiles` (Bauhaus Poster): large shapes trading places on four eased beats | `beat` (hold) |
-| `shapes` | `truchet-weave` (Truchet Mandala): Truchet arcs on the rings of a round medallion | `rings`, `seed` |
-| `shapes` | `floating-shapes` (Shape Mobile): a hanging mobile of balanced arms and cutouts | `sway` |
-| `shapes` | `pinwheel-grid` (Pinwheel Garden): paper pinwheels on stems spinning in gusts | `pinwheels`, `seed` |
+| `depth` | `horizon-grid` (Ridgeline Field): muted wireframe ridgelines filling the frame toward a high horizon | `ridges` |
+| `depth` | `dot-tunnel` (Helix Field): stacked dotted tubes seen from the side, turning into helix stripes | `frames` (tubes), `dots` |
+| `depth` | `zoom-polygons` (Polygon Drift): hexagon outlines circling slowly in three depth layers | `sides`, `count` |
+| `depth` | `gyro-rings` (Orbit Arcs): wide orbital arcs around a sun beyond the frame, small planets gliding | `rings`, `seed` |
+| `lines` | `speed-streaks` (Light Trails): soft light trails looping slowly, each in its own patch of the frame | `streaks`, `seed` |
+| `lines` | `wave-stack` (Ribbon Field): muted striped ribbons laid diagonally, slowly twisting | `lines` (ribbons) |
+| `lines` | `ray-burst` (Sunburst Wash): soft sunburst wedges fanning from far below the frame | `rays` (wedges) |
+| `lines` | `contour-drift` (Terraced Relief): a frame-wide relief of lifted contour terraces | `levels`, `seed` |
+| `dots` | `halftone-sweep` (Halftone Clouds): a halftone screen with soft clouds of larger dots drifting | `pitch` |
+| `dots` | `dot-ripple` (Ripple Plane): a perspective plane of dots lifted by slow ripples | `wavelength` |
+| `dots` | `phyllotaxis-bloom` (Bloom Wallpaper): a wallpaper of small flower heads opening in a travelling wave | `dots` (florets) |
+| `dots` | `pixel-rain` (Pixel Rain): night pixel rain falling into a shimmering pixel lake | `columns`, `seed` |
+| `shapes` | `bauhaus-tiles` (Bauhaus Rows): rows of soft Bauhaus motifs sliding on four eased beats | `beat` (hold) |
+| `shapes` | `truchet-weave` (Truchet Arcs): bands of Truchet arcs curving from a centre off the corner | `rings` (bands), `seed` |
+| `shapes` | `floating-shapes` (Hanging Garlands): garlands of paper cutouts hanging from the top edge | `sway` |
+| `shapes` | `pinwheel-grid` (Pinwheel Meadow): a meadow of small pinwheels in receding rows | `pinwheels`, `seed` |
 
-Ids are stable; titles describe the current design.
+Ids are stable; titles describe the current design. Earlier standalone, composition-style versions of all sixteen are kept under the git tag `motion-loops-compositions` and are not in the registry.
 
 ```bash
 npx hyperbits find --tag loop --tag lines --json
@@ -60,6 +60,13 @@ The seam rules:
 6. Identity that shifts with motion (a highlighted ring, a coloured spiral arm) must shift by a multiple of its own period, or the highlight jumps at the seam.
 7. Randomness is seeded and drawn once at setup (`hyperbits.random`, `randomFloat`, `pick`), keyed by a `seed` knob.
 8. Tints come from the tokens: mix the accent toward the background for a muted tone. Interpolate channels in sRGB for these mixes; Oklch hue interpolation between a chromatic and a near-neutral colour drifts toward unrelated hues.
+
+Background rules: a loop sits behind text and UI, so it must not compete with it.
+
+- No single focal point or hero object; spread the marks so visual weight is even across the frame.
+- Keep contrast muted: tint marks toward the background or draw them at partial opacity.
+- Keep motion slow and peripheral: local drifts, orbits and gentle travel rather than objects sweeping across the frame.
+- Check a headline, a paragraph and a button card on top, in light type on the dark palette and dark type on the light palette.
 
 Style rules that keep the set coherent:
 
