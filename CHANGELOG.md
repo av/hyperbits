@@ -1,3 +1,8 @@
+### Unreleased
+
+- Docs: copy buttons on the landing page and in the bit playground copy on click, Enter and Space, show a Copied state, and fall back to a selection copy on non-secure origins
+- CI: GitHub Actions CI on every push and pull request; tag-driven release workflow that runs the full checks, publishes to npm with provenance and creates the GitHub release. `scripts/release.sh` now only bumps, tags and pushes
+
 ### v0.2.0
 
 - 16 Motion Loops bits in a new `motion-loops` category: seamless 12-second loops in four families (depth, lines, dots, shapes), each restyled with `background`, `foreground` and `accent` palette tokens and shipped with a `preview.png`. Fifteen are calm backgrounds for text and UI; Bauhaus Poster is a standalone composition.

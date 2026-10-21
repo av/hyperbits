@@ -223,7 +223,7 @@ npm install
 | `npm run test:package` | Packs the tarball and runs the published CLI through it |
 | `npm run docs:dev` / `docs:build` | Docs site |
 | `npm run demo:preview` / `demo:render` | Demo gallery reel |
-| `scripts/release.sh` | Full check set. Optional version bump. Does not publish. |
+| `scripts/release.sh <version>` | Bump, commit, tag and push; GitHub Actions checks and publishes |
 
 Repo-local CLI after `npm run build`:
 
@@ -234,15 +234,19 @@ node dist/cli/index.js add fade-in --into compositions/
 node dist/cli/index.js mcp
 ```
 
-Release (manual publish):
+Release: bump and push a tag, nothing else runs locally.
 
 ```bash
-scripts/release.sh            # checks only
-scripts/release.sh 0.1.1      # checks, then bump package.json and src/version.ts
-npm publish --access public   # you run this
+scripts/release.sh 0.3.0      # or patch / minor / major
 ```
 
-`npm version` also works: keep `src/version.ts` in sync with `package.json`, then publish. `prepublishOnly` runs the helpers build, inventory, registry, skill refs, and the test suite.
+The script bumps `package.json`, `package-lock.json` and `src/version.ts`, renames `### Unreleased` in `CHANGELOG.md` to the new version, commits, tags `v<version>` and pushes. The tag starts [`.github/workflows/release.yml`](./.github/workflows/release.yml), which runs the full check set (build, typecheck, lint, tests, packed-package test, generated files, docs build), publishes to npm with provenance, and creates the GitHub release with that version's CHANGELOG notes.
+
+- npm auth: trusted publishing (GitHub OIDC). Until the trusted publisher is configured on npmjs.com, the workflow falls back to an `NPM_TOKEN` repository secret.
+- Dry run: run the Release workflow by hand (`gh workflow run release.yml -f dry_run=true`) to get every check and an `npm publish --dry-run` without publishing.
+- Re-run for an existing tag: `gh workflow run release.yml -f tag=v0.2.0 -f dry_run=false`.
+
+CI (`.github/workflows/ci.yml`) runs the same checks on every push to `master` and on pull requests.
 
 ## What a bit is here
 
