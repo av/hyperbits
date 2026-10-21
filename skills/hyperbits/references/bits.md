@@ -554,7 +554,7 @@ A meadow of small paper pinwheels in receding rows filling the frame, turning sl
 
 ### `pixel-rain`
 
-Night-time pixel rain slanting into a still pixel lake, each drop splashing rings across the surface
+Slanting pixel rain that lands and splashes at different depths across the whole frame
 
 - Path: `bits/motion-loops/pixel-rain/index.html`
 - Title: Pixel Rain

@@ -362,7 +362,7 @@ export const docsBits: DocsBit[] = [
     "id": "pixel-rain",
     "name": "Pixel Rain",
     "title": "Pixel Rain",
-    "description": "Night-time pixel rain slanting into a still pixel lake, each drop splashing rings across the surface",
+    "description": "Slanting pixel rain that lands and splashes at different depths across the whole frame",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [

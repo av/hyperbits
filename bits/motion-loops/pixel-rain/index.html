@@ -96,21 +96,21 @@
         const background = channels(vars.background);
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const water = mix(accent, background, 0.8);
+        const muted = mix(foreground, background, 0.45);
         const columns = Math.max(16, Math.round(Number(vars.columns) || 96));
         const seed = Number(vars.seed) || 0;
         const cell = view.width / columns;
         const rows = Math.ceil(view.height / cell);
-        const surface = Math.round(rows * 0.8);
-        const block = cell * 0.86;
-        const drops = [...Array(Math.round(columns * 1.5)).keys()].map((index) => {
+        const block = cell * 0.82;
+        const drops = [...Array(Math.round(columns * 1.3)).keys()].map((index) => {
           const key = "drop-" + seed + "-" + index;
           return {
             column: hyperbits.randomInt(key + "-c", 0, columns - 1),
-            start: hyperbits.randomInt(key + "-s", -16, -2),
+            start: hyperbits.randomInt(key + "-s", -14, -2),
+            land: Math.round(rows * hyperbits.randomFloat(key + "-g", 0.2, 0.98)),
             offset: hyperbits.random(key + "-o"),
-            laps: hyperbits.pick(key + "-l", [1, 2, 2, 3]),
-            bright: hyperbits.random(key + "-b") > 0.7,
+            laps: hyperbits.pick(key + "-l", [1, 1, 2]),
+            bright: hyperbits.random(key + "-b") > 0.75,
           };
         });
         function pixel(column, row, color, alpha) {
@@ -122,32 +122,25 @@
         function draw(phase) {
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
-          for (let row = surface; row < rows; row += 1) {
-            for (let column = 0; column < columns; column += 1) {
-              const shimmer = 0.5 + 0.5 * Math.sin(turn * (phase * 2 + column * 0.11 + (row - surface) * 0.35));
-              pixel(column, row, water, (0.2 + 0.45 * shimmer) * (1 - 0.6 * (row - surface) / (rows - surface)));
-            }
-          }
           for (const drop of drops) {
             const progress = (((drop.offset + phase * drop.laps) % 1) + 1) % 1;
-            const color = drop.bright ? accent : foreground;
-            if (progress < 0.62) {
-              const fall = Math.pow(progress / 0.62, 2);
-              const row = Math.floor(drop.start + (surface - drop.start) * fall);
-              const drift = Math.floor((row - drop.start) * 0.35);
-              pixel(drop.column + drift, row, color, 1);
-              pixel(drop.column + drift, row - 1, color, 0.6);
-              pixel(drop.column + drift - 1, row - 2, color, 0.3);
+            const color = drop.bright ? accent : muted;
+            const fallShare = 0.7;
+            if (progress < fallShare) {
+              const fall = Math.pow(progress / fallShare, 1.6);
+              const row = Math.floor(drop.start + (drop.land - drop.start) * fall);
+              const drift = Math.floor((row - drop.start) * 0.3);
+              pixel(drop.column + drift, row, color, 0.85);
+              pixel(drop.column + drift, row - 1, color, 0.45);
+              pixel(drop.column + drift - 1, row - 2, color, 0.2);
             } else {
-              const splash = (progress - 0.62) / 0.38;
-              const drift = Math.floor((surface - drop.start) * 0.35);
-              const reach = Math.floor(splash * 7);
-              const alpha = Math.pow(1 - splash, 1.5);
-              pixel(drop.column + drift - reach, surface, color, alpha);
-              pixel(drop.column + drift + reach, surface, color, alpha);
-              if (splash < 0.35) pixel(drop.column + drift, surface - 1 - Math.floor(splash * 6), color, 1 - splash / 0.35);
-              pixel(drop.column + drift - Math.floor(reach / 2), surface + 1, accent, alpha * 0.6);
-              pixel(drop.column + drift + Math.floor(reach / 2), surface + 1, accent, alpha * 0.6);
+              const splash = (progress - fallShare) / (1 - fallShare);
+              const drift = Math.floor((drop.land - drop.start) * 0.3);
+              const reach = 1 + Math.floor(splash * 4);
+              const alpha = 0.7 * Math.pow(1 - splash, 1.5);
+              pixel(drop.column + drift - reach, drop.land, color, alpha);
+              pixel(drop.column + drift + reach, drop.land, color, alpha);
+              pixel(drop.column + drift, drop.land - Math.floor(reach / 2) - 1, color, alpha * 0.6);
             }
           }
         }

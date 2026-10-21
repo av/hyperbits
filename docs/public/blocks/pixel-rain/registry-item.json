@@ -3,7 +3,7 @@
   "name": "pixel-rain",
   "type": "hyperframes:block",
   "title": "Pixel Rain",
-  "description": "Night-time pixel rain slanting into a still pixel lake, each drop splashing rings across the surface",
+  "description": "Slanting pixel rain that lands and splashes at different depths across the whole frame",
   "tags": [
     "loop",
     "background",
