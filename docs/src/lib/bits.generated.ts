@@ -113,9 +113,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "bauhaus-tiles",
-    "name": "Bauhaus Poster",
-    "title": "Bauhaus Poster",
-    "description": "An asymmetric Bauhaus poster whose circle, half-disc, bars and triangle trade places in four eased beats",
+    "name": "Bauhaus Rows",
+    "title": "Bauhaus Rows",
+    "description": "Rows of small Bauhaus motifs in soft tones sliding past each other on four eased beats, like a moving frieze",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -123,7 +123,7 @@ export const docsBits: DocsBit[] = [
       "background",
       "shapes",
       "geometric",
-      "poster"
+      "frieze"
     ],
     "duration": 12,
     "width": 1920,
@@ -131,6 +131,7 @@ export const docsBits: DocsBit[] = [
     "helpers": [
       "color",
       "interpolate",
+      "random",
       "viewport"
     ],
     "htmlPath": "/bits/bauhaus-tiles.html",
@@ -138,9 +139,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "contour-drift",
-    "name": "Terraced Island",
-    "title": "Terraced Island",
-    "description": "A single island built from stacked contour terraces, like a laser-cut relief, reshaping as its layers breathe",
+    "name": "Terraced Relief",
+    "title": "Terraced Relief",
+    "description": "A frame-wide relief of softly lifted contour terraces, the low hills reshaping slowly as the layers breathe",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -163,9 +164,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "dot-ripple",
-    "name": "Ripple Drum",
-    "title": "Ripple Drum",
-    "description": "A tilted drumhead of polar dot rings, struck off-centre so ripples lift the dots into rolling 3D waves",
+    "name": "Ripple Plane",
+    "title": "Ripple Plane",
+    "description": "A wide perspective plane of dots stretching to a high horizon, slow ripples from three points lifting it gently",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -173,7 +174,7 @@ export const docsBits: DocsBit[] = [
       "background",
       "dots",
       "ripple",
-      "drum"
+      "plane"
     ],
     "duration": 12,
     "width": 1920,
@@ -187,9 +188,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "dot-tunnel",
-    "name": "Dot Helix Tube",
-    "title": "Dot Helix Tube",
-    "description": "A dotted tube seen from the side, its rings spinning into helix stripes while a bulge travels along it",
+    "name": "Helix Field",
+    "title": "Helix Field",
+    "description": "Stacked dotted tubes seen from the side, their rings slowly turning into helix stripes across the whole frame",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -211,9 +212,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "floating-shapes",
-    "name": "Shape Mobile",
-    "title": "Shape Mobile",
-    "description": "A hanging mobile of balanced arms and cutout shapes, swaying and turning slowly on its threads",
+    "name": "Hanging Garlands",
+    "title": "Hanging Garlands",
+    "description": "Garlands of soft paper cutouts hanging from the top edge across the whole width, swaying gently on their threads",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -228,6 +229,7 @@ export const docsBits: DocsBit[] = [
     "height": 1080,
     "helpers": [
       "color",
+      "random",
       "viewport"
     ],
     "htmlPath": "/bits/floating-shapes.html",
@@ -235,9 +237,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "gyro-rings",
-    "name": "Orrery Rings",
-    "title": "Orrery Rings",
-    "description": "Tilted planetary orbits around an off-centre sun, planets trailing light at whole-number periods",
+    "name": "Orbit Arcs",
+    "title": "Orbit Arcs",
+    "description": "Wide orbital arcs around a sun far beyond the frame, small planets gliding along them in whole-number periods",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -260,9 +262,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "halftone-sweep",
-    "name": "Halftone Orbs",
-    "title": "Halftone Orbs",
-    "description": "A square halftone screen swelling into three orbiting orbs, a solid one, a ring and a soft cloud",
+    "name": "Halftone Clouds",
+    "title": "Halftone Clouds",
+    "description": "A square halftone screen where soft clouds of larger dots drift in small slow circles across the whole frame",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -270,13 +272,14 @@ export const docsBits: DocsBit[] = [
       "background",
       "dots",
       "halftone",
-      "orbs"
+      "clouds"
     ],
     "duration": 12,
     "width": 1920,
     "height": 1080,
     "helpers": [
       "color",
+      "random",
       "viewport"
     ],
     "htmlPath": "/bits/halftone-sweep.html",
@@ -284,9 +287,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "horizon-grid",
-    "name": "Horizon Ridges",
-    "title": "Horizon Ridges",
-    "description": "Wireframe ridgelines rolling toward a striped sun on the horizon",
+    "name": "Ridgeline Field",
+    "title": "Ridgeline Field",
+    "description": "Muted wireframe ridgelines filling the frame and rolling slowly toward a high, distant horizon",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -308,9 +311,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "phyllotaxis-bloom",
-    "name": "Phyllotaxis Bloom",
-    "title": "Phyllotaxis Bloom",
-    "description": "Paper flower heads whose phyllotaxis petals open and close in waves rolling out from the seed centres",
+    "name": "Bloom Wallpaper",
+    "title": "Bloom Wallpaper",
+    "description": "A wallpaper of small phyllotaxis flower heads whose petals open and close in a slow wave travelling across the frame",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -333,9 +336,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "pinwheel-grid",
-    "name": "Pinwheel Garden",
-    "title": "Pinwheel Garden",
-    "description": "Paper pinwheels on swaying stems of different heights, spinning up as gusts of wind roll across the garden",
+    "name": "Pinwheel Meadow",
+    "title": "Pinwheel Meadow",
+    "description": "A meadow of small paper pinwheels in receding rows filling the frame, turning slowly as soft gusts roll through",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -343,7 +346,7 @@ export const docsBits: DocsBit[] = [
       "background",
       "shapes",
       "pinwheel",
-      "garden"
+      "meadow"
     ],
     "duration": 12,
     "width": 1920,
@@ -383,9 +386,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "ray-burst",
-    "name": "Sunburst Horizon",
-    "title": "Sunburst Horizon",
-    "description": "Retro sunburst wedges turning above a striped half-sun, with rings rippling out from the horizon",
+    "name": "Sunburst Wash",
+    "title": "Sunburst Wash",
+    "description": "Soft retro sunburst wedges fanning from far below the frame, turning slowly under faint rings rippling outward",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -409,7 +412,7 @@ export const docsBits: DocsBit[] = [
     "id": "speed-streaks",
     "name": "Light Trails",
     "title": "Light Trails",
-    "description": "A few long-exposure light trails tracing looping paths across the frame, their tails fading behind glowing heads",
+    "description": "Soft long-exposure light trails looping slowly in their own patch of the frame, spread evenly with no bright heads",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -432,9 +435,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "truchet-weave",
-    "name": "Truchet Mandala",
-    "title": "Truchet Mandala",
-    "description": "Truchet arcs laid on concentric rings of a medallion, each ring clicking round a quarter turn so the strands rewire",
+    "name": "Truchet Arcs",
+    "title": "Truchet Arcs",
+    "description": "Wide bands of Truchet arcs curving across the frame from a centre far off the corner, each band clicking a step in turn",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -442,7 +445,7 @@ export const docsBits: DocsBit[] = [
       "background",
       "shapes",
       "truchet",
-      "mandala"
+      "pattern"
     ],
     "duration": 12,
     "width": 1920,
@@ -458,9 +461,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "wave-stack",
-    "name": "Twisting Ribbon",
-    "title": "Twisting Ribbon",
-    "description": "A wide striped ribbon twisting across a dark field, its back face flashing as the fold travels",
+    "name": "Ribbon Field",
+    "title": "Ribbon Field",
+    "description": "Muted striped ribbons laid diagonally across the whole frame, each slowly twisting so its back face shows",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -482,9 +485,9 @@ export const docsBits: DocsBit[] = [
   },
   {
     "id": "zoom-polygons",
-    "name": "Polygon Procession",
-    "title": "Polygon Procession",
-    "description": "Hexagon panels stepping forward in a diagonal procession, each inner shape clicking round a sixth turn per step",
+    "name": "Polygon Drift",
+    "title": "Polygon Drift",
+    "description": "Hexagon outlines in three depth layers circling slowly in place with parallax, turning a sixth per loop",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -492,14 +495,14 @@ export const docsBits: DocsBit[] = [
       "background",
       "depth",
       "polygons",
-      "cards"
+      "parallax"
     ],
     "duration": 12,
     "width": 1920,
     "height": 1080,
     "helpers": [
       "color",
-      "interpolate",
+      "random",
       "viewport"
     ],
     "htmlPath": "/bits/zoom-polygons.html",

@@ -2,8 +2,8 @@
   "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
   "name": "horizon-grid",
   "type": "hyperframes:block",
-  "title": "Horizon Ridges",
-  "description": "Wireframe ridgelines rolling toward a striped sun on the horizon",
+  "title": "Ridgeline Field",
+  "description": "Muted wireframe ridgelines filling the frame and rolling slowly toward a high, distant horizon",
   "tags": [
     "loop",
     "background",

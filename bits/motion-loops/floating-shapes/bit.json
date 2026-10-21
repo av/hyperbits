@@ -1,7 +1,7 @@
 {
   "name": "floating-shapes",
-  "title": "Shape Mobile",
-  "description": "A hanging mobile of balanced arms and cutout shapes, swaying and turning slowly on its threads",
+  "title": "Hanging Garlands",
+  "description": "Garlands of soft paper cutouts hanging from the top edge across the whole width, swaying gently on their threads",
   "tags": [
     "loop",
     "background",
@@ -14,6 +14,7 @@
   "height": 1080,
   "helpers": [
     "color",
+    "random",
     "viewport"
   ],
   "iifeLocal": "../../../dist/hyperbits.iife.js",
@@ -22,8 +23,8 @@
     "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
     "name": "floating-shapes",
     "type": "hyperframes:block",
-    "title": "Shape Mobile",
-    "description": "A hanging mobile of balanced arms and cutout shapes, swaying and turning slowly on its threads",
+    "title": "Hanging Garlands",
+    "description": "Garlands of soft paper cutouts hanging from the top edge across the whole width, swaying gently on their threads",
     "tags": [
       "loop",
       "background",

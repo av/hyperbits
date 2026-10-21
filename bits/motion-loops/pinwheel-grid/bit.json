@@ -1,13 +1,13 @@
 {
   "name": "pinwheel-grid",
-  "title": "Pinwheel Garden",
-  "description": "Paper pinwheels on swaying stems of different heights, spinning up as gusts of wind roll across the garden",
+  "title": "Pinwheel Meadow",
+  "description": "A meadow of small paper pinwheels in receding rows filling the frame, turning slowly as soft gusts roll through",
   "tags": [
     "loop",
     "background",
     "shapes",
     "pinwheel",
-    "garden"
+    "meadow"
   ],
   "duration": 12,
   "width": 1920,
@@ -23,14 +23,14 @@
     "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
     "name": "pinwheel-grid",
     "type": "hyperframes:block",
-    "title": "Pinwheel Garden",
-    "description": "Paper pinwheels on swaying stems of different heights, spinning up as gusts of wind roll across the garden",
+    "title": "Pinwheel Meadow",
+    "description": "A meadow of small paper pinwheels in receding rows filling the frame, turning slowly as soft gusts roll through",
     "tags": [
       "loop",
       "background",
       "shapes",
       "pinwheel",
-      "garden"
+      "meadow"
     ],
     "license": "MIT",
     "dimensions": {

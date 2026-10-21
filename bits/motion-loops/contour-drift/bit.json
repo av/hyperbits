@@ -1,7 +1,7 @@
 {
   "name": "contour-drift",
-  "title": "Terraced Island",
-  "description": "A single island built from stacked contour terraces, like a laser-cut relief, reshaping as its layers breathe",
+  "title": "Terraced Relief",
+  "description": "A frame-wide relief of softly lifted contour terraces, the low hills reshaping slowly as the layers breathe",
   "tags": [
     "loop",
     "background",
@@ -23,8 +23,8 @@
     "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
     "name": "contour-drift",
     "type": "hyperframes:block",
-    "title": "Terraced Island",
-    "description": "A single island built from stacked contour terraces, like a laser-cut relief, reshaping as its layers breathe",
+    "title": "Terraced Relief",
+    "description": "A frame-wide relief of softly lifted contour terraces, the low hills reshaping slowly as the layers breathe",
     "tags": [
       "loop",
       "background",

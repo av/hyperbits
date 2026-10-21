@@ -1,13 +1,13 @@
 {
   "name": "bauhaus-tiles",
-  "title": "Bauhaus Poster",
-  "description": "An asymmetric Bauhaus poster whose circle, half-disc, bars and triangle trade places in four eased beats",
+  "title": "Bauhaus Rows",
+  "description": "Rows of small Bauhaus motifs in soft tones sliding past each other on four eased beats, like a moving frieze",
   "tags": [
     "loop",
     "background",
     "shapes",
     "geometric",
-    "poster"
+    "frieze"
   ],
   "duration": 12,
   "width": 1920,
@@ -15,6 +15,7 @@
   "helpers": [
     "color",
     "interpolate",
+    "random",
     "viewport"
   ],
   "iifeLocal": "../../../dist/hyperbits.iife.js",
@@ -23,14 +24,14 @@
     "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
     "name": "bauhaus-tiles",
     "type": "hyperframes:block",
-    "title": "Bauhaus Poster",
-    "description": "An asymmetric Bauhaus poster whose circle, half-disc, bars and triangle trade places in four eased beats",
+    "title": "Bauhaus Rows",
+    "description": "Rows of small Bauhaus motifs in soft tones sliding past each other on four eased beats, like a moving frieze",
     "tags": [
       "loop",
       "background",
       "shapes",
       "geometric",
-      "poster"
+      "frieze"
     ],
     "license": "MIT",
     "dimensions": {

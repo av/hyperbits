@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#f2652a"},{"id":"streaks","type":"number","label":"Trails","default":6},{"id":"seed","type":"number","label":"Seed","default":9}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#f2652a"},{"id":"streaks","type":"number","label":"Trails","default":20},{"id":"seed","type":"number","label":"Seed","default":9}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -95,61 +95,52 @@
         }
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const warm = mix(accent, foreground, 0.45);
-        const count = Math.max(1, Math.round(Number(vars.streaks) || 6));
+        const warm = mix(accent, foreground, 0.4);
+        const count = Math.max(1, Math.round(Number(vars.streaks) || 20));
         const seed = Number(vars.seed) || 0;
-        const tones = [accent, warm, foreground, accent];
+        const columns = Math.ceil(Math.sqrt(count * (view.width / view.height)));
+        const rows = Math.ceil(count / columns);
+        const tones = [accent, warm, accent, foreground];
         const trails = [...Array(count).keys()].map((index) => {
           const key = "trail-" + seed + "-" + index;
           return {
-            rateX: hyperbits.pick(key + "-fx", [1, 2]),
-            rateY: hyperbits.pick(key + "-fy", [2, 3]),
+            homeX: ((index % columns) + 0.5) / columns,
+            homeY: (Math.floor(index / columns) + 0.5) / rows,
+            rateY: hyperbits.pick(key + "-fy", [1, 2]),
             shiftX: hyperbits.random(key + "-sx"),
             shiftY: hyperbits.random(key + "-sy"),
-            reachX: hyperbits.randomFloat(key + "-ax", 0.32, 0.48),
-            reachY: hyperbits.randomFloat(key + "-ay", 0.25, 0.4),
-            width: view.vmin * hyperbits.randomFloat(key + "-w", 0.35, 0.9),
-            length: hyperbits.randomFloat(key + "-l", 0.18, 0.3),
+            reachX: hyperbits.randomFloat(key + "-ax", 0.6, 0.9) / columns,
+            reachY: hyperbits.randomFloat(key + "-ay", 0.5, 0.8) / rows,
+            width: view.vmin * hyperbits.randomFloat(key + "-w", 0.18, 0.4),
+            length: hyperbits.randomFloat(key + "-l", 0.3, 0.5),
             color: tones[index % tones.length],
           };
         });
         function position(trail, time) {
           return [
-            view.width * (0.5 + trail.reachX * Math.sin(turn * (time * trail.rateX + trail.shiftX))),
-            view.height * (0.5 + trail.reachY * Math.sin(turn * (time * trail.rateY + trail.shiftY))),
+            view.width * (trail.homeX + trail.reachX * Math.sin(turn * (time + trail.shiftX))),
+            view.height * (trail.homeY + trail.reachY * Math.sin(turn * (time * trail.rateY + trail.shiftY))),
           ];
         }
         function draw(phase) {
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
           context.lineCap = "round";
-          context.globalCompositeOperation = "lighter";
-          const pieces = 90;
+          const pieces = 60;
           for (const trail of trails) {
             let previous = position(trail, phase - trail.length);
             for (let piece = 1; piece <= pieces; piece += 1) {
               const share = piece / pieces;
               const current = position(trail, phase - trail.length * (1 - share));
-              context.strokeStyle = rgba(trail.color, Math.pow(share, 2.2) * 0.9);
-              context.lineWidth = trail.width * (0.25 + 0.75 * share);
+              context.strokeStyle = rgba(trail.color, 0.45 * Math.pow(share, 1.6));
+              context.lineWidth = trail.width;
               context.beginPath();
               context.moveTo(previous[0], previous[1]);
               context.lineTo(current[0], current[1]);
               context.stroke();
               previous = current;
             }
-            const [headX, headY] = position(trail, phase);
-            const glow = context.createRadialGradient(headX, headY, 0, headX, headY, trail.width * 9);
-            glow.addColorStop(0, rgba(trail.color, 0.6));
-            glow.addColorStop(1, rgba(trail.color, 0));
-            context.fillStyle = glow;
-            context.fillRect(headX - trail.width * 9, headY - trail.width * 9, trail.width * 18, trail.width * 18);
-            context.fillStyle = rgba(foreground, 1);
-            context.beginPath();
-            context.arc(headX, headY, trail.width * 0.9, 0, turn);
-            context.fill();
           }
-          context.globalCompositeOperation = "source-over";
         }
         const proxy = { time: 0 };
         const timeline = gsap.timeline({ paused: true });

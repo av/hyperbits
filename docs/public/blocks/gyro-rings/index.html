@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#4fb6ec"},{"id":"rings","type":"number","label":"Orbits","default":7},{"id":"seed","type":"number","label":"Seed","default":3}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#4fb6ec"},{"id":"rings","type":"number","label":"Orbits","default":16},{"id":"seed","type":"number","label":"Seed","default":3}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -92,76 +92,59 @@
         }
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const count = Math.max(1, Math.round(Number(vars.rings) || 7));
+        const count = Math.max(1, Math.round(Number(vars.rings) || 16));
         const seed = Number(vars.seed) || 0;
-        const centerX = view.width * 0.38;
-        const centerY = view.height * 0.56;
-        const squash = 0.34;
-        const tilt = -0.2;
+        const centerX = -view.width * 0.25;
+        const centerY = view.height * 1.35;
+        const squash = 0.62;
+        const tilt = -0.18;
+        const innerRadius = Math.hypot(centerX, centerY - view.height) * 0.9;
+        const outerRadius = Math.hypot(view.width - centerX, centerY) * 1.02;
         const orbits = [...Array(count).keys()].map((index) => {
-          const key = "orrery-" + seed + "-" + index;
+          const key = "arc-" + seed + "-" + index;
           return {
-            radius: view.vmin * (14 + index * 13 + hyperbits.randomFloat(key + "-r", -2, 2)),
-            start: hyperbits.randomFloat(key + "-a", 0, turn),
-            laps: Math.max(1, count - index - Math.floor(index / 2)),
-            size: view.vmin * hyperbits.randomFloat(key + "-s", 0.7, 2.2),
-            lit: index % 3 === 1,
+            radius: innerRadius + ((outerRadius - innerRadius) * (index + 0.5)) / count,
+            planets: [0, 1, 2, 3, 4, 5].map((planet) => hyperbits.randomFloat(key + "-p", 0, turn) + (turn * planet) / 6),
+            laps: hyperbits.pick(key + "-l", [1, 1, -1]),
+            size: view.vmin * hyperbits.randomFloat(key + "-s", 0.35, 0.8),
+            lit: hyperbits.random(key + "-lit") > 0.8,
           };
         });
         function place(orbit, angle) {
           const flatX = Math.cos(angle) * orbit.radius;
           const flatY = Math.sin(angle) * orbit.radius * squash;
-          return {
-            pointX: centerX + flatX * Math.cos(tilt) - flatY * Math.sin(tilt),
-            pointY: centerY + flatX * Math.sin(tilt) + flatY * Math.cos(tilt),
-            front: Math.sin(angle),
-          };
-        }
-        function drawPlanet(orbit, angle) {
-          const spot = place(orbit, angle);
-          const color = orbit.lit ? accent : foreground;
-          for (let step = 1; step <= 24; step += 1) {
-            const from = place(orbit, angle - step * 0.03);
-            const to = place(orbit, angle - (step - 1) * 0.03);
-            context.strokeStyle = rgba(color, 0.5 * (1 - step / 24));
-            context.lineWidth = orbit.size * 0.9;
-            context.beginPath();
-            context.moveTo(from.pointX, from.pointY);
-            context.lineTo(to.pointX, to.pointY);
-            context.stroke();
-          }
-          context.fillStyle = rgba(color, 1);
-          context.beginPath();
-          context.arc(spot.pointX, spot.pointY, orbit.size * (1 + 0.25 * spot.front), 0, turn);
-          context.fill();
+          return [centerX + flatX * Math.cos(tilt) - flatY * Math.sin(tilt), centerY + flatX * Math.sin(tilt) + flatY * Math.cos(tilt)];
         }
         function draw(phase) {
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
           context.lineCap = "round";
-          const angles = orbits.map((orbit) => orbit.start + turn * phase * orbit.laps);
           for (const orbit of orbits) {
-            context.strokeStyle = rgba(foreground, 0.18);
+            context.strokeStyle = rgba(foreground, 0.14);
             context.lineWidth = view.vmin * 0.12;
             context.beginPath();
             context.ellipse(centerX, centerY, orbit.radius, orbit.radius * squash, tilt, 0, turn);
             context.stroke();
+            const color = orbit.lit ? accent : foreground;
+            for (const start of orbit.planets) {
+              const angle = start + (turn / 6) * phase * orbit.laps;
+              for (let step = 1; step <= 18; step += 1) {
+                const [fromX, fromY] = place(orbit, angle - orbit.laps * step * 0.004);
+                const [toX, toY] = place(orbit, angle - orbit.laps * (step - 1) * 0.004);
+                context.strokeStyle = rgba(color, 0.3 * (1 - step / 18));
+                context.lineWidth = orbit.size;
+                context.beginPath();
+                context.moveTo(fromX, fromY);
+                context.lineTo(toX, toY);
+                context.stroke();
+              }
+              const [planetX, planetY] = place(orbit, angle);
+              context.fillStyle = rgba(color, 0.6);
+              context.beginPath();
+              context.arc(planetX, planetY, orbit.size, 0, turn);
+              context.fill();
+            }
           }
-          orbits.forEach((orbit, index) => {
-            if (place(orbit, angles[index]).front < 0) drawPlanet(orbit, angles[index]);
-          });
-          const halo = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, view.vmin * 20);
-          halo.addColorStop(0, rgba(accent, 0.55));
-          halo.addColorStop(1, rgba(accent, 0));
-          context.fillStyle = halo;
-          context.fillRect(centerX - view.vmin * 20, centerY - view.vmin * 20, view.vmin * 40, view.vmin * 40);
-          context.fillStyle = rgba(accent, 1);
-          context.beginPath();
-          context.arc(centerX, centerY, view.vmin * (5.5 + 0.4 * Math.sin(turn * phase * 3)), 0, turn);
-          context.fill();
-          orbits.forEach((orbit, index) => {
-            if (place(orbit, angles[index]).front >= 0) drawPlanet(orbit, angles[index]);
-          });
         }
         const proxy = { time: 0 };
         const timeline = gsap.timeline({ paused: true });

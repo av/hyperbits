@@ -1,13 +1,13 @@
 {
   "name": "truchet-weave",
-  "title": "Truchet Mandala",
-  "description": "Truchet arcs laid on concentric rings of a medallion, each ring clicking round a quarter turn so the strands rewire",
+  "title": "Truchet Arcs",
+  "description": "Wide bands of Truchet arcs curving across the frame from a centre far off the corner, each band clicking a step in turn",
   "tags": [
     "loop",
     "background",
     "shapes",
     "truchet",
-    "mandala"
+    "pattern"
   ],
   "duration": 12,
   "width": 1920,
@@ -24,14 +24,14 @@
     "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
     "name": "truchet-weave",
     "type": "hyperframes:block",
-    "title": "Truchet Mandala",
-    "description": "Truchet arcs laid on concentric rings of a medallion, each ring clicking round a quarter turn so the strands rewire",
+    "title": "Truchet Arcs",
+    "description": "Wide bands of Truchet arcs curving across the frame from a centre far off the corner, each band clicking a step in turn",
     "tags": [
       "loop",
       "background",
       "shapes",
       "truchet",
-      "mandala"
+      "pattern"
     ],
     "license": "MIT",
     "dimensions": {

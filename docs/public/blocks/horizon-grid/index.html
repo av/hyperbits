@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#4fb6ec"},{"id":"ridges","type":"number","label":"Ridge rows","default":34}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#4fb6ec"},{"id":"ridges","type":"number","label":"Ridge rows","default":80}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -90,73 +90,40 @@
         function rgba(rgb, alpha) {
           return "rgba(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
         }
-        function mix(from, to, amount) {
-          return from.map((value, index) => Math.round(value + (to[index] - value) * amount));
-        }
         const background = channels(vars.background);
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const sunLow = mix(accent, foreground, 0.55);
-        const ridges = Math.max(8, Math.round(Number(vars.ridges) || 34));
-        const horizon = view.height * 0.46;
+        const ridges = Math.max(8, Math.round(Number(vars.ridges) || 80));
+        const horizon = view.height * 0.06;
         const centerX = view.width * 0.5;
-        const focal = view.height * 0.55;
-        const spacing = 0.5;
-        const near = 0.35;
+        const focal = view.height * 0.3;
+        const spacing = 0.22;
+        const near = 0.25;
         const far = ridges * spacing;
-        const rowsPerLoop = 16;
+        const rowsPerLoop = 8;
         const period = rowsPerLoop * spacing;
-        const samples = 90;
-        const sunX = view.width * 0.66;
-        const sunRadius = view.vmin * 19;
+        const samples = 80;
         function height(worldX, worldZ) {
           const along = (turn * worldZ) / period;
-          return (
-            0.55 * Math.sin(along + worldX * 0.45) +
-            0.35 * Math.sin(along * 2 - worldX * 0.9 + 1.3) +
-            0.18 * Math.sin(along * 3 + worldX * 1.7 + 2.1)
-          ) * (0.35 + Math.min(Math.abs(worldX) / 6, 1));
+          return 0.5 * Math.sin(along + worldX * 0.4) + 0.3 * Math.sin(along * 2 - worldX * 0.8 + 1.3) + 0.15 * Math.sin(along * 3 + worldX * 1.6 + 2.1);
         }
         function draw(phase) {
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
           const travel = phase * period;
-          const sway = Math.sin(turn * phase) * 0.8;
-          const glow = context.createRadialGradient(sunX, horizon, 0, sunX, horizon, sunRadius * 2.6);
-          glow.addColorStop(0, rgba(accent, 0.35));
-          glow.addColorStop(1, rgba(accent, 0));
-          context.fillStyle = glow;
-          context.fillRect(0, 0, view.width, horizon + sunRadius);
-          const sun = context.createLinearGradient(0, horizon - sunRadius * 1.3, 0, horizon);
-          sun.addColorStop(0, rgba(sunLow, 1));
-          sun.addColorStop(1, rgba(accent, 1));
-          context.save();
-          context.beginPath();
-          context.arc(sunX, horizon - sunRadius * 0.3, sunRadius, 0, turn);
-          context.clip();
-          context.fillStyle = sun;
-          context.fillRect(sunX - sunRadius, horizon - sunRadius * 1.4, sunRadius * 2, sunRadius * 2);
-          context.fillStyle = rgba(background, 1);
-          const slit = sunRadius * 0.22;
-          const slide = (phase * 4) % 1;
-          for (let band = 0; band < 6; band += 1) {
-            const offset = (band + slide) * slit;
-            const thickness = slit * (0.08 + 0.09 * (band + slide));
-            context.fillRect(sunX - sunRadius, horizon - sunRadius * 0.55 + offset, sunRadius * 2, thickness);
-          }
-          context.restore();
+          const sway = Math.sin(turn * phase) * 0.4;
           const first = Math.ceil((travel + near) / spacing);
           const last = Math.floor((travel + far) / spacing);
           context.lineJoin = "round";
           for (let row = last; row >= first; row -= 1) {
             const worldZ = row * spacing;
             const depth = worldZ - travel;
-            const fog = Math.pow(1 - (depth - near) / (far - near), 1.4);
+            const fog = Math.pow(1 - (depth - near) / (far - near), 0.9);
             context.beginPath();
             for (let sample = 0; sample <= samples; sample += 1) {
-              const worldX = (sample / samples - 0.5) * (depth * 3.6 + 4) + sway;
+              const worldX = (sample / samples - 0.5) * (depth * 7 + 3) + sway;
               const pointX = centerX + ((worldX - sway) * focal) / depth;
-              const pointY = horizon + ((1.2 - height(worldX, worldZ)) * focal) / depth;
+              const pointY = horizon + ((2.2 - height(worldX, worldZ)) * focal) / depth;
               if (sample === 0) context.moveTo(pointX, pointY);
               else context.lineTo(pointX, pointY);
             }
@@ -165,8 +132,9 @@
             context.closePath();
             context.fillStyle = rgba(background, 1);
             context.fill();
-            context.strokeStyle = rgba(row % 4 === 0 ? foreground : accent, fog * (row % 4 === 0 ? 0.9 : 0.75));
-            context.lineWidth = Math.max(view.vmin * 0.1, (view.vmin * 0.55) / depth);
+            const marked = row % 4 === 0;
+            context.strokeStyle = rgba(marked ? accent : foreground, fog * (marked ? 0.55 : 0.32));
+            context.lineWidth = Math.max(view.vmin * 0.1, (view.vmin * 0.28) / depth);
             context.stroke();
           }
         }

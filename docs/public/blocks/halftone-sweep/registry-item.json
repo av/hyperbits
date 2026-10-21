@@ -2,14 +2,14 @@
   "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
   "name": "halftone-sweep",
   "type": "hyperframes:block",
-  "title": "Halftone Orbs",
-  "description": "A square halftone screen swelling into three orbiting orbs, a solid one, a ring and a soft cloud",
+  "title": "Halftone Clouds",
+  "description": "A square halftone screen where soft clouds of larger dots drift in small slow circles across the whole frame",
   "tags": [
     "loop",
     "background",
     "dots",
     "halftone",
-    "orbs"
+    "clouds"
   ],
   "license": "MIT",
   "dimensions": {

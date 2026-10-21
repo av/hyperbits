@@ -1,7 +1,7 @@
 {
   "name": "wave-stack",
-  "title": "Twisting Ribbon",
-  "description": "A wide striped ribbon twisting across a dark field, its back face flashing as the fold travels",
+  "title": "Ribbon Field",
+  "description": "Muted striped ribbons laid diagonally across the whole frame, each slowly twisting so its back face shows",
   "tags": [
     "loop",
     "background",
@@ -22,8 +22,8 @@
     "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
     "name": "wave-stack",
     "type": "hyperframes:block",
-    "title": "Twisting Ribbon",
-    "description": "A wide striped ribbon twisting across a dark field, its back face flashing as the fold travels",
+    "title": "Ribbon Field",
+    "description": "Muted striped ribbons laid diagonally across the whole frame, each slowly twisting so its back face shows",
     "tags": [
       "loop",
       "background",

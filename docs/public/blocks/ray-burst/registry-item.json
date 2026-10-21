@@ -2,8 +2,8 @@
   "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
   "name": "ray-burst",
   "type": "hyperframes:block",
-  "title": "Sunburst Horizon",
-  "description": "Retro sunburst wedges turning above a striped half-sun, with rings rippling out from the horizon",
+  "title": "Sunburst Wash",
+  "description": "Soft retro sunburst wedges fanning from far below the frame, turning slowly under faint rings rippling outward",
   "tags": [
     "loop",
     "background",

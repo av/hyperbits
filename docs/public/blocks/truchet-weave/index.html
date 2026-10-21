@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#9d8af0"},{"id":"rings","type":"number","label":"Rings","default":7},{"id":"seed","type":"number","label":"Seed","default":6}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#9d8af0"},{"id":"rings","type":"number","label":"Bands","default":16},{"id":"seed","type":"number","label":"Seed","default":6}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -92,19 +92,20 @@
         }
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const rings = Math.max(2, Math.round(Number(vars.rings) || 7));
+        const rings = Math.max(2, Math.round(Number(vars.rings) || 16));
         const seed = Number(vars.seed) || 0;
-        const sectors = 32;
+        const sectors = 240;
         const ease = hyperbits.Easing.easeInOutCubic;
-        const centerX = view.width * 0.5;
-        const centerY = view.height * 0.5;
-        const outer = view.vmin * 48;
-        const inner = view.vmin * 7;
+        const centerX = view.width * 1.08;
+        const centerY = view.height * 1.15;
+        const inner = Math.hypot(centerX - view.width, centerY - view.height) + view.vmin * 2;
+        const outer = Math.hypot(centerX, centerY) + view.vmin * 4;
         const band = (outer - inner) / rings;
+        const width = turn / sectors;
         const flips = [];
         for (let ring = 0; ring < rings; ring += 1) {
           for (let sector = 0; sector < sectors; sector += 1) {
-            flips.push(hyperbits.random("mandala-" + seed + "-" + ring + "-" + sector) > 0.5);
+            flips.push(hyperbits.random("arcs-" + seed + "-" + ring + "-" + (sector % 24)) > 0.5);
           }
         }
         function polar(distance, angle) {
@@ -120,20 +121,24 @@
         function draw(phase) {
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
-          const width = turn / sectors;
           context.lineCap = "round";
           for (let ring = 0; ring < rings; ring += 1) {
-            const beat = phase * 4 - ring * 0.07;
+            const beat = phase * 4 - ring * 0.05;
             const whole = Math.floor(beat);
-            const offset = (ring % 2 === 0 ? 1 : -1) * (Math.PI / 2) * (whole + ease(Math.min(Math.max((beat - whole) / 0.45, 0), 1)));
+            const steps = whole + ease(Math.min(Math.max((beat - whole) / 0.4, 0), 1));
+            const offset = (ring % 2 === 0 ? 1 : -1) * width * 6 * steps;
             const low = inner + ring * band;
             const high = low + band;
             const middle = (low + high) / 2;
-            context.strokeStyle = rgba(ring % 3 === 1 ? accent : foreground, 1);
-            context.lineWidth = band * 0.2;
+            const visibleFrom = Math.PI + 0.05;
+            const visibleTo = Math.PI * 1.55;
+            context.strokeStyle = rgba(ring % 4 === 1 ? accent : foreground, ring % 4 === 1 ? 0.45 : 0.22);
+            context.lineWidth = Math.min(band * 0.16, view.vmin * 0.6);
             context.beginPath();
             for (let sector = 0; sector < sectors; sector += 1) {
               const start = sector * width + offset;
+              const wrapped = ((start % turn) + turn) % turn;
+              if (wrapped < visibleFrom - width || wrapped > visibleTo) continue;
               const end = start + width;
               const center = start + width / 2;
               if (flips[ring * sectors + sector]) {
@@ -146,15 +151,6 @@
             }
             context.stroke();
           }
-          context.fillStyle = rgba(accent, 1);
-          context.beginPath();
-          context.arc(centerX, centerY, inner * 0.55, 0, turn);
-          context.fill();
-          context.strokeStyle = rgba(foreground, 0.35);
-          context.lineWidth = view.vmin * 0.2;
-          context.beginPath();
-          context.arc(centerX, centerY, outer + band * 0.35, 0, turn);
-          context.stroke();
         }
         const proxy = { time: 0 };
         const timeline = gsap.timeline({ paused: true });

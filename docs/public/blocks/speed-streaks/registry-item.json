@@ -3,7 +3,7 @@
   "name": "speed-streaks",
   "type": "hyperframes:block",
   "title": "Light Trails",
-  "description": "A few long-exposure light trails tracing looping paths across the frame, their tails fading behind glowing heads",
+  "description": "Soft long-exposure light trails looping slowly in their own patch of the frame, spread evenly with no bright heads",
   "tags": [
     "loop",
     "background",

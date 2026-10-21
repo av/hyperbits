@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#f2f0e5"},{"id":"foreground","type":"color","label":"Foreground","default":"#100f0f"},{"id":"accent","type":"color","label":"Accent","default":"#ef5da8"},{"id":"dots","type":"number","label":"Florets per flower","default":320}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#f2f0e5"},{"id":"foreground","type":"color","label":"Foreground","default":"#100f0f"},{"id":"accent","type":"color","label":"Accent","default":"#ef5da8"},{"id":"dots","type":"number","label":"Florets per flower","default":90}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -96,52 +96,52 @@
         const background = channels(vars.background);
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const petalEdge = mix(accent, foreground, 0.35);
-        const petalLight = mix(accent, background, 0.35);
-        const count = Math.max(40, Math.round(Number(vars.dots) || 320));
+        const petal = mix(accent, background, 0.45);
+        const petalLight = mix(accent, background, 0.65);
+        const seedTone = mix(foreground, background, 0.55);
+        const florets = Math.max(20, Math.round(Number(vars.dots) || 90));
         const golden = Math.PI * (3 - Math.sqrt(5));
         const ease = hyperbits.Easing.easeInOutSine;
-        const flowers = [
-          { centerX: view.width * 0.36, centerY: view.height * 0.54, radius: view.vmin * 44, lag: 0, florets: count },
-          { centerX: view.width * 0.84, centerY: view.height * 0.22, radius: view.vmin * 20, lag: 0.33, florets: Math.round(count * 0.4) },
-          { centerX: view.width * 0.9, centerY: view.height * 0.95, radius: view.vmin * 26, lag: 0.66, florets: Math.round(count * 0.55) },
-        ];
-        function drawFlower(flower, phase) {
-          const seeds = Math.round(flower.florets * 0.32);
-          const spread = flower.radius / Math.sqrt(flower.florets);
-          for (let index = flower.florets - 1; index >= 0; index -= 1) {
-            const distance = spread * Math.sqrt(index + 0.5);
-            const angle = index * golden;
-            const share = index / flower.florets;
-            const floretX = flower.centerX + Math.cos(angle) * distance;
-            const floretY = flower.centerY + Math.sin(angle) * distance;
-            if (index < seeds) {
-              context.fillStyle = rgba(index % 2 === 0 ? foreground : mix(foreground, accent, 0.4), 1);
-              context.beginPath();
-              context.arc(floretX, floretY, spread * (0.32 + 0.25 * share / 0.32), 0, turn);
-              context.fill();
-              continue;
-            }
-            const open = ease(0.5 + 0.5 * Math.sin(turn * (phase * 2 - share * 1.4 + flower.lag)));
-            const length = spread * (1.1 + 2.4 * open) * (0.7 + share);
-            const width = spread * (0.55 + 0.25 * share);
-            context.save();
-            context.translate(floretX, floretY);
-            context.rotate(angle + 0.25 * Math.sin(turn * (phase + share)));
-            context.fillStyle = rgba(index % 3 === 0 ? petalLight : accent, 1);
-            context.strokeStyle = rgba(petalEdge, 1);
-            context.lineWidth = view.vmin * 0.12;
-            context.beginPath();
-            context.ellipse(length * 0.5, 0, length * 0.5, width, 0, 0, turn);
-            context.fill();
-            context.stroke();
-            context.restore();
+        const cellX = view.vmin * 20;
+        const cellY = view.vmin * 17;
+        const radius = view.vmin * 7.2;
+        const flowers = [];
+        for (let row = -1; row * cellY < view.height + cellY; row += 1) {
+          for (let column = -1; column * cellX < view.width + cellX; column += 1) {
+            flowers.push({ centerX: column * cellX + (row % 2 === 0 ? 0 : cellX / 2), centerY: row * cellY });
           }
         }
         function draw(phase) {
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
-          for (const flower of flowers) drawFlower(flower, phase);
+          const spread = radius / Math.sqrt(florets);
+          const seeds = Math.round(florets * 0.3);
+          for (const flower of flowers) {
+            const lag = flower.centerX / view.width + flower.centerY / view.height * 0.5;
+            const open = ease(0.5 + 0.5 * Math.sin(turn * (phase - lag)));
+            for (let index = florets - 1; index >= 0; index -= 1) {
+              const distance = spread * Math.sqrt(index + 0.5);
+              const angle = index * golden;
+              const floretX = flower.centerX + Math.cos(angle) * distance;
+              const floretY = flower.centerY + Math.sin(angle) * distance;
+              if (index < seeds) {
+                context.fillStyle = rgba(seedTone, 0.7);
+                context.beginPath();
+                context.arc(floretX, floretY, spread * 0.38, 0, turn);
+                context.fill();
+                continue;
+              }
+              const length = spread * (1 + 1.6 * open);
+              context.save();
+              context.translate(floretX, floretY);
+              context.rotate(angle);
+              context.fillStyle = rgba(index % 3 === 0 ? petalLight : petal, 1);
+              context.beginPath();
+              context.ellipse(length * 0.5, 0, length * 0.5, spread * 0.55, 0, 0, turn);
+              context.fill();
+              context.restore();
+            }
+          }
         }
         const proxy = { time: 0 };
         const timeline = gsap.timeline({ paused: true });

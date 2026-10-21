@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#9d8af0"},{"id":"pinwheels","type":"number","label":"Pinwheels","default":9},{"id":"seed","type":"number","label":"Seed","default":5}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#9d8af0"},{"id":"pinwheels","type":"number","label":"Pinwheels per row","default":14},{"id":"seed","type":"number","label":"Seed","default":5}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -96,31 +96,37 @@
         const background = channels(vars.background);
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const fold = mix(accent, background, 0.4);
-        const paleFold = mix(foreground, background, 0.35);
-        const count = Math.max(1, Math.round(Number(vars.pinwheels) || 9));
+        const perRow = Math.max(2, Math.round(Number(vars.pinwheels) || 14));
         const seed = Number(vars.seed) || 0;
-        const ground = view.height * 0.9;
-        const plants = [...Array(count).keys()].map((index) => {
-          const key = "garden-" + seed + "-" + index;
-          return {
-            baseX: view.width * ((index + hyperbits.randomFloat(key + "-x", 0.3, 0.7)) / count),
-            height: view.height * hyperbits.randomFloat(key + "-h", 0.3, 0.7),
-            radius: view.vmin * hyperbits.randomFloat(key + "-r", 5, 10),
-            spins: hyperbits.pick(key + "-s", [2, 3, 3, 4]),
-            pale: index % 3 === 1,
-          };
-        });
-        function wheel(radius, pale) {
+        const plants = [];
+        for (let row = 0; row < 6; row += 1) {
+          const depth = 1 - row / 6;
+          const count = Math.round(perRow * (0.7 + row * 0.12));
+          for (let index = 0; index < count; index += 1) {
+            const key = "meadow-" + seed + "-" + row + "-" + index;
+            plants.push({
+              depth,
+              baseX: view.width * ((index + hyperbits.randomFloat(key + "-x", 0.2, 0.8)) / count),
+              baseY: view.height * (1.02 - 0.17 * (5 - row) * 0.98),
+              height: view.vmin * (6 + 12 * depth) * hyperbits.randomFloat(key + "-h", 0.8, 1.2),
+              radius: view.vmin * (1.6 + 3.2 * depth),
+              tone: mix(hyperbits.random(key + "-t") > 0.75 ? foreground : accent, background, 0.35 + 0.4 * (1 - depth)),
+              fold: mix(accent, background, 0.65 + 0.2 * (1 - depth)),
+              spin: hyperbits.pick(key + "-s", [1, 1, -1]),
+            });
+          }
+        }
+        plants.sort((left, right) => left.depth - right.depth);
+        function wheel(radius, tone, fold) {
           for (let blade = 0; blade < 4; blade += 1) {
-            context.fillStyle = rgba(pale ? foreground : accent, 1);
+            context.fillStyle = rgba(tone, 1);
             context.beginPath();
             context.moveTo(0, 0);
             context.lineTo(radius, 0);
             context.lineTo(radius, -radius);
             context.closePath();
             context.fill();
-            context.fillStyle = rgba(pale ? paleFold : fold, 1);
+            context.fillStyle = rgba(fold, 1);
             context.beginPath();
             context.moveTo(0, 0);
             context.lineTo(radius, -radius);
@@ -133,32 +139,20 @@
         function draw(phase) {
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
-          context.strokeStyle = rgba(foreground, 0.4);
-          context.lineWidth = view.vmin * 0.3;
-          context.beginPath();
-          context.moveTo(0, ground);
-          context.lineTo(view.width, ground);
-          context.stroke();
           for (const plant of plants) {
-            const gust = Math.pow(0.5 + 0.5 * Math.cos(turn * (phase * 2 - plant.baseX / view.width)), 3);
-            const bend = view.vmin * (2 + 7 * gust);
-            const tipX = plant.baseX + bend;
-            const tipY = ground - plant.height;
-            context.strokeStyle = rgba(foreground, 0.85);
-            context.lineWidth = view.vmin * 0.4;
+            const gust = Math.pow(0.5 + 0.5 * Math.cos(turn * (phase - plant.baseX / view.width)), 3);
+            const tipX = plant.baseX + view.vmin * (0.6 + 2.4 * gust) * plant.depth;
+            const tipY = plant.baseY - plant.height;
+            context.strokeStyle = rgba(foreground, 0.12 + 0.18 * plant.depth);
+            context.lineWidth = view.vmin * (0.1 + 0.18 * plant.depth);
             context.beginPath();
-            context.moveTo(plant.baseX, ground);
-            context.quadraticCurveTo(plant.baseX, ground - plant.height * 0.55, tipX, tipY);
+            context.moveTo(plant.baseX, plant.baseY);
+            context.quadraticCurveTo(plant.baseX, plant.baseY - plant.height * 0.55, tipX, tipY);
             context.stroke();
-            const angle = turn * phase * plant.spins + 1.2 * Math.sin(turn * (phase * 2 - plant.baseX / view.width));
             context.save();
             context.translate(tipX, tipY);
-            context.rotate(angle);
-            wheel(plant.radius, plant.pale);
-            context.fillStyle = rgba(foreground, 1);
-            context.beginPath();
-            context.arc(0, 0, view.vmin * 0.6, 0, turn);
-            context.fill();
+            context.rotate(plant.spin * (turn * phase + 0.8 * Math.sin(turn * (phase - plant.baseX / view.width))));
+            wheel(plant.radius, plant.tone, plant.fold);
             context.restore();
           }
         }

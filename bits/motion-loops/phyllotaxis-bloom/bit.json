@@ -1,7 +1,7 @@
 {
   "name": "phyllotaxis-bloom",
-  "title": "Phyllotaxis Bloom",
-  "description": "Paper flower heads whose phyllotaxis petals open and close in waves rolling out from the seed centres",
+  "title": "Bloom Wallpaper",
+  "description": "A wallpaper of small phyllotaxis flower heads whose petals open and close in a slow wave travelling across the frame",
   "tags": [
     "loop",
     "background",
@@ -23,8 +23,8 @@
     "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
     "name": "phyllotaxis-bloom",
     "type": "hyperframes:block",
-    "title": "Phyllotaxis Bloom",
-    "description": "Paper flower heads whose phyllotaxis petals open and close in waves rolling out from the seed centres",
+    "title": "Bloom Wallpaper",
+    "description": "A wallpaper of small phyllotaxis flower heads whose petals open and close in a slow wave travelling across the frame",
     "tags": [
       "loop",
       "background",

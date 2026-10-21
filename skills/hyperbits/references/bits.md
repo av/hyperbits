@@ -410,146 +410,146 @@ Smooth transition between radial gradients
 
 ### `bauhaus-tiles`
 
-An asymmetric Bauhaus poster whose circle, half-disc, bars and triangle trade places in four eased beats
+Rows of small Bauhaus motifs in soft tones sliding past each other on four eased beats, like a moving frieze
 
 - Path: `bits/motion-loops/bauhaus-tiles/index.html`
-- Title: Bauhaus Poster
+- Title: Bauhaus Rows
 - Size: 1920x1080, duration 12s
-- Helpers: `color`, `interpolate`, `viewport`
+- Helpers: `color`, `interpolate`, `random`, `viewport`
 - Knobs (`data-composition-variables`):
   - `background` (color, default "#f2f0e5") — Background
   - `foreground` (color, default "#100f0f") — Foreground
   - `accent` (color, default "#9d8af0") — Accent
-  - `beat` (number, default 0.45) — Beat hold (0-1)
+  - `beat` (number, default 0.5) — Beat hold (0-1)
 
 ### `contour-drift`
 
-A single island built from stacked contour terraces, like a laser-cut relief, reshaping as its layers breathe
+A frame-wide relief of softly lifted contour terraces, the low hills reshaping slowly as the layers breathe
 
 - Path: `bits/motion-loops/contour-drift/index.html`
-- Title: Terraced Island
+- Title: Terraced Relief
 - Size: 1920x1080, duration 12s
 - Helpers: `color`, `random`, `viewport`
 - Knobs (`data-composition-variables`):
   - `background` (color, default "#100f0f") — Background
   - `foreground` (color, default "#f2f0e5") — Foreground
   - `accent` (color, default "#f2652a") — Accent
-  - `levels` (number, default 11) — Terraces
+  - `levels` (number, default 9) — Terraces
   - `seed` (number, default 4) — Seed
 
 ### `dot-ripple`
 
-A tilted drumhead of polar dot rings, struck off-centre so ripples lift the dots into rolling 3D waves
+A wide perspective plane of dots stretching to a high horizon, slow ripples from three points lifting it gently
 
 - Path: `bits/motion-loops/dot-ripple/index.html`
-- Title: Ripple Drum
+- Title: Ripple Plane
 - Size: 1920x1080, duration 12s
 - Helpers: `color`, `viewport`
 - Knobs (`data-composition-variables`):
   - `background` (color, default "#100f0f") — Background
   - `foreground` (color, default "#f2f0e5") — Foreground
   - `accent` (color, default "#ef5da8") — Accent
-  - `wavelength` (number, default 12) — Wavelength (vmin)
+  - `wavelength` (number, default 2.4) — Wavelength
 
 ### `dot-tunnel`
 
-A dotted tube seen from the side, its rings spinning into helix stripes while a bulge travels along it
+Stacked dotted tubes seen from the side, their rings slowly turning into helix stripes across the whole frame
 
 - Path: `bits/motion-loops/dot-tunnel/index.html`
-- Title: Dot Helix Tube
+- Title: Helix Field
 - Size: 1920x1080, duration 12s
 - Helpers: `color`, `viewport`
 - Knobs (`data-composition-variables`):
   - `background` (color, default "#100f0f") — Background
   - `foreground` (color, default "#f2f0e5") — Foreground
   - `accent` (color, default "#4fb6ec") — Accent
-  - `frames` (number, default 46) — Rings
-  - `dots` (number, default 18) — Dots per ring
+  - `frames` (number, default 5) — Tubes
+  - `dots` (number, default 12) — Dots per ring
 
 ### `floating-shapes`
 
-A hanging mobile of balanced arms and cutout shapes, swaying and turning slowly on its threads
+Garlands of soft paper cutouts hanging from the top edge across the whole width, swaying gently on their threads
 
 - Path: `bits/motion-loops/floating-shapes/index.html`
-- Title: Shape Mobile
+- Title: Hanging Garlands
 - Size: 1920x1080, duration 12s
-- Helpers: `color`, `viewport`
+- Helpers: `color`, `random`, `viewport`
 - Knobs (`data-composition-variables`):
   - `background` (color, default "#f2f0e5") — Background
   - `foreground` (color, default "#100f0f") — Foreground
   - `accent` (color, default "#9d8af0") — Accent
-  - `sway` (number, default 9) — Sway (degrees)
+  - `sway` (number, default 4) — Sway (degrees)
 
 ### `gyro-rings`
 
-Tilted planetary orbits around an off-centre sun, planets trailing light at whole-number periods
+Wide orbital arcs around a sun far beyond the frame, small planets gliding along them in whole-number periods
 
 - Path: `bits/motion-loops/gyro-rings/index.html`
-- Title: Orrery Rings
+- Title: Orbit Arcs
 - Size: 1920x1080, duration 12s
 - Helpers: `color`, `random`, `viewport`
 - Knobs (`data-composition-variables`):
   - `background` (color, default "#100f0f") — Background
   - `foreground` (color, default "#f2f0e5") — Foreground
   - `accent` (color, default "#4fb6ec") — Accent
-  - `rings` (number, default 7) — Orbits
+  - `rings` (number, default 16) — Orbits
   - `seed` (number, default 3) — Seed
 
 ### `halftone-sweep`
 
-A square halftone screen swelling into three orbiting orbs, a solid one, a ring and a soft cloud
+A square halftone screen where soft clouds of larger dots drift in small slow circles across the whole frame
 
 - Path: `bits/motion-loops/halftone-sweep/index.html`
-- Title: Halftone Orbs
+- Title: Halftone Clouds
 - Size: 1920x1080, duration 12s
-- Helpers: `color`, `viewport`
+- Helpers: `color`, `random`, `viewport`
 - Knobs (`data-composition-variables`):
   - `background` (color, default "#100f0f") — Background
   - `foreground` (color, default "#f2f0e5") — Foreground
   - `accent` (color, default "#ef5da8") — Accent
-  - `pitch` (number, default 2.3) — Dot pitch (vmin)
+  - `pitch` (number, default 2.2) — Dot pitch (vmin)
 
 ### `horizon-grid`
 
-Wireframe ridgelines rolling toward a striped sun on the horizon
+Muted wireframe ridgelines filling the frame and rolling slowly toward a high, distant horizon
 
 - Path: `bits/motion-loops/horizon-grid/index.html`
-- Title: Horizon Ridges
+- Title: Ridgeline Field
 - Size: 1920x1080, duration 12s
 - Helpers: `color`, `viewport`
 - Knobs (`data-composition-variables`):
   - `background` (color, default "#100f0f") — Background
   - `foreground` (color, default "#f2f0e5") — Foreground
   - `accent` (color, default "#4fb6ec") — Accent
-  - `ridges` (number, default 34) — Ridge rows
+  - `ridges` (number, default 80) — Ridge rows
 
 ### `phyllotaxis-bloom`
 
-Paper flower heads whose phyllotaxis petals open and close in waves rolling out from the seed centres
+A wallpaper of small phyllotaxis flower heads whose petals open and close in a slow wave travelling across the frame
 
 - Path: `bits/motion-loops/phyllotaxis-bloom/index.html`
-- Title: Phyllotaxis Bloom
+- Title: Bloom Wallpaper
 - Size: 1920x1080, duration 12s
 - Helpers: `color`, `interpolate`, `viewport`
 - Knobs (`data-composition-variables`):
   - `background` (color, default "#f2f0e5") — Background
   - `foreground` (color, default "#100f0f") — Foreground
   - `accent` (color, default "#ef5da8") — Accent
-  - `dots` (number, default 320) — Florets per flower
+  - `dots` (number, default 90) — Florets per flower
 
 ### `pinwheel-grid`
 
-Paper pinwheels on swaying stems of different heights, spinning up as gusts of wind roll across the garden
+A meadow of small paper pinwheels in receding rows filling the frame, turning slowly as soft gusts roll through
 
 - Path: `bits/motion-loops/pinwheel-grid/index.html`
-- Title: Pinwheel Garden
+- Title: Pinwheel Meadow
 - Size: 1920x1080, duration 12s
 - Helpers: `color`, `random`, `viewport`
 - Knobs (`data-composition-variables`):
   - `background` (color, default "#100f0f") — Background
   - `foreground` (color, default "#f2f0e5") — Foreground
   - `accent` (color, default "#9d8af0") — Accent
-  - `pinwheels` (number, default 9) — Pinwheels
+  - `pinwheels` (number, default 14) — Pinwheels per row
   - `seed` (number, default 5) — Seed
 
 ### `pixel-rain`
@@ -569,21 +569,21 @@ Night-time pixel rain slanting into a still pixel lake, each drop splashing ring
 
 ### `ray-burst`
 
-Retro sunburst wedges turning above a striped half-sun, with rings rippling out from the horizon
+Soft retro sunburst wedges fanning from far below the frame, turning slowly under faint rings rippling outward
 
 - Path: `bits/motion-loops/ray-burst/index.html`
-- Title: Sunburst Horizon
+- Title: Sunburst Wash
 - Size: 1920x1080, duration 12s
 - Helpers: `color`, `viewport`
 - Knobs (`data-composition-variables`):
   - `background` (color, default "#f2f0e5") — Background
   - `foreground` (color, default "#100f0f") — Foreground
   - `accent` (color, default "#f2652a") — Accent
-  - `rays` (number, default 32) — Wedges
+  - `rays` (number, default 40) — Wedges
 
 ### `speed-streaks`
 
-A few long-exposure light trails tracing looping paths across the frame, their tails fading behind glowing heads
+Soft long-exposure light trails looping slowly in their own patch of the frame, spread evenly with no bright heads
 
 - Path: `bits/motion-loops/speed-streaks/index.html`
 - Title: Light Trails
@@ -593,52 +593,52 @@ A few long-exposure light trails tracing looping paths across the frame, their t
   - `background` (color, default "#100f0f") — Background
   - `foreground` (color, default "#f2f0e5") — Foreground
   - `accent` (color, default "#f2652a") — Accent
-  - `streaks` (number, default 6) — Trails
+  - `streaks` (number, default 20) — Trails
   - `seed` (number, default 9) — Seed
 
 ### `truchet-weave`
 
-Truchet arcs laid on concentric rings of a medallion, each ring clicking round a quarter turn so the strands rewire
+Wide bands of Truchet arcs curving across the frame from a centre far off the corner, each band clicking a step in turn
 
 - Path: `bits/motion-loops/truchet-weave/index.html`
-- Title: Truchet Mandala
+- Title: Truchet Arcs
 - Size: 1920x1080, duration 12s
 - Helpers: `color`, `interpolate`, `random`, `viewport`
 - Knobs (`data-composition-variables`):
   - `background` (color, default "#100f0f") — Background
   - `foreground` (color, default "#f2f0e5") — Foreground
   - `accent` (color, default "#9d8af0") — Accent
-  - `rings` (number, default 7) — Rings
+  - `rings` (number, default 16) — Bands
   - `seed` (number, default 6) — Seed
 
 ### `wave-stack`
 
-A wide striped ribbon twisting across a dark field, its back face flashing as the fold travels
+Muted striped ribbons laid diagonally across the whole frame, each slowly twisting so its back face shows
 
 - Path: `bits/motion-loops/wave-stack/index.html`
-- Title: Twisting Ribbon
+- Title: Ribbon Field
 - Size: 1920x1080, duration 12s
 - Helpers: `color`, `viewport`
 - Knobs (`data-composition-variables`):
   - `background` (color, default "#100f0f") — Background
   - `foreground` (color, default "#f2f0e5") — Foreground
   - `accent` (color, default "#f2652a") — Accent
-  - `lines` (number, default 18) — Stripes
+  - `lines` (number, default 6) — Ribbons
 
 ### `zoom-polygons`
 
-Hexagon panels stepping forward in a diagonal procession, each inner shape clicking round a sixth turn per step
+Hexagon outlines in three depth layers circling slowly in place with parallax, turning a sixth per loop
 
 - Path: `bits/motion-loops/zoom-polygons/index.html`
-- Title: Polygon Procession
+- Title: Polygon Drift
 - Size: 1920x1080, duration 12s
-- Helpers: `color`, `interpolate`, `viewport`
+- Helpers: `color`, `random`, `viewport`
 - Knobs (`data-composition-variables`):
   - `background` (color, default "#100f0f") — Background
   - `foreground` (color, default "#f2f0e5") — Foreground
   - `accent` (color, default "#4fb6ec") — Accent
   - `sides` (number, default 6) — Polygon sides
-  - `twist` (number, default 8) — Card tilt (degrees)
+  - `count` (number, default 54) — Polygons
 
 ## Particles
 

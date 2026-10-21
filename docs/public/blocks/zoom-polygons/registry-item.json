@@ -2,14 +2,14 @@
   "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
   "name": "zoom-polygons",
   "type": "hyperframes:block",
-  "title": "Polygon Procession",
-  "description": "Hexagon panels stepping forward in a diagonal procession, each inner shape clicking round a sixth turn per step",
+  "title": "Polygon Drift",
+  "description": "Hexagon outlines in three depth layers circling slowly in place with parallax, turning a sixth per loop",
   "tags": [
     "loop",
     "background",
     "depth",
     "polygons",
-    "cards"
+    "parallax"
   ],
   "license": "MIT",
   "dimensions": {
