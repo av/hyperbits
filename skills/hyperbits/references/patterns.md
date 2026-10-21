@@ -229,7 +229,7 @@ When combining two full bits, embed both with `data-composition-src` and stagger
 ## Adding a new bit
 
 1. Create `bits/<category>/<name>/` with `index.html`, `bit.json`, and optional `preview.png`.
-   Categories: `text-animations`, `staggered-motion`, `background-effects`, `particles`, `scenes-3d`, `full-compositions`.
+   Categories: `text-animations`, `staggered-motion`, `background-effects`, `motion-loops`, `particles`, `scenes-3d`, `full-compositions`. Loops also follow `motion-loops.md`.
 2. Follow every rule in this file.
 3. Put theme colors as literals in a top-level `:root` block. No emoji as visual elements; use inline SVG.
 4. List used helpers in `bit.json`.
