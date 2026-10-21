@@ -3,6 +3,7 @@ import CodeMirror from '@uiw/react-codemirror';
 import { html } from '@codemirror/lang-html';
 import { flexoki } from '../lib/editor-theme';
 import { docsBitsById, type DocsBit } from '../lib/bits.generated';
+import { copyText } from '../lib/copy';
 import {
   applyCompositionVariables,
   defaultsFromVariables,
@@ -67,6 +68,7 @@ export const BitPlayground: React.FC<BitPlaygroundProps> = ({ bitName }) => {
   const playerRef = useRef<HyperframesPlayerElement | null>(null);
   const [sourceHtml, setSourceHtml] = useState('');
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [copyState, setCopyState] = useState<'copied' | 'failed' | null>(null);
   const [variableValues, setVariableValues] = useState<Record<string, unknown>>(
     {},
   );
@@ -157,8 +159,9 @@ export const BitPlayground: React.FC<BitPlaygroundProps> = ({ bitName }) => {
   }, []);
 
   const handleCopy = useCallback(() => {
-    void navigator.clipboard.writeText(sourceHtml).then(() => {
-      window.alert('Bit HTML copied to clipboard.');
+    void copyText(sourceHtml).then((copied) => {
+      setCopyState(copied ? 'copied' : 'failed');
+      window.setTimeout(() => setCopyState(null), 1600);
     });
   }, [sourceHtml]);
 
@@ -304,9 +307,17 @@ export const BitPlayground: React.FC<BitPlaygroundProps> = ({ bitName }) => {
             onClick={handleCopy}
             type="button"
             title="Copy bit HTML"
+            aria-label="Copy bit HTML"
+            data-copy-state={copyState ?? undefined}
           >
             <CopyIcon />
+            {copyState && (
+              <span className="bit-playground-copy-label">{copyState === 'copied' ? 'Copied' : 'Copy failed'}</span>
+            )}
           </button>
+          <span className="sr-only" role="status" aria-live="polite">
+            {copyState === 'copied' ? 'Bit HTML copied to clipboard' : copyState === 'failed' ? 'Copy failed' : ''}
+          </span>
         </div>
       </div>
 
@@ -398,6 +409,21 @@ export const BitPlayground: React.FC<BitPlaygroundProps> = ({ bitName }) => {
           cursor: pointer;
         }
 
+        .bit-playground-copy-label {
+          position: absolute;
+          right: calc(100% + 6px);
+          top: 50%;
+          transform: translateY(-50%);
+          white-space: nowrap;
+          padding: 2px 8px;
+          border-radius: 4px;
+          background: var(--sl-color-gray-6);
+          font-size: 12px;
+          color: #86efac;
+        }
+        .bit-playground-action-btn[data-copy-state='failed'] .bit-playground-copy-label {
+          color: #fca5a5;
+        }
         .bit-playground-action-btn {
           position: absolute;
           top: 1rem;

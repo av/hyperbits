@@ -61,10 +61,14 @@ import Logo from "@/components/Logo.astro";
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
           <button
             id="hero-npm-install"
-            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-mono text-primary mb-8 animate-fade-in-up cursor-pointer hover:bg-primary/20 transition-colors"
+            type="button"
+            data-copy="npx hyperbits add fade-in"
+            aria-label="Copy install command: npx hyperbits add fade-in"
+            class="copy-chip inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-mono text-primary mb-8 animate-fade-in-up cursor-pointer hover:bg-primary/20 transition-colors"
           >
-            <span class="material-symbols-outlined text-sm">terminal</span>
+            <span class="material-symbols-outlined text-sm" aria-hidden="true">terminal</span>
             npx hyperbits add fade-in
+            <span class="copy-label" data-copy-label>Copy</span>
           </button>
           <h1
             class="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tight text-white mb-8 leading-[1.1] md:leading-[1.1]"
@@ -123,16 +127,23 @@ import Logo from "@/components/Logo.astro";
           <div
             class="bg-surface-dark border border-white/10 rounded-xl squircle p-4 md:p-8 max-w-2xl mx-auto shadow-2xl"
           >
-            <div class="flex items-center justify-between gap-4 font-mono text-sm md:text-lg">
-              <div class="flex items-center gap-3">
-                <span class="text-primary font-bold">➜</span>
+            <button
+              id="copy-npm-install"
+              type="button"
+              data-copy="npx hyperbits add fade-in"
+              aria-label="Copy install command: npx hyperbits add fade-in"
+              class="copy-box w-full flex items-center justify-between gap-4 font-mono text-sm md:text-lg text-left cursor-pointer"
+            >
+              <span class="flex items-center gap-3">
+                <span class="text-primary font-bold" aria-hidden="true">➜</span>
                 <span class="text-gray-300">npx hyperbits add</span>
                 <span class="text-white font-bold">fade-in</span>
-              </div>
-              <button id="copy-npm-install" aria-label="Copy" class="text-gray-500 hover:text-white transition-colors">
-                <span class="material-symbols-outlined">content_copy</span>
-              </button>
-            </div>
+              </span>
+              <span class="flex items-center gap-2 text-gray-500 copy-box-action">
+                <span class="copy-label text-xs md:text-sm" data-copy-label>Copy</span>
+                <span class="material-symbols-outlined" aria-hidden="true">content_copy</span>
+              </span>
+            </button>
           </div>
           <p class="text-gray-500 mt-8 text-sm">
             Requires HyperFrames and GSAP 3.14.2.
@@ -184,21 +195,14 @@ import Logo from "@/components/Logo.astro";
       </footer>
     </div>
     <script>
+      import { wireCopyElements } from "../lib/copy";
+
       const yearElement = document.getElementById("year");
       if (yearElement) {
         yearElement.textContent = new Date().getFullYear().toString();
       }
 
-      const copyText = "npx hyperbits add fade-in";
-      const wireCopy = (id: string) => {
-        const button = document.getElementById(id);
-        if (!button) return;
-        button.addEventListener("click", async () => {
-          await navigator.clipboard.writeText(copyText);
-        });
-      };
-      wireCopy("copy-npm-install");
-      wireCopy("hero-npm-install");
+      wireCopyElements();
     </script>
   </body>
 </html>
