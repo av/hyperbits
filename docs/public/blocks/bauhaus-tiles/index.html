@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#f2f0e5"},{"id":"foreground","type":"color","label":"Foreground","default":"#100f0f"},{"id":"accent","type":"color","label":"Accent","default":"#9d8af0"},{"id":"beat","type":"number","label":"Beat hold (0-1)","default":0.5}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#f2f0e5"},{"id":"foreground","type":"color","label":"Foreground","default":"#100f0f"},{"id":"accent","type":"color","label":"Accent","default":"#9d8af0"},{"id":"size","type":"number","label":"Motif size (vmin)","default":9}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -97,10 +97,8 @@
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
         const tones = [mix(accent, background, 0.55), mix(accent, background, 0.75), mix(foreground, background, 0.8), mix(accent, background, 0.3)];
-        const hold = Math.min(Math.max(Number(vars.beat) || 0.5, 0), 0.9);
-        const ease = hyperbits.Easing.easeInOutCubic;
-        const size = view.vmin * 9;
-        const period = 8;
+        const size = view.vmin * Math.max(3, Number(vars.size) || 9);
+        const period = 5;
         const rows = Math.ceil(view.height / size) + 1;
         const motifs = ["quarter", "half", "circle", "triangle", "bar", "dot"];
         const pattern = [];
@@ -141,13 +139,10 @@
         function draw(phase) {
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
-          const beat = phase * 4;
-          const whole = Math.floor(beat);
-          const slide = whole + ease(Math.min(Math.max((beat - whole) / (1 - hold), 0), 1));
           const cells = Math.ceil(view.width / size) + 2;
           for (let row = 0; row < rows; row += 1) {
             const direction = row % 2 === 0 ? 1 : -1;
-            const offset = direction * slide * 2 * size;
+            const offset = direction * phase * period * size;
             const first = Math.floor(-offset / size) - 1;
             for (let index = first; index < first + cells; index += 1) {
               const entry = pattern[row][((index % period) + period) % period];

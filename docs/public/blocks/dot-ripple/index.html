@@ -93,38 +93,35 @@
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
         const wavelength = Math.max(0.5, Number(vars.wavelength) || 2.4);
-        const horizon = view.height * 0.04;
-        const focal = view.height * 0.42;
-        const eye = 1.4;
-        const columns = 90;
-        const rows = 60;
-        const spacing = 0.24;
+        const pitch = view.vmin * 2.6;
+        const rows = Math.ceil(view.height / (pitch * 0.62)) + 2;
+        const columns = Math.ceil((view.width * 1.6) / pitch);
         const sources = [
-          { sourceX: -3, sourceZ: 4 },
-          { sourceX: 4, sourceZ: 7 },
-          { sourceX: 0.5, sourceZ: 11 },
+          { sourceX: 0.22, sourceY: 0.75 },
+          { sourceX: 0.78, sourceY: 0.62 },
+          { sourceX: 0.5, sourceY: 0.2 },
         ];
         function draw(phase) {
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
           for (let row = rows - 1; row >= 0; row -= 1) {
-            const worldZ = 0.8 + row * spacing;
+            const share = row / (rows - 1);
+            const scale = 1 - 0.4 * share;
+            const baseY = view.height * (1.02 - 1.06 * share);
             for (let column = 0; column < columns; column += 1) {
-              const worldX = (column - columns / 2) * spacing;
+              const offsetX = (column - columns / 2 + (row % 2) * 0.5) * pitch * scale;
+              const pointX = view.width / 2 + offsetX;
+              if (pointX < -pitch || pointX > view.width + pitch) continue;
               let height = 0;
               for (const source of sources) {
-                const distance = Math.hypot(worldX - source.sourceX, worldZ - source.sourceZ);
-                height += Math.sin(turn * (distance / wavelength - phase * 2)) * Math.exp(-distance / 9);
+                const distance = Math.hypot(pointX / view.width - source.sourceX, (baseY / view.height - source.sourceY) * 0.6) * 100;
+                height += Math.sin(turn * (distance / (wavelength * 4) - phase * 2)) * Math.exp(-distance / 60);
               }
               height /= 2;
-              const pointX = view.width / 2 + (worldX * focal) / worldZ;
-              const pointY = horizon + ((eye - height * 0.35) * focal) / worldZ;
-              if (pointX < -20 || pointX > view.width + 20 || pointY > view.height + 20) continue;
-              const fog = 1 - row / rows;
               const crest = Math.max(0, height);
-              context.fillStyle = rgba(crest > 0.45 ? accent : foreground, (crest > 0.45 ? 0.6 : 0.34 + 0.2 * crest) * (0.35 + 0.65 * fog));
+              context.fillStyle = rgba(crest > 0.4 ? accent : foreground, crest > 0.4 ? 0.5 : 0.24 + 0.2 * crest);
               context.beginPath();
-              context.arc(pointX, pointY, Math.max(view.vmin * 0.1, (view.vmin * 0.6) / worldZ) * (1 + 0.4 * crest), 0, turn);
+              context.arc(pointX, baseY - height * view.vmin * 1.6 * scale, view.vmin * (0.26 + 0.16 * crest) * scale, 0, turn);
               context.fill();
             }
           }

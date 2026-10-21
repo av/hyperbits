@@ -410,17 +410,17 @@ Smooth transition between radial gradients
 
 ### `bauhaus-tiles`
 
-Rows of small Bauhaus motifs in soft tones sliding past each other on four eased beats, like a moving frieze
+Rows of small Bauhaus motifs in soft tones gliding slowly past each other in opposite directions, like a moving frieze
 
 - Path: `bits/motion-loops/bauhaus-tiles/index.html`
 - Title: Bauhaus Rows
 - Size: 1920x1080, duration 12s
-- Helpers: `color`, `interpolate`, `random`, `viewport`
+- Helpers: `color`, `random`, `viewport`
 - Knobs (`data-composition-variables`):
   - `background` (color, default "#f2f0e5") — Background
   - `foreground` (color, default "#100f0f") — Foreground
   - `accent` (color, default "#9d8af0") — Accent
-  - `beat` (number, default 0.5) — Beat hold (0-1)
+  - `size` (number, default 9) — Motif size (vmin)
 
 ### `contour-drift`
 
@@ -439,7 +439,7 @@ A frame-wide relief of softly lifted contour terraces, the low hills reshaping s
 
 ### `dot-ripple`
 
-A wide perspective plane of dots stretching to a high horizon, slow ripples from three points lifting it gently
+A gently tilted plane of dots filling the frame, slow ripples from three points lifting it in soft waves
 
 - Path: `bits/motion-loops/dot-ripple/index.html`
 - Title: Ripple Plane
@@ -598,17 +598,17 @@ Soft long-exposure light trails looping slowly in their own patch of the frame, 
 
 ### `truchet-weave`
 
-Wide bands of Truchet arcs curving across the frame from a centre far off the corner, each band clicking a step in turn
+Gently curving bands of Truchet arcs across the frame, from a centre far off the corner, neighbouring bands gliding slowly in opposite directions
 
 - Path: `bits/motion-loops/truchet-weave/index.html`
 - Title: Truchet Arcs
 - Size: 1920x1080, duration 12s
-- Helpers: `color`, `interpolate`, `random`, `viewport`
+- Helpers: `color`, `random`, `viewport`
 - Knobs (`data-composition-variables`):
   - `background` (color, default "#100f0f") — Background
   - `foreground` (color, default "#f2f0e5") — Foreground
   - `accent` (color, default "#9d8af0") — Accent
-  - `rings` (number, default 16) — Bands
+  - `rings` (number, default 11) — Bands
   - `seed` (number, default 6) — Seed
 
 ### `wave-stack`

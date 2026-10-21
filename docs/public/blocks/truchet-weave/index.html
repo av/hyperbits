@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#9d8af0"},{"id":"rings","type":"number","label":"Bands","default":16},{"id":"seed","type":"number","label":"Seed","default":6}]'>
+<html lang="en" data-composition-variables='[{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Foreground","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#9d8af0"},{"id":"rings","type":"number","label":"Bands","default":11},{"id":"seed","type":"number","label":"Seed","default":6}]'>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1920, height=1080" />
@@ -92,29 +92,34 @@
         }
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const rings = Math.max(2, Math.round(Number(vars.rings) || 16));
+        const rings = Math.max(2, Math.round(Number(vars.rings) || 11));
         const seed = Number(vars.seed) || 0;
-        const sectors = 240;
-        const ease = hyperbits.Easing.easeInOutCubic;
-        const centerX = view.width * 1.08;
-        const centerY = view.height * 1.15;
-        const inner = Math.hypot(centerX - view.width, centerY - view.height) + view.vmin * 2;
-        const outer = Math.hypot(centerX, centerY) + view.vmin * 4;
+        const sectors = 120;
+        const centerX = view.width * 1.9;
+        const centerY = view.height * 3.2;
+        const corners = [[0, 0], [view.width, 0], [0, view.height], [view.width, view.height]];
+        const distances = corners.map(([cornerX, cornerY]) => Math.hypot(cornerX - centerX, cornerY - centerY));
+        const angles = corners.map(([cornerX, cornerY]) => Math.atan2(cornerY - centerY, cornerX - centerX));
+        const inner = Math.min(...distances) - view.vmin * 4;
+        const outer = Math.max(...distances) + view.vmin * 4;
         const band = (outer - inner) / rings;
         const width = turn / sectors;
+        const fromAngle = Math.min(...angles) - width * 4;
+        const toAngle = Math.max(...angles) + width * 4;
+        const slots = 6;
         const flips = [];
         for (let ring = 0; ring < rings; ring += 1) {
-          for (let sector = 0; sector < sectors; sector += 1) {
-            flips.push(hyperbits.random("arcs-" + seed + "-" + ring + "-" + (sector % 24)) > 0.5);
+          for (let slot = 0; slot < slots; slot += 1) {
+            flips.push(hyperbits.random("arcs-" + seed + "-" + ring + "-" + slot) > 0.5);
           }
         }
         function polar(distance, angle) {
           return [centerX + Math.cos(angle) * distance, centerY + Math.sin(angle) * distance];
         }
-        function curve(fromDistance, fromAngle, cornerDistance, cornerAngle, toDistance, toAngle) {
-          const [startX, startY] = polar(fromDistance, fromAngle);
+        function curve(fromDistance, startAngle, cornerDistance, cornerAngle, toDistance, endAngle) {
+          const [startX, startY] = polar(fromDistance, startAngle);
           const [controlX, controlY] = polar(cornerDistance, cornerAngle);
-          const [endX, endY] = polar(toDistance, toAngle);
+          const [endX, endY] = polar(toDistance, endAngle);
           context.moveTo(startX, startY);
           context.quadraticCurveTo(controlX, controlY, endX, endY);
         }
@@ -123,25 +128,22 @@
           context.clearRect(0, 0, view.width, view.height);
           context.lineCap = "round";
           for (let ring = 0; ring < rings; ring += 1) {
-            const beat = phase * 4 - ring * 0.05;
-            const whole = Math.floor(beat);
-            const steps = whole + ease(Math.min(Math.max((beat - whole) / 0.4, 0), 1));
-            const offset = (ring % 2 === 0 ? 1 : -1) * width * 6 * steps;
+            const direction = ring % 2 === 0 ? 1 : -1;
+            const offset = direction * width * slots * phase;
             const low = inner + ring * band;
             const high = low + band;
             const middle = (low + high) / 2;
-            const visibleFrom = Math.PI + 0.05;
-            const visibleTo = Math.PI * 1.55;
-            context.strokeStyle = rgba(ring % 4 === 1 ? accent : foreground, ring % 4 === 1 ? 0.45 : 0.22);
-            context.lineWidth = Math.min(band * 0.16, view.vmin * 0.6);
+            context.strokeStyle = rgba(ring % 4 === 1 ? accent : foreground, ring % 4 === 1 ? 0.4 : 0.2);
+            context.lineWidth = Math.min(band * 0.05, view.vmin * 0.6);
             context.beginPath();
-            for (let sector = 0; sector < sectors; sector += 1) {
+            const firstSector = Math.floor((fromAngle - offset) / width);
+            const lastSector = Math.ceil((toAngle - offset) / width);
+            for (let sector = firstSector; sector <= lastSector; sector += 1) {
               const start = sector * width + offset;
-              const wrapped = ((start % turn) + turn) % turn;
-              if (wrapped < visibleFrom - width || wrapped > visibleTo) continue;
               const end = start + width;
               const center = start + width / 2;
-              if (flips[ring * sectors + sector]) {
+              const slot = ((sector % slots) + slots) % slots;
+              if (flips[ring * slots + slot]) {
                 curve(low, center, low, start, middle, start);
                 curve(high, center, high, end, middle, end);
               } else {

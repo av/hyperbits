@@ -3,7 +3,7 @@
   "name": "truchet-weave",
   "type": "hyperframes:block",
   "title": "Truchet Arcs",
-  "description": "Wide bands of Truchet arcs curving across the frame from a centre far off the corner, each band clicking a step in turn",
+  "description": "Gently curving bands of Truchet arcs across the frame, from a centre far off the corner, neighbouring bands gliding slowly in opposite directions",
   "tags": [
     "loop",
     "background",

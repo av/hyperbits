@@ -96,14 +96,14 @@
         const background = channels(vars.background);
         const foreground = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const water = mix(accent, background, 0.55);
+        const water = mix(accent, background, 0.8);
         const columns = Math.max(16, Math.round(Number(vars.columns) || 96));
         const seed = Number(vars.seed) || 0;
         const cell = view.width / columns;
         const rows = Math.ceil(view.height / cell);
-        const surface = Math.round(rows * 0.7);
+        const surface = Math.round(rows * 0.8);
         const block = cell * 0.86;
-        const drops = [...Array(Math.round(columns * 1.1)).keys()].map((index) => {
+        const drops = [...Array(Math.round(columns * 1.5)).keys()].map((index) => {
           const key = "drop-" + seed + "-" + index;
           return {
             column: hyperbits.randomInt(key + "-c", 0, columns - 1),
@@ -125,7 +125,7 @@
           for (let row = surface; row < rows; row += 1) {
             for (let column = 0; column < columns; column += 1) {
               const shimmer = 0.5 + 0.5 * Math.sin(turn * (phase * 2 + column * 0.11 + (row - surface) * 0.35));
-              pixel(column, row, water, (0.3 + 0.7 * shimmer) * (1 - 0.7 * (row - surface) / (rows - surface)));
+              pixel(column, row, water, (0.2 + 0.45 * shimmer) * (1 - 0.6 * (row - surface) / (rows - surface)));
             }
           }
           for (const drop of drops) {

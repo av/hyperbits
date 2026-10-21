@@ -115,7 +115,7 @@ export const docsBits: DocsBit[] = [
     "id": "bauhaus-tiles",
     "name": "Bauhaus Rows",
     "title": "Bauhaus Rows",
-    "description": "Rows of small Bauhaus motifs in soft tones sliding past each other on four eased beats, like a moving frieze",
+    "description": "Rows of small Bauhaus motifs in soft tones gliding slowly past each other in opposite directions, like a moving frieze",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -130,7 +130,6 @@ export const docsBits: DocsBit[] = [
     "height": 1080,
     "helpers": [
       "color",
-      "interpolate",
       "random",
       "viewport"
     ],
@@ -166,7 +165,7 @@ export const docsBits: DocsBit[] = [
     "id": "dot-ripple",
     "name": "Ripple Plane",
     "title": "Ripple Plane",
-    "description": "A wide perspective plane of dots stretching to a high horizon, slow ripples from three points lifting it gently",
+    "description": "A gently tilted plane of dots filling the frame, slow ripples from three points lifting it in soft waves",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -437,7 +436,7 @@ export const docsBits: DocsBit[] = [
     "id": "truchet-weave",
     "name": "Truchet Arcs",
     "title": "Truchet Arcs",
-    "description": "Wide bands of Truchet arcs curving across the frame from a centre far off the corner, each band clicking a step in turn",
+    "description": "Gently curving bands of Truchet arcs across the frame, from a centre far off the corner, neighbouring bands gliding slowly in opposite directions",
     "category": "motion-loops",
     "categoryLabel": "Motion Loops",
     "tags": [
@@ -452,7 +451,6 @@ export const docsBits: DocsBit[] = [
     "height": 1080,
     "helpers": [
       "color",
-      "interpolate",
       "random",
       "viewport"
     ],
