@@ -101,17 +101,17 @@
         const plants = [];
         for (let row = 0; row < 6; row += 1) {
           const depth = 1 - row / 6;
-          const count = Math.round(perRow * (0.7 + row * 0.12));
+          const count = Math.round(perRow * (0.85 + row * 0.06));
           for (let index = 0; index < count; index += 1) {
             const key = "meadow-" + seed + "-" + row + "-" + index;
             plants.push({
               depth,
               baseX: view.width * ((index + hyperbits.randomFloat(key + "-x", 0.2, 0.8)) / count),
-              baseY: view.height * (1.02 - 0.17 * (5 - row) * 0.98),
-              height: view.vmin * (6 + 12 * depth) * hyperbits.randomFloat(key + "-h", 0.8, 1.2),
-              radius: view.vmin * (1.6 + 3.2 * depth),
-              tone: mix(hyperbits.random(key + "-t") > 0.75 ? foreground : accent, background, 0.35 + 0.4 * (1 - depth)),
-              fold: mix(accent, background, 0.65 + 0.2 * (1 - depth)),
+              baseY: view.height * (1.04 - 0.165 * row),
+              height: view.vmin * (7 + 6 * depth) * hyperbits.randomFloat(key + "-h", 0.8, 1.2),
+              radius: view.vmin * (2.4 + 1.6 * depth),
+              tone: mix(hyperbits.random(key + "-t") > 0.75 ? foreground : accent, background, 0.4 + 0.15 * (1 - depth)),
+              fold: mix(accent, background, 0.7 + 0.1 * (1 - depth)),
               spin: hyperbits.pick(key + "-s", [1, 1, -1]),
             });
           }
