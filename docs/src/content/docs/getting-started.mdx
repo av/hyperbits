@@ -10,13 +10,23 @@ hyperbits is a catalog of self-contained HTML + GSAP animation bits for [HyperFr
 
 ## Installation
 
+The package is published to GitHub Packages as `@av/hyperbits`. GitHub Packages needs a token even for public packages, so set up npm once:
+
+```bash
+gh auth refresh -h github.com -s read:packages
+npm config set @av:registry https://npm.pkg.github.com
+npm config set //npm.pkg.github.com/:_authToken "$(gh auth token)"
+```
+
+Without the `gh` CLI, create a classic token with the `read:packages` scope at https://github.com/settings/tokens/new?scopes=read:packages and use it in place of `$(gh auth token)`.
+
 <Tabs>
   <TabItem label="CLI">
     Search and add bits from a HyperFrames project:
 
     ```bash
-    npx hyperbits find "fade in text"
-    npx hyperbits add fade-in
+    npx @av/hyperbits find "fade in text"
+    npx @av/hyperbits add fade-in
     ```
 
     `add` writes `compositions/fade-in.html` and prints a `data-composition-src` snippet.
@@ -36,7 +46,7 @@ hyperbits is a catalog of self-contained HTML + GSAP animation bits for [HyperFr
   </TabItem>
   <TabItem label="npm">
     ```bash
-    npm install hyperbits
+    npm install @av/hyperbits
     ```
   </TabItem>
   <TabItem label="MCP">
@@ -45,7 +55,7 @@ hyperbits is a catalog of self-contained HTML + GSAP animation bits for [HyperFr
       "mcpServers": {
         "hyperbits": {
           "command": "npx",
-          "args": ["-y", "hyperbits", "mcp"]
+          "args": ["-y", "@av/hyperbits", "mcp"]
         }
       }
     }
@@ -89,7 +99,7 @@ Never paint on the composition root. The HyperFrames renderer drops `background`
 The same helpers bits use are available as ES modules:
 
 ```js
-import { interpolate, stagger, viewport } from 'hyperbits/helpers';
+import { interpolate, stagger, viewport } from '@av/hyperbits/helpers';
 ```
 
 or on the IIFE global `hyperbits` inside a composition `<script>`.

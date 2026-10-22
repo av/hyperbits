@@ -2,8 +2,8 @@
 
 ![Gallery](./docs/public/gallery.gif)
 
-[![NPM Version](https://img.shields.io/npm/v/hyperbits?style=flat-square&color=%23ec8b49)](https://www.npmjs.com/package/hyperbits)
-[![License](https://img.shields.io/npm/l/hyperbits?style=flat-square&color=%23ec8b49)](https://github.com/av/hyperbits/blob/master/LICENSE)
+[![GitHub Packages](https://img.shields.io/badge/github%20packages-%40av%2Fhyperbits-ec8b49?style=flat-square)](https://github.com/av/hyperbits/pkgs/npm/hyperbits)
+[![License](https://img.shields.io/github/license/av/hyperbits?style=flat-square&color=%23ec8b49)](https://github.com/av/hyperbits/blob/master/LICENSE)
 
 Ready-made animation bits for [HyperFrames](https://github.com/heygen-com/hyperframes) video compositions, with a discoverable catalog, a CLI, and an MCP server. The sibling of [remotion-bits](https://github.com/av/remotion-bits), rebuilt for HTML + GSAP compositions instead of React.
 
@@ -16,24 +16,34 @@ Ready-made animation bits for [HyperFrames](https://github.com/heygen-com/hyperf
 
 ## Single-step usage
 
-All published entry points use the same package name: `hyperbits`. Once published, the packed CLI is `npx hyperbits ...`. Locally, after `npm pack`:
+The package is published to GitHub Packages as `@av/hyperbits`; the CLI it installs is `hyperbits`. GitHub Packages needs a token even for public packages, so set up npm once:
 
 ```bash
-npm exec --package ./hyperbits-*.tgz -- hyperbits find "fade in"
+gh auth refresh -h github.com -s read:packages
+npm config set @av:registry https://npm.pkg.github.com
+npm config set //npm.pkg.github.com/:_authToken "$(gh auth token)"
+```
+
+Without the `gh` CLI, create a classic token with the `read:packages` scope at https://github.com/settings/tokens/new?scopes=read:packages and use it in place of `$(gh auth token)`.
+
+Then use `npx @av/hyperbits ...`. Locally, after `npm pack`:
+
+```bash
+npm exec --package ./av-hyperbits-*.tgz -- hyperbits find "fade in"
 ```
 
 ### CLI
 
 ```bash
-npx hyperbits find 3d cards
-npx hyperbits fetch fade-in --json
-npx hyperbits add fade-in --into compositions/
+npx @av/hyperbits find 3d cards
+npx @av/hyperbits fetch fade-in --json
+npx @av/hyperbits add fade-in --into compositions/
 ```
 
 Or install the bin globally:
 
 ```bash
-npm i -g hyperbits
+npm i -g @av/hyperbits
 hyperbits find 3d cards
 hyperbits add fade-in --into compositions/
 ```
@@ -43,7 +53,7 @@ hyperbits add fade-in --into compositions/
 ### MCP
 
 ```bash
-npx hyperbits mcp
+npx @av/hyperbits mcp
 ```
 
 Minimal MCP client config:
@@ -51,7 +61,7 @@ Minimal MCP client config:
 ```json
 {
   "command": "npx",
-  "args": ["-y", "hyperbits", "mcp"]
+  "args": ["-y", "@av/hyperbits", "mcp"]
 }
 ```
 
@@ -74,7 +84,7 @@ The server exposes two tools:
 From a HyperFrames project directory:
 
 ```bash
-npx hyperbits add fade-in --into compositions/
+npx @av/hyperbits add fade-in --into compositions/
 ```
 
 Embed the written file:
@@ -106,11 +116,11 @@ This repository ships a skill file at `skills/hyperbits/SKILL.md`. Point an agen
 Install when you want to import helpers as ESM:
 
 ```bash
-npm install hyperbits
+npm install @av/hyperbits
 ```
 
 ```js
-import { interpolate, stagger, viewport } from "hyperbits/helpers";
+import { interpolate, stagger, viewport } from "@av/hyperbits/helpers";
 ```
 
 HTML compositions load the IIFE instead:
@@ -141,7 +151,7 @@ ffmpeg -i demo/out/gallery.mp4 docs/public/gallery.gif
 
 ## Helpers
 
-Each helper is deterministic given a time value so HyperFrames frame-by-frame rendering stays exact. ESM import from `hyperbits/helpers` or `hyperbits/helpers/<name>`. Bits load the IIFE global `hyperbits`.
+Each helper is deterministic given a time value so HyperFrames frame-by-frame rendering stays exact. ESM import from `@av/hyperbits/helpers` or `@av/hyperbits/helpers/<name>`. Bits load the IIFE global `hyperbits`.
 
 - `interpolate`: easing map, non-monotonic ranges, GSAP ease-name compatibility
 - `stagger`: GSAP timeline from a keyframe spec (`x`/`y`/`rotate`/`scale`/`opacity`, `duration`, `delay`, `stagger`, `hold`)
@@ -177,8 +187,8 @@ Browse them in the [catalog](https://hyperbits.dev/docs/bits-catalog).
 Seamless 12-second motion graphics backgrounds in four families: depth, lines, dots and shapes. Frame 12s equals frame 0, so they loop with no seam, and each one is restyled with three palette tokens: `background`, `foreground` and `accent`.
 
 ```bash
-npx hyperbits find --tag loop --tag dots
-npx hyperbits add halftone-sweep --into compositions/
+npx @av/hyperbits find --tag loop --tag dots
+npx @av/hyperbits add halftone-sweep --into compositions/
 ```
 
 ```html
@@ -240,9 +250,9 @@ Release: bump and push a tag, nothing else runs locally.
 scripts/release.sh 0.3.0      # or patch / minor / major
 ```
 
-The script bumps `package.json`, `package-lock.json` and `src/version.ts`, renames `### Unreleased` in `CHANGELOG.md` to the new version, commits, tags `v<version>` and pushes. The tag starts [`.github/workflows/release.yml`](./.github/workflows/release.yml), which runs the full check set (build, typecheck, lint, tests, packed-package test, generated files, docs build), publishes to npm with provenance, and creates the GitHub release with that version's CHANGELOG notes.
+The script bumps `package.json`, `package-lock.json` and `src/version.ts`, renames `### Unreleased` in `CHANGELOG.md` to the new version, commits, tags `v<version>` and pushes. The tag starts [`.github/workflows/release.yml`](./.github/workflows/release.yml), which runs the full check set (build, typecheck, lint, tests, packed-package test, generated files, docs build), publishes `@av/hyperbits` to GitHub Packages with the repository's own `GITHUB_TOKEN`, and creates the GitHub release with that version's CHANGELOG notes.
 
-- npm auth: trusted publishing (GitHub OIDC). Until the trusted publisher is configured on npmjs.com, the workflow falls back to an `NPM_TOKEN` repository secret.
+- Package page: https://github.com/av/hyperbits/pkgs/npm/hyperbits
 - Dry run: run the Release workflow by hand (`gh workflow run release.yml -f dry_run=true`) to get every check and an `npm publish --dry-run` without publishing.
 - Re-run for an existing tag: `gh workflow run release.yml -f tag=v0.2.0 -f dry_run=false`.
 

@@ -6,7 +6,7 @@ description: Time-value interpolation with easing and GSAP ease names
 `interpolate` maps an input along a range of numbers. Ranges may be non-monotonic (holds, reverse segments). Easing accepts the built-in map or GSAP ease names such as `power2.out`.
 
 ```js
-import { interpolate, Easing, gsapEase, hold, steps } from "hyperbits/helpers";
+import { interpolate, Easing, gsapEase, hold, steps } from "@av/hyperbits/helpers";
 
 const scale = interpolate(time, [0, 1.5], [0.5, 1.5], {
   easing: "easeOutCubic",

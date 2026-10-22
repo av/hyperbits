@@ -508,8 +508,8 @@ const renderHelpersMarkdown = (sections) => {
     .map((section) => {
       const importPath =
         section.id === "package"
-          ? "hyperbits/helpers"
-          : `hyperbits/helpers/${section.id}`;
+          ? "@av/hyperbits/helpers"
+          : `@av/hyperbits/helpers/${section.id}`;
       const lines = [
         `## ${section.title}`,
         "",
@@ -539,7 +539,7 @@ const renderHelpersMarkdown = (sections) => {
     `<script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js"></script>`,
     "```",
     "",
-    "ESM consumers import from `hyperbits/helpers` or `hyperbits/helpers/<name>`.",
+    "ESM consumers import from `@av/hyperbits/helpers` or `@av/hyperbits/helpers/<name>`.",
     "",
     "## Table of contents",
     toc,

@@ -62,12 +62,12 @@ import Logo from "@/components/Logo.astro";
           <button
             id="hero-npm-install"
             type="button"
-            data-copy="npx hyperbits add fade-in"
-            aria-label="Copy install command: npx hyperbits add fade-in"
+            data-copy="npx @av/hyperbits add fade-in"
+            aria-label="Copy install command: npx @av/hyperbits add fade-in"
             class="copy-chip inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-mono text-primary mb-8 animate-fade-in-up cursor-pointer hover:bg-primary/20 transition-colors"
           >
             <span class="material-symbols-outlined text-sm" aria-hidden="true">terminal</span>
-            npx hyperbits add fade-in
+            npx @av/hyperbits add fade-in
             <span class="copy-label" data-copy-label>Copy</span>
           </button>
           <h1
@@ -130,13 +130,13 @@ import Logo from "@/components/Logo.astro";
             <button
               id="copy-npm-install"
               type="button"
-              data-copy="npx hyperbits add fade-in"
-              aria-label="Copy install command: npx hyperbits add fade-in"
+              data-copy="npx @av/hyperbits add fade-in"
+              aria-label="Copy install command: npx @av/hyperbits add fade-in"
               class="copy-box w-full flex items-center justify-between gap-4 font-mono text-sm md:text-lg text-left cursor-pointer"
             >
               <span class="flex items-center gap-3">
                 <span class="text-primary font-bold" aria-hidden="true">➜</span>
-                <span class="text-gray-300">npx hyperbits add</span>
+                <span class="text-gray-300">npx @av/hyperbits add</span>
                 <span class="text-white font-bold">fade-in</span>
               </span>
               <span class="flex items-center gap-2 text-gray-500 copy-box-action">
@@ -144,6 +144,31 @@ import Logo from "@/components/Logo.astro";
                 <span class="material-symbols-outlined" aria-hidden="true">content_copy</span>
               </span>
             </button>
+          </div>
+          <div class="bg-surface-dark/60 border border-white/10 rounded-xl squircle p-4 md:p-6 max-w-2xl mx-auto mt-4 text-left">
+            <div class="flex items-start justify-between gap-4">
+              <p class="text-gray-400 text-sm">
+                One-time setup: <code>@av/hyperbits</code> is on GitHub Packages, which needs a token even for public packages.
+              </p>
+              <button
+                id="copy-registry-setup"
+                type="button"
+                data-copy="gh auth refresh -h github.com -s read:packages&#10;npm config set @av:registry https://npm.pkg.github.com&#10;npm config set //npm.pkg.github.com/:_authToken &quot;$(gh auth token)&quot;"
+                aria-label="Copy GitHub Packages setup commands"
+                class="copy-box shrink-0 flex items-center gap-2 text-gray-500 cursor-pointer"
+              >
+                <span class="copy-label text-xs md:text-sm" data-copy-label>Copy</span>
+                <span class="material-symbols-outlined" aria-hidden="true">content_copy</span>
+              </button>
+            </div>
+            <pre class="mt-3 overflow-x-auto font-mono text-xs md:text-sm text-gray-300 leading-relaxed">gh auth refresh -h github.com -s read:packages
+npm config set @av:registry https://npm.pkg.github.com
+npm config set //npm.pkg.github.com/:_authToken &quot;$(gh auth token)&quot;</pre>
+            <p class="text-gray-500 text-xs mt-3">
+              No <code>gh</code>? Use a classic token with the <code>read:packages</code> scope from
+              <a class="text-primary hover:underline" href="https://github.com/settings/tokens/new?scopes=read:packages">GitHub settings</a>
+              in place of <code>$(gh auth token)</code>.
+            </p>
           </div>
           <p class="text-gray-500 mt-8 text-sm">
             Requires HyperFrames and GSAP 3.14.2.

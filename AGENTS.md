@@ -19,7 +19,7 @@ Keep going until the query is completely resolved before yielding. Do not guess 
 - `npm test` — vitest + jsdom
 - `npm run build` — compile `src/` to `dist/`
 - `npm run inventory`, `npm run skill:refs`, `npm run registry`, `npm run docs:*`
-- Releases: `scripts/release.sh <version|patch|minor|major>` bumps, commits, tags and pushes; `.github/workflows/release.yml` runs the checks, publishes to npm and creates the GitHub release. Never run `npm publish` locally.
+- Releases: `scripts/release.sh <version|patch|minor|major>` bumps, commits, tags and pushes; `.github/workflows/release.yml` runs the checks, publishes `@av/hyperbits` to GitHub Packages and creates the GitHub release. Never run `npm publish` locally.
 
 Generated output lives in `dist/`. Do not commit `dist/`, `node_modules/`, `coverage/`, or `*.tgz`. Inventory and registry generators write under `src/catalog/` and the repo root; those files are committed when they exist. Skill reference markdown under `skills/hyperbits/references/bits.md` and `helpers.md` is generated and committed.
 
@@ -54,7 +54,7 @@ These rules match `skills/hyperbits/references/patterns.md`. Do not add a parall
 - Every bit must pass `npx hyperframes lint` before it is considered done (`npm run lint:bits`).
 - No emoji as visual elements. Use inline SVG.
 - Bits meant for shader transitions follow the shader-compatible CSS rules: no `transparent` in gradients (use `rgba(..., 0)`), no `var()` on captured elements, explicit `background-color` on scenes.
-- Embed a bit in a host composition with `data-composition-src` (and optional `data-variable-values`). `npx hyperbits add <name> --into compositions/` is the install path.
+- Embed a bit in a host composition with `data-composition-src` (and optional `data-variable-values`). `npx @av/hyperbits add <name> --into compositions/` is the install path.
 - After adding or changing a bit, run `npm run inventory` so the catalog and skill references stay in sync.
 
 ### Maintaining the skill

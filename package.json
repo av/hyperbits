@@ -1,5 +1,5 @@
 {
-  "name": "hyperbits",
+  "name": "@av/hyperbits",
   "version": "0.2.0",
   "description": "Animation bits, helpers, CLI and MCP server for HyperFrames video compositions",
   "type": "module",
@@ -11,6 +11,9 @@
   "homepage": "https://hyperbits.dev",
   "bugs": {
     "url": "https://github.com/av/hyperbits/issues"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   },
   "keywords": [
     "hyperframes",

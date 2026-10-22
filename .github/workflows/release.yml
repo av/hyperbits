@@ -10,7 +10,7 @@ on:
         type: string
         default: ""
       dry_run:
-        description: Run every check and an npm publish dry run, without publishing or touching the GitHub release.
+        description: Run every check and a publish dry run, without publishing or touching the GitHub release.
         type: boolean
         default: true
 
@@ -33,7 +33,7 @@ jobs:
     timeout-minutes: 30
     permissions:
       contents: write
-      id-token: write
+      packages: write
     env:
       DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
     steps:
@@ -43,10 +43,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          registry-url: https://registry.npmjs.org
+          registry-url: https://npm.pkg.github.com
+          scope: "@av"
           cache: npm
-      - name: Use an npm that supports trusted publishing
-        run: npm install -g npm@^11.5.1
       - run: npm ci
 
       - name: Resolve version and check the tag
@@ -71,14 +70,14 @@ jobs:
           if [ ! -s release-notes.md ]; then echo "hyperbits $VERSION" > release-notes.md; fi
           cat release-notes.md
 
-      - name: Publish to npm
+      - name: Publish to GitHub Packages
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if [ "$DRY_RUN" = "true" ]; then
-            npm publish --dry-run --access public
+            npm publish --dry-run
           else
-            npm publish --provenance --access public
+            npm publish
           fi
 
       - name: Create or update the GitHub release

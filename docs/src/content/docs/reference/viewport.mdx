@@ -6,7 +6,7 @@ description: Fractional sizing from composition data-width and data-height
 Read the composition root's `data-width` / `data-height` and size elements as fractions of the frame. Do not hardcode pixel layout.
 
 ```js
-import { viewport, compositionRoot } from "hyperbits/helpers";
+import { viewport, compositionRoot } from "@av/hyperbits/helpers";
 
 const view = viewport(root);
 title.style.fontSize = `${view.vmin * 8}px`;

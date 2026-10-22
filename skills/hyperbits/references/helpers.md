@@ -9,7 +9,7 @@ Bits load helpers from the IIFE global `hyperbits` after GSAP:
 <script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js"></script>
 ```
 
-ESM consumers import from `hyperbits/helpers` or `hyperbits/helpers/<name>`.
+ESM consumers import from `@av/hyperbits/helpers` or `@av/hyperbits/helpers/<name>`.
 
 ## Table of contents
 - [Package constants](#package-constants)
@@ -27,7 +27,7 @@ ESM consumers import from `hyperbits/helpers` or `hyperbits/helpers/<name>`.
 
 ## Package constants
 
-ESM: `import { ... } from "hyperbits/helpers"`. IIFE: `hyperbits.<name>(...)`.
+ESM: `import { ... } from "@av/hyperbits/helpers"`. IIFE: `hyperbits.<name>(...)`.
 
 ### `HYPERBITS_GSAP_CDN`
 
@@ -68,7 +68,7 @@ const gsapUrl = hyperbits.HYPERBITS_GSAP_CDN;
 
 ## interpolate
 
-ESM: `import { ... } from "hyperbits/helpers/interpolate"`. IIFE: `hyperbits.<name>(...)`.
+ESM: `import { ... } from "@av/hyperbits/helpers/interpolate"`. IIFE: `hyperbits.<name>(...)`.
 
 ### `SpringConfig`
 
@@ -188,7 +188,7 @@ const gsapFn = hyperbits.gsapEase("power2.out");
 
 ## stagger
 
-ESM: `import { ... } from "hyperbits/helpers/stagger"`. IIFE: `hyperbits.<name>(...)`.
+ESM: `import { ... } from "@av/hyperbits/helpers/stagger"`. IIFE: `hyperbits.<name>(...)`.
 
 ### `StaggerDirection`
 
@@ -248,7 +248,7 @@ hyperbits.stagger(".item", {
 
 ## color
 
-ESM: `import { ... } from "hyperbits/helpers/color"`. IIFE: `hyperbits.<name>(...)`.
+ESM: `import { ... } from "@av/hyperbits/helpers/color"`. IIFE: `hyperbits.<name>(...)`.
 
 ### `mixOklch`
 
@@ -299,7 +299,7 @@ timeline.to(proxy, { progress: 1, duration: 2, onUpdate: apply }, 0);
 
 ## gradient
 
-ESM: `import { ... } from "hyperbits/helpers/gradient"`. IIFE: `hyperbits.<name>(...)`.
+ESM: `import { ... } from "@av/hyperbits/helpers/gradient"`. IIFE: `hyperbits.<name>(...)`.
 
 ### `GradientType`
 
@@ -391,7 +391,7 @@ timeline.to(proxy, { progress: 1, duration: 3, ease: "none", onUpdate: apply }, 
 
 ## random
 
-ESM: `import { ... } from "hyperbits/helpers/random"`. IIFE: `hyperbits.<name>(...)`.
+ESM: `import { ... } from "@av/hyperbits/helpers/random"`. IIFE: `hyperbits.<name>(...)`.
 
 ### `RandomSeed`
 
@@ -433,7 +433,7 @@ const hue = hyperbits.pick("card-color-3", ["#38bdf8", "#f59e0b", "#34d399"]);
 
 ## particles
 
-ESM: `import { ... } from "hyperbits/helpers/particles"`. IIFE: `hyperbits.<name>(...)`.
+ESM: `import { ... } from "@av/hyperbits/helpers/particles"`. IIFE: `hyperbits.<name>(...)`.
 
 ### `ParticleVector`
 
@@ -614,7 +614,7 @@ hyperbits.bind(timeline, canvas, sim, { color: "#ffffff", size: view.vmin * 0.4 
 
 ## viewport
 
-ESM: `import { ... } from "hyperbits/helpers/viewport"`. IIFE: `hyperbits.<name>(...)`.
+ESM: `import { ... } from "@av/hyperbits/helpers/viewport"`. IIFE: `hyperbits.<name>(...)`.
 
 ### `ViewportAxis`
 
@@ -651,7 +651,7 @@ card.style.height = view.px(0.2, "y") + "px";
 
 ## text
 
-ESM: `import { ... } from "hyperbits/helpers/text"`. IIFE: `hyperbits.<name>(...)`.
+ESM: `import { ... } from "@av/hyperbits/helpers/text"`. IIFE: `hyperbits.<name>(...)`.
 
 ### `SplitMode`
 
@@ -713,7 +713,7 @@ hyperbits.stagger(words, { opacity: [0, 1], y: [20, 0], duration: 0.4, stagger: 
 
 ## counter
 
-ESM: `import { ... } from "hyperbits/helpers/counter"`. IIFE: `hyperbits.<name>(...)`.
+ESM: `import { ... } from "@av/hyperbits/helpers/counter"`. IIFE: `hyperbits.<name>(...)`.
 
 ### `CounterFormatOptions`
 
@@ -758,7 +758,7 @@ timeline.fromTo(proxy, { value: 0 }, { value: 1_000_000, duration: 2, onUpdate: 
 
 ## code
 
-ESM: `import { ... } from "hyperbits/helpers/code"`. IIFE: `hyperbits.<name>(...)`.
+ESM: `import { ... } from "@av/hyperbits/helpers/code"`. IIFE: `hyperbits.<name>(...)`.
 
 ### `LineRange`
 
@@ -829,7 +829,7 @@ timeline.eventCallback("onUpdate", () => {
 
 ## scene3d
 
-ESM: `import { ... } from "hyperbits/helpers/scene3d"`. IIFE: `hyperbits.<name>(...)`.
+ESM: `import { ... } from "@av/hyperbits/helpers/scene3d"`. IIFE: `hyperbits.<name>(...)`.
 
 ### `Vec3`
 

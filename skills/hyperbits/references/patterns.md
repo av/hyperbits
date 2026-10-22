@@ -141,7 +141,7 @@ Theme tokens in `:root` are fine for authoring, but captured elements need the r
 Install with the CLI, then mount as a sub-composition:
 
 ```bash
-npx hyperbits add fade-in --into compositions/
+npx @av/hyperbits add fade-in --into compositions/
 ```
 
 ```html

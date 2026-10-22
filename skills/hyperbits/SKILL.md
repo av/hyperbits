@@ -29,7 +29,7 @@ Treat the catalog bits as the primary library of working patterns. Reach for hel
 1. MCP first.
    Use `find_hyperbits` for discovery and `fetch_hyperbit` for the full HTML source.
 2. CLI second.
-   Use `npx hyperbits find "hero intro" --tag text --json` and `npx hyperbits fetch fade-in --json`. Install with `npx hyperbits add fade-in --into compositions/`.
+   Use `npx @av/hyperbits find "hero intro" --tag text --json` and `npx @av/hyperbits fetch fade-in --json`. Install with `npx @av/hyperbits add fade-in --into compositions/`.
 3. Direct file inspection last.
    Inspect `bits/<category>/<name>/index.html` and `bit.json`, then adapt the nearest example.
 
@@ -40,15 +40,15 @@ If the MCP surface is available, use it before the CLI. If the CLI is available,
 Use the published package when you do not want a repo-local workflow:
 
 ```bash
-npx hyperbits find 3d cards
-npx hyperbits fetch fade-in --json
-npx hyperbits add fade-in --into compositions/
+npx @av/hyperbits find 3d cards
+npx @av/hyperbits fetch fade-in --json
+npx @av/hyperbits add fade-in --into compositions/
 ```
 
 Start the MCP server from the published package:
 
 ```bash
-npx hyperbits mcp
+npx @av/hyperbits mcp
 ```
 
 When an agent or MCP client needs a stdio command, point it at:
@@ -56,7 +56,7 @@ When an agent or MCP client needs a stdio command, point it at:
 ```json
 {
   "command": "npx",
-  "args": ["-y", "hyperbits", "mcp"]
+  "args": ["-y", "@av/hyperbits", "mcp"]
 }
 ```
 
@@ -134,7 +134,7 @@ These match `references/patterns.md` and `AGENTS.md`. Do not invent a parallel s
 
 `bits/motion-loops/` holds seamless 12-second backgrounds in four families, tagged `depth`, `lines`, `dots` and `shapes`. Frame 12s equals frame 0. Fifteen are backgrounds for text and UI: even, muted and slow, with no focal object. Bauhaus Poster is a standalone composition. Titles: Ridgeline Field, Helix Field, Polygon Drift, Orbit Arcs (depth); Light Trails, Ribbon Field, Sunburst Wash, Terraced Relief (lines); Halftone Clouds, Ripple Plane, Bloom Wallpaper, Pixel Rain (dots); Bauhaus Poster, Truchet Arcs, Hanging Garlands, Pinwheel Meadow (shapes). `references/motion-loops.md` maps each title to its id and structural knobs.
 
-- Search with `--tag loop` plus a family tag, for example `npx hyperbits find --tag loop --tag dots`.
+- Search with `--tag loop` plus a family tag, for example `npx @av/hyperbits find --tag loop --tag dots`.
 - Restyle through the shared palette tokens `background`, `foreground` and `accent` (`data-variable-values` or `--variables`), not by editing the drawing code.
 - To design a new loop in this style, follow `references/motion-loops.md`: draw every frame from the loop phase, use whole cycles and symmetric turns, and check the seam step before shipping.
 
@@ -146,9 +146,9 @@ find_hyperbits {"query":"camera flythrough product showcase","tags":["scene-3d"]
 fetch_hyperbit {"id":"carousel"}
 
 # CLI
-npx hyperbits find "camera flythrough product showcase" --tag scene-3d --limit 2 --json
-npx hyperbits fetch carousel --json
-npx hyperbits add carousel --into compositions/
+npx @av/hyperbits find "camera flythrough product showcase" --tag scene-3d --limit 2 --json
+npx @av/hyperbits fetch carousel --json
+npx @av/hyperbits add carousel --into compositions/
 ```
 
 ## References

@@ -28,7 +28,7 @@ Every loop exposes the same three colour knobs, plus one or two structural ones 
 Install one, then pass your brand colours on the embed:
 
 ```bash
-npx hyperbits add halftone-sweep --into compositions/
+npx @av/hyperbits add halftone-sweep --into compositions/
 ```
 
 ```html
@@ -52,7 +52,7 @@ To cover more than 12 seconds, place copies back to back (`data-start="0"`, `"12
 
 ## Design your own
 
-Start from the loop closest to the look you want (`npx hyperbits fetch dot-tunnel`) and keep its shell: `#bg`, one full-bleed canvas, a paused 12-second timeline and the three palette tokens. Then follow these rules so the loop stays seamless:
+Start from the loop closest to the look you want (`npx @av/hyperbits fetch dot-tunnel`) and keep its shell: `#bg`, one full-bleed canvas, a paused 12-second timeline and the three palette tokens. Then follow these rules so the loop stays seamless:
 
 1. Draw everything from `phase = (time % 12) / 12`. The timeline tween calls `draw(phase)`; nothing else keeps state between frames.
 2. Every periodic term completes a whole number of cycles per loop: `Math.sin(turn * (phase * 2 + offset))`, never `phase * 1.5`.

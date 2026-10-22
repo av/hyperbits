@@ -28,8 +28,8 @@ Bits live in `bits/motion-loops/`. Each is tagged `loop`, `background` and one f
 Ids are stable; titles describe the current design. Earlier standalone, composition-style versions of all sixteen are kept under the git tag `motion-loops-compositions` and are not in the registry.
 
 ```bash
-npx hyperbits find --tag loop --tag lines --json
-npx hyperbits fetch contour-drift --json
+npx @av/hyperbits find --tag loop --tag lines --json
+npx @av/hyperbits fetch contour-drift --json
 ```
 
 ## Restyle

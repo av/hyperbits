@@ -64,7 +64,7 @@ Then embed it on the main timeline:
 ></div>
 ```
 
-Published installs use `npx hyperbits add <bit> --into compositions/` the same way.
+Published installs use `npx @av/hyperbits add <bit> --into compositions/` the same way.
 
 ## Gallery reel
 

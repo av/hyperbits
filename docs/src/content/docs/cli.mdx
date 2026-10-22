@@ -6,10 +6,10 @@ description: Search, fetch, and add hyperbits from the terminal
 The `hyperbits` binary ships with the npm package.
 
 ```bash
-npx hyperbits find [query] [--tag <tag>] [--limit <n>] [--json]
-npx hyperbits fetch <id-or-name> [--json]
-npx hyperbits add <name> [--into compositions/] [--json]
-npx hyperbits mcp
+npx @av/hyperbits find [query] [--tag <tag>] [--limit <n>] [--json]
+npx @av/hyperbits fetch <id-or-name> [--json]
+npx @av/hyperbits add <name> [--into compositions/] [--json]
+npx @av/hyperbits mcp
 ```
 
 ## find
@@ -17,9 +17,9 @@ npx hyperbits mcp
 Search the published catalog by visual goal and tags.
 
 ```bash
-npx hyperbits find "gradient background"
-npx hyperbits find "text reveal" --tag text --limit 5
-npx hyperbits find --tag particles --json
+npx @av/hyperbits find "gradient background"
+npx @av/hyperbits find "text reveal" --tag text --limit 5
+npx @av/hyperbits find --tag particles --json
 ```
 
 `--tag` is repeatable. Comma-separated values are accepted. `--json` prints a stable object with a `results` array.
@@ -29,8 +29,8 @@ npx hyperbits find --tag particles --json
 Print one bit record, including HTML source, helper script tag, and the embed snippet.
 
 ```bash
-npx hyperbits fetch fade-in
-npx hyperbits fetch fade-in --json
+npx @av/hyperbits fetch fade-in
+npx @av/hyperbits fetch fade-in --json
 ```
 
 The identifier can be the bit id (`fade-in`) or the exact display name (`Fade In`). Unknown names print close matches (`Did you mean: fade-in?`).
@@ -40,8 +40,8 @@ The identifier can be the bit id (`fade-in`) or the exact display name (`Fade In
 Write the bit HTML into a HyperFrames project and print the snippet to embed it.
 
 ```bash
-npx hyperbits add fade-in
-npx hyperbits add fade-in --into compositions/
+npx @av/hyperbits add fade-in
+npx @av/hyperbits add fade-in --into compositions/
 ```
 
 `add` rewrites the local `hyperbits.iife.js` script src to the published IIFE URL so the file runs outside this repo.

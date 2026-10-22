@@ -1,7 +1,8 @@
 ### Unreleased
 
 - Docs: copy buttons on the landing page and in the bit playground copy on click, Enter and Space, show a Copied state, and fall back to a selection copy on non-secure origins
-- CI: GitHub Actions CI on every push and pull request; tag-driven release workflow that runs the full checks, publishes to npm with provenance and creates the GitHub release. `scripts/release.sh` now only bumps, tags and pushes
+- Package: published to GitHub Packages as `@av/hyperbits` (the CLI is still `hyperbits`); install docs show the one-time npm setup GitHub Packages needs
+- CI: GitHub Actions CI on every push and pull request; tag-driven release workflow that runs the full checks, publishes `@av/hyperbits` to GitHub Packages and creates the GitHub release. `scripts/release.sh` now only bumps, tags and pushes
 
 ### v0.2.0
 

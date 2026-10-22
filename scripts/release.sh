@@ -2,8 +2,8 @@
 set -euo pipefail
 
 # Cut a hyperbits release: bump, commit, tag, push. GitHub Actions does the rest
-# (.github/workflows/release.yml runs every check, publishes to npm with
-# provenance and creates the GitHub release). Nothing is published from here.
+# (.github/workflows/release.yml runs every check, publishes @av/hyperbits to
+# GitHub Packages and creates the GitHub release). Nothing is published from here.
 #
 #   scripts/release.sh 0.3.0        explicit version
 #   scripts/release.sh patch        or minor / major
