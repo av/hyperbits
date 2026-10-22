@@ -1,4 +1,4 @@
-### Unreleased
+### v0.2.2
 
 - CLI: `hyperbits add` and `fetch` now print only the local helper tag (`<script src="./hyperbits.iife.js">`); the npmjs CDN advice is gone. Bits no longer carry the dead unpkg `data-hyperbits-src` attribute
 
