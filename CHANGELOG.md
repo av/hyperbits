@@ -1,4 +1,4 @@
-### Unreleased
+### v0.2.3
 
 - Registry: `npx hyperframes add <bit>` from the hyperbits.dev registry now installs `hyperbits.iife.js` next to the bit and points the bit at it, so registry-installed bits animate. Previously the registry rewrote the helper to unpkg, which only serves npmjs.com
 - Metadata and docs: `bit.json` `iifeCdn` and the exported `HYPERBITS_HELPER_URL` (was `HYPERBITS_UNPKG_IIFE`) point at `https://hyperbits.dev/vendor/hyperbits.iife.js`; getting-started no longer shows the unpkg script tag
