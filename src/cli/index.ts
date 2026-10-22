@@ -379,7 +379,7 @@ const parseAddArguments = (args: string[]) => {
 
 const HELPER_BUNDLE_FILE = "hyperbits.iife.js";
 const LOCAL_HELPER_SRC = `./${HELPER_BUNDLE_FILE}`;
-const localHelperScriptTag = `<script src="${LOCAL_HELPER_SRC}"></script>`;
+const localHelperScriptTag = helperScriptTag();
 
 const prepareInstalledHtml = (html: string): string =>
   html.replaceAll(`src="${HELPER_BUNDLE_FILE}"`, `src="${LOCAL_HELPER_SRC}"`);
@@ -539,9 +539,6 @@ const runAddCommand = async (args: string[], io: CliIo): Promise<number> => {
       "",
       "Helper script (already referenced by the bit):",
       localHelperScriptTag,
-      "",
-      "CDN tag, for use once hyperbits is published to npmjs.com:",
-      helperScriptTag(),
       "",
     ].join("\n"),
   );

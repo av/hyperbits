@@ -2,7 +2,6 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { HYPERBITS_UNPKG_IIFE } from "./bit-schema";
 import type { BitCatalogEntry, BitCatalogResolution } from "./contracts";
 import { DEFAULT_ADD_DIR } from "./contracts";
 import { sharedBitInventory } from "./inventory.generated";
@@ -42,7 +41,7 @@ const readBitSource = (sourcePath: string): string =>
   fs.readFileSync(assertSafeSourcePath(sourcePath), "utf8");
 
 export const helperScriptTag = (): string =>
-  `<script src="${HYPERBITS_UNPKG_IIFE}"></script>`;
+  '<script src="./hyperbits.iife.js"></script>';
 
 export const compositionSrcSnippet = (
   bitId: string,

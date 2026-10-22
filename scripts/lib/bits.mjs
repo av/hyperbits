@@ -121,7 +121,7 @@ export const GSAP_SCRIPT_TAG =
   '<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>';
 
 export const IIFE_SCRIPT_TAG =
-  '<script src="hyperbits.iife.js" data-hyperbits-src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>';
+  '<script src="hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>';
 
 const ROOT_OPEN = /<div\b([^>]*\sid="root"[^>]*)>/;
 const BG_OPEN = /<div\b([^>]*\sid="bg"[^>]*)>/;

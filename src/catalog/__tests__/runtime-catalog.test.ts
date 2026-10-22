@@ -66,8 +66,7 @@ describe("published runtime catalog", () => {
       helpers: expect.arrayContaining(["viewport"]),
       embedSnippet:
         '<div data-composition-src="compositions/fade-in.html"></div>',
-      helperScriptTag:
-        '<script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js"></script>',
+      helperScriptTag: '<script src="./hyperbits.iife.js"></script>',
     });
     expect(bit?.sourceCode).toContain('data-composition-id="fade-in"');
     expect(bit?.sourceCode).toContain("window.__timelines");

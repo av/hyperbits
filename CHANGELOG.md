@@ -1,3 +1,7 @@
+### Unreleased
+
+- CLI: `hyperbits add` and `fetch` now print only the local helper tag (`<script src="./hyperbits.iife.js">`); the npmjs CDN advice is gone. Bits no longer carry the dead unpkg `data-hyperbits-src` attribute
+
 ### v0.2.1
 
 - CLI: `hyperbits add` copies the helper bundle (`hyperbits.iife.js`) next to the bit and points the bit at it, so added bits animate without any CDN. Previously they loaded the bundle from unpkg, which only serves npmjs.com

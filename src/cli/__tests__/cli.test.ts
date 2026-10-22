@@ -249,18 +249,23 @@ describe("hyperbits lookup cli", () => {
     expect(getStdout()).toContain(
       `<div data-composition-src="${destination}/fade-in.html"></div>`,
     );
-    expect(getStdout()).toContain(
-      '<script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js"></script>',
-    );
+    expect(getStdout()).toContain(`Wrote ${destination}/hyperbits.iife.js`);
+    expect(getStdout()).toContain('<script src="./hyperbits.iife.js"></script>');
+    expect(getStdout()).not.toContain("unpkg");
 
     const written = readFileSync(
       path.join(destination, "fade-in.html"),
       "utf8",
     );
     expect(written).toContain('data-composition-id="fade-in"');
-    expect(written).toContain(
-      'src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js"',
+    expect(written).toContain('src="./hyperbits.iife.js"');
+    expect(written).not.toContain("unpkg");
+
+    const bundle = readFileSync(
+      path.join(destination, "hyperbits.iife.js"),
+      "utf8",
     );
-    expect(written).not.toContain('src="hyperbits.iife.js"');
+    expect(bundle.length).toBeGreaterThan(0);
+    expect(bundle).toContain("hyperbits");
   });
 });
