@@ -22,6 +22,11 @@
       "path": "index.html",
       "target": "compositions/transform3d-showcase.html",
       "type": "hyperframes:composition"
+    },
+    {
+      "path": "hyperbits.iife.js",
+      "target": "compositions/hyperbits.iife.js",
+      "type": "hyperframes:asset"
     }
   ]
 }

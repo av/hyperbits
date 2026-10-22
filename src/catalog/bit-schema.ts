@@ -40,8 +40,8 @@ export const HELPER_NAMES = [
 
 export const REGISTRY_NAME_PATTERN = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
 
-export const HYPERBITS_UNPKG_IIFE =
-  "https://unpkg.com/hyperbits/dist/hyperbits.iife.js";
+export const HYPERBITS_HELPER_URL =
+  "https://hyperbits.dev/vendor/hyperbits.iife.js";
 
 export type RegistryFile = {
   path: string;

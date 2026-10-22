@@ -3,12 +3,12 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   BIT_CATEGORIES,
-  HYPERBITS_UNPKG_IIFE,
+  HYPERBITS_HELPER_URL,
   validateBitManifest,
 } from "./bit-schema";
 import {
   CATEGORY_ORDER,
-  HYPERBITS_UNPKG_IIFE as SCRIPT_UNPKG_IIFE,
+  HYPERBITS_HELPER_URL as SCRIPT_HELPER_URL,
   inspectBitHtml,
   listBitJsonFilesSync,
   projectRoot as repoRoot,
@@ -19,7 +19,7 @@ describe("bit manifests", () => {
 
   it("finds one bit.json per remotion-bits example category folder", () => {
     expect(BIT_CATEGORIES).toEqual(CATEGORY_ORDER);
-    expect(HYPERBITS_UNPKG_IIFE).toBe(SCRIPT_UNPKG_IIFE);
+    expect(HYPERBITS_HELPER_URL).toBe(SCRIPT_HELPER_URL);
     expect(bitFiles.length).toBeGreaterThan(0);
   });
 

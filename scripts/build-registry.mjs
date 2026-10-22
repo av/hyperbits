@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 
-import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
-  HYPERBITS_UNPKG_IIFE,
   listBitJsonFiles,
   normalizePath,
   projectRoot,
@@ -23,8 +22,11 @@ export const ITEM_TYPE_DIRS = {
 
 const TYPE_DIR_NAMES = Object.values(ITEM_TYPE_DIRS);
 
+const HELPER_BUNDLE_FILE = "hyperbits.iife.js";
+const helperBundleSource = path.join(projectRoot, "dist", HELPER_BUNDLE_FILE);
+
 const prepareInstalledHtml = (html) =>
-  html.replaceAll('src="hyperbits.iife.js"', `src="${HYPERBITS_UNPKG_IIFE}"`);
+  html.replaceAll(`src="${HELPER_BUNDLE_FILE}"`, `src="./${HELPER_BUNDLE_FILE}"`);
 
 const assertSafeRelative = (value, label) => {
   const normalized = normalizePath(value);
@@ -68,8 +70,19 @@ const writeItemTree = async (bitDir, registryItem) => {
     await writeFile(destinationPath, contents);
   }
 
+  await copyFile(helperBundleSource, path.join(itemDir, HELPER_BUNDLE_FILE));
+  const compositionFile = files.find((file) => file.type === "hyperframes:composition") ?? files[0];
+  const targetDir = path.posix.dirname(normalizePath(compositionFile.target));
   const itemManifest = {
     ...registryItem,
+    files: [
+      ...files,
+      {
+        path: HELPER_BUNDLE_FILE,
+        target: targetDir === "." ? HELPER_BUNDLE_FILE : `${targetDir}/${HELPER_BUNDLE_FILE}`,
+        type: "hyperframes:asset",
+      },
+    ],
   };
   await writeFile(
     path.join(itemDir, "registry-item.json"),

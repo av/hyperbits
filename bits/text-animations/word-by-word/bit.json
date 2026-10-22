@@ -16,7 +16,7 @@
     "viewport"
   ],
   "iifeLocal": "../../../dist/hyperbits.iife.js",
-  "iifeCdn": "https://unpkg.com/hyperbits/dist/hyperbits.iife.js",
+  "iifeCdn": "https://hyperbits.dev/vendor/hyperbits.iife.js",
   "registryItem": {
     "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
     "name": "word-by-word",

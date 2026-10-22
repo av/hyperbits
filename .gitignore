@@ -21,6 +21,7 @@ docs/.astro/
 docs/public/vendor/hyperbits.iife.js
 docs/public/bits/
 docs/public/previews/
+docs/public/blocks/*/hyperbits.iife.js
 demo/node_modules/
 demo/out/
 demo/renders/

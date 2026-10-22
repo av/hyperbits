@@ -33,8 +33,8 @@ export const CATEGORY_LABELS = {
 export const GSAP_CDN =
   "https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js";
 
-export const HYPERBITS_UNPKG_IIFE =
-  "https://unpkg.com/hyperbits/dist/hyperbits.iife.js";
+export const HYPERBITS_HELPER_URL =
+  "https://hyperbits.dev/vendor/hyperbits.iife.js";
 
 export const normalizePath = (value) => value.split(path.sep).join("/");
 

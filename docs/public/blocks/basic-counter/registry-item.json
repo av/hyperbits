@@ -20,6 +20,11 @@
       "path": "index.html",
       "target": "compositions/basic-counter.html",
       "type": "hyperframes:composition"
+    },
+    {
+      "path": "hyperbits.iife.js",
+      "target": "compositions/hyperbits.iife.js",
+      "type": "hyperframes:asset"
     }
   ]
 }
