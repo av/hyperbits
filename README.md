@@ -48,7 +48,7 @@ hyperbits find 3d cards
 hyperbits add fade-in --into compositions/
 ```
 
-`add` writes the bit HTML into a HyperFrames project (default `compositions/`) and prints a `data-composition-src` snippet.
+`add` writes the bit HTML into a HyperFrames project (default `compositions/`), copies the helper bundle `hyperbits.iife.js` next to it, and prints a `data-composition-src` snippet.
 
 ### MCP
 
@@ -123,11 +123,11 @@ npm install @av/hyperbits
 import { interpolate, stagger, viewport } from "@av/hyperbits/helpers";
 ```
 
-HTML compositions load the IIFE instead:
+HTML compositions load the IIFE instead. `hyperbits add` copies it next to each bit; it is also at `node_modules/@av/hyperbits/dist/hyperbits.iife.js`:
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
-<script src="https://unpkg.com/hyperbits/dist/hyperbits.iife.js"></script>
+<script src="./hyperbits.iife.js"></script>
 ```
 
 ## Gallery

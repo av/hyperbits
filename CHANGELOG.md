@@ -1,5 +1,6 @@
 ### Unreleased
 
+- CLI: `hyperbits add` copies the helper bundle (`hyperbits.iife.js`) next to the bit and points the bit at it, so added bits animate without any CDN. Previously they loaded the bundle from unpkg, which only serves npmjs.com
 - Docs: copy buttons on the landing page and in the bit playground copy on click, Enter and Space, show a Copied state, and fall back to a selection copy on non-secure origins
 - Package: published to GitHub Packages as `@av/hyperbits` (the CLI is still `hyperbits`); install docs show the one-time npm setup GitHub Packages needs
 - CI: GitHub Actions CI on every push and pull request; tag-driven release workflow that runs the full checks, publishes `@av/hyperbits` to GitHub Packages and creates the GitHub release. `scripts/release.sh` now only bumps, tags and pushes

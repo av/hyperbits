@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { realpathSync } from "node:fs";
-import { mkdir, writeFile } from "node:fs/promises";
+import { existsSync, realpathSync } from "node:fs";
+import { copyFile, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
@@ -17,7 +17,6 @@ import {
 } from "../catalog/runtime";
 import type { BitCatalogEntry, BitCatalogSummary } from "../catalog/contracts";
 import { DEFAULT_ADD_DIR } from "../catalog/contracts";
-import { HYPERBITS_UNPKG_IIFE } from "../catalog/bit-schema";
 import { startHyperbitsMcpServer } from "../mcp/index";
 
 type Writable = {
@@ -378,8 +377,26 @@ const parseAddArguments = (args: string[]) => {
   };
 };
 
+const HELPER_BUNDLE_FILE = "hyperbits.iife.js";
+const LOCAL_HELPER_SRC = `./${HELPER_BUNDLE_FILE}`;
+const localHelperScriptTag = `<script src="${LOCAL_HELPER_SRC}"></script>`;
+
 const prepareInstalledHtml = (html: string): string =>
-  html.replaceAll('src="hyperbits.iife.js"', `src="${HYPERBITS_UNPKG_IIFE}"`);
+  html.replaceAll(`src="${HELPER_BUNDLE_FILE}"`, `src="${LOCAL_HELPER_SRC}"`);
+
+const findHelperBundle = (): string | null => {
+  const candidates = [
+    new URL(`../${HELPER_BUNDLE_FILE}`, import.meta.url),
+    new URL(`../../dist/${HELPER_BUNDLE_FILE}`, import.meta.url),
+  ];
+  for (const candidate of candidates) {
+    const candidatePath = fileURLToPath(candidate);
+    if (existsSync(candidatePath)) {
+      return candidatePath;
+    }
+  }
+  return null;
+};
 
 const runFindCommand = async (args: string[], io: CliIo): Promise<number> => {
   const options = parseFindArguments(args);
@@ -487,8 +504,13 @@ const runAddCommand = async (args: string[], io: CliIo): Promise<number> => {
   await mkdir(path.dirname(outputPath), { recursive: true });
   await writeFile(outputPath, prepareInstalledHtml(bit.sourceCode), "utf8");
 
+  const bundleSource = findHelperBundle();
+  const bundlePath = path.join(into, HELPER_BUNDLE_FILE);
+  if (bundleSource) {
+    await copyFile(bundleSource, bundlePath);
+  }
+
   const embedSnippet = compositionSrcSnippet(bit.id, into);
-  const scriptTag = helperScriptTag();
 
   if (options.json) {
     io.stdout.write(
@@ -498,7 +520,7 @@ const runAddCommand = async (args: string[], io: CliIo): Promise<number> => {
           name: bit.name,
           path: outputPath.split(path.sep).join("/"),
           embedSnippet,
-          helperScriptTag: scriptTag,
+          helperScriptTag: localHelperScriptTag,
         },
       }),
     );
@@ -508,12 +530,18 @@ const runAddCommand = async (args: string[], io: CliIo): Promise<number> => {
   io.stdout.write(
     [
       `Wrote ${outputPath.split(path.sep).join("/")}`,
+      bundleSource
+        ? `Wrote ${bundlePath.split(path.sep).join("/")} (helper bundle the bit loads)`
+        : `Warning: ${HELPER_BUNDLE_FILE} was not found in this install; copy it next to the bit.`,
       "",
       "Embed with:",
       embedSnippet,
       "",
-      "Helper script:",
-      scriptTag,
+      "Helper script (already referenced by the bit):",
+      localHelperScriptTag,
+      "",
+      "CDN tag, for use once hyperbits is published to npmjs.com:",
+      helperScriptTag(),
       "",
     ].join("\n"),
   );
