@@ -1,4 +1,4 @@
-### Unreleased
+### v0.2.1
 
 - CLI: `hyperbits add` copies the helper bundle (`hyperbits.iife.js`) next to the bit and points the bit at it, so added bits animate without any CDN. Previously they loaded the bundle from unpkg, which only serves npmjs.com
 - Docs: copy buttons on the landing page and in the bit playground copy on click, Enter and Space, show a Copied state, and fall back to a selection copy on non-secure origins

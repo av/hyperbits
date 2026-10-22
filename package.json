@@ -1,6 +1,6 @@
 {
   "name": "@av/hyperbits",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Animation bits, helpers, CLI and MCP server for HyperFrames video compositions",
   "type": "module",
   "license": "MIT",
