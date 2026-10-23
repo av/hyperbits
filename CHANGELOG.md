@@ -1,3 +1,7 @@
+### Unreleased
+
+- Skill: `references/helpers.md` shows the local `./hyperbits.iife.js` that `hyperbits add` and `hyperframes add` write, plus the hyperbits.dev copy, instead of the unpkg URL that does not serve
+
 ### v0.2.3
 
 - Registry: `npx hyperframes add <bit>` from the hyperbits.dev registry now installs `hyperbits.iife.js` next to the bit and points the bit at it, so registry-installed bits animate. Previously the registry rewrote the helper to unpkg, which only serves npmjs.com
