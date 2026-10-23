@@ -1,4 +1,4 @@
-### Unreleased
+### v0.2.4
 
 - Skill: `references/helpers.md` shows the local `./hyperbits.iife.js` that `hyperbits add` and `hyperframes add` write, plus the hyperbits.dev copy, instead of the unpkg URL that does not serve
 
