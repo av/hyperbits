@@ -215,7 +215,7 @@
       {
         t: 6.35,
         pos: [1950, -1000, 2750],
-        tgt: [-150, 150, 0],
+        tgt: [-650, 150, 0],
         roll: 4,
         lens: 1100,
         ease: "sine.inOut",
@@ -223,7 +223,7 @@
       {
         t: 9.6,
         pos: [1450, -820, 3050],
-        tgt: [-150, 150, 0],
+        tgt: [-650, 150, 0],
         roll: 2,
         lens: 1100,
         ease: "expo.inOut",
@@ -539,7 +539,7 @@
       progress(time, spotTime(tile.category), 0.38, "expo.out") -
       progress(
         time,
-        spotTime(tile.category) + SPOT_STEP * 1.6,
+        spotTime(tile.category) + SPOT_STEP * 1.05,
         0.5,
         "power2.inOut",
       );
@@ -636,28 +636,16 @@
     element("div", "lv-button lv-dark", "hyperbits.dev", ctaRow),
   ];
 
-  const categoryLabels = categories.map((category, index) => {
-    const label = element(
+  const ticker = element("div", "lv-ticker", undefined, hud);
+  const categoryLabels = categories.map((category, index) => ({
+    index,
+    label: element(
       "div",
       "lv-category-label",
       `<span class="lv-tile-chip" style="width:60px;height:60px;border-radius:15px">${icon(category.icon, 36)}</span>${category.label}<span class="lv-count">${category.count}</span>`,
-      world,
-    );
-    const members = tiles.filter((tile) => tile.category === index);
-    const centroid = scale(
-      members.reduce((sum, tile) => add(sum, tile.home), [0, 0, 0]),
-      1 / members.length,
-    );
-    const first = members.reduce((best, tile) =>
-      length(sub(tile.home, centroid)) < length(sub(best.home, centroid))
-        ? tile
-        : best,
-    );
-    label.style.left = "0";
-    label.style.top = "0";
-    label.style.transformOrigin = "0 100%";
-    return { label, anchor: add(first.home, [-240, -175, 60]), index };
-  });
+      ticker,
+    ),
+  }));
 
   const terminal = element(
     "div",
@@ -789,7 +777,9 @@
   element("div", "lv-vignette", undefined, hud);
   const scrim = element("div", "lv-scrim", undefined, hud);
   const scrimCenter = element("div", "lv-scrim-center", undefined, hud);
+  const scrimCorner = element("div", "lv-scrim-corner", undefined, hud);
   const flash = element("div", "lv-flash", undefined, hud);
+  hud.appendChild(ticker);
 
   function display(lines, fontSize, parent) {
     const block = element("div", "lv-display", undefined, parent);
@@ -969,7 +959,7 @@
       if (tile !== heroTile) dim = Math.max(dim, 0.45 * brandDim);
       const inSpot =
         progress(time, spotTime(tile.category) - 0.05, 0.25) -
-        progress(time, spotTime(tile.category) + SPOT_STEP * 1.6, 0.4);
+        progress(time, spotTime(tile.category) + SPOT_STEP * 1.05, 0.4);
       dim = Math.max(dim, 0.4 * spotActive * (1 - inSpot));
       if (activeDive && activeDive.tile !== tile) dim = Math.max(dim, 0.55);
       if (tile !== carousel) dim = Math.max(dim, 0.74 * agentDim);
@@ -1014,26 +1004,22 @@
     scan.style.opacity = scanShow.toFixed(3);
 
     categoryLabels.forEach((entry) => {
-      const show =
-        progress(time, spotTime(entry.index), 0.45, "expo.out") -
-        progress(
-          time,
-          spotTime(entry.index) + SPOT_STEP * 1.6,
-          0.4,
-          "power2.in",
-        );
+      const begin = spotTime(entry.index);
+      const last = entry.index === categories.length - 1;
+      const enter = progress(time, begin, 0.5, "expo.out");
+      const exit = last
+        ? progress(time, 9.5, 0.35, "power3.in")
+        : progress(time, begin + SPOT_STEP, 0.3, "power3.in");
+      const show = Math.min(enter, 1 - exit);
       if (show <= 0.001) {
-        entry.label.style.display = "none";
+        entry.label.style.opacity = "0";
         return;
       }
-      place(
-        entry.label,
-        camera,
-        add(entry.anchor, [0, -40 * show, 300 * show]),
-        IDENTITY,
-        3.4 * lerp(0.85, 1, show),
-      );
       entry.label.style.opacity = show.toFixed(3);
+      entry.label.style.transform = `translate3d(0,${((1 - enter) * 60 - exit * 60).toFixed(1)}px,0)`;
+      const blur = (1 - enter) * 10 + exit * 10;
+      entry.label.style.filter =
+        blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : "none";
     });
 
     const brand = time < 20;
@@ -1163,6 +1149,7 @@
       span(time, 6.2, 9.75, 0.3, 0.4),
       span(time, 9.8, 12.35, 0.3, 0.3),
     ).toFixed(3);
+    scrimCorner.style.opacity = span(time, 21.4, 27.9, 0.4, 0.4).toFixed(3);
 
     const labelDive = dives.find(
       (dive) => time >= dive.arrive - 0.2 && time < dive.leave + 0.4,
