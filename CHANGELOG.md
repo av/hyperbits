@@ -1,4 +1,4 @@
-### Unreleased
+### v0.2.5
 
 - Text: character splitting and all three typewriter bits reveal whole Unicode graphemes, keeping combining accents, flags and joined characters intact when typing, deleting and seeking.
 
