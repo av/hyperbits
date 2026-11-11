@@ -1,6 +1,6 @@
 # hyperbits launch video
 
-A 38-second HyperFrames composition that announces hyperbits using all 62 catalog bits, live, as tiles in one 3D scene.
+A 36-second HyperFrames composition that announces hyperbits using all 62 catalog bits, live and restyled to the site palette through their own variables, as tiles in one 3D scene.
 
 ## Build
 
@@ -30,5 +30,5 @@ ffmpeg -i out/launch-240.mp4 -vf "tmix=frames=4,fps=60" -c:v libx264 -crf 16 -pr
 
 ## Structure
 
-- `src/launch.js` drives everything from the root timeline time: a look-at camera on monotone splines, tile formations (tunnel, curved wall, logo mosaic), the inspector sweep, the terminal and the HUD.
+- `src/launch.js` drives everything from the root timeline time: an eased look-at camera with lens changes, tile formations (grid, portal, category spotlights, logo mosaic), the inspector sweep, the terminal and the HUD. Styling follows `docs/src` (palette, Geist, cards, chips, glow).
 - Each tile chains several `data-composition-src` clips of its bit, offset with `data-media-start`, so it stays live across the video. Dive and carousel tiles get one long clip timed to their close-up.

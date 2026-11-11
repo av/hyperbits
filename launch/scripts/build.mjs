@@ -17,6 +17,7 @@ const cli = join(repoDir, "dist/cli/index.js");
 const iife = join(repoDir, "dist/hyperbits.iife.js");
 const hyperframes = ["--yes", "hyperframes@0.8.29"];
 const skipPosters = process.argv.includes("--skip-posters");
+const refreshPosters = process.argv.includes("--refresh-posters");
 
 if (!existsSync(cli) || !existsSync(iife)) {
   console.error("Run `npm run build` in the repository root first.");
@@ -24,27 +25,111 @@ if (!existsSync(cli) || !existsSync(iife)) {
 }
 
 const categories = [
-  { dir: "text-animations", label: "Text Animations", color: "#d0a215" },
-  { dir: "staggered-motion", label: "Staggered Motion", color: "#879a39" },
-  { dir: "background-effects", label: "Background Effects", color: "#ce5d97" },
-  { dir: "motion-loops", label: "Motion Loops", color: "#3aa99f" },
-  { dir: "particles", label: "Particles", color: "#d14d41" },
-  { dir: "scenes-3d", label: "3D Scenes", color: "#4385be" },
-  { dir: "full-compositions", label: "Full Compositions", color: "#8b7ec8" },
+  { dir: "text-animations", label: "Text Animations", icon: "text_fields" },
+  { dir: "staggered-motion", label: "Staggered Motion", icon: "stacks" },
+  { dir: "background-effects", label: "Background Effects", icon: "gradient" },
+  { dir: "motion-loops", label: "Motion Loops", icon: "all_inclusive" },
+  { dir: "particles", label: "Particles", icon: "grain" },
+  { dir: "scenes-3d", label: "3D Scenes", icon: "view_in_ar" },
+  { dir: "full-compositions", label: "Full Compositions", icon: "movie" },
 ];
 
-const heroes = {
-  "counter-confetti": { start: 10.6, end: 14.2, mediaStart: 2.25 },
-  "card-stack": { start: 13.1, end: 16.7, mediaStart: 0 },
-  "bauhaus-tiles": { start: 15.6, end: 19.2, mediaStart: 2 },
-  "pinwheel-grid": { start: 18.1, end: 21.7, mediaStart: 3 },
-  carousel: { start: 24.9, end: 34.9, mediaStart: 0 },
+const palette = {
+  black: "#100f0f",
+  surface: "#1c1b1a",
+  paper: "#f2f0e5",
+  primary: "#ec8b49",
+  soft: "#fcc192",
+};
+const lightBits = new Set([
+  "bauhaus-tiles",
+  "floating-shapes",
+  "phyllotaxis-bloom",
+  "ray-burst",
+]);
+const structuralBits = new Set([
+  "fracture-reassemble",
+  "mosaic-reframe",
+  "ken-burns",
+]);
+const gradientThemes = {
+  "conic-gradient": { color1: palette.black, color2: palette.primary },
+  "linear-gradient": {
+    color1Start: palette.black,
+    color1End: "#343331",
+    color2Start: palette.primary,
+    color2End: "#551b18",
+  },
+  "radial-gradient": {
+    color1Start: palette.primary,
+    color1End: palette.black,
+    color2Start: palette.soft,
+    color2End: palette.surface,
+  },
 };
 
+function declaredVariables(id) {
+  const html = readFileSync(join(launchDir, `compositions/${id}.html`), "utf8");
+  const match = html.match(/data-composition-variables='([^']*)'/);
+  return match ? JSON.parse(match[1]) : [];
+}
+
+function themeFor(id) {
+  if (structuralBits.has(id)) return {};
+  if (gradientThemes[id]) return gradientThemes[id];
+  const light = lightBits.has(id);
+  const values = {};
+  for (const variable of declaredVariables(id)) {
+    if (variable.type !== "color") continue;
+    const current = String(variable.default).toLowerCase();
+    if (variable.id === "background")
+      values.background = light
+        ? palette.paper
+        : current === palette.surface
+          ? palette.surface
+          : palette.black;
+    else if (variable.id === "foreground")
+      values.foreground = light ? palette.black : palette.paper;
+    else if (variable.id === "accent") values.accent = palette.primary;
+    else if (variable.id === "color")
+      values.color = ["#fcc192", "#ec8b49", "#f6a45c"].includes(current)
+        ? current
+        : current === "#ffffff"
+          ? palette.paper
+          : palette.primary;
+  }
+  return values;
+}
+
+const DURATION = 36;
+const DIVES = ["matrix-rain", "bauhaus-tiles", "wave-stack", "pinwheel-grid"];
+const DIVE_ARRIVE = 13.0;
+const DIVE_STEP = 2.15;
+const diveMediaStart = {
+  "matrix-rain": 2,
+  "bauhaus-tiles": 2,
+  "wave-stack": 3,
+  "pinwheel-grid": 3,
+};
+const heroes = Object.fromEntries(
+  DIVES.map((id, order) => {
+    const arrive = DIVE_ARRIVE + order * DIVE_STEP;
+    return [
+      id,
+      {
+        start: round(arrive - 0.9),
+        end: round(arrive + 1.85),
+        mediaStart: diveMediaStart[id],
+      },
+    ];
+  }),
+);
+heroes.carousel = { start: 23.8, end: 34, mediaStart: 0 };
+
 const windows = [
-  { start: 0, end: 12, cap: 4 },
-  { start: 12, end: 28.6, cap: 2 },
-  { start: 28.6, end: 38, cap: 3 },
+  { start: 0, end: 12.2, cap: 4 },
+  { start: 12.2, end: 28, cap: 2 },
+  { start: 28, end: DURATION, cap: 3 },
 ];
 
 const inventory = JSON.parse(
@@ -61,6 +146,8 @@ const bits = inventory
     return {
       id: bit.id,
       name: bit.name,
+      width: bit.width,
+      height: bit.height,
       duration: bit.duration,
       category,
       loop,
@@ -101,16 +188,18 @@ function clipsFor(bit) {
 }
 
 function tileMarkup(bit, index) {
-  const color = categories[bit.category].color;
+  const fit = Math.max(480 / bit.width, 270 / bit.height);
+  const placement = `width:${bit.width}px;height:${bit.height}px;transform:translate(${round((480 - bit.width * fit) / 2)}px,${round((270 - bit.height * fit) / 2)}px) scale(${round(fit)})`;
   const hosts = clipsFor(bit)
     .map(
       (span, clip) =>
-        `<div class="lv-host" id="tile-${bit.id}-${clip}" data-composition-id="tile-${bit.id}-${clip}" data-composition-src="compositions/${bit.id}.html" data-start="${round(span.start)}" data-media-start="${round(span.mediaStart)}" data-duration="${round(span.end - span.start)}" data-width="1920" data-height="1080"></div>`,
+        `<div class="lv-host" id="tile-${bit.id}-${clip}" style="${placement}" data-composition-id="tile-${bit.id}-${clip}" data-composition-src="compositions/${bit.id}.html" data-variable-values='${JSON.stringify(bit.theme)}' data-start="${round(span.start)}" data-media-start="${round(span.mediaStart)}" data-duration="${round(span.end - span.start)}" data-width="${bit.width}" data-height="${bit.height}"></div>`,
     )
     .join("");
   return `<div class="lv-tile" data-index="${index}" data-id="${bit.id}" data-category="${bit.category}">
-          <div class="lv-screen" style="border-color:${color}"><img class="lv-poster" src="public/posters/${bit.id}.jpg" alt="" />${hosts}<div class="lv-shade"></div><div class="lv-tint" style="background-color:${color}"></div></div>
-          <div class="lv-inspect"><div class="lv-outline"></div><div class="lv-tag"><b>div</b>${bit.id}.html</div><div class="lv-dims">1920 × 1080</div></div>
+          <div class="lv-card"><img class="lv-poster" src="public/posters/${bit.id}.jpg" alt="" />${hosts}<div class="lv-veil"></div><div class="lv-label">${bit.id}</div><div class="lv-sheen"></div><div class="lv-shade"></div><div class="lv-tint"></div></div>
+          <div class="lv-ring"></div>
+          <div class="lv-inspect"><div class="lv-outline"></div><div class="lv-tag">compositions/${bit.id}.html</div><div class="lv-dims">1920 × 1080</div></div>
         </div>`;
 }
 
@@ -124,14 +213,22 @@ for (const bit of bits) {
   });
 }
 
+for (const bit of bits) bit.theme = themeFor(bit.id);
+
 const data = {
-  categories: categories.map(({ label, color }, index) => ({
+  categories: categories.map(({ label, icon }, index) => ({
     label,
-    color,
+    icon,
     count: bits.filter((bit) => bit.category === index).length,
   })),
   bits: bits.map(({ id, name, category }) => ({ id, name, category })),
-  heroes,
+  icons: JSON.parse(readFileSync(join(launchDir, "src/icons.json"), "utf8")),
+  timing: {
+    duration: DURATION,
+    dives: DIVES,
+    diveArrive: DIVE_ARRIVE,
+    diveStep: DIVE_STEP,
+  },
 };
 
 const template = readFileSync(join(launchDir, "src/template.html"), "utf8");
@@ -148,16 +245,29 @@ console.log(
 
 if (!skipPosters) {
   const pending = bits.filter(
-    (bit) => !existsSync(join(launchDir, `public/posters/${bit.id}.jpg`)),
+    (bit) =>
+      refreshPosters ||
+      !existsSync(join(launchDir, `public/posters/${bit.id}.jpg`)),
   );
   const workDir = join(launchDir, "out/posters");
   async function poster(bit) {
     const dir = join(workDir, bit.id);
     mkdirSync(dir, { recursive: true });
-    copyFileSync(
+    const themed = readFileSync(
       join(launchDir, `compositions/${bit.id}.html`),
-      join(dir, "index.html"),
+      "utf8",
+    ).replace(
+      /data-composition-variables='([^']*)'/,
+      (whole, json) =>
+        `data-composition-variables='${JSON.stringify(
+          JSON.parse(json).map((variable) =>
+            variable.id in bit.theme
+              ? { ...variable, default: bit.theme[variable.id] }
+              : variable,
+          ),
+        )}'`,
     );
+    writeFileSync(join(dir, "index.html"), themed);
     copyFileSync(iife, join(dir, "hyperbits.iife.js"));
     await run(
       "npx",
