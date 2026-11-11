@@ -109,7 +109,7 @@ function tileMarkup(bit, index) {
     )
     .join("");
   return `<div class="lv-tile" data-index="${index}" data-id="${bit.id}" data-category="${bit.category}">
-          <div class="lv-screen" style="border-color:${color}"><img class="lv-poster" src="public/posters/${bit.id}.jpg" alt="" />${hosts}<div class="lv-shade"></div></div>
+          <div class="lv-screen" style="border-color:${color}"><img class="lv-poster" src="public/posters/${bit.id}.jpg" alt="" />${hosts}<div class="lv-shade"></div><div class="lv-tint" style="background-color:${color}"></div></div>
           <div class="lv-inspect"><div class="lv-outline"></div><div class="lv-tag"><b>div</b>${bit.id}.html</div><div class="lv-dims">1920 × 1080</div></div>
         </div>`;
 }

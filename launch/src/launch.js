@@ -162,6 +162,7 @@
         index,
         screen: element.querySelector(".lv-screen"),
         shade: element.querySelector(".lv-shade"),
+        tint: element.querySelector(".lv-tint"),
         inspect: element.querySelector(".lv-inspect"),
         category: bit.category,
         within: bits
@@ -825,6 +826,10 @@
         );
       if (tile !== carouselTile) dim = Math.max(dim, 0.72 * agentDim);
       tile.shade.style.opacity = dim.toFixed(3);
+      const landed = finaleStart(tile, tile.finaleOrder) + FINALE_FLIGHT * 0.7;
+      tile.tint.style.opacity = (
+        0.42 * progress(time, landed, 0.8, "power2.out")
+      ).toFixed(3);
       const inspected =
         progress(time, tile.scanTime, 0.22, "power2.out") *
         (1 - progress(time, 10.95, 0.35, "power2.in"));
