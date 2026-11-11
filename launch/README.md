@@ -21,11 +21,11 @@ npm run preview
 npm run render
 ```
 
-`render` writes `out/hyperbits-launch.mp4` at 60 fps. For camera motion blur, render at 120 fps and blend frame pairs:
+`render` writes `out/hyperbits-launch.mp4` at 60 fps. For camera motion blur, render at 240 fps and average four subframes into each output frame:
 
 ```bash
-npx --yes hyperframes@0.8.29 render --fps 120 --quality high --output out/launch-120.mp4
-ffmpeg -i out/launch-120.mp4 -vf "tmix=frames=2,fps=60" -c:v libx264 -crf 16 -preset slow -pix_fmt yuv420p out/hyperbits-launch.mp4
+npx --yes hyperframes@0.8.29 render --fps 240 --quality high --output out/launch-240.mp4
+ffmpeg -i out/launch-240.mp4 -vf "tmix=frames=4,fps=60" -c:v libx264 -crf 16 -preset slow -pix_fmt yuv420p -movflags +faststart out/hyperbits-launch.mp4
 ```
 
 ## Structure
