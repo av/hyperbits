@@ -1,4 +1,4 @@
-### Unreleased
+### v0.2.6
 
 - Validation: pin HyperFrames lint/check to the same published 0.8.29 version as the demo. Newer unpinned CLI releases scan the bundled helper runtime as composition code and reject every bit. No lint rules are disabled.
 
