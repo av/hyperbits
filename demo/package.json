@@ -6,11 +6,11 @@
   "private": true,
   "scripts": {
     "sync": "mkdir -p public && cp ../dist/hyperbits.iife.js public/hyperbits.iife.js",
-    "preview": "npm run sync && npx --yes hyperframes@0.8.50 preview",
+    "preview": "npm run sync && npx --yes hyperframes@0.8.29 preview",
     "dev": "npm run preview",
-    "check": "npx --yes hyperframes@0.8.50 check",
-    "lint": "npx --yes hyperframes@0.8.50 lint",
-    "render": "npm run sync && npx --yes hyperframes@0.8.50 render --output out/gallery.mp4",
-    "publish": "npx --yes hyperframes@0.8.50 publish"
+    "check": "npx --yes hyperframes@0.8.29 check",
+    "lint": "npx --yes hyperframes@0.8.29 lint",
+    "render": "npm run sync && npx --yes hyperframes@0.8.29 render --output out/gallery.mp4",
+    "publish": "npx --yes hyperframes@0.8.29 publish"
   }
 }

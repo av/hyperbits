@@ -1,3 +1,9 @@
+### Unreleased
+
+- Text: character splitting and all three typewriter bits reveal whole Unicode graphemes, keeping combining accents, flags and joined characters intact when typing, deleting and seeking.
+
+- Demo: use the published HyperFrames 0.8.29 CLI so the documented preview, check, lint and render commands install successfully.
+
 ### v0.2.4
 
 - Skill: `references/helpers.md` shows the local `./hyperbits.iife.js` that `hyperbits add` and `hyperframes add` write, plus the hyperbits.dev copy, instead of the unpkg URL that does not serve

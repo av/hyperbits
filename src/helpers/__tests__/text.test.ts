@@ -12,6 +12,15 @@ describe("splitUnits", () => {
     expect(splitUnits("hi ", "chars")).toEqual(["h", "i", " "]);
   });
 
+  it("keeps combining marks, flags, modifiers and joined characters together", () => {
+    expect(splitUnits("e\u0301🇵🇱👍🏽👩‍💻", "chars")).toEqual([
+      "e\u0301",
+      "🇵🇱",
+      "👍🏽",
+      "👩‍💻",
+    ]);
+  });
+
   it("splits words while keeping whitespace", () => {
     expect(splitUnits("hello world", "words")).toEqual(["hello", " ", "world"]);
   });
@@ -71,6 +80,15 @@ describe("typewriter", () => {
     expect(spans[2].style.display).toBe("block");
   });
 
+  it("preserves CRLF graphemes as block breaks", () => {
+    const element = document.createElement("p");
+    element.textContent = "a\r\nb";
+    const driver = typewriter(element, { duration: 3 });
+    driver.apply(2);
+    expect(driver.spans[1].textContent).toBe("\r\n");
+    expect(driver.spans[1].style.display).toBe("block");
+  });
+
   it("typewriter() splits once and applies over time", () => {
     const element = document.createElement("p");
     element.textContent = "Hey";
@@ -78,6 +96,25 @@ describe("typewriter", () => {
     expect(driver.spans).toHaveLength(3);
     expect(driver.apply(0)).toBe(0);
     expect(driver.apply(1)).toBe(3);
+  });
+
+  it("reveals whole graphemes when seeking forwards and backwards", () => {
+    const element = document.createElement("p");
+    element.textContent = "e\u0301👩‍💻!";
+    const driver = typewriter(element, { duration: 3 });
+    const visibleText = () =>
+      driver.spans
+        .filter((span) => span.style.display !== "none")
+        .map((span) => span.textContent)
+        .join("");
+    driver.apply(2);
+    expect(visibleText()).toBe("e\u0301👩‍💻");
+    driver.apply(1);
+    expect(visibleText()).toBe("e\u0301");
+    driver.apply(3);
+    expect(visibleText()).toBe(element.getAttribute("aria-label"));
+    driver.apply(0);
+    expect(visibleText()).toBe("");
   });
 
   it("reveals everything immediately when duration is 0", () => {
