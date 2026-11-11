@@ -41,8 +41,6 @@
       .lv-tag b { font-weight: 500; color: #100f0f; margin-right: 12px; }
       .lv-dims { position: absolute; right: 0; top: 100%; margin-top: 8px; padding: 5px 10px; border-radius: 6px; background-color: #100f0f; color: #fffcf0; font: 400 22px/1 "Geist Mono", monospace; white-space: nowrap; }
       .lv-wordmark { left: 0; top: 0; width: 0; height: 0; }
-      .lv-glyph { position: absolute; font-weight: 700; color: #fffcf0; line-height: 1; white-space: pre; }
-      .lv-shape { position: absolute; }
       .lv-terminal { left: -650px; top: -410px; width: 1300px; height: 820px; border-radius: 28px; background-color: #1c1b1a; border: 3px solid #343331; overflow: hidden; }
       .lv-terminal .lv-bar { height: 76px; display: flex; align-items: center; gap: 14px; padding: 0 30px; border-bottom: 3px solid #282726; font: 500 26px/1 "Geist Mono", monospace; color: #878580; }
       .lv-terminal .lv-dot { width: 20px; height: 20px; border-radius: 50%; background-color: #403e3c; }
@@ -56,13 +54,11 @@
       .lv-terminal .lv-hit { color: #fffcf0; }
       .lv-terminal .lv-ok { color: #879a39; }
       .lv-cursor { display: inline-block; width: 0.6em; height: 1.1em; vertical-align: -0.2em; background-color: #ec8b49; }
-      .lv-lockup-outline { left: 0; top: 0; overflow: visible; }
       #launch-hud { position: absolute; inset: 0; pointer-events: none; }
       #launch-hud > * { position: absolute; }
       .lv-hook { left: 0; right: 0; top: 50%; text-align: center; font-weight: 800; font-size: 150px; letter-spacing: -0.045em; line-height: 1; transform: translateY(-50%); perspective: 900px; }
       .lv-hook span { display: inline-block; transform-origin: 50% 80%; }
       .lv-hook .lv-em { color: #ec8b49; }
-      .lv-sub { font: 500 46px/1.2 "Geist", sans-serif; color: #b7b5ac; letter-spacing: -0.01em; }
       .lv-headline { left: 0; right: 0; text-align: center; font-weight: 700; font-size: 84px; letter-spacing: -0.035em; line-height: 1.05; }
       .lv-headline .lv-em { color: #ec8b49; }
       .lv-legend { left: 50%; bottom: 56px; width: 1500px; display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 18px; transform: translateX(-50%); }
@@ -95,7 +91,6 @@
         <div id="launch-world">
         <!--TILES-->
           <div class="lv-wordmark" id="wordmark"></div>
-          <svg class="lv-lockup-outline" id="lockup-outline" width="1" height="1" viewBox="0 0 1 1"></svg>
           <div class="lv-terminal" id="terminal">
             <div class="lv-bar"><span class="lv-dot"></span><span class="lv-dot"></span><span class="lv-dot"></span><span class="lv-title">agent — ~/my-launch-video</span></div>
             <div class="lv-body" id="terminal-body"></div>

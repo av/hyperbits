@@ -160,7 +160,6 @@
         element,
         bit,
         index,
-        screen: element.querySelector(".lv-screen"),
         shade: element.querySelector(".lv-shade"),
         tint: element.querySelector(".lv-tint"),
         inspect: element.querySelector(".lv-inspect"),
@@ -310,10 +309,7 @@
     LOCKUP.center[1] + (y - 11.9) * LOCKUP.unit,
     0,
   ];
-  const mosaicOrder = [...mosaic.cells]
-    .map((cell, index) => ({ cell, index }))
-    .sort((a, b) => a.cell.y - b.cell.y || a.cell.x - b.cell.x)
-    .map((entry) => entry.cell);
+  const mosaicOrder = [...mosaic.cells].sort((a, b) => a.y - b.y || a.x - b.x);
 
   const DIVE_START = 11.2;
   const DIVE_LENGTH = 2.5;
@@ -465,7 +461,7 @@
     "left:-4px;top:-1300px;width:8px;height:2600px;background-color:#4385be;box-shadow:0 0 40px 12px rgba(67,133,190,0.55);border-radius:4px;";
   world.appendChild(scanLine);
 
-  const finaleStart = (tile, cellIndex) => 28.6 + cellIndex * 0.028;
+  const finaleStart = (order) => 28.6 + order * 0.028;
   const FINALE_FLIGHT = 1.9;
 
   function tileState(tile, time) {
@@ -509,8 +505,8 @@
       rotation = quat.slerp(wall.rotation, CAROUSEL_SLOT.rotation, amount);
       size = lerp(1, CAROUSEL_SLOT.size, amount);
     }
-    const cellIndex = tile.cellIndex;
-    const begin = finaleStart(tile, tile.finaleOrder);
+    const cellIndex = tile.index;
+    const begin = finaleStart(tile.finaleOrder);
     if (time >= begin) {
       const cell = mosaicOrder[cellIndex];
       const target = iconToWorld(cell.x, cell.y);
@@ -528,19 +524,9 @@
     return { position, rotation, size };
   }
 
-  const cellOrder = tiles.map((tile) => tile.index);
-  tiles.forEach((tile, index) => {
-    tile.cellIndex = cellOrder[index];
-  });
   const finaleOrder = [...tiles].sort((a, b) => {
-    const ca = iconToWorld(
-      mosaicOrder[a.cellIndex].x,
-      mosaicOrder[a.cellIndex].y,
-    );
-    const cb = iconToWorld(
-      mosaicOrder[b.cellIndex].x,
-      mosaicOrder[b.cellIndex].y,
-    );
+    const ca = iconToWorld(mosaicOrder[a.index].x, mosaicOrder[a.index].y);
+    const cb = iconToWorld(mosaicOrder[b.index].x, mosaicOrder[b.index].y);
     return length(sub(ca, LOCKUP.center)) - length(sub(cb, LOCKUP.center));
   });
   finaleOrder.forEach((tile, order) => {
@@ -826,7 +812,7 @@
         );
       if (tile !== carouselTile) dim = Math.max(dim, 0.72 * agentDim);
       tile.shade.style.opacity = dim.toFixed(3);
-      const landed = finaleStart(tile, tile.finaleOrder) + FINALE_FLIGHT * 0.7;
+      const landed = finaleStart(tile.finaleOrder) + FINALE_FLIGHT * 0.7;
       tile.tint.style.opacity = (
         0.42 * progress(time, landed, 0.8, "power2.out")
       ).toFixed(3);
