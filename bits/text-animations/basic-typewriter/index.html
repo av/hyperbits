@@ -97,6 +97,7 @@
         const typed = document.getElementById("typed");
         const cursor = document.getElementById("cursor");
         const text = String(vars.text);
+        const characters = hyperbits.splitUnits(text, "chars");
         line.setAttribute("aria-label", text);
         line.style.color = vars.color;
         line.style.fontSize = vmin * 8 + "px";
@@ -105,8 +106,8 @@
         const proxy = { time: 0 };
         function render() {
           const frame = Math.round(proxy.time * 30);
-          const visible = Math.min(text.length, Math.floor(frame / typeSpeed));
-          typed.textContent = text.slice(0, visible);
+          const visible = Math.min(characters.length, Math.floor(frame / typeSpeed));
+          typed.textContent = characters.slice(0, visible).join("");
           cursor.style.opacity = frame % blinkSpeed < blinkSpeed / 2 ? "1" : "0";
         }
         const timeline = gsap.timeline({ paused: true });

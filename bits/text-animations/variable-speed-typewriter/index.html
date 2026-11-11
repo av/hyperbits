@@ -110,7 +110,8 @@
         let floatFrame = 0;
         let current = "";
         function push() { events.push({ frame: Math.round(floatFrame), text: current }); }
-        const length = text.length;
+        const characters = hyperbits.splitUnits(text, "chars");
+        const length = characters.length;
         for (let index = 0; index < length; index += 1) {
           const progress = index / Math.max(1, length);
           const charSeed = "typewriter-0-" + index;
@@ -127,7 +128,7 @@
             push();
           }
           floatFrame += typeSpeed;
-          current += text[index];
+          current += characters[index];
           push();
         }
         const proxy = { time: 0 };

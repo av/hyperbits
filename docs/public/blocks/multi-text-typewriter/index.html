@@ -111,16 +111,17 @@
         let current = "";
         function push() { events.push({ frame: Math.round(floatFrame), text: current }); }
         texts.forEach(function (str) {
-          for (let index = 0; index < str.length; index += 1) {
+          const characters = hyperbits.splitUnits(str, "chars");
+          for (let index = 0; index < characters.length; index += 1) {
             floatFrame += typeSpeed;
-            current += str[index];
+            current += characters[index];
             push();
           }
           floatFrame += pauseAfterType;
           push();
-          for (let index = current.length - 1; index >= 0; index -= 1) {
+          for (let index = characters.length - 1; index >= 0; index -= 1) {
             floatFrame += deleteSpeed;
-            current = current.slice(0, -1);
+            current = characters.slice(0, index).join("");
             push();
           }
           floatFrame += pauseAfterDelete;

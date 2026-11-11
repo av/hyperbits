@@ -2,6 +2,10 @@ import { unitProgress } from "./math";
 
 export type SplitMode = "chars" | "words" | "lines";
 
+const graphemeSegmenter = new Intl.Segmenter(undefined, {
+  granularity: "grapheme",
+});
+
 const CHAR_ATTR = "data-char";
 
 export function splitUnits(text: string, mode: SplitMode): string[] {
@@ -11,7 +15,7 @@ export function splitUnits(text: string, mode: SplitMode): string[] {
     const parts = text.split(/(\n)/);
     return parts.filter((part) => part.length > 0);
   }
-  return Array.from(text);
+  return Array.from(graphemeSegmenter.segment(text), (part) => part.segment);
 }
 
 export function splitText(
@@ -30,7 +34,7 @@ export function splitText(
     span.textContent = unit;
     span.setAttribute("aria-hidden", "true");
     span.style.whiteSpace = "pre";
-    if (mode === "lines" || unit === "\n") {
+    if (mode === "lines" || unit === "\n" || unit === "\r\n") {
       span.style.display = "block";
     } else {
       span.style.display = "inline-block";
@@ -84,7 +88,7 @@ export function applyTypewriter(
   for (let index = 0; index < spans.length; index++) {
     const shown = index < visible;
     spans[index].style.display = shown
-      ? spans[index].textContent === "\n"
+      ? ["\n", "\r\n"].includes(spans[index].textContent ?? "")
         ? "block"
         : "inline-block"
       : "none";
