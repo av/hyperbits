@@ -16,7 +16,7 @@ const runCheck =
   process.argv.includes("--check") || process.argv.includes("--audit");
 
 function runHyperframes(command, bitDir) {
-  const args = ["hyperframes", command, "--json", bitDir];
+  const args = ["--yes", "hyperframes@0.8.29", command, "--json", bitDir];
   const result = spawnSync("npx", args, {
     cwd: root,
     encoding: "utf8",
