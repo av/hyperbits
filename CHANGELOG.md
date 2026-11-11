@@ -2,11 +2,13 @@
 
 - Validation: pin HyperFrames lint/check to the same published 0.8.29 version as the demo. Newer unpinned CLI releases scan the bundled helper runtime as composition code and reject every bit. No lint rules are disabled.
 
-### v0.2.5
-
 - Text: character splitting and all three typewriter bits reveal whole Unicode graphemes, keeping combining accents, flags and joined characters intact when typing, deleting and seeking.
 
 - Demo: use the published HyperFrames 0.8.29 CLI so the documented preview, check, lint and render commands install successfully.
+
+### v0.2.5
+
+- Unpublished: release validation failed before package publication. Changes ship in v0.2.6.
 
 ### v0.2.4
 
