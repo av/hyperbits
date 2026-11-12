@@ -12,7 +12,7 @@ Ready-made animation bits for [HyperFrames](https://github.com/heygen-com/hyperf
 
 ## Status
 
-0.2.0: helpers, 62 bits including 16 seamless motion loops, CLI, MCP server, docs site, demo reel and agent skill.
+0.2.0: helpers, 92 bits including 16 seamless motion loops, CLI, MCP server, docs site, demo reel and agent skill.
 
 ## Single-step usage
 
@@ -168,17 +168,17 @@ Reference pages live on the [docs site](https://hyperbits.dev/docs/getting-start
 
 ## Bits
 
-62 bits in 7 categories. Each is a self-contained HTML composition with `bit.json` metadata.
+92 bits in 7 categories. Each is a self-contained HTML composition with `bit.json` metadata.
 
 | Category | Count | Bits |
 | --- | ---: | --- |
-| Text Animations | 17 | `bar-chart`, `basic-code-block`, `basic-counter`, `basic-typewriter`, `blur-slide-word`, `char-by-char`, `cli-simulation`, `counter-confetti`, `fade-in`, `glitch-cycle`, `glitch-in`, `matrix-rain`, `multi-text-typewriter`, `stat-rings`, `typing-code-block`, `variable-speed-typewriter`, `word-by-word` |
-| Staggered Motion | 10 | `card-stack`, `chat-conversation`, `easings-visualizer`, `fracture-reassemble`, `grid-stagger`, `list-reveal`, `lower-third`, `mosaic-reframe`, `slide-from-left`, `staggered-fade-in` |
-| Background Effects | 3 | `conic-gradient`, `linear-gradient`, `radial-gradient` |
+| Text Animations | 27 | `bar-chart`, `basic-code-block`, `basic-counter`, `basic-typewriter`, `blur-slide-word`, `char-by-char`, `cli-simulation`, `counter-confetti`, `crt-boot`, `dither-type`, `extruded-type`, `fade-in`, `glitch-cycle`, `glitch-in`, `led-marquee`, `matrix-rain`, `mosaic-resolve`, `multi-text-typewriter`, `odometer-roll`, `pixel-sort`, `riso-print`, `slit-scan`, `split-flap`, `stat-rings`, `typing-code-block`, `variable-speed-typewriter`, `word-by-word` |
+| Staggered Motion | 12 | `card-stack`, `chat-conversation`, `easings-visualizer`, `fracture-reassemble`, `grid-stagger`, `list-reveal`, `lower-third`, `mosaic-reframe`, `paper-fold`, `receipt-print`, `slide-from-left`, `staggered-fade-in` |
+| Background Effects | 9 | `circuit-traces`, `conic-gradient`, `hard-light`, `lava-dither`, `linear-gradient`, `moire-field`, `op-art-lens`, `radial-gradient`, `rule-cascade` |
 | Motion Loops | 16 | `bauhaus-tiles`, `contour-drift`, `dot-ripple`, `dot-tunnel`, `floating-shapes`, `gyro-rings`, `halftone-sweep`, `horizon-grid`, `phyllotaxis-bloom`, `pinwheel-grid`, `pixel-rain`, `ray-burst`, `speed-streaks`, `truchet-weave`, `wave-stack`, `zoom-polygons` |
-| Particles | 5 | `fireflies`, `particles-fountain`, `particles-grid`, `particles-snow`, `scrolling-columns` |
-| 3D Scenes | 10 | `3d-basic`, `3d-elements`, `carousel`, `cube-navigation`, `cursor-flyover`, `flying-through-words`, `ken-burns`, `step-timing-context`, `terminal-3d`, `transform3d-showcase` |
-| Full Compositions | 1 | `feature-showcase` |
+| Particles | 9 | `fireflies`, `flow-field`, `particles-fountain`, `particles-grid`, `particles-snow`, `radar-sweep`, `scrolling-columns`, `strange-attractor`, `vector-scope` |
+| 3D Scenes | 17 | `3d-basic`, `3d-elements`, `ascii-torus`, `carousel`, `cube-navigation`, `cursor-flyover`, `dither-orb`, `dot-globe`, `exploded-stack`, `flying-through-words`, `isometric-city`, `ken-burns`, `step-timing-context`, `terminal-3d`, `transform3d-showcase`, `voxel-type`, `wire-solids` |
+| Full Compositions | 2 | `blueprint-draw`, `feature-showcase` |
 
 Browse them in the [catalog](https://hyperbits.dev/docs/bits-catalog).
 
