@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"hole","type":"number","label":"Clear circle radius (vmin)","default":18},{"id":"seed","type":"number","label":"Seed","default":4},{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Ink","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent ink","default":"#ec8b49"}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #100f0f;
+        --fg: #f2f0e5;
+        --accent: #ec8b49;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #100f0f;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="flow-field"
+      data-start="0"
+      data-duration="10"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <canvas id="stage" class="clip" data-start="0" data-duration="10"></canvas>
+    </div>
+    <script>
+      (function () {
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+        function channels(color) {
+          const parts = hyperbits.mixOklch(String(color), String(color), 0, "rgb(0, 0, 0)").match(/[0-9.]+/g) || [0, 0, 0];
+          return parts.slice(0, 3).map(Number);
+        }
+        function rgba(rgb, alpha) {
+          return "rgba(" + Math.round(rgb[0]) + ", " + Math.round(rgb[1]) + ", " + Math.round(rgb[2]) + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
+        }
+        function mixRgb(from, to, amount) {
+          return [from[0] + (to[0] - from[0]) * amount, from[1] + (to[1] - from[1]) * amount, from[2] + (to[2] - from[2]) * amount];
+        }
+        function progressOf(time, start, length) {
+          return Math.min(Math.max((time - start) / length, 0), 1);
+        }
+
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const canvas = document.getElementById("stage");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        canvas.width = view.width;
+        canvas.height = view.height;
+        const context = canvas.getContext("2d");
+        const duration = 10;
+        const seed = Math.round(Number(vars.seed) || 0);
+        const back = channels(vars.background);
+        const fore = channels(vars.foreground);
+        const accent = channels(vars.accent);
+        const hole = view.vmin * Math.max(0, Number(vars.hole) || 0);
+        const centerX = view.width * 0.5;
+        const centerY = view.height * 0.5;
+        const phases = [0, 1, 2, 3, 4, 5].map((index) => hyperbits.randomFloat("flow-phase-" + seed + "-" + index, 0, Math.PI * 2));
+        function potential(pointX, pointY) {
+          const scale = 1 / (view.vmin * 22);
+          const u = pointX * scale;
+          const v = pointY * scale;
+          return Math.sin(u * 1.3 + phases[0]) * Math.cos(v * 1.1 + phases[1]) + 0.5 * Math.sin(u * 2.7 - v * 1.9 + phases[2]) + 0.25 * Math.cos(u * 4.3 + v * 3.7 + phases[3]);
+        }
+        function velocity(pointX, pointY) {
+          const step = view.vmin * 0.5;
+          const curlX = (potential(pointX, pointY + step) - potential(pointX, pointY - step)) / (2 * step);
+          const curlY = -(potential(pointX + step, pointY) - potential(pointX - step, pointY)) / (2 * step);
+          let flowX = 1 + curlX * view.vmin * 30;
+          let flowY = curlY * view.vmin * 30;
+          if (hole > 0) {
+            const dx = pointX - centerX;
+            const dy = pointY - centerY;
+            const radiusSquared = dx * dx + dy * dy;
+            const ratio = (hole * hole) / Math.max(radiusSquared, 1);
+            const angle = Math.atan2(dy, dx);
+            const flowRadial = flowX * Math.cos(angle) + flowY * Math.sin(angle);
+            const flowTangential = -flowX * Math.sin(angle) + flowY * Math.cos(angle);
+            const shapedRadial = flowRadial * (1 - ratio);
+            const shapedTangential = flowTangential * (1 + ratio);
+            flowX = shapedRadial * Math.cos(angle) - shapedTangential * Math.sin(angle);
+            flowY = shapedRadial * Math.sin(angle) + shapedTangential * Math.cos(angle);
+          }
+          const length = Math.hypot(flowX, flowY) || 1;
+          return [flowX / length, flowY / length];
+        }
+        const lines = [];
+        const spacing = view.vmin * 2.3;
+        const stepLength = view.vmin * 0.55;
+        for (let gridY = -spacing; gridY < view.height + spacing; gridY += spacing) {
+          for (let gridX = -spacing * 4; gridX < view.width; gridX += spacing) {
+            const key = "flow-" + seed + "-" + Math.round(gridX) + "-" + Math.round(gridY);
+            let pointX = gridX + hyperbits.randomFloat(key + "-x", -spacing / 2, spacing / 2);
+            let pointY = gridY + hyperbits.randomFloat(key + "-y", -spacing / 2, spacing / 2);
+            if (Math.hypot(pointX - centerX, pointY - centerY) < hole * 1.05) continue;
+            const points = [pointX, pointY];
+            const steps = Math.round(hyperbits.randomFloat(key + "-n", 18, 52));
+            for (let step = 0; step < steps; step += 1) {
+              const [flowX, flowY] = velocity(pointX, pointY);
+              pointX += flowX * stepLength;
+              pointY += flowY * stepLength;
+              if (hole > 0 && Math.hypot(pointX - centerX, pointY - centerY) < hole * 1.02) break;
+              points.push(pointX, pointY);
+            }
+            if (points.length < 8) continue;
+            lines.push({
+              points,
+              delay: 0.15 + (gridX / view.width) * 2.4 + hyperbits.randomFloat(key + "-d", 0, 0.6),
+              grow: hyperbits.randomFloat(key + "-g", 0.8, 1.6),
+              accent: hyperbits.random(key + "-a") < 0.1,
+              width: hyperbits.randomFloat(key + "-w", 0.1, 0.24),
+              tint: hyperbits.randomFloat(key + "-t", 0.35, 0.8),
+            });
+          }
+        }
+        function draw(time) {
+          if (!context || typeof context.stroke !== "function") return;
+          context.clearRect(0, 0, view.width, view.height);
+          context.lineCap = "round";
+          context.lineJoin = "round";
+          for (const pass of [false, true]) {
+            for (const line of lines) {
+              if (line.accent !== pass) continue;
+              const progress = hyperbits.Easing.easeOutCubic(Math.min(1, Math.max(0, (time - line.delay) / line.grow)));
+              if (progress <= 0) continue;
+              const total = line.points.length / 2;
+              const visible = Math.max(2, Math.floor(total * progress));
+              context.beginPath();
+              context.moveTo(line.points[0], line.points[1]);
+              for (let index = 1; index < visible; index += 1) context.lineTo(line.points[index * 2], line.points[index * 2 + 1]);
+              if (line.accent) {
+                context.setLineDash([view.vmin * 2.2, view.vmin * 1.4]);
+                context.lineDashOffset = -time * view.vmin * 6;
+                context.strokeStyle = rgba(accent, 0.95);
+                context.lineWidth = view.vmin * (line.width + 0.12);
+              } else {
+                context.setLineDash([]);
+                context.strokeStyle = rgba(mixRgb(back, fore, line.tint), 0.75);
+                context.lineWidth = view.vmin * line.width;
+              }
+              context.stroke();
+              const tipX = line.points[(visible - 1) * 2];
+              const tipY = line.points[(visible - 1) * 2 + 1];
+              if (progress < 1) {
+                context.setLineDash([]);
+                context.fillStyle = rgba(line.accent ? accent : fore, 1);
+                context.beginPath();
+                context.arc(tipX, tipY, view.vmin * (line.width + 0.1), 0, Math.PI * 2);
+                context.fill();
+              }
+            }
+          }
+          context.setLineDash([]);
+          if (hole > 0) {
+            const ring = progressOf(time, 1.2, 1.2);
+            context.strokeStyle = rgba(accent, 0.8);
+            context.lineWidth = view.vmin * 0.18;
+            context.beginPath();
+            context.arc(centerX, centerY, hole * 0.82, -Math.PI / 2, -Math.PI / 2 + ring * Math.PI * 2);
+            context.stroke();
+          }
+        }
+        const proxy = { time: 0 };
+        const timeline = gsap.timeline({ paused: true });
+        timeline.to(proxy, { time: duration, duration: duration, ease: "none", onUpdate: () => draw(proxy.time) }, 0);
+        draw(0);
+        registerTimeline("flow-field", timeline);
+      })();
+    </script>
+  </body>
+</html>

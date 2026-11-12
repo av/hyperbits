@@ -1,0 +1,32 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "wire-solids",
+  "type": "hyperframes:block",
+  "title": "Hidden-Line Solids",
+  "description": "The five Platonic solids turning in technical line art, visible edges solid and hidden edges dashed, each drawn edge by edge and named with its Schlafli symbol and V E F counts",
+  "tags": [
+    "3d",
+    "line-art",
+    "geometry",
+    "math",
+    "technical"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 10,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/wire-solids.html",
+      "type": "hyperframes:composition"
+    },
+    {
+      "path": "hyperbits.iife.js",
+      "target": "compositions/hyperbits.iife.js",
+      "type": "hyperframes:asset"
+    }
+  ]
+}

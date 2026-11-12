@@ -1,0 +1,31 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "radar-sweep",
+  "type": "hyperframes:block",
+  "title": "Radar Sweep",
+  "description": "A phosphor radar scope with a conic afterglow beam, moving contacts that flare and fade as the sweep passes, ground clutter, bearing ring and a live contact table",
+  "tags": [
+    "hud",
+    "data",
+    "ui",
+    "crt"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 10,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/radar-sweep.html",
+      "type": "hyperframes:composition"
+    },
+    {
+      "path": "hyperbits.iife.js",
+      "target": "compositions/hyperbits.iife.js",
+      "type": "hyperframes:asset"
+    }
+  ]
+}

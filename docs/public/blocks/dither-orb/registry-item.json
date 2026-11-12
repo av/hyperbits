@@ -1,0 +1,32 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "dither-orb",
+  "type": "hyperframes:block",
+  "title": "Dithered Planet",
+  "description": "A ringed planet raytraced per pixel and printed in three-ink Bayer dithering, its light swinging from a thin crescent to full day under a mono HUD",
+  "tags": [
+    "3d",
+    "dither",
+    "pixel",
+    "retro",
+    "hud"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 10,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/dither-orb.html",
+      "type": "hyperframes:composition"
+    },
+    {
+      "path": "hyperbits.iife.js",
+      "target": "compositions/hyperbits.iife.js",
+      "type": "hyperframes:asset"
+    }
+  ]
+}

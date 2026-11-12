@@ -1,0 +1,48 @@
+{
+  "name": "crt-boot",
+  "title": "CRT Power-On",
+  "description": "A curved amber CRT snapping on from a single dot, booting through a typed self-test and progress bar to a glowing title, with scanlines, rolling bar and bloom, then collapsing off",
+  "tags": [
+    "text",
+    "crt",
+    "terminal",
+    "retro",
+    "glow"
+  ],
+  "duration": 8,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "color",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://hyperbits.dev/vendor/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "crt-boot",
+    "type": "hyperframes:block",
+    "title": "CRT Power-On",
+    "description": "A curved amber CRT snapping on from a single dot, booting through a typed self-test and progress bar to a glowing title, with scanlines, rolling bar and bloom, then collapsing off",
+    "tags": [
+      "text",
+      "crt",
+      "terminal",
+      "retro",
+      "glow"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 8,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/crt-boot.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "name": "odometer-roll",
+  "title": "Odometer Roll",
+  "description": "A mechanical counter of real 3D number drums: the ones wheel spins into a motion blur, higher wheels click over with true carries and everything settles on the target value",
+  "tags": [
+    "counter",
+    "number",
+    "3d",
+    "mechanical",
+    "component"
+  ],
+  "duration": 6,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://hyperbits.dev/vendor/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "odometer-roll",
+    "type": "hyperframes:block",
+    "title": "Odometer Roll",
+    "description": "A mechanical counter of real 3D number drums: the ones wheel spins into a motion blur, higher wheels click over with true carries and everything settles on the target value",
+    "tags": [
+      "counter",
+      "number",
+      "3d",
+      "mechanical",
+      "component"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 6,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/odometer-roll.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

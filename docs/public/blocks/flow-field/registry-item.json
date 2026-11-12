@@ -1,0 +1,31 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "flow-field",
+  "type": "hyperframes:block",
+  "title": "Ink Flow Field",
+  "description": "Hundreds of ink streamlines grow through a curl-noise current that parts around an empty circle, then keep flowing as accent dashes travel along them like a plotter drawing",
+  "tags": [
+    "particles",
+    "generative",
+    "lines",
+    "background"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 10,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/flow-field.html",
+      "type": "hyperframes:composition"
+    },
+    {
+      "path": "hyperbits.iife.js",
+      "target": "compositions/hyperbits.iife.js",
+      "type": "hyperframes:asset"
+    }
+  ]
+}

@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"headline","type":"string","label":"Headline","default":"Unfold the story"},{"id":"label","type":"string","label":"Label","default":"VOL. 03 / FOUR PANELS"},{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Text","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#ec8b49"}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Sans";
+        font-weight: 800;
+        font-display: block;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5/files/geist-sans-latin-800-normal.woff2) format("woff2");
+      }
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 500;
+        font-display: block;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-500-normal.woff2) format("woff2");
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="./hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #100f0f;
+        --fg: #f2f0e5;
+        --accent: #ec8b49;
+        --paper: #1c1b1a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #100f0f;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+        perspective: 2400px;
+      }
+      #card {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform-style: preserve-3d;
+      }
+      .panel {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        transform-style: preserve-3d;
+      }
+      .face {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        background-color: #1c1b1a;
+        backface-visibility: hidden;
+      }
+      .back {
+        position: absolute;
+        inset: 0;
+        background-color: #242322;
+        transform: rotateY(180deg);
+        backface-visibility: hidden;
+      }
+      .poster {
+        position: absolute;
+        top: 0;
+        height: 100%;
+      }
+      .shade {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+      .headline {
+        position: absolute;
+        font-family: "Geist Sans", ui-sans-serif, system-ui, sans-serif;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 0.92;
+        color: #f2f0e5;
+      }
+      .label {
+        position: absolute;
+        font-family: "Geist Mono", ui-monospace, monospace;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        white-space: nowrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="paper-fold"
+      data-start="0"
+      data-duration="7"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="7" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <div id="stage" class="clip" data-start="0" data-duration="7"><div id="card"></div></div>
+    </div>
+    <script>
+      (function () {
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+        function progressOf(time, start, length) {
+          return Math.min(Math.max((time - start) / length, 0), 1);
+        }
+
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const card = document.getElementById("card");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        const duration = 7;
+        const panels = 4;
+        const cardWidth = view.width * 0.7;
+        const cardHeight = view.height * 0.66;
+        const panelWidth = cardWidth / panels;
+        card.style.width = cardWidth + "px";
+        card.style.height = cardHeight + "px";
+        card.style.marginLeft = -cardWidth / 2 + "px";
+        card.style.marginTop = -cardHeight / 2 + "px";
+        function posterContent() {
+          const poster = document.createElement("div");
+          poster.className = "poster";
+          poster.style.width = cardWidth + "px";
+          const svgNs = "http://www.w3.org/2000/svg";
+          const art = document.createElementNS(svgNs, "svg");
+          art.setAttribute("width", String(cardWidth));
+          art.setAttribute("height", String(cardHeight));
+          art.style.position = "absolute";
+          art.style.left = "0";
+          art.style.top = "0";
+          const centerX = cardWidth * 0.78;
+          const centerY = cardHeight * 0.55;
+          for (let ring = 0; ring < 9; ring += 1) {
+            const circle = document.createElementNS(svgNs, "circle");
+            circle.setAttribute("cx", String(centerX));
+            circle.setAttribute("cy", String(centerY));
+            circle.setAttribute("r", String(cardHeight * (0.08 + ring * 0.07)));
+            circle.setAttribute("fill", "none");
+            circle.setAttribute("stroke", ring === 2 ? vars.accent : vars.foreground);
+            circle.setAttribute("stroke-opacity", ring === 2 ? "1" : String(0.32 - ring * 0.025));
+            circle.setAttribute("stroke-width", String(ring === 2 ? view.vmin * 0.5 : view.vmin * 0.18));
+            art.append(circle);
+          }
+          const disc = document.createElementNS(svgNs, "circle");
+          disc.setAttribute("cx", String(centerX));
+          disc.setAttribute("cy", String(centerY));
+          disc.setAttribute("r", String(cardHeight * 0.08));
+          disc.setAttribute("fill", vars.accent);
+          art.append(disc);
+          const rule = document.createElementNS(svgNs, "line");
+          rule.setAttribute("x1", String(cardWidth * 0.06));
+          rule.setAttribute("x2", String(cardWidth * 0.94));
+          rule.setAttribute("y1", String(cardHeight * 0.88));
+          rule.setAttribute("y2", String(cardHeight * 0.88));
+          rule.setAttribute("stroke", vars.foreground);
+          rule.setAttribute("stroke-opacity", "0.25");
+          rule.setAttribute("stroke-width", String(Math.max(1, view.vmin * 0.15)));
+          art.append(rule);
+          poster.append(art);
+          const label = document.createElement("div");
+          label.className = "label";
+          label.textContent = String(vars.label);
+          label.style.left = cardWidth * 0.06 + "px";
+          label.style.top = cardHeight * 0.12 + "px";
+          label.style.fontSize = view.vmin * 1.9 + "px";
+          label.style.color = vars.accent;
+          const headline = document.createElement("div");
+          headline.className = "headline";
+          headline.textContent = String(vars.headline);
+          headline.style.left = cardWidth * 0.055 + "px";
+          headline.style.top = cardHeight * 0.24 + "px";
+          headline.style.width = cardWidth * 0.62 + "px";
+          headline.style.fontSize = view.vmin * 11 + "px";
+          headline.style.color = vars.foreground;
+          const footer = document.createElement("div");
+          footer.className = "label";
+          footer.textContent = "01  02  03  04";
+          footer.style.left = cardWidth * 0.06 + "px";
+          footer.style.top = cardHeight * 0.91 + "px";
+          footer.style.fontSize = view.vmin * 1.5 + "px";
+          footer.style.color = vars.foreground;
+          footer.style.opacity = "0.5";
+          poster.append(label, headline, footer);
+          return poster;
+        }
+        const shades = [];
+        const hinges = [];
+        let parent = card;
+        for (let index = 0; index < panels; index += 1) {
+          const panel = document.createElement("div");
+          panel.className = "panel";
+          panel.style.width = panelWidth + "px";
+          panel.style.left = (index === 0 ? 0 : panelWidth) + "px";
+          panel.style.transformOrigin = "0 50%";
+          const face = document.createElement("div");
+          face.className = "face";
+          const poster = posterContent();
+          poster.style.left = -index * panelWidth + "px";
+          face.append(poster);
+          const shade = document.createElement("div");
+          shade.className = "shade";
+          face.append(shade);
+          const back = document.createElement("div");
+          back.className = "back";
+          panel.append(face, back);
+          parent.append(panel);
+          shades.push(shade);
+          hinges.push(panel);
+          parent = panel;
+        }
+        card.setAttribute("aria-label", String(vars.headline));
+        const proxy = { time: 0 };
+        function render() {
+          const time = proxy.time;
+          const enter = hyperbits.Easing.easeOutCubic(progressOf(time, 0, 0.9));
+          const close = hyperbits.Easing.easeInOutCubic(progressOf(time, 5.6, 1.2));
+          const swing = Math.sin(time * 0.8) * 4;
+          card.style.transform = "translateY(" + (1 - enter) * view.height * 0.12 + "px) rotateX(" + (14 - enter * 6 + close * 4) + "deg) rotateY(" + (-24 + enter * 14 + swing - close * 8) + "deg) translateX(" + (1 - enter) * -cardWidth * 0.25 + "px)";
+          card.style.opacity = String(Math.min(1, time / 0.3));
+          for (let index = 0; index < panels; index += 1) {
+            if (index === 0) {
+              hinges[index].style.transform = "none";
+              shades[index].style.background = "linear-gradient(90deg, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, " + (0.25 * (1 - progressOf(time, 0.8, 1.6))) + "))";
+              continue;
+            }
+            const open = hyperbits.Easing.easeInOutCubic(progressOf(time, 0.8 + (index - 1) * 0.45, 1.1));
+            const shut = hyperbits.Easing.easeInOutCubic(progressOf(time, 5.6 + (panels - 1 - index) * 0.18, 0.8));
+            const folded = index % 2 === 1 ? -178 : 178;
+            const angle = folded * (1 - open) + folded * shut * open;
+            hinges[index].style.transform = "rotateY(" + angle + "deg)";
+            const light = Math.abs(angle) / 180;
+            const side = angle < 0 ? "90deg" : "270deg";
+            shades[index].style.background = "linear-gradient(" + side + ", rgba(0, 0, 0, " + (0.55 * light + 0.06) + "), rgba(255, 255, 255, " + (0.05 * (1 - light)) + ") 40%, rgba(0, 0, 0, " + 0.3 * light + "))";
+          }
+        }
+        const timeline = gsap.timeline({ paused: true });
+        timeline.to(proxy, { time: duration, duration: duration, ease: "none", onUpdate: render }, 0);
+        render();
+        registerTimeline("paper-fold", timeline);
+      })();
+    </script>
+  </body>
+</html>

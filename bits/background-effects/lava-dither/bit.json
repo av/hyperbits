@@ -1,0 +1,47 @@
+{
+  "name": "lava-dither",
+  "title": "Error-Diffusion Lava",
+  "description": "Slow metaball lava rendered through Floyd-Steinberg error diffusion into three inks, so the blobs crawl with living organic grain as they merge and split",
+  "tags": [
+    "background",
+    "dither",
+    "pixel",
+    "organic"
+  ],
+  "duration": 10,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "color",
+    "random",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://hyperbits.dev/vendor/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "lava-dither",
+    "type": "hyperframes:block",
+    "title": "Error-Diffusion Lava",
+    "description": "Slow metaball lava rendered through Floyd-Steinberg error diffusion into three inks, so the blobs crawl with living organic grain as they merge and split",
+    "tags": [
+      "background",
+      "dither",
+      "pixel",
+      "organic"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 10,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/lava-dither.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

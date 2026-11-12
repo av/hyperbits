@@ -1,0 +1,46 @@
+{
+  "name": "op-art-lens",
+  "title": "Op-Art Lens",
+  "description": "A Vasarely-style checkerboard swelling under a travelling magnifying lens and pinching under a second, with an accent band of cells sweeping diagonally through the warp",
+  "tags": [
+    "background",
+    "op-art",
+    "pattern",
+    "warp"
+  ],
+  "duration": 10,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "color",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://hyperbits.dev/vendor/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "op-art-lens",
+    "type": "hyperframes:block",
+    "title": "Op-Art Lens",
+    "description": "A Vasarely-style checkerboard swelling under a travelling magnifying lens and pinching under a second, with an accent band of cells sweeping diagonally through the warp",
+    "tags": [
+      "background",
+      "op-art",
+      "pattern",
+      "warp"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 10,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/op-art-lens.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "name": "hard-light",
+  "title": "Hard Light",
+  "description": "A top-down field of turning blocks lit by a wandering point light that throws long soft-edged shadows across a glowing floor, the shadow fan swinging as the light orbits",
+  "tags": [
+    "background",
+    "light",
+    "shadow",
+    "geometry"
+  ],
+  "duration": 10,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "color",
+    "random",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://hyperbits.dev/vendor/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "hard-light",
+    "type": "hyperframes:block",
+    "title": "Hard Light",
+    "description": "A top-down field of turning blocks lit by a wandering point light that throws long soft-edged shadows across a glowing floor, the shadow fan swinging as the light orbits",
+    "tags": [
+      "background",
+      "light",
+      "shadow",
+      "geometry"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 10,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/hard-light.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

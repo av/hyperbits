@@ -1,0 +1,32 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "dot-globe",
+  "type": "hyperframes:block",
+  "title": "Network Globe",
+  "description": "A turning globe of land dots under a faint graticule, great-circle arcs launching between cities with travelling packets and landing pings, beside a live counter",
+  "tags": [
+    "3d",
+    "data",
+    "globe",
+    "network",
+    "dots"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 10,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/dot-globe.html",
+      "type": "hyperframes:composition"
+    },
+    {
+      "path": "hyperbits.iife.js",
+      "target": "compositions/hyperbits.iife.js",
+      "type": "hyperframes:asset"
+    }
+  ]
+}
