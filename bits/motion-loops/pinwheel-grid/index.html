@@ -98,16 +98,17 @@
         const accent = channels(vars.accent);
         const perRow = Math.max(2, Math.round(Number(vars.pinwheels) || 14));
         const seed = Number(vars.seed) || 0;
+        const rows = Math.max(1, Math.round((6 * view.height) / (view.vmin * 100)));
         const plants = [];
-        for (let row = 0; row < 6; row += 1) {
-          const depth = 1 - row / 6;
-          const count = Math.round(perRow * (0.85 + row * 0.06));
+        for (let row = 0; row < rows; row += 1) {
+          const depth = 1 - row / rows;
+          const count = Math.round(perRow * (0.85 + (row / rows) * 0.36));
           for (let index = 0; index < count; index += 1) {
             const key = "meadow-" + seed + "-" + row + "-" + index;
             plants.push({
               depth,
               baseX: view.width * ((index + hyperbits.randomFloat(key + "-x", 0.2, 0.8)) / count),
-              baseY: view.height * (1.04 - 0.165 * row),
+              baseY: view.height * (1.04 - (0.99 * row) / rows),
               height: view.vmin * (7 + 6 * depth) * hyperbits.randomFloat(key + "-h", 0.8, 1.2),
               radius: view.vmin * (2.4 + 1.6 * depth),
               tone: mix(hyperbits.random(key + "-t") > 0.75 ? foreground : accent, background, 0.4 + 0.15 * (1 - depth)),

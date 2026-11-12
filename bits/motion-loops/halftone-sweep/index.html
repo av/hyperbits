@@ -95,13 +95,15 @@
         const pitch = view.vmin * Math.max(1, Number(vars.pitch) || 2.2);
         const columns = Math.ceil(view.width / pitch) + 1;
         const rows = Math.ceil(view.height / pitch) + 1;
+        const cloudColumns = Math.ceil(view.width / (view.vmin * 45));
+        const cloudRows = Math.ceil(view.height / (view.vmin * 45));
         const clouds = [];
-        for (let row = 0; row < 3; row += 1) {
-          for (let column = 0; column < 4; column += 1) {
+        for (let row = 0; row < cloudRows; row += 1) {
+          for (let column = 0; column < cloudColumns; column += 1) {
             const key = "cloud-" + row + "-" + column;
             clouds.push({
-              homeX: view.width * ((column + 0.5 + hyperbits.randomFloat(key + "-x", -0.2, 0.2)) / 4),
-              homeY: view.height * ((row + 0.5 + hyperbits.randomFloat(key + "-y", -0.2, 0.2)) / 3),
+              homeX: view.width * ((column + 0.5 + hyperbits.randomFloat(key + "-x", -0.2, 0.2)) / cloudColumns),
+              homeY: view.height * ((row + 0.5 + hyperbits.randomFloat(key + "-y", -0.2, 0.2)) / cloudRows),
               radius: view.vmin * hyperbits.randomFloat(key + "-r", 14, 22),
               orbit: view.vmin * hyperbits.randomFloat(key + "-o", 4, 8),
               shift: hyperbits.random(key + "-s"),
