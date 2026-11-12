@@ -8,3 +8,23 @@ import { BitPlayground } from '@components/BitPlayground';
 A curved amber CRT snapping on from a single dot, booting through a typed self-test and progress bar to a glowing title, with scanlines, rolling bar and bloom, then collapsing off.
 
 <BitPlayground client:only="react" bitName="crt-boot" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `title` | string | `"HYPERBITS"` | Title |
+| `subtitle` | string | `"motion bits for hyperframes"` | Subtitle |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Hot phosphor |
+| `accent` | color | `#ec8b49` | Phosphor |
+
+```html
+<div data-composition-src="compositions/crt-boot.html" data-variable-values='{"title":"HYPERBITS","subtitle":"motion bits for hyperframes","background":"#100f0f","foreground":"#f2f0e5","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add crt-boot --into compositions/ --set "background=#0b1020"
+```

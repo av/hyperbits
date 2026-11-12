@@ -28,5 +28,37 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#100f0f"
+    },
+    {
+      "id": "foreground",
+      "type": "color",
+      "label": "Foreground",
+      "default": "#f2f0e5"
+    },
+    {
+      "id": "accent",
+      "type": "color",
+      "label": "Accent",
+      "default": "#ef5da8"
+    },
+    {
+      "id": "columns",
+      "type": "number",
+      "label": "Columns",
+      "default": 96
+    },
+    {
+      "id": "seed",
+      "type": "number",
+      "label": "Seed",
+      "default": 2
+    }
   ]
 }

@@ -8,3 +8,21 @@ import { BitPlayground } from '@components/BitPlayground';
 Cycling text with glitch transition effects between words.
 
 <BitPlayground client:only="react" bitName="glitch-cycle" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `words` | string | `"INITIALIZING,LOADING ASSETS,SYSTEM ONLINE,WELCOME USER"` | Words (comma separated) |
+| `color` | color | `#fcc192` | Text color |
+| `background` | color | `#100f0f` | Background |
+
+```html
+<div data-composition-src="compositions/glitch-cycle.html" data-variable-values='{"words":"INITIALIZING,LOADING ASSETS,SYSTEM ONLINE,WELCOME USER","color":"#fcc192","background":"#100f0f"}'></div>
+```
+
+```bash
+npx @av/hyperbits add glitch-cycle --into compositions/ --set "background=#0b1020"
+```

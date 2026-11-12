@@ -28,5 +28,31 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "layers",
+      "type": "string",
+      "label": "Layers, top to bottom, comma separated",
+      "default": "Interface,Timeline,Helpers,Renderer,Frames"
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#100f0f"
+    },
+    {
+      "id": "foreground",
+      "type": "color",
+      "label": "Line ink",
+      "default": "#f2f0e5"
+    },
+    {
+      "id": "accent",
+      "type": "color",
+      "label": "Accent",
+      "default": "#ec8b49"
+    }
   ]
 }

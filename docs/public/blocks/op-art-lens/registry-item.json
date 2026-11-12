@@ -27,5 +27,31 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "cells",
+      "type": "number",
+      "label": "Cells across",
+      "default": 32
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Dark cells",
+      "default": "#100f0f"
+    },
+    {
+      "id": "foreground",
+      "type": "color",
+      "label": "Light cells",
+      "default": "#f2f0e5"
+    },
+    {
+      "id": "accent",
+      "type": "color",
+      "label": "Accent",
+      "default": "#ec8b49"
+    }
   ]
 }

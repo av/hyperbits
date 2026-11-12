@@ -30,5 +30,25 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "title",
+      "type": "string",
+      "label": "Caption (empty hides it)",
+      "default": ""
+    },
+    {
+      "id": "color",
+      "type": "color",
+      "label": "Ring color",
+      "default": "#ec8b49"
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#100f0f"
+    }
   ]
 }

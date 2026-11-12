@@ -8,3 +8,20 @@ import { BitPlayground } from '@components/BitPlayground';
 A vertical list of items scaling and finding their place..
 
 <BitPlayground client:only="react" bitName="list-reveal" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `color` | color | `#fcc192` | Icon color |
+| `background` | color | `#09090b` | Background |
+
+```html
+<div data-composition-src="compositions/list-reveal.html" data-variable-values='{"color":"#fcc192","background":"#09090b"}'></div>
+```
+
+```bash
+npx @av/hyperbits add list-reveal --into compositions/ --set "background=#0b1020"
+```

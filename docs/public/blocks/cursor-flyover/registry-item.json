@@ -28,5 +28,19 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "color",
+      "type": "color",
+      "label": "Cursor color",
+      "default": "#fcc192"
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#0a0a0a"
+    }
   ]
 }

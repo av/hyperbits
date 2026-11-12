@@ -28,5 +28,31 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "rules",
+      "type": "string",
+      "label": "Rules, comma separated",
+      "default": "30,90,110,45"
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#100f0f"
+    },
+    {
+      "id": "foreground",
+      "type": "color",
+      "label": "Cells",
+      "default": "#f2f0e5"
+    },
+    {
+      "id": "accent",
+      "type": "color",
+      "label": "Newest cells",
+      "default": "#ec8b49"
+    }
   ]
 }

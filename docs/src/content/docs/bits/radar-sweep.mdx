@@ -8,3 +8,23 @@ import { BitPlayground } from '@components/BitPlayground';
 A phosphor radar scope with a conic afterglow beam, moving contacts that flare and fade as the sweep passes, ground clutter, bearing ring and a live contact table.
 
 <BitPlayground client:only="react" bitName="radar-sweep" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `title` | string | `"SECTOR 7 / LIVE CONTACTS"` | Panel title |
+| `seed` | number | `5` | Seed |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Text |
+| `accent` | color | `#ec8b49` | Phosphor |
+
+```html
+<div data-composition-src="compositions/radar-sweep.html" data-variable-values='{"title":"SECTOR 7 / LIVE CONTACTS","seed":5,"background":"#100f0f","foreground":"#f2f0e5","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add radar-sweep --into compositions/ --set "background=#0b1020"
+```

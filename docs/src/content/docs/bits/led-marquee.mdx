@@ -8,3 +8,23 @@ import { BitPlayground } from '@components/BitPlayground';
 A dot-matrix LED sign in a dark housing: a message scrolls across the glowing dots, then a second line wipes in column by column and pulses.
 
 <BitPlayground client:only="react" bitName="led-marquee" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `message` | string | `"NOW SHOWING: NEW BITS FOR HYPERFRAMES +++"` | Scrolling message |
+| `headline` | string | `"HYPERBITS"` | Final line |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Hot core |
+| `accent` | color | `#ec8b49` | LED colour |
+
+```html
+<div data-composition-src="compositions/led-marquee.html" data-variable-values='{"message":"NOW SHOWING: NEW BITS FOR HYPERFRAMES +++","headline":"HYPERBITS","background":"#100f0f","foreground":"#f2f0e5","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add led-marquee --into compositions/ --set "background=#0b1020"
+```

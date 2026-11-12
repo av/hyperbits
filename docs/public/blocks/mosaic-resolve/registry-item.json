@@ -28,5 +28,37 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "headline",
+      "type": "string",
+      "label": "Headline",
+      "default": "Low res, high taste"
+    },
+    {
+      "id": "label",
+      "type": "string",
+      "label": "Label",
+      "default": "EPISODE 08 / PIXEL WORKS"
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#100f0f"
+    },
+    {
+      "id": "foreground",
+      "type": "color",
+      "label": "Foreground",
+      "default": "#f2f0e5"
+    },
+    {
+      "id": "accent",
+      "type": "color",
+      "label": "Accent",
+      "default": "#ec8b49"
+    }
   ]
 }

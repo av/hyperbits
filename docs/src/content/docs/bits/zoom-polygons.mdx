@@ -8,3 +8,23 @@ import { BitPlayground } from '@components/BitPlayground';
 Hexagon outlines in three depth layers circling slowly in place with parallax, turning a sixth per loop.
 
 <BitPlayground client:only="react" bitName="zoom-polygons" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Foreground |
+| `accent` | color | `#4fb6ec` | Accent |
+| `sides` | number | `6` | Polygon sides |
+| `count` | number | `54` | Polygons |
+
+```html
+<div data-composition-src="compositions/zoom-polygons.html" data-variable-values='{"background":"#100f0f","foreground":"#f2f0e5","accent":"#4fb6ec","sides":6,"count":54}'></div>
+```
+
+```bash
+npx @av/hyperbits add zoom-polygons --into compositions/ --set "background=#0b1020"
+```

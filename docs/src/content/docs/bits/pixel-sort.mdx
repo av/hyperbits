@@ -8,3 +8,23 @@ import { BitPlayground } from '@components/BitPlayground';
 A sunset title card torn apart by brightness-sorted pixel runs that drip down each column, settling into the clean frame before a sweeping band glitches it again.
 
 <BitPlayground client:only="react" bitName="pixel-sort" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `headline` | string | `"Sorted by light"` | Headline |
+| `label` | string | `"SIDE A / TRACK 04"` | Label |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Foreground |
+| `accent` | color | `#ec8b49` | Accent |
+
+```html
+<div data-composition-src="compositions/pixel-sort.html" data-variable-values='{"headline":"Sorted by light","label":"SIDE A / TRACK 04","background":"#100f0f","foreground":"#f2f0e5","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add pixel-sort --into compositions/ --set "background=#0b1020"
+```

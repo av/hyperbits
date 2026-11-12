@@ -8,3 +8,21 @@ import { BitPlayground } from '@components/BitPlayground';
 Circular progress rings filling up with percentage counters in the center..
 
 <BitPlayground client:only="react" bitName="stat-rings" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `title` | string | `""` | Caption (empty hides it) |
+| `color` | color | `#ec8b49` | Ring color |
+| `background` | color | `#100f0f` | Background |
+
+```html
+<div data-composition-src="compositions/stat-rings.html" data-variable-values='{"title":"","color":"#ec8b49","background":"#100f0f"}'></div>
+```
+
+```bash
+npx @av/hyperbits add stat-rings --into compositions/ --set "background=#0b1020"
+```

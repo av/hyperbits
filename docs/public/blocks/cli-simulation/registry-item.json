@@ -27,5 +27,25 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "command",
+      "type": "string",
+      "label": "Command",
+      "default": "npm install hyperbits"
+    },
+    {
+      "id": "color",
+      "type": "color",
+      "label": "Command color",
+      "default": "#ce9178"
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#1e1e1e"
+    }
   ]
 }

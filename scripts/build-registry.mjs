@@ -5,8 +5,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
+  bitHtmlPath,
   listBitJsonFiles,
   normalizePath,
+  parseCompositionVariables,
   projectRoot,
   readBitManifest,
 } from "./lib/bits.mjs";
@@ -41,7 +43,7 @@ const assertSafeRelative = (value, label) => {
   return normalized;
 };
 
-const writeItemTree = async (bitDir, registryItem) => {
+const writeItemTree = async (bitDir, registryItem, variables) => {
   const typeDir = ITEM_TYPE_DIRS[registryItem.type];
   if (!typeDir) {
     throw new Error(
@@ -75,6 +77,7 @@ const writeItemTree = async (bitDir, registryItem) => {
   const targetDir = path.posix.dirname(normalizePath(compositionFile.target));
   const itemManifest = {
     ...registryItem,
+    variables,
     files: [
       ...files,
       {
@@ -146,7 +149,10 @@ export const buildRegistry = async () => {
     }
 
     const bitDir = path.dirname(bitJsonPath);
-    const written = await writeItemTree(bitDir, registryItem);
+    const variables = parseCompositionVariables(
+      await readFile(bitHtmlPath(bitJsonPath), "utf8"),
+    );
+    const written = await writeItemTree(bitDir, registryItem, variables);
     keep.add(`${written.typeDir}/${registryItem.name}`);
 
     items.push({

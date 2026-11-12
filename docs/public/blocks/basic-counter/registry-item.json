@@ -26,5 +26,31 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "prefix",
+      "type": "string",
+      "label": "Prefix",
+      "default": "width: "
+    },
+    {
+      "id": "postfix",
+      "type": "string",
+      "label": "Postfix",
+      "default": "px"
+    },
+    {
+      "id": "color",
+      "type": "color",
+      "label": "Text color",
+      "default": "#fcc192"
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#100f0f"
+    }
   ]
 }

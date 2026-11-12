@@ -8,3 +8,23 @@ import { BitPlayground } from '@components/BitPlayground';
 Soft long-exposure light trails looping slowly in their own patch of the frame, spread evenly with no bright heads.
 
 <BitPlayground client:only="react" bitName="speed-streaks" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Foreground |
+| `accent` | color | `#f2652a` | Accent |
+| `streaks` | number | `20` | Trails |
+| `seed` | number | `9` | Seed |
+
+```html
+<div data-composition-src="compositions/speed-streaks.html" data-variable-values='{"background":"#100f0f","foreground":"#f2f0e5","accent":"#f2652a","streaks":20,"seed":9}'></div>
+```
+
+```bash
+npx @av/hyperbits add speed-streaks --into compositions/ --set "background=#0b1020"
+```

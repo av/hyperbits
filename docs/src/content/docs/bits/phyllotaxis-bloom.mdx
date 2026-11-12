@@ -8,3 +8,22 @@ import { BitPlayground } from '@components/BitPlayground';
 A wallpaper of small phyllotaxis flower heads whose petals open and close in a slow wave travelling across the frame.
 
 <BitPlayground client:only="react" bitName="phyllotaxis-bloom" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `background` | color | `#f2f0e5` | Background |
+| `foreground` | color | `#100f0f` | Foreground |
+| `accent` | color | `#ef5da8` | Accent |
+| `dots` | number | `90` | Florets per flower |
+
+```html
+<div data-composition-src="compositions/phyllotaxis-bloom.html" data-variable-values='{"background":"#f2f0e5","foreground":"#100f0f","accent":"#ef5da8","dots":90}'></div>
+```
+
+```bash
+npx @av/hyperbits add phyllotaxis-bloom --into compositions/ --set "background=#0b1020"
+```

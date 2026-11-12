@@ -8,3 +8,23 @@ import { BitPlayground } from '@components/BitPlayground';
 A thermal receipt feeds up out of a printer line by line, each row burning in left to right down to a highlighted total and barcode, before the slip is torn off and flies away.
 
 <BitPlayground client:only="react" bitName="receipt-print" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `store` | string | `"HYPERBITS SUPPLY CO."` | Store name |
+| `items` | string | `"Dithered planet:12.00,Split-flap board:8.50,ASCII torus:6.25,Isometric city:14.00,Vector scope:9.75"` | Items as name:price, comma separated |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Paper |
+| `accent` | color | `#ec8b49` | Accent |
+
+```html
+<div data-composition-src="compositions/receipt-print.html" data-variable-values='{"store":"HYPERBITS SUPPLY CO.","items":"Dithered planet:12.00,Split-flap board:8.50,ASCII torus:6.25,Isometric city:14.00,Vector scope:9.75","background":"#100f0f","foreground":"#f2f0e5","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add receipt-print --into compositions/ --set "background=#0b1020"
+```

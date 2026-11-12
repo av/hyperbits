@@ -8,3 +8,24 @@ import { BitPlayground } from '@components/BitPlayground';
 Digital rain animation inspired by The Matrix.
 
 <BitPlayground client:only="react" bitName="matrix-rain" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `color` | color | `#00FF41` | Rain color |
+| `fontSize` | number | `30` | Font size (px at 1080p) |
+| `speed` | number | `1` | Speed |
+| `density` | number | `1` | Density (0-1) |
+| `streamLength` | number | `15` | Stream length |
+| `background` | color | `#100f0f` | Background |
+
+```html
+<div data-composition-src="compositions/matrix-rain.html" data-variable-values='{"color":"#00FF41","fontSize":30,"speed":1,"density":1,"streamLength":15,"background":"#100f0f"}'></div>
+```
+
+```bash
+npx @av/hyperbits add matrix-rain --into compositions/ --set "background=#0b1020"
+```

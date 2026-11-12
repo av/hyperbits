@@ -8,3 +8,22 @@ import { BitPlayground } from '@components/BitPlayground';
 An asymmetric Bauhaus poster whose circle, half-disc, bars and triangle trade places in four eased beats.
 
 <BitPlayground client:only="react" bitName="bauhaus-tiles" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `background` | color | `#f2f0e5` | Background |
+| `foreground` | color | `#100f0f` | Foreground |
+| `accent` | color | `#9d8af0` | Accent |
+| `beat` | number | `0.45` | Beat hold (0-1) |
+
+```html
+<div data-composition-src="compositions/bauhaus-tiles.html" data-variable-values='{"background":"#f2f0e5","foreground":"#100f0f","accent":"#9d8af0","beat":0.45}'></div>
+```
+
+```bash
+npx @av/hyperbits add bauhaus-tiles --into compositions/ --set "background=#0b1020"
+```

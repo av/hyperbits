@@ -8,3 +8,21 @@ import { BitPlayground } from '@components/BitPlayground';
 Counter reaching 1000 with confetti particles bursting from the sides..
 
 <BitPlayground client:only="react" bitName="counter-confetti" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `target` | number | `1000` | Target value |
+| `color` | color | `#fcc192` | Text color |
+| `background` | color | `#100f0f` | Background |
+
+```html
+<div data-composition-src="compositions/counter-confetti.html" data-variable-values='{"target":1000,"color":"#fcc192","background":"#100f0f"}'></div>
+```
+
+```bash
+npx @av/hyperbits add counter-confetti --into compositions/ --set "background=#0b1020"
+```

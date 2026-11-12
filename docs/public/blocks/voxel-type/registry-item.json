@@ -28,5 +28,31 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "word",
+      "type": "string",
+      "label": "Word (up to 8 characters)",
+      "default": "BITS"
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#100f0f"
+    },
+    {
+      "id": "foreground",
+      "type": "color",
+      "label": "Light face",
+      "default": "#f2f0e5"
+    },
+    {
+      "id": "accent",
+      "type": "color",
+      "label": "Voxel colour",
+      "default": "#ec8b49"
+    }
   ]
 }

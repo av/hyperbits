@@ -8,3 +8,23 @@ import { BitPlayground } from '@components/BitPlayground';
 Stacked dotted tubes seen from the side, their rings slowly turning into helix stripes across the whole frame.
 
 <BitPlayground client:only="react" bitName="dot-tunnel" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Foreground |
+| `accent` | color | `#4fb6ec` | Accent |
+| `frames` | number | `5` | Tubes |
+| `dots` | number | `12` | Dots per ring |
+
+```html
+<div data-composition-src="compositions/dot-tunnel.html" data-variable-values='{"background":"#100f0f","foreground":"#f2f0e5","accent":"#4fb6ec","frames":5,"dots":12}'></div>
+```
+
+```bash
+npx @av/hyperbits add dot-tunnel --into compositions/ --set "background=#0b1020"
+```

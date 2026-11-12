@@ -8,3 +8,23 @@ import { BitPlayground } from '@components/BitPlayground';
 A headline sliced into hundreds of vertical slits, each sampling the motion a moment later than its neighbour, so the word pours in like liquid, holds crisp, then smears away with an accent echo.
 
 <BitPlayground client:only="react" bitName="slit-scan" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `headline` | string | `"Time bends"` | Headline |
+| `label` | string | `"SLIT-SCAN / 480 SLICES"` | Label |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Text |
+| `accent` | color | `#ec8b49` | Echo |
+
+```html
+<div data-composition-src="compositions/slit-scan.html" data-variable-values='{"headline":"Time bends","label":"SLIT-SCAN / 480 SLICES","background":"#100f0f","foreground":"#f2f0e5","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add slit-scan --into compositions/ --set "background=#0b1020"
+```

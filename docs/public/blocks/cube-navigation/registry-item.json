@@ -28,5 +28,19 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "color",
+      "type": "color",
+      "label": "Top and bottom faces",
+      "default": "#ec8b49"
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#111111"
+    }
   ]
 }

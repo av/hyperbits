@@ -27,5 +27,37 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "title",
+      "type": "string",
+      "label": "Drawing title",
+      "default": "FLANGE COUPLING"
+    },
+    {
+      "id": "part",
+      "type": "string",
+      "label": "Part number",
+      "default": "HB-0907"
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#100f0f"
+    },
+    {
+      "id": "foreground",
+      "type": "color",
+      "label": "Line ink",
+      "default": "#f2f0e5"
+    },
+    {
+      "id": "accent",
+      "type": "color",
+      "label": "Dimension ink",
+      "default": "#ec8b49"
+    }
   ]
 }

@@ -8,3 +8,22 @@ import { BitPlayground } from '@components/BitPlayground';
 Isometric voxels fly in from a scattered cloud and lock into a word built from a 5x7 pixel font, ripple with a travelling wave, then burst apart.
 
 <BitPlayground client:only="react" bitName="voxel-type" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `word` | string | `"BITS"` | Word (up to 8 characters) |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Light face |
+| `accent` | color | `#ec8b49` | Voxel colour |
+
+```html
+<div data-composition-src="compositions/voxel-type.html" data-variable-values='{"word":"BITS","background":"#100f0f","foreground":"#f2f0e5","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add voxel-type --into compositions/ --set "background=#0b1020"
+```

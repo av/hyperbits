@@ -26,5 +26,31 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "color1Start",
+      "type": "color",
+      "label": "Gradient 1 Start",
+      "default": "#051226"
+    },
+    {
+      "id": "color1End",
+      "type": "color",
+      "label": "Gradient 1 End",
+      "default": "#1e0541"
+    },
+    {
+      "id": "color2Start",
+      "type": "color",
+      "label": "Gradient 2 Start",
+      "default": "#a5d4dd"
+    },
+    {
+      "id": "color2End",
+      "type": "color",
+      "label": "Gradient 2 End",
+      "default": "#5674b1"
+    }
   ]
 }

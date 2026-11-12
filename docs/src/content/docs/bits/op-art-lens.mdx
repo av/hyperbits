@@ -8,3 +8,22 @@ import { BitPlayground } from '@components/BitPlayground';
 A Vasarely-style checkerboard swelling under a travelling magnifying lens and pinching under a second, with an accent band of cells sweeping diagonally through the warp.
 
 <BitPlayground client:only="react" bitName="op-art-lens" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `cells` | number | `32` | Cells across |
+| `background` | color | `#100f0f` | Dark cells |
+| `foreground` | color | `#f2f0e5` | Light cells |
+| `accent` | color | `#ec8b49` | Accent |
+
+```html
+<div data-composition-src="compositions/op-art-lens.html" data-variable-values='{"cells":32,"background":"#100f0f","foreground":"#f2f0e5","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add op-art-lens --into compositions/ --set "background=#0b1020"
+```

@@ -8,3 +8,23 @@ import { BitPlayground } from '@components/BitPlayground';
 A top-down field of turning blocks lit by a wandering point light that throws long soft-edged shadows across a glowing floor, the shadow fan swinging as the light orbits.
 
 <BitPlayground client:only="react" bitName="hard-light" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `caption` | string | `"LIGHT STUDY 04"` | Caption |
+| `seed` | number | `6` | Seed |
+| `background` | color | `#100f0f` | Shadow |
+| `foreground` | color | `#f2f0e5` | Blocks |
+| `accent` | color | `#ec8b49` | Light |
+
+```html
+<div data-composition-src="compositions/hard-light.html" data-variable-values='{"caption":"LIGHT STUDY 04","seed":6,"background":"#100f0f","foreground":"#f2f0e5","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add hard-light --into compositions/ --set "background=#0b1020"
+```

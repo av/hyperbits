@@ -29,5 +29,31 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "name",
+      "type": "string",
+      "label": "Name",
+      "default": "Ada Lovelace"
+    },
+    {
+      "id": "title",
+      "type": "string",
+      "label": "Title",
+      "default": "Analytical Engine Programmer"
+    },
+    {
+      "id": "color",
+      "type": "color",
+      "label": "Accent",
+      "default": "#ec8b49"
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#1c1b1a"
+    }
   ]
 }

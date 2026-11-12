@@ -28,5 +28,31 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#f2f0e5"
+    },
+    {
+      "id": "foreground",
+      "type": "color",
+      "label": "Foreground",
+      "default": "#100f0f"
+    },
+    {
+      "id": "accent",
+      "type": "color",
+      "label": "Accent",
+      "default": "#9d8af0"
+    },
+    {
+      "id": "sway",
+      "type": "number",
+      "label": "Sway (degrees)",
+      "default": 4
+    }
   ]
 }

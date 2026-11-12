@@ -8,3 +8,20 @@ import { BitPlayground } from '@components/BitPlayground';
 3D Scene allows placing arbitrary elements in 3D space.
 
 <BitPlayground client:only="react" bitName="3d-elements" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `color` | color | `#fcc192` | Word color |
+| `background` | color | `#100f0f` | Background |
+
+```html
+<div data-composition-src="compositions/3d-elements.html" data-variable-values='{"color":"#fcc192","background":"#100f0f"}'></div>
+```
+
+```bash
+npx @av/hyperbits add 3d-elements --into compositions/ --set "background=#0b1020"
+```

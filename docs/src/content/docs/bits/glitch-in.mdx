@@ -8,3 +8,21 @@ import { BitPlayground } from '@components/BitPlayground';
 Text effect that glitches into existence from random characters.
 
 <BitPlayground client:only="react" bitName="glitch-in" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `text` | string | `"SYSTEM ONLINE"` | Text |
+| `color` | color | `#fcc192` | Text color |
+| `background` | color | `#100f0f` | Background |
+
+```html
+<div data-composition-src="compositions/glitch-in.html" data-variable-values='{"text":"SYSTEM ONLINE","color":"#fcc192","background":"#100f0f"}'></div>
+```
+
+```bash
+npx @av/hyperbits add glitch-in --into compositions/ --set "background=#0b1020"
+```

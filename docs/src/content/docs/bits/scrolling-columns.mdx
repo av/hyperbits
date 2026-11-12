@@ -8,3 +8,20 @@ import { BitPlayground } from '@components/BitPlayground';
 Four columns of images scrolling with different speeds in a panning 3D scene.
 
 <BitPlayground client:only="react" bitName="scrolling-columns" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `color` | color | `#ffffff` | Card text |
+| `background` | color | `#111827` | Background |
+
+```html
+<div data-composition-src="compositions/scrolling-columns.html" data-variable-values='{"color":"#ffffff","background":"#111827"}'></div>
+```
+
+```bash
+npx @av/hyperbits add scrolling-columns --into compositions/ --set "background=#0b1020"
+```

@@ -27,5 +27,19 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "color1",
+      "type": "color",
+      "label": "Color 1",
+      "default": "#000000"
+    },
+    {
+      "id": "color2",
+      "type": "color",
+      "label": "Color 2",
+      "default": "#009900"
+    }
   ]
 }

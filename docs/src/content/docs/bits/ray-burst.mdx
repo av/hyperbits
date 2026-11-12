@@ -8,3 +8,22 @@ import { BitPlayground } from '@components/BitPlayground';
 Soft retro sunburst wedges fanning from far below the frame, turning slowly under faint rings rippling outward.
 
 <BitPlayground client:only="react" bitName="ray-burst" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `background` | color | `#f2f0e5` | Background |
+| `foreground` | color | `#100f0f` | Foreground |
+| `accent` | color | `#f2652a` | Accent |
+| `rays` | number | `40` | Wedges |
+
+```html
+<div data-composition-src="compositions/ray-burst.html" data-variable-values='{"background":"#f2f0e5","foreground":"#100f0f","accent":"#f2652a","rays":40}'></div>
+```
+
+```bash
+npx @av/hyperbits add ray-burst --into compositions/ --set "background=#0b1020"
+```

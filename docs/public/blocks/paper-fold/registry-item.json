@@ -27,5 +27,37 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "headline",
+      "type": "string",
+      "label": "Headline",
+      "default": "Unfold the story"
+    },
+    {
+      "id": "label",
+      "type": "string",
+      "label": "Label",
+      "default": "VOL. 03 / FOUR PANELS"
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#100f0f"
+    },
+    {
+      "id": "foreground",
+      "type": "color",
+      "label": "Text",
+      "default": "#f2f0e5"
+    },
+    {
+      "id": "accent",
+      "type": "color",
+      "label": "Accent",
+      "default": "#ec8b49"
+    }
   ]
 }

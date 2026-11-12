@@ -8,3 +8,21 @@ import { BitPlayground } from '@components/BitPlayground';
 Simulates a command-line interface with user typing and system output..
 
 <BitPlayground client:only="react" bitName="cli-simulation" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `command` | string | `"npm install hyperbits"` | Command |
+| `color` | color | `#ce9178` | Command color |
+| `background` | color | `#1e1e1e` | Background |
+
+```html
+<div data-composition-src="compositions/cli-simulation.html" data-variable-values='{"command":"npm install hyperbits","color":"#ce9178","background":"#1e1e1e"}'></div>
+```
+
+```bash
+npx @av/hyperbits add cli-simulation --into compositions/ --set "background=#0b1020"
+```

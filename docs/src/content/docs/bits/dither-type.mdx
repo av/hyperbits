@@ -8,3 +8,23 @@ import { BitPlayground } from '@components/BitPlayground';
 A headline that materialises through an 8x8 Bayer threshold sweep, printed in three inks with a dithered halo and a drifting light behind it, then dissolves back into the screen.
 
 <BitPlayground client:only="react" bitName="dither-type" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `headline` | string | `"Ship the frame"` | Headline |
+| `subline` | string | `"ORDERED DITHER / 3 INKS / 1 BIT PER INK"` | Subline |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Highlight ink |
+| `accent` | color | `#ec8b49` | Accent ink |
+
+```html
+<div data-composition-src="compositions/dither-type.html" data-variable-values='{"headline":"Ship the frame","subline":"ORDERED DITHER / 3 INKS / 1 BIT PER INK","background":"#100f0f","foreground":"#f2f0e5","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add dither-type --into compositions/ --set "background=#0b1020"
+```

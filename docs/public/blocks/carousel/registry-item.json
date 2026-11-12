@@ -27,5 +27,19 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "color",
+      "type": "color",
+      "label": "Card color",
+      "default": "#fcc192"
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#111111"
+    }
   ]
 }

@@ -8,3 +8,23 @@ import { BitPlayground } from '@components/BitPlayground';
 A departure-board message where every tile riffles through the alphabet on hinged 3D flaps before landing on its letter, sweeping in a diagonal wave.
 
 <BitPlayground client:only="react" bitName="split-flap" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `headline` | string | `"NOW BOARDING HYPERBITS"` | Headline |
+| `status` | string | `"GATE 09  ON TIME"` | Status line |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Letters |
+| `accent` | color | `#ec8b49` | Accent |
+
+```html
+<div data-composition-src="compositions/split-flap.html" data-variable-values='{"headline":"NOW BOARDING HYPERBITS","status":"GATE 09  ON TIME","background":"#100f0f","foreground":"#f2f0e5","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add split-flap --into compositions/ --set "background=#0b1020"
+```

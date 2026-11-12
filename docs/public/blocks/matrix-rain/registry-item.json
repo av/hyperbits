@@ -27,5 +27,43 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "color",
+      "type": "color",
+      "label": "Rain color",
+      "default": "#00FF41"
+    },
+    {
+      "id": "fontSize",
+      "type": "number",
+      "label": "Font size (px at 1080p)",
+      "default": 30
+    },
+    {
+      "id": "speed",
+      "type": "number",
+      "label": "Speed",
+      "default": 1
+    },
+    {
+      "id": "density",
+      "type": "number",
+      "label": "Density (0-1)",
+      "default": 1
+    },
+    {
+      "id": "streamLength",
+      "type": "number",
+      "label": "Stream length",
+      "default": 15
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#100f0f"
+    }
   ]
 }

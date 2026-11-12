@@ -8,3 +8,21 @@ import { BitPlayground } from '@components/BitPlayground';
 Advanced typewriter with variable speed curves and error simulation..
 
 <BitPlayground client:only="react" bitName="variable-speed-typewriter" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `text` | string | `"Typing with errors and variable speed..."` | Text |
+| `color` | color | `#ff6b6b` | Text color |
+| `background` | color | `#100f0f` | Background |
+
+```html
+<div data-composition-src="compositions/variable-speed-typewriter.html" data-variable-values='{"text":"Typing with errors and variable speed...","color":"#ff6b6b","background":"#100f0f"}'></div>
+```
+
+```bash
+npx @av/hyperbits add variable-speed-typewriter --into compositions/ --set "background=#0b1020"
+```

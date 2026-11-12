@@ -8,3 +8,22 @@ import { BitPlayground } from '@components/BitPlayground';
 Elementary cellular automata growing generation by generation and scrolling upward, switching between rules 30, 90, 110 and 45 under a lookup-table legend, the newest generation glowing.
 
 <BitPlayground client:only="react" bitName="rule-cascade" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `rules` | string | `"30,90,110,45"` | Rules, comma separated |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Cells |
+| `accent` | color | `#ec8b49` | Newest cells |
+
+```html
+<div data-composition-src="compositions/rule-cascade.html" data-variable-values='{"rules":"30,90,110,45","background":"#100f0f","foreground":"#f2f0e5","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add rule-cascade --into compositions/ --set "background=#0b1020"
+```

@@ -28,5 +28,25 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "message",
+      "type": "string",
+      "label": "First message",
+      "default": "Hey, did the render finish?"
+    },
+    {
+      "id": "color",
+      "type": "color",
+      "label": "My bubble color",
+      "default": "#ec8b49"
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#100f0f"
+    }
   ]
 }

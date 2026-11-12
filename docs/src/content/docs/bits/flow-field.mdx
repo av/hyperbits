@@ -8,3 +8,23 @@ import { BitPlayground } from '@components/BitPlayground';
 Hundreds of ink streamlines grow through a curl-noise current that parts around an empty circle, then keep flowing as accent dashes travel along them like a plotter drawing.
 
 <BitPlayground client:only="react" bitName="flow-field" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `hole` | number | `18` | Clear circle radius (vmin) |
+| `seed` | number | `4` | Seed |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Ink |
+| `accent` | color | `#ec8b49` | Accent ink |
+
+```html
+<div data-composition-src="compositions/flow-field.html" data-variable-values='{"hole":18,"seed":4,"background":"#100f0f","foreground":"#f2f0e5","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add flow-field --into compositions/ --set "background=#0b1020"
+```

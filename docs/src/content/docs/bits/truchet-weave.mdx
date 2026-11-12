@@ -8,3 +8,23 @@ import { BitPlayground } from '@components/BitPlayground';
 Gently curving bands of Truchet arcs across the frame, from a centre far off the corner, neighbouring bands gliding slowly in opposite directions.
 
 <BitPlayground client:only="react" bitName="truchet-weave" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Foreground |
+| `accent` | color | `#9d8af0` | Accent |
+| `rings` | number | `11` | Bands |
+| `seed` | number | `6` | Seed |
+
+```html
+<div data-composition-src="compositions/truchet-weave.html" data-variable-values='{"background":"#100f0f","foreground":"#f2f0e5","accent":"#9d8af0","rings":11,"seed":6}'></div>
+```
+
+```bash
+npx @av/hyperbits add truchet-weave --into compositions/ --set "background=#0b1020"
+```

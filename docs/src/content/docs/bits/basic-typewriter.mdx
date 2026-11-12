@@ -8,3 +8,21 @@ import { BitPlayground } from '@components/BitPlayground';
 Simple typing animation with cursor..
 
 <BitPlayground client:only="react" bitName="basic-typewriter" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `text` | string | `"Ah, those sunny days!"` | Text |
+| `color` | color | `#fcc192` | Text color |
+| `background` | color | `#100f0f` | Background |
+
+```html
+<div data-composition-src="compositions/basic-typewriter.html" data-variable-values='{"text":"Ah, those sunny days!","color":"#fcc192","background":"#100f0f"}'></div>
+```
+
+```bash
+npx @av/hyperbits add basic-typewriter --into compositions/ --set "background=#0b1020"
+```

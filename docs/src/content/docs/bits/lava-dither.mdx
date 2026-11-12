@@ -8,3 +8,23 @@ import { BitPlayground } from '@components/BitPlayground';
 Slow metaball lava rendered through Floyd-Steinberg error diffusion into three inks, so the blobs crawl with living organic grain as they merge and split.
 
 <BitPlayground client:only="react" bitName="lava-dither" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `blobs` | number | `7` | Blobs |
+| `seed` | number | `2` | Seed |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Hot ink |
+| `accent` | color | `#ec8b49` | Lava ink |
+
+```html
+<div data-composition-src="compositions/lava-dither.html" data-variable-values='{"blobs":7,"seed":2,"background":"#100f0f","foreground":"#f2f0e5","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add lava-dither --into compositions/ --set "background=#0b1020"
+```

@@ -8,3 +8,23 @@ import { BitPlayground } from '@components/BitPlayground';
 A technical drawing that plots itself: centrelines, a bolted flange and its hatched section view, dimension lines with arrowheads and callouts, a title block, then an approval stamp.
 
 <BitPlayground client:only="react" bitName="blueprint-draw" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `title` | string | `"FLANGE COUPLING"` | Drawing title |
+| `part` | string | `"HB-0907"` | Part number |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Line ink |
+| `accent` | color | `#ec8b49` | Dimension ink |
+
+```html
+<div data-composition-src="compositions/blueprint-draw.html" data-variable-values='{"title":"FLANGE COUPLING","part":"HB-0907","background":"#100f0f","foreground":"#f2f0e5","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add blueprint-draw --into compositions/ --set "background=#0b1020"
+```

@@ -8,3 +8,23 @@ import { BitPlayground } from '@components/BitPlayground';
 A two-ink risograph poster on warm paper: a grainy halftone sun stamps down, then orange and black ink passes slide into near-registration and overprint, with crop and registration marks.
 
 <BitPlayground client:only="react" bitName="riso-print" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `headline` | string | `"Make it move"` | Headline |
+| `caption` | string | `"TWO INK RISO / ISSUE 09 / 2026"` | Caption |
+| `background` | color | `#f2f0e5` | Paper |
+| `foreground` | color | `#100f0f` | Black ink |
+| `accent` | color | `#ec8b49` | Spot ink |
+
+```html
+<div data-composition-src="compositions/riso-print.html" data-variable-values='{"headline":"Make it move","caption":"TWO INK RISO / ISSUE 09 / 2026","background":"#f2f0e5","foreground":"#100f0f","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add riso-print --into compositions/ --set "background=#0b1020"
+```

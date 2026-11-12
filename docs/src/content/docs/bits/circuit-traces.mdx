@@ -8,3 +8,23 @@ import { BitPlayground } from '@components/BitPlayground';
 A chip in the centre of a dark PCB routes copper buses out to every edge with 45-degree bends and vias, then data packets race along the traces while the die glows.
 
 <BitPlayground client:only="react" bitName="circuit-traces" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `chip` | string | `"HB-09"` | Chip label |
+| `seed` | number | `9` | Seed |
+| `background` | color | `#100f0f` | Board |
+| `foreground` | color | `#f2f0e5` | Packets |
+| `accent` | color | `#ec8b49` | Copper |
+
+```html
+<div data-composition-src="compositions/circuit-traces.html" data-variable-values='{"chip":"HB-09","seed":9,"background":"#100f0f","foreground":"#f2f0e5","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add circuit-traces --into compositions/ --set "background=#0b1020"
+```

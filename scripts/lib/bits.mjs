@@ -123,6 +123,30 @@ export const GSAP_SCRIPT_TAG =
 export const IIFE_SCRIPT_TAG =
   '<script src="hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>';
 
+export const VARIABLES_ATTR = /data-composition-variables=(['"])([\s\S]*?)\1/;
+
+export const parseCompositionVariables = (html) => {
+  const match = html.match(VARIABLES_ATTR);
+  if (!match) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(match[2]);
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+    return parsed.filter(
+      (entry) =>
+        typeof entry === "object" &&
+        entry !== null &&
+        typeof entry.id === "string",
+    );
+  } catch {
+    return [];
+  }
+};
+
 const ROOT_OPEN = /<div\b([^>]*\sid="root"[^>]*)>/;
 const BG_OPEN = /<div\b([^>]*\sid="bg"[^>]*)>/;
 
