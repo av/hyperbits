@@ -44,7 +44,10 @@ npx @av/hyperbits find 3d cards
 npx @av/hyperbits fetch fade-in --json
 npx @av/hyperbits add fade-in --into compositions/
 npx @av/hyperbits add fade-in glitch-in --into compositions/ --set background=#0b1020 --set color=#e8ecff
+npx @av/hyperbits add fade-in --into compositions/ --size 9:16
 ```
+
+Every bit works at 16:9, 9:16 and 1:1. Match the host composition: `add --size` takes `9:16` (1080x1920), `1:1` (1080x1080), `16:9` (1920x1080) or `WIDTHxHEIGHT`, and `fetch_hyperbit` takes the same value as `size`. Without it the bit keeps its native size. Do not hand-edit `data-width`/`data-height` to resize a bit; retarget it.
 
 Start the MCP server from the published package:
 
@@ -95,6 +98,7 @@ These match `references/patterns.md` and `AGENTS.md`. Do not invent a parallel s
 - In the host composition, never style the bits' generic ids (`#root`, `#bg`, `#stage`, `#scene`, `#title`) or bare element selectors. Host CSS is global and reaches into every embedded bit. Use prefixed host ids or classes, and size or position a bit through a class on its `data-composition-src` element.
 
 - Keep `viewport(root)` sizing. Prefer `view.vmin`, `view.vmax`, `view.vw`, `view.vh`, and `view.px()` over hardcoded pixels. Hero text 8–12 vmin, body 3–4 vmin, UI mocks ≥ 60% of the frame.
+- Work at any size. A bit must look designed for 16:9, 9:16 and 1:1: size from the short side (`vmin`), fit layouts to the width, and switch layout by aspect where a landscape arrangement does not fit portrait. Check with `npm run check:sizes`.
 - Never paint on the composition root. First child is a full-bleed `#bg` layer with a literal background colour. Animate gradients on that layer.
 - Keep theme colors as literal values in a top-level `:root` block. Do not swap in an arbitrary palette unless the user asked for one.
 - Expose user-facing knobs through `data-composition-variables`. Read them with `window.__hyperframes.getVariables()`.
@@ -162,11 +166,13 @@ These match `references/patterns.md` and `AGENTS.md`. Do not invent a parallel s
 # MCP
 find_hyperbits {"query":"camera flythrough product showcase","tags":["scene-3d"],"limit":2}
 fetch_hyperbit {"id":"carousel"}
+fetch_hyperbit {"id":"carousel","size":"9:16"}
 
 # CLI
 npx @av/hyperbits find "camera flythrough product showcase" --tag scene-3d --limit 2 --json
 npx @av/hyperbits fetch carousel --json
 npx @av/hyperbits add carousel --into compositions/
+npx @av/hyperbits add carousel --into compositions/ --size 9:16
 ```
 
 ## References

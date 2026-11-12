@@ -61,6 +61,17 @@ Every bit declares its knobs in `data-composition-variables`. `fetch` lists them
 
 Host CSS is global inside a HyperFrames composition: a host rule for `#root`, `#bg`, `#stage` or `#title` also styles every embedded bit. Use prefixed ids or classes for host elements. See [Host CSS](https://hyperbits.dev/docs/getting-started#host-css).
 
+Every bit works at 16:9, 9:16 and 1:1. `--size` writes the bit at your composition's size; the default is the bit's native size:
+
+```bash
+npx @av/hyperbits add fade-in --into compositions/ --size 9:16    # 1080x1920
+npx @av/hyperbits add carousel --into compositions/ --size 1:1    # 1080x1080
+npx @av/hyperbits add card-stack --into compositions/ --size 16:9 # 1920x1080
+npx @av/hyperbits add dot-globe --into compositions/ --size 1080x1350
+```
+
+MCP `fetch_hyperbit` accepts the same value as an optional `size` argument.
+
 ### MCP
 
 ```bash
@@ -240,6 +251,7 @@ npm install
 | `npm run typecheck` | Inventory plus `tsc --noEmit` |
 | `npm run lint` | oxlint, then `lint:bits` |
 | `npm run lint:bits` | `npx hyperframes lint` on every bit |
+| `npm run check:sizes` | Retarget every bit to 16:9, 9:16 and 1:1, snapshot it, and write contact sheets to `.check-sizes/` |
 | `npm test` | vitest (excludes the packed-package gate) |
 | `npm run test:package` | Packs the tarball and runs the published CLI through it |
 | `npm run docs:dev` / `docs:build` | Docs site |

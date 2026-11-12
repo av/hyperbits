@@ -91,6 +91,17 @@ card.style.height = `${view.px(0.2, "y")}px`;
 - `view.px(fraction, axis?)` scales a 0–1 fraction by width (`x`, default), height (`y`), min, or max.
 - Hero text is about 8–12 vmin, body text about 3–4 vmin. UI mocks fill at least 60% of the frame. Also set CSS `vmin`/`vw` fallbacks so layout survives if JS sizing is late.
 
+## Work at any size
+
+Every bit must work at 16:9 (1920x1080), 9:16 (1080x1920) and 1:1 (1080x1080), whatever its native size. `hyperbits add --size` and `fetch_hyperbit` `size` only rewrite the root `data-width`/`data-height`, the meta viewport and the `html, body` size; everything else must follow from `viewport(root)`.
+
+- Scale type, strokes, radii and motion distances from the short side: `view.vmin`, or `const unit = view.vmin / 10.8` for a 1080-based design unit. Never `view.height / 1080` or `view.vw * n` for type, which blow up or vanish in portrait.
+- Fit layouts to the width as well as the height, for example `Math.min(view.width * 0.86, view.vmin * 110)` for a panel.
+- Choose layout by aspect where a landscape arrangement does not fit portrait (`const portrait = view.height > view.width`): stack rows into columns, put side panels above or below, wrap long headlines at about 86% of the width. A vertical frame should look designed for vertical, not like a landscape frame shrunk into the middle.
+- Canvases and grids fill `view.width` x `view.height`; derive grid counts from the dimensions.
+- Pass criteria at every size: subject and text fully inside the frame with margins, nothing clipped, full-bleed background, text sizes above relative to the short side.
+- Check with `npm run check:sizes -- --only <name>` and review `.check-sizes/sheets/<name>.jpg`.
+
 ## `data-composition-variables`
 
 User-facing knobs belong on the `<html>` element as a JSON array of `{id, type, label, default}`.
