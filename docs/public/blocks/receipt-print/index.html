@@ -135,31 +135,32 @@
         const view = hyperbits.viewport(root);
         bg.style.backgroundColor = vars.background;
         const duration = 8;
-        const paperWidth = view.vmin * 60;
+        const unit = Math.min(view.width / 90, view.height / 106);
+        const paperWidth = unit * 60;
         const printerWidth = paperWidth * 1.3;
-        const printerHeight = view.vmin * 13;
-        const printerTop = view.height - printerHeight - view.vmin * 5;
-        const fontSize = view.vmin * 2.8;
+        const printerHeight = unit * 13;
+        const printerTop = view.height - printerHeight - Math.max(unit * 5, (view.height - unit * 106) / 2);
+        const fontSize = unit * 2.8;
         const lineHeight = fontSize * 1.75;
-        const padding = view.vmin * 3.2;
+        const padding = unit * 3.2;
         printer.style.width = printerWidth + "px";
         printer.style.height = printerHeight + "px";
         printer.style.top = printerTop + "px";
-        printer.style.borderRadius = view.vmin * 1.8 + "px";
-        printer.style.boxShadow = "0 " + view.vmin * 1.5 + "px " + view.vmin * 4 + "px rgba(0, 0, 0, 0.6)";
-        slot.style.height = view.vmin * 1.2 + "px";
-        slot.style.top = view.vmin * 2.2 + "px";
-        slot.style.borderRadius = view.vmin * 0.6 + "px";
+        printer.style.borderRadius = unit * 1.8 + "px";
+        printer.style.boxShadow = "0 " + unit * 1.5 + "px " + unit * 4 + "px rgba(0, 0, 0, 0.6)";
+        slot.style.height = unit * 1.2 + "px";
+        slot.style.top = unit * 2.2 + "px";
+        slot.style.borderRadius = unit * 0.6 + "px";
         const lamp = document.createElement("div");
         lamp.style.position = "absolute";
-        lamp.style.width = view.vmin * 1.1 + "px";
-        lamp.style.height = view.vmin * 1.1 + "px";
+        lamp.style.width = unit * 1.1 + "px";
+        lamp.style.height = unit * 1.1 + "px";
         lamp.style.borderRadius = "50%";
-        lamp.style.right = view.vmin * 3 + "px";
-        lamp.style.bottom = view.vmin * 3 + "px";
+        lamp.style.right = unit * 3 + "px";
+        lamp.style.bottom = unit * 3 + "px";
         lamp.style.backgroundColor = vars.accent;
         printer.append(lamp);
-        const slotLine = printerTop + view.vmin * 2.8;
+        const slotLine = printerTop + unit * 2.8;
         paperWindow.style.width = paperWidth + "px";
         paperWindow.style.marginLeft = -paperWidth / 2 + "px";
         paperWindow.style.top = "0";
@@ -215,8 +216,8 @@
         const totalRow = row("TOTAL", (subtotal + tax).toFixed(2), true);
         totalRow.style.fontSize = fontSize * 1.35 + "px";
         totalRow.style.backgroundColor = vars.accent;
-        totalRow.style.margin = "0 " + -view.vmin * 1 + "px";
-        totalRow.style.padding = "0 " + view.vmin * 1 + "px";
+        totalRow.style.margin = "0 " + -unit * 1 + "px";
+        totalRow.style.padding = "0 " + unit * 1 + "px";
         textLine(" ");
         const barcode = document.createElement("div");
         barcode.style.height = lineHeight * 1.6 + "px";
@@ -226,8 +227,8 @@
         for (let bar = 0; bar < 46; bar += 1) {
           const stripe = document.createElement("div");
           const widths = [1, 2, 1, 3, 1, 1, 2, 4];
-          stripe.style.width = widths[(bar * 7 + 3) % widths.length] * view.vmin * 0.18 + "px";
-          stripe.style.marginRight = widths[(bar * 5 + 1) % widths.length] * view.vmin * 0.14 + "px";
+          stripe.style.width = widths[(bar * 7 + 3) % widths.length] * unit * 0.18 + "px";
+          stripe.style.marginRight = widths[(bar * 5 + 1) % widths.length] * unit * 0.14 + "px";
           stripe.style.backgroundColor = "#1c1b1a";
           barcode.append(stripe);
         }
@@ -237,10 +238,10 @@
         edge.style.position = "absolute";
         edge.style.left = "0";
         edge.style.right = "0";
-        edge.style.top = -view.vmin * 1.2 + "px";
-        edge.style.height = view.vmin * 1.2 + "px";
+        edge.style.top = -unit * 1.2 + "px";
+        edge.style.height = unit * 1.2 + "px";
         edge.style.backgroundImage = "linear-gradient(45deg, " + vars.foreground + " 50%, rgba(0, 0, 0, 0) 50%), linear-gradient(315deg, " + vars.foreground + " 50%, rgba(0, 0, 0, 0) 50%)";
-        edge.style.backgroundSize = view.vmin * 1.6 + "px " + view.vmin * 1.2 + "px";
+        edge.style.backgroundSize = unit * 1.6 + "px " + unit * 1.2 + "px";
         edge.style.backgroundPosition = "0 0";
         paper.append(edge);
         paperWindow.setAttribute("aria-label", String(vars.store) + " " + String(vars.items));
@@ -248,7 +249,7 @@
         const printStart = 0.6;
         const perLine = 0.28;
         const printEnd = printStart + lineCount * perLine;
-        const extra = view.vmin * 6;
+        const extra = unit * 6;
         const fullHeight = padding * 2 + lineCount * lineHeight + lineHeight * 0.6;
         const proxy = { time: 0 };
         function render() {
@@ -266,7 +267,7 @@
           paper.style.transformOrigin = "50% 100%";
           paper.style.transform = "translateY(" + (slotLine - fed - fly * view.height * 1.1) + "px) rotate(" + -fly * 8 + "deg)";
           paperWindow.style.overflow = tear > 0 ? "visible" : "hidden";
-          const jitter = time > printStart && time < printEnd ? Math.sin(time * 90) * view.vmin * 0.08 : 0;
+          const jitter = time > printStart && time < printEnd ? Math.sin(time * 90) * unit * 0.08 : 0;
           printer.style.transform = "translateX(-50%) translateY(" + jitter + "px)";
           lamp.style.opacity = time > printStart && time < printEnd && Math.floor(time * 6) % 2 === 0 ? "1" : "0.35";
         }

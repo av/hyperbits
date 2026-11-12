@@ -96,7 +96,8 @@
         const ridges = Math.max(8, Math.round(Number(vars.ridges) || 80));
         const horizon = view.height * 0.06;
         const centerX = view.width * 0.5;
-        const focal = view.height * 0.3;
+        const focal = view.vmin * 30;
+        const lift = focal * Math.pow(view.height / (view.vmin * 100), 2);
         const spacing = 0.22;
         const near = 0.25;
         const far = ridges * spacing;
@@ -123,7 +124,7 @@
             for (let sample = 0; sample <= samples; sample += 1) {
               const worldX = (sample / samples - 0.5) * (depth * 7 + 3) + sway;
               const pointX = centerX + ((worldX - sway) * focal) / depth;
-              const pointY = horizon + ((2.2 - height(worldX, worldZ)) * focal) / depth;
+              const pointY = horizon + (2.2 * lift - height(worldX, worldZ) * focal) / depth;
               if (sample === 0) context.moveTo(pointX, pointY);
               else context.lineTo(pointX, pointY);
             }

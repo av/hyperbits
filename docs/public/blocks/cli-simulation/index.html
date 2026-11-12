@@ -113,7 +113,8 @@
         const bg = document.getElementById("bg");
         const view = hyperbits.viewport(root);
         const vmin = view.vmin;
-        const unit = view.height / 1080;
+        const unit = view.vmin / 10.8;
+        const portrait = view.height > view.width * 1.1;
         bg.style.backgroundColor = vars.background;
         const term = document.getElementById("term");
         const column = document.getElementById("column");
@@ -126,8 +127,8 @@
         const command = String(vars.command);
         commandEl.setAttribute("aria-label", command);
         typed.style.color = vars.color;
-        term.style.padding = vmin * 10 + "px";
-        term.style.fontSize = vmin * 3 + "px";
+        term.style.padding = portrait ? view.height * 0.3 + "px " + vmin * 8 + "px" : vmin * 10 + "px";
+        term.style.fontSize = vmin * (portrait ? 4.2 : 3) + "px";
         column.style.gap = vmin + "px";
         arrow.style.marginRight = vmin * 1.5 + "px";
         tilde.style.marginRight = vmin * 1.5 + "px";

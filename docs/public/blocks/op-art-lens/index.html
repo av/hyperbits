@@ -72,6 +72,10 @@
           const parts = hyperbits.mixOklch(String(color), String(color), 0, "rgb(0, 0, 0)").match(/[0-9.]+/g) || [0, 0, 0];
           return parts.slice(0, 3).map(Number);
         }
+        function smoothstep(edge0, edge1, value) {
+          const amount = Math.min(Math.max((value - edge0) / (edge1 - edge0), 0), 1);
+          return amount * amount * (3 - 2 * amount);
+        }
         function rgba(rgb, alpha) {
           return "rgba(" + Math.round(rgb[0]) + ", " + Math.round(rgb[1]) + ", " + Math.round(rgb[2]) + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
         }
@@ -92,8 +96,9 @@
         const back = channels(vars.background);
         const fore = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const across = Math.max(8, Math.round(Number(vars.cells) || 32));
-        const cell = view.width / across;
+        const density = Math.max(8, Math.round(Number(vars.cells) || 32));
+        const cell = Math.max(view.width, view.height) / density;
+        const across = Math.ceil(view.width / cell);
         const down = Math.ceil(view.height / cell) + 1;
         const subdivisions = 4;
         function lensesAt(time) {

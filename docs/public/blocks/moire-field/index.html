@@ -129,7 +129,7 @@
           maskContext.globalCompositeOperation = "xor";
           rings(maskContext, secondX, secondY);
           maskContext.globalCompositeOperation = "source-in";
-          const paint = maskContext.createRadialGradient(view.width / 2, view.height / 2, 0, view.width / 2, view.height / 2, view.width * 0.6);
+          const paint = maskContext.createRadialGradient(view.width / 2, view.height / 2, 0, view.width / 2, view.height / 2, Math.max(view.width, view.height) * 0.6);
           paint.addColorStop(0, rgba(mixRgb(accent, fore, 0.55), 1));
           paint.addColorStop(0.45, rgba(accent, 1));
           paint.addColorStop(1, rgba(mixRgb(accent, back, 0.75), 1));
@@ -140,7 +140,7 @@
           context.globalAlpha = fade;
           context.drawImage(mask, 0, 0);
           context.globalAlpha = 1;
-          const vignette = context.createRadialGradient(view.width / 2, view.height / 2, view.height * 0.3, view.width / 2, view.height / 2, view.width * 0.65);
+          const vignette = context.createRadialGradient(view.width / 2, view.height / 2, Math.min(view.width, view.height) * 0.3, view.width / 2, view.height / 2, Math.max(view.width, view.height) * 0.65);
           vignette.addColorStop(0, rgba(back, 0));
           vignette.addColorStop(1, rgba(back, 0.85));
           context.fillStyle = vignette;

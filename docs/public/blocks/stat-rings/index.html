@@ -153,13 +153,16 @@
           heading.style.fontSize = vmin * 4 + "px";
           heading.style.marginBottom = vmin * 4 + "px";
         }
-        row.style.gap = vmin * 8 + "px";
+        const portrait = view.height > view.width * 1.1;
+        const rowGap = vmin * (view.width > view.height * 1.4 ? 8 : 5);
+        row.style.gap = rowGap + "px";
+        if (portrait) row.style.flexDirection = "column";
         const stats = [
           { label: "Uptime", value: 99.9, decimals: 1 },
           { label: "Test coverage", value: 87, decimals: 0 },
           { label: "Cache hits", value: 64, decimals: 0 },
         ];
-        const ringSize = vmin * 34;
+        const ringSize = portrait ? vmin * 38 : Math.min(vmin * 34, (view.width * 0.9 - rowGap * (stats.length - 1)) / stats.length);
         const strokeWidth = vmin * 2.6;
         const radius = (ringSize - strokeWidth) / 2;
         const circumference = 2 * Math.PI * radius;
@@ -197,7 +200,7 @@
           valueWrap.className = "value-wrap";
           const valueEl = document.createElement("div");
           valueEl.className = "value";
-          valueEl.style.fontSize = vmin * 7 + "px";
+          valueEl.style.fontSize = (ringSize * 7) / 34 + "px";
           const number = document.createElement("span");
           const unit = document.createElement("span");
           unit.className = "unit";

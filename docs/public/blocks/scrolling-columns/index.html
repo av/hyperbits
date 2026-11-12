@@ -103,15 +103,19 @@
         bg.style.backgroundColor = vars.background;
         const sceneEl = document.getElementById("scene");
         const durationInFrames = 300;
+        const portrait = view.height > view.width * 1.1;
+        const spread = portrait ? 1.25 : 1;
+        const pan = portrait ? 0.3 : 1;
         const columns = [
-          { x: -view.width * 0.3, speed: 4, z: 50 },
-          { x: -view.width * 0.1, speed: 7, z: 0 },
-          { x: view.width * 0.1, speed: 5, z: 100 },
-          { x: view.width * 0.3, speed: 6, z: -50 },
+          { x: -view.width * 0.3 * spread, speed: 4, z: 50 },
+          { x: -view.width * 0.1 * spread, speed: 7, z: 0 },
+          { x: view.width * 0.1 * spread, speed: 5, z: 100 },
+          { x: view.width * 0.3 * spread, speed: 6, z: -50 },
         ];
-        const itemWidth = view.width * 0.15;
+        const itemWidth = view.width * (portrait ? 0.2 : 0.15);
         const itemHeight = itemWidth * 1.2;
-        const gap = 30 * (view.height / 1080);
+        const gap = 30 * (view.vmin / 10.8);
+        const travel = view.height / 1080;
         const cardColors = ["#ef4444", "#f87171", "#fca5a5", "#3b82f6", "#60a5fa", "#93c5fd", "#10b981", "#34d399", "#6ee7b7", "#f59e0b", "#fbbf24", "#fcd34d", "#8b5cf6", "#a78bfa", "#c4b5fd"];
         const world = document.createElement("div");
         world.id = "world";
@@ -126,9 +130,9 @@
           spawners: columns.map(function (column, index) {
             return {
               id: "spawner-" + index,
-              rate: column.speed / (itemHeight + gap),
+              rate: (column.speed * travel) / (itemHeight + gap),
               position: { x: column.x + view.width / 2 - itemWidth / 2, y: -view.height * 0.15, z: column.z },
-              velocity: { x: 0, y: column.speed, z: 0 },
+              velocity: { x: 0, y: column.speed * travel, z: 0 },
               lifespan: durationInFrames + 200,
               startFrame: 150,
             };
@@ -160,8 +164,8 @@
           transitionDuration: durationInFrames / 30,
           easing: "easeIn",
           steps: [
-            { id: "start", x: -view.width * 0.2, y: view.height * 1.5, scale: 0.85, duration: 1 / 30 },
-            { id: "end", x: view.width * 0.5, y: view.height * 1.2, scale: 1, duration: durationInFrames / 30 },
+            { id: "start", x: -view.width * 0.2 * pan, y: view.height * 1.5, scale: 0.85, duration: 1 / 30 },
+            { id: "end", x: view.width * 0.5 * pan, y: view.height * 1.2, scale: 1, duration: durationInFrames / 30 },
           ],
           elements: [{ element: anchor, x: 0, y: 0, z: 0 }],
         });

@@ -163,7 +163,7 @@
           const cosE = Math.cos(elevation);
           const sinE = Math.sin(elevation);
           const zoom = 1 + 0.12 * hyperbits.Easing.easeInOutSine(progressOf(time, 0, duration));
-          const unit = (view.height / (size * 0.92)) * zoom;
+          const unit = Math.min(view.height / (size * 0.92), view.width / (size * 1.34)) * zoom;
           const originX = view.width * 0.5;
           const originY = view.height * 0.6;
           function project(pointX, pointY, pointZ) {

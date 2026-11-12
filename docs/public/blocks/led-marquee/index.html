@@ -131,7 +131,8 @@
           if (columns.length) columns.pop();
           return columns;
         }
-        const columns = 96;
+        const portrait = view.height > view.width * 1.1;
+        const columns = portrait ? 56 : 96;
         const rows = 18;
         const pitch = Math.min((view.width * 0.88) / columns, (view.height * 0.5) / rows);
         const panelWidth = columns * pitch;

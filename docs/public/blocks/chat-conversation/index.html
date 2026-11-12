@@ -131,6 +131,8 @@
         const stagger = 20;
         thread.style.gap = vmin * 2.2 + "px";
         thread.style.padding = "0 " + vmin * 6 + "px";
+        thread.style.width = Math.min(view.width, vmin * 110) + "px";
+        thread.style.margin = "0 auto";
         const timeline = gsap.timeline({ paused: true });
         messages.forEach(function (message, index) {
           const isMe = message.from === "me";

@@ -89,6 +89,10 @@
           const parts = hyperbits.mixOklch(String(color), String(color), 0, "rgb(0, 0, 0)").match(/[0-9.]+/g) || [0, 0, 0];
           return parts.slice(0, 3).map(Number);
         }
+        function smoothstep(edge0, edge1, value) {
+          const amount = Math.min(Math.max((value - edge0) / (edge1 - edge0), 0), 1);
+          return amount * amount * (3 - 2 * amount);
+        }
         function rgba(rgb, alpha) {
           return "rgba(" + Math.round(rgb[0]) + ", " + Math.round(rgb[1]) + ", " + Math.round(rgb[2]) + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
         }
@@ -110,9 +114,14 @@
         const back = channels(vars.background);
         const fore = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const screenSize = view.height * 0.74;
-        const screenX = (view.width - screenSize - view.vmin * 36) / 2;
-        const screenY = (view.height - screenSize) / 2;
+        const portrait = view.height > view.width * 1.1;
+        const readoutUnit = view.vmin * (portrait ? 1.3 : 1);
+        const panelGap = view.vmin * 9;
+        const panelWidth = readoutUnit * 27;
+        const panelHeight = readoutUnit * 49;
+        const screenSize = portrait ? view.width * 0.8 : Math.min(view.height * 0.74, view.width - panelGap - panelWidth - view.vmin * 14);
+        const screenX = portrait ? (view.width - screenSize) / 2 : (view.width - screenSize - panelGap - panelWidth) / 2;
+        const screenY = portrait ? (view.height - screenSize - panelGap - panelHeight) / 2 : (view.height - screenSize) / 2;
         const centerX = screenX + screenSize / 2;
         const centerY = screenY + screenSize / 2;
         const amplitude = screenSize * 0.4;
@@ -233,8 +242,9 @@
           freqValue.textContent = (figure.a * 220).toFixed(1).padStart(6, " ") + " Hz";
           freqValueB.textContent = (figure.b * 220).toFixed(1).padStart(6, " ") + " Hz";
         }
-        const panelX = screenX + screenSize + view.vmin * 9;
-        const fontSize = view.vmin * 2;
+        const panelX = portrait ? screenX : screenX + screenSize + panelGap;
+        const panelY = portrait ? screenY + screenSize + panelGap : screenY;
+        const fontSize = readoutUnit * 2;
         function addReadout(text, top, options) {
           const node = document.createElement("div");
           node.className = "readout";
@@ -251,15 +261,15 @@
           hud.append(node);
           return node;
         }
-        const labelNode = addReadout(String(vars.label), screenY, { dim: true });
-        addReadout("RATIO", screenY + view.vmin * 7, { dim: true });
-        const ratioValue = addReadout("1:1", screenY + view.vmin * 9.5, { size: view.vmin * 9 });
-        addReadout("PHASE", screenY + view.vmin * 23, { dim: true });
-        const phaseValue = addReadout("000", screenY + view.vmin * 25.5, { size: view.vmin * 4 });
-        addReadout("CH1", screenY + view.vmin * 34, { dim: true });
-        const freqValue = addReadout("220.0 Hz", screenY + view.vmin * 36.5, { size: view.vmin * 3 });
-        addReadout("CH2", screenY + view.vmin * 43, { dim: true });
-        const freqValueB = addReadout("220.0 Hz", screenY + view.vmin * 45.5, { size: view.vmin * 3 });
+        const labelNode = addReadout(String(vars.label), panelY, { dim: true });
+        addReadout("RATIO", panelY + readoutUnit * 7, { dim: true });
+        const ratioValue = addReadout("1:1", panelY + readoutUnit * 9.5, { size: readoutUnit * 9 });
+        addReadout("PHASE", panelY + readoutUnit * 23, { dim: true });
+        const phaseValue = addReadout("000", panelY + readoutUnit * 25.5, { size: readoutUnit * 4 });
+        addReadout("CH1", panelY + readoutUnit * 34, { dim: true });
+        const freqValue = addReadout("220.0 Hz", panelY + readoutUnit * 36.5, { size: readoutUnit * 3 });
+        addReadout("CH2", panelY + readoutUnit * 43, { dim: true });
+        const freqValueB = addReadout("220.0 Hz", panelY + readoutUnit * 45.5, { size: readoutUnit * 3 });
         labelNode.setAttribute("aria-label", String(vars.label));
         const proxy = { time: 0 };
         const timeline = gsap.timeline({ paused: true });

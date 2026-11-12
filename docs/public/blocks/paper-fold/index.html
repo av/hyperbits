@@ -165,11 +165,12 @@
           art.style.top = "0";
           const centerX = cardWidth * 0.78;
           const centerY = cardHeight * 0.55;
+          const ringBase = Math.min(cardHeight, cardWidth * 0.95);
           for (let ring = 0; ring < 9; ring += 1) {
             const circle = document.createElementNS(svgNs, "circle");
             circle.setAttribute("cx", String(centerX));
             circle.setAttribute("cy", String(centerY));
-            circle.setAttribute("r", String(cardHeight * (0.08 + ring * 0.07)));
+            circle.setAttribute("r", String(ringBase * (0.08 + ring * 0.07)));
             circle.setAttribute("fill", "none");
             circle.setAttribute("stroke", ring === 2 ? vars.accent : vars.foreground);
             circle.setAttribute("stroke-opacity", ring === 2 ? "1" : String(0.32 - ring * 0.025));
@@ -179,7 +180,7 @@
           const disc = document.createElementNS(svgNs, "circle");
           disc.setAttribute("cx", String(centerX));
           disc.setAttribute("cy", String(centerY));
-          disc.setAttribute("r", String(cardHeight * 0.08));
+          disc.setAttribute("r", String(ringBase * 0.08));
           disc.setAttribute("fill", vars.accent);
           art.append(disc);
           const rule = document.createElementNS(svgNs, "line");

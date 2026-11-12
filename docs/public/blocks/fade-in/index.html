@@ -45,8 +45,9 @@
       #title {
         color: #fcc192;
         font-weight: 700;
-        font-size: 5vw;
-        white-space: pre;
+        font-size: 8.9vmin;
+        white-space: pre-wrap;
+        text-align: center;
         position: relative;
         z-index: 1;
       }
@@ -93,7 +94,8 @@
         bg.style.backgroundColor = vars.background;
         title.textContent = vars.text;
         title.style.color = vars.color;
-        title.style.fontSize = view.vw * 5 + "px";
+        title.style.fontSize = view.vmin * 8.9 + "px";
+        title.style.maxWidth = view.width * 0.86 + "px";
         const timeline = gsap.timeline({ paused: true });
         timeline.fromTo(title, { opacity: 0 }, { opacity: 1, duration: 1, ease: "none" }, 0);
         timeline.to({}, { duration: 3 }, 0);

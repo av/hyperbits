@@ -134,8 +134,8 @@
         const slabSize = 4;
         const thickness = 0.32;
         const gapClosed = 0.06;
-        const gapOpen = 1.65;
-        const unit = Math.min(view.vmin * 8.5, (view.height * 0.78) / (count * (thickness + gapOpen) * 0.82 + slabSize * 0.6));
+        const unit = Math.min(view.vmin * 8.5, (view.height * 0.78) / (count * (thickness + 1.65) * 0.82 + slabSize * 0.6));
+        const gapOpen = Math.max(1.65, ((view.height * 0.7) / unit - slabSize * 0.6) / (count * 0.82) - thickness);
         const lineWidth = Math.max(1, view.vmin * 0.15);
         const patterns = ["grid", "chips", "stripes", "rings", "dots", "grid"];
         const layout = { originX: view.width * 0.38, originY: view.height * 0.5 };

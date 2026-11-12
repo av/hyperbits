@@ -188,8 +188,10 @@
         const bg = document.getElementById("bg");
         const sceneEl = document.getElementById("scene");
         const view = hyperbits.viewport(root);
-        const vmin = view.vmin;
-        const unit = view.height / 1080;
+        const portrait = view.height > view.width * 1.1;
+        const compact = view.width < view.height * 1.4;
+        const vmin = view.vmin * (portrait ? 1.4 : 1);
+        const unit = vmin / 10.8;
         bg.style.backgroundColor = vars.background;
         const accent = vars.color;
         const primary = "#ec8b49";
@@ -225,14 +227,26 @@
         }
 
         const base = Transform3D.identity();
-        const initialIconBase = base.translate(-vmin * 40, -vmin * 1, 0);
-        const elementsBase = base.translate(0, -vmin * 120, 0).rotateX(15);
+        const initialIconBase = compact ? base.translate(0, vmin * 14, 0) : base.translate(-vmin * 40, -vmin * 1, 0);
+        const elementsBase = base.translate(0, -vmin * (portrait ? 150 : 120), 0).rotateX(15);
         const elementsIconBase = elementsBase.scaleBy(2.0).rotateZ(-240);
         const transitionsBase = base.translate(vmin * 200, vmin * 50, 0).rotateY(-15);
         const transitionsIconBase = transitionsBase.translate(0, vmin * -20, 0).scaleBy(2.0);
         const scenesBase = base.translate(-vmin * 120, vmin * 70, 0).rotateY(15);
         const scenesIconBase = scenesBase.scaleBy(2.0);
-        const sceneItems = {
+        const sceneItems = portrait ? {
+          hero: base.translate(vmin * -3, vmin * 18, vmin * 5).rotateY(-10),
+          dash: base.translate(vmin * -31, vmin * -56, 0).rotateY(5),
+          notif: base.translate(vmin * -27, vmin * 44, vmin * 10),
+          code: base.translate(vmin * 2, vmin * -38, 0),
+          player: base.translate(vmin * -31, vmin * 16, 0),
+        } : compact ? {
+          hero: base.translate(vmin * 8, vmin * 18, vmin * 5).rotateY(-10),
+          dash: base.translate(vmin * -45, vmin * -44, 0).rotateY(5),
+          notif: base.translate(vmin * -40, vmin * -12, vmin * 10),
+          code: base.translate(vmin * 14, vmin * -42, 0),
+          player: base.translate(vmin * -43, vmin * 22, 0),
+        } : {
           hero: base.translate(vmin * 28, vmin * -5, vmin * 5).rotateY(-10),
           dash: base.translate(vmin * -80, vmin * -30, 0).rotateY(5),
           notif: base.translate(vmin * -70, 0, vmin * 10),
@@ -243,7 +257,7 @@
         const squareOffset = new Vec3(-vmin * 2, vmin * 2, 0);
         const circleOffset = new Vec3(vmin * 2, vmin * 2, 0);
         const scaled = function (vector, factor) { return new Vec3(vector.x * factor, vector.y * factor, vector.z * factor); };
-        const baseShift = base.translate(vmin * 7, 0, 0);
+        const baseShift = compact ? base.translate(0, -vmin * 7, 0) : base.translate(vmin * 7, 0, 0);
         const transitionsShift = transitionsBase.translate(vmin * 23, 0, 0);
         const scenesShift = scenesBase.translate(vmin * 23, 0, 0);
         const transitionsShiftUp = transitionsShift.translate(0, -vmin * 10, 0);
@@ -594,7 +608,7 @@
           Object.assign({ id: "outro", duration: 4, element: stepNode() }, toProps(base)),
         ];
         const scene = hyperbits.createScene3D(sceneEl, {
-          perspective: 1000,
+          perspective: 1000 * unit,
           transitionDuration: 2,
           stepDuration: 2,
           easing: "easeInOutCubic",

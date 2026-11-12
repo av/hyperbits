@@ -99,13 +99,14 @@
         const muted = mix(foreground, background, 0.45);
         const columns = Math.max(16, Math.round(Number(vars.columns) || 96));
         const seed = Number(vars.seed) || 0;
-        const cell = view.width / columns;
+        const cell = (view.vmin * 1600) / (9 * columns);
+        const across = Math.round(view.width / cell);
         const rows = Math.ceil(view.height / cell);
         const block = cell * 0.82;
-        const drops = [...Array(Math.round(columns * 1.3)).keys()].map((index) => {
+        const drops = [...Array(Math.round((across * rows * 1.3 * 16) / (9 * columns))).keys()].map((index) => {
           const key = "drop-" + seed + "-" + index;
           return {
-            column: hyperbits.randomInt(key + "-c", 0, columns - 1),
+            column: hyperbits.randomInt(key + "-c", 0, across - 1),
             start: hyperbits.randomInt(key + "-s", -14, -2),
             land: Math.round(rows * hyperbits.randomFloat(key + "-g", 0.2, 0.98)),
             offset: hyperbits.random(key + "-o"),
@@ -115,7 +116,7 @@
         });
         function pixel(column, row, color, alpha) {
           if (row < 0 || row >= rows || alpha <= 0.01) return;
-          const wrapped = ((column % columns) + columns) % columns;
+          const wrapped = ((column % across) + across) % across;
           context.fillStyle = rgba(color, alpha);
           context.fillRect(wrapped * cell + (cell - block) / 2, row * cell + (cell - block) / 2, block, block);
         }
