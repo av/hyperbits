@@ -98,7 +98,12 @@ const HELPER_SECTIONS = [
   {
     id: "scene3d",
     title: "scene3d",
-    files: ["scene3d/math.ts", "scene3d/transform.ts", "scene3d/scene.ts"],
+    files: [
+      "scene3d/math.ts",
+      "scene3d/transform.ts",
+      "scene3d/scene.ts",
+      "scene3d/camera.ts",
+    ],
   },
 ];
 
@@ -188,7 +193,15 @@ scene.bind(timeline);
 
 const start = hyperbits.Transform3D.identity().translate(0, view.vmin * 20, 0);
 const end = hyperbits.Transform3D.identity();
-el.style.transform = hyperbits.interpolateTransform(start, end, 0.5).toCSSMatrix3D();`,
+el.style.transform = hyperbits.interpolateTransform(start, end, 0.5).toCSSMatrix3D();
+
+const keys = [
+  { time: 0, position: [0, 0, 3200], target: [0, 0, 0], lens: 2400, ease: "power3.inOut" },
+  { time: 3, position: [600, -200, 900], target: [0, 0, 0], roll: 4, lens: 1100 },
+];
+const camera = hyperbits.createCamera(stage, world, { keys });
+camera.bind(timeline);
+const css = hyperbits.cameraToCSS(hyperbits.cameraStateAt(1.5, { keys }));`,
 };
 
 const formatDefault = (value) => {

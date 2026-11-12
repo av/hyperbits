@@ -200,10 +200,15 @@ export class Quat {
     if (cosHalfTheta >= 1) return this;
     const sinHalfTheta = Math.sqrt(1 - cosHalfTheta * cosHalfTheta);
     if (Math.abs(sinHalfTheta) < 0.001) {
-      this.x = 0.5 * (this.x + next.x);
-      this.y = 0.5 * (this.y + next.y);
-      this.z = 0.5 * (this.z + next.z);
-      this.w = 0.5 * (this.w + next.w);
+      const x = this.x + (next.x - this.x) * alpha;
+      const y = this.y + (next.y - this.y) * alpha;
+      const z = this.z + (next.z - this.z) * alpha;
+      const w = this.w + (next.w - this.w) * alpha;
+      const length = Math.hypot(x, y, z, w) || 1;
+      this.x = x / length;
+      this.y = y / length;
+      this.z = z / length;
+      this.w = w / length;
       return this;
     }
     const halfTheta = Math.atan2(sinHalfTheta, cosHalfTheta);

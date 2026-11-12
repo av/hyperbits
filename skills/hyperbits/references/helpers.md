@@ -1022,6 +1022,84 @@ type Scene3DHandle = TimeStateBinding<Scene3DState> & { canvas: HTMLElement; wor
 createScene3D(root: HTMLElement, config: Scene3DConfig): Scene3DHandle
 ```
 
+### `CameraVector`
+
+```ts
+type CameraVector = [number, number, number] | { x: number; y: number; z: number };
+```
+
+### `CameraKey`
+
+```ts
+type CameraKey = { time: number; position: CameraVector; target?: CameraVector; roll?: number; lens?: number; ease?: string | EasingFunction; };
+```
+
+### `CameraConfig`
+
+```ts
+type CameraConfig = { keys: CameraKey[]; lens?: number; ease?: string | EasingFunction; };
+```
+
+### `LookAtCameraState`
+
+```ts
+type LookAtCameraState = { time: number; segment: number; progress: number; position: [number, number, number]; target: [number, number, number]; forward: [number, number, number]; orientation: [number, number, number, number]; roll: number; lens: number; };
+```
+
+### `CameraCSS`
+
+```ts
+type CameraCSS = { perspective: string; transform: string; };
+```
+
+### `CameraProjection`
+
+```ts
+type CameraProjection = { x: number; y: number; depth: number; scale: number; };
+```
+
+### `CameraHandle`
+
+```ts
+type CameraHandle = TimeStateBinding<LookAtCameraState> & { stage: HTMLElement; world: HTMLElement; apply: (state: LookAtCameraState) => void; bind: TimelineBind; };
+```
+
+### `lookAtOrientation`
+
+```ts
+lookAtOrientation(position: CameraVector, target: CameraVector, roll: number = 0): [number, number, number, number]
+```
+
+### `cameraStateAt`
+
+```ts
+cameraStateAt(time: number, config: CameraConfig): LookAtCameraState
+```
+
+### `cameraToCSS`
+
+```ts
+cameraToCSS(state: LookAtCameraState): CameraCSS
+```
+
+### `cameraProject`
+
+```ts
+cameraProject(state: LookAtCameraState, point: CameraVector): CameraProjection
+```
+
+### `applyCamera`
+
+```ts
+applyCamera(stage: HTMLElement, world: HTMLElement, state: LookAtCameraState): void
+```
+
+### `createCamera`
+
+```ts
+createCamera(stage: HTMLElement, world: HTMLElement, config: CameraConfig): CameraHandle
+```
+
 Example:
 
 ```js
@@ -1040,4 +1118,12 @@ scene.bind(timeline);
 const start = hyperbits.Transform3D.identity().translate(0, view.vmin * 20, 0);
 const end = hyperbits.Transform3D.identity();
 el.style.transform = hyperbits.interpolateTransform(start, end, 0.5).toCSSMatrix3D();
+
+const keys = [
+  { time: 0, position: [0, 0, 3200], target: [0, 0, 0], lens: 2400, ease: "power3.inOut" },
+  { time: 3, position: [600, -200, 900], target: [0, 0, 0], roll: 4, lens: 1100 },
+];
+const camera = hyperbits.createCamera(stage, world, { keys });
+camera.bind(timeline);
+const css = hyperbits.cameraToCSS(hyperbits.cameraStateAt(1.5, { keys }));
 ```
