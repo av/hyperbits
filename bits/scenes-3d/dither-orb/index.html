@@ -129,9 +129,9 @@
             speed: hyperbits.randomFloat("orb-star-s-" + index, 1, 3),
           });
         }
-        const centerX = bufferWidth * 0.6;
+        const centerX = bufferWidth * (view.width > view.height * 1.1 ? 0.6 : 0.5);
         const centerY = bufferHeight * 0.52;
-        const radius = bufferHeight * 0.3;
+        const radius = Math.min(bufferHeight * 0.3, bufferWidth * 0.2);
         const ringInner = 1.38;
         const ringOuter = 2.25;
         const tilt = -0.32;

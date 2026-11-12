@@ -55,6 +55,7 @@
         text-align: center;
         font-weight: 700;
         white-space: pre;
+        transform: translate(-50%, -50%);
       }
     </style>
   </head>
@@ -96,7 +97,7 @@
         const bg = document.getElementById("bg");
                 const view = hyperbits.viewport(root);
         const vmin = view.vmin;
-        const unit = view.height / 1080;
+        const unit = view.vmin / 10.8;
         bg.style.backgroundColor = vars.background;
         const space = document.getElementById("space");
         space.style.perspective = (view.width < 500 ? 1000 : 5000) + "px";

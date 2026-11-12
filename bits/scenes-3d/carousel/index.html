@@ -91,13 +91,13 @@
         const bg = document.getElementById("bg");
         const sceneEl = document.getElementById("scene");
         const view = hyperbits.viewport(root);
-        const vmin = view.vmin;
-        const unit = view.height / 1080;
+        const vmin = Math.min(view.vmin, view.width / 133);
+        const unit = view.vmin / 10.8;
         bg.style.backgroundColor = vars.background;
         const radius = vmin * 60;
         const count = 8;
         const cardWidth = vmin * 40;
-        const cardHeight = vmin * 40;
+        const cardHeight = cardWidth * Math.max(1, (view.height / view.width) * 0.75);
         const rotationSpeed = 360 / (30 * 10);
         const elements = [];
         for (let index = 0; index < count; index += 1) {
@@ -127,7 +127,7 @@
         }
         placeCards(0);
         const scene = hyperbits.createScene3D(sceneEl, {
-          perspective: 1000,
+          perspective: vmin * 92.6,
           transitionDuration: 1,
           stepDuration: 1,
           easing: "easeInOutCubic",

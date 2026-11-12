@@ -85,11 +85,11 @@
         const sceneEl = document.getElementById("scene");
         const view = hyperbits.viewport(root);
         const vmin = view.vmin;
-        const unit = view.height / 1080;
+        const unit = view.vmin / 10.8;
         bg.style.backgroundColor = vars.background;
         bg.setAttribute("data-color", vars.color);
-        const frameWidth = vmin * 177.78;
-        const frameHeight = vmin * 100;
+        const frameWidth = view.width;
+        const frameHeight = view.height;
         const xShift = vmin * 4.63;
         const yShift = vmin * 5.56;
         const shots = [
