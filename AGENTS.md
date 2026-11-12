@@ -54,7 +54,7 @@ These rules match `skills/hyperbits/references/patterns.md`. Do not add a parall
 - Every bit must pass `npx hyperframes lint` before it is considered done (`npm run lint:bits`).
 - No emoji as visual elements. Use inline SVG.
 - Bits meant for shader transitions follow the shader-compatible CSS rules: no `transparent` in gradients (use `rgba(..., 0)`), no `var()` on captured elements, explicit `background-color` on scenes.
-- Embed a bit in a host composition with `data-composition-src` (and optional `data-variable-values`). `npx @av/hyperbits add <name> --into compositions/` is the install path.
+- Embed a bit in a host composition with `data-composition-src` (and optional `data-variable-values`). `npx @av/hyperbits add <name...> --into compositions/ [--set id=value]` is the install path. Host CSS reaches into embedded bits, so hosts must not style the bits' generic ids (`#root`, `#bg`, `#stage`, `#title`); see "Host CSS and generic ids" in `references/patterns.md`.
 - After adding or changing a bit, run `npm run inventory` so the catalog and skill references stay in sync.
 
 ### Maintaining the skill

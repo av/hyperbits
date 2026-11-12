@@ -47,7 +47,7 @@ Search the catalog.
 | `tags` | string[] | AND tag filter |
 | `limit` | integer | Maximum number of results |
 
-Returns `{ results: BitCatalogSummary[] }`.
+Returns `{ results }`: catalog summaries (id, name, description, tags, duration, size, helpers) plus `variableIds`, the knobs each bit exposes. Use them to prefer a bit that can take your palette, for example one with `background`, `foreground` and `accent`.
 
 ### fetch_hyperbit
 
@@ -57,6 +57,22 @@ Fetch one bit by id (or exact display name).
 | --- | --- | --- |
 | `id` | string | Bit id or exact name |
 
-Returns `{ bit }` with `sourceCode`, `embedSnippet`, `helperScriptTag`, helpers, tags, and duration.
+Returns `{ bit }` with `variables`, `sourceCode`, `embedSnippet`, `helperScriptTag`, helpers, tags, and duration. `variables` is the bit's `data-composition-variables` list:
+
+```json
+[
+  { "id": "text", "type": "string", "label": "Text", "default": "Hello World" },
+  { "id": "color", "type": "color", "label": "Text color", "default": "#fcc192" },
+  { "id": "background", "type": "color", "label": "Background", "default": "#100f0f" }
+]
+```
+
+Theme the embed instead of editing the bit:
+
+```html
+<div data-composition-src="compositions/fade-in.html" data-variable-values='{"background":"#0b1020","color":"#e8ecff"}'></div>
+```
+
+To bake the values into the installed file, run `hyperbits add fade-in --set background=#0b1020 --set color=#e8ecff`.
 
 Unknown ids return an error that includes close matches. Agents should search first, then fetch, then write the HTML into the HyperFrames project (or tell the user to run `hyperbits add`).

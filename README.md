@@ -38,6 +38,7 @@ npm exec --package ./av-hyperbits-*.tgz -- hyperbits find "fade in"
 npx @av/hyperbits find 3d cards
 npx @av/hyperbits fetch fade-in --json
 npx @av/hyperbits add fade-in --into compositions/
+npx @av/hyperbits add fade-in glitch-in --into compositions/ --set background=#0b1020 --set color=#e8ecff
 ```
 
 Or install the bin globally:
@@ -48,7 +49,17 @@ hyperbits find 3d cards
 hyperbits add fade-in --into compositions/
 ```
 
-`add` writes the bit HTML into a HyperFrames project (default `compositions/`), copies the helper bundle `hyperbits.iife.js` next to it, and prints a `data-composition-src` snippet.
+`add` writes one or more bits into a HyperFrames project (default `compositions/`), copies the helper bundle `hyperbits.iife.js` next to them, and prints a `data-composition-src` snippet for each.
+
+Every bit declares its knobs in `data-composition-variables`. `fetch` lists them (id, type, default, label) before the source, `find --json` and `fetch --json` return them as `variables`, and `add` prints a ready-to-edit override after each snippet:
+
+```html
+<div data-composition-src="compositions/fade-in.html" data-variable-values='{"text":"Hello World","color":"#fcc192","background":"#100f0f"}'></div>
+```
+
+`--set id=value` (repeatable) bakes new defaults into the installed copies instead. Values are validated against the variable type (colors must be CSS colors), literal copies of the old default in the bit's CSS and markup are rewritten too, and bits that do not declare an id are reported as skipped. An unknown bit or invalid value exits non-zero and writes nothing.
+
+Host CSS is global inside a HyperFrames composition: a host rule for `#root`, `#bg`, `#stage` or `#title` also styles every embedded bit. Use prefixed ids or classes for host elements. See [Host CSS](https://hyperbits.dev/docs/getting-started#host-css).
 
 ### MCP
 
@@ -76,8 +87,8 @@ If you installed the package globally:
 
 The server exposes two tools:
 
-- `find_hyperbits`
-- `fetch_hyperbit`
+- `find_hyperbits`: results carry `variableIds`, the knobs each bit exposes
+- `fetch_hyperbit`: returns the bit with `variables` (`id`, `type`, `label`, `default`), source and embed snippet
 
 ### Add into a HyperFrames project
 

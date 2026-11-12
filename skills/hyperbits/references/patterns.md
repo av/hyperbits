@@ -123,6 +123,11 @@ Overrides, lowest to highest:
 
 Do not hide knobs as magic numbers in the script if a user is expected to change them.
 
+The catalog exposes every bit's declarations as `variables` (`fetch_hyperbit`, `hyperbits fetch --json`, `hyperbits find --json`; `find_hyperbits` lists `variableIds`), and `references/bits.md` lists them per bit. Theme a bit from the host rather than editing it:
+
+- Per embed: `data-variable-values='{"background":"#0b1020"}'` on the `data-composition-src` element.
+- Per installed file: `npx @av/hyperbits add fade-in glitch-in --into compositions/ --set background=#0b1020`. `--set` validates the value against the variable type and also rewrites literal copies of the old default in the bit's CSS and markup.
+
 ## Shader-compatible CSS
 
 Bits that may be captured for shader transitions follow html2canvas limits:
@@ -153,7 +158,22 @@ npx @av/hyperbits add fade-in --into compositions/
 ></div>
 ```
 
-`fetch_hyperbit` and `hyperbits add --json` include this snippet. The host composition still needs its own paused root timeline; nested bits register theirs under their own `data-composition-id`.
+`fetch_hyperbit` and `hyperbits add --json` include the plain snippet, and `hyperbits add` prints a `data-variable-values` example built from the bit's variables. The host composition still needs its own paused root timeline; nested bits register theirs under their own `data-composition-id`.
+
+## Host CSS and generic ids
+
+Bits use generic ids: every bit has `#root` and `#bg`, about half have `#stage`, and many have `#scene`, `#title`, `#caption`, `#cursor` or `#panel`. HyperFrames inlines each embedded bit into the host document. Checked with `hyperframes@0.8.29 snapshot` on a host that embeds `fade-in` and `glitch-in`:
+
+- Host CSS reaches bits. HyperFrames scopes a bit's own `<style>` to that bit, but host rules stay global. Host rules for `#bg` (border), `#title` (underline) and `#root` (`transform: scale(0.5)`) changed both embedded bits, and a bare `h1 { font-style: italic }` italicised their titles.
+- Bit CSS does not reach the host or other bits. Two bits that style `#title` differently (sans and mono) each kept their own look and text, a host element with `id="title"` kept the host style, and the host `body` background was unchanged. Bit scripts that call `document.getElementById("title")` found their own element.
+- A bit's `html, body` rule is applied to its mount element. The mount shows that literal background wherever the bit's `#bg` does not cover it, for example after the bit's clips end when the embed's `data-duration` is longer than the bit. `data-variable-values` does not change it (a `background` override showed `#112233` during the bit and the old `#100f0f` after it). `hyperbits add --set background=...` rewrites the literal, so the new color shows at every frame.
+
+Rules for host authors:
+
+- Do not style `#root`, `#bg`, `#stage`, `#scene`, `#title` or other bare ids and element selectors (`h1`, `canvas`, `svg`) in host CSS. Give host elements prefixed ids or classes (`#intro-root`, `.host-title`) and style those.
+- Do not use `id="root"` for the host root if the host has a `#root` rule; that rule also matches every embedded bit root.
+- Size, position and fade a bit through its mount element (a class on the `data-composition-src` element), and theme it through its variables, not through its internal ids.
+- Match the embed's `data-duration` to the bit, or set colors with `--set`, so the mount never shows a stale background.
 
 ## Helper binding conventions
 

@@ -16,8 +16,8 @@ Use this skill to build HyperFrames compositions from live hyperbits examples fi
 ## Default workflow
 
 1. Start with `find_hyperbits` using the visual goal, motion style, or scene description.
-2. Fetch the best one or two matches with `fetch_hyperbit`.
-3. Adapt the closest bit before composing from helpers.
+2. Fetch the best one or two matches with `fetch_hyperbit`. Its `variables` list (`id`, `type`, `label`, `default`) is what you can theme without editing the bit; `find_hyperbits` results carry the same ids as `variableIds`.
+3. Theme through variables first, then adapt the closest bit, before composing from helpers.
 4. If multiple bits match, prefer the simplest one that satisfies the request.
 5. If the request is multi-step, camera-driven, or presentation-like, bias toward `scenes-3d` bits.
 6. When adapting a bit, keep fractional `viewport()` sizing, paused timelines on `window.__timelines`, and `data-composition-variables` knobs.
@@ -29,7 +29,7 @@ Treat the catalog bits as the primary library of working patterns. Reach for hel
 1. MCP first.
    Use `find_hyperbits` for discovery and `fetch_hyperbit` for the full HTML source.
 2. CLI second.
-   Use `npx @av/hyperbits find "hero intro" --tag text --json` and `npx @av/hyperbits fetch fade-in --json`. Install with `npx @av/hyperbits add fade-in --into compositions/`.
+   Use `npx @av/hyperbits find "hero intro" --tag text --json` and `npx @av/hyperbits fetch fade-in --json` (both include `variables`). Install with `npx @av/hyperbits add fade-in glitch-in --into compositions/ --set background=#0b1020`.
 3. Direct file inspection last.
    Inspect `bits/<category>/<name>/index.html` and `bit.json`, then adapt the nearest example.
 
@@ -43,6 +43,7 @@ Use the published package when you do not want a repo-local workflow:
 npx @av/hyperbits find 3d cards
 npx @av/hyperbits fetch fade-in --json
 npx @av/hyperbits add fade-in --into compositions/
+npx @av/hyperbits add fade-in glitch-in --into compositions/ --set background=#0b1020 --set color=#e8ecff
 ```
 
 Start the MCP server from the published package:
@@ -76,7 +77,7 @@ node dist/cli/index.js add fade-in --into compositions/
 node dist/cli/index.js mcp
 ```
 
-`add` writes the bit HTML into a HyperFrames project (default `compositions/`) and prints a `data-composition-src` snippet. `npx hyperframes add` does not take a registry URL; `hyperbits add` is the guaranteed install path.
+`add` writes one or more bits into a HyperFrames project (default `compositions/`) and prints a `data-composition-src` snippet plus a ready-to-edit `data-variable-values` example per bit. `--set id=value` (repeatable) writes validated new defaults into the installed copies, rewrites literal copies of the old default in their CSS and markup, and reports which bits do not declare the id. `npx hyperframes add` does not take a registry URL; `hyperbits add` is the guaranteed install path.
 
 ## How to search well
 
@@ -88,6 +89,10 @@ node dist/cli/index.js mcp
 ## Adaptation rules
 
 These match `references/patterns.md` and `AGENTS.md`. Do not invent a parallel set.
+
+- Theme before you edit. Map the user's palette and copy onto the bit's declared variables: `background`, `foreground`, `accent` or `color` for colors, `text`, `title`, `headline`, `label` or `caption` for copy. Pass them per embed with `data-variable-values='{"background":"#0b1020"}'` on the `data-composition-src` element, or bake them into the installed file with `hyperbits add <bit> --set id=value`. Prefer `--set` for background colors: a bit's `html, body` background shows on its mount after the bit's clips end, and only `--set` rewrites it.
+- Edit bit source only for what no variable covers, and keep the edited knob declared in `data-composition-variables`.
+- In the host composition, never style the bits' generic ids (`#root`, `#bg`, `#stage`, `#scene`, `#title`) or bare element selectors. Host CSS is global and reaches into every embedded bit. Use prefixed host ids or classes, and size or position a bit through a class on its `data-composition-src` element.
 
 - Keep `viewport(root)` sizing. Prefer `view.vmin`, `view.vmax`, `view.vw`, `view.vh`, and `view.px()` over hardcoded pixels. Hero text 8–12 vmin, body 3–4 vmin, UI mocks ≥ 60% of the frame.
 - Never paint on the composition root. First child is a full-bleed `#bg` layer with a literal background colour. Animate gradients on that layer.

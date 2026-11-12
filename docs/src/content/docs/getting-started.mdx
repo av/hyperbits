@@ -85,7 +85,29 @@ After `hyperbits add fade-in` (or `hyperframes add fade-in`), `compositions/` ho
 <div data-composition-src="compositions/fade-in.html"></div>
 ```
 
-Override knobs declared in `data-composition-variables` with `data-variable-values` on the host, or `--variables` on `hyperframes render`.
+Every bit declares its knobs in `data-composition-variables`. `hyperbits fetch fade-in` lists them, and `add` prints a ready-to-edit override after the embed snippet:
+
+```html
+<div data-composition-src="compositions/fade-in.html" data-variable-values='{"text":"Launch day","background":"#0b1020"}'></div>
+```
+
+To make your palette the default of the installed files, set it on install. `--set` applies to every listed bit that declares the id and reports the ones that do not:
+
+```bash
+npx @av/hyperbits add fade-in glitch-in --into compositions/ --set background=#0b1020 --set color=#e8ecff
+```
+
+Top-level renders also take `--variables` on `hyperframes render`.
+
+## Host CSS
+
+Bits use generic ids such as `#root`, `#bg`, `#stage` and `#title`. HyperFrames scopes each bit's own CSS to that bit, so bits do not restyle the host or each other, but host CSS is global and reaches into every embedded bit: a host rule for `#bg`, `#title` or `#root`, or a bare `h1` rule, changes the bits too.
+
+<Aside type="caution">
+Style host elements through prefixed ids or classes (`#intro-root`, `.host-title`), not `#root`, `#bg`, `#stage`, `#title` or bare element selectors. Size, position and fade a bit through a class on its `data-composition-src` element, and theme it through its variables.
+</Aside>
+
+A bit's `html, body` background is applied to its mount element and shows after the bit's clips end if the embed's `data-duration` is longer than the bit. `data-variable-values` does not change that color; `--set background=...` does. See [authoring patterns](https://github.com/av/hyperbits/blob/master/skills/hyperbits/references/patterns.md#host-css-and-generic-ids) for the snapshot checks behind these rules.
 
 ## Background layer
 
