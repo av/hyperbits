@@ -24,6 +24,7 @@ const { values } = parseArgs({
     sizes: { type: "string" },
     out: { type: "string" },
     concurrency: { type: "string" },
+    "sheets-only": { type: "boolean" },
     help: { type: "boolean", short: "h" },
   },
 });
@@ -32,7 +33,9 @@ if (values.help) {
   console.log(`Usage: npm run check:sizes -- [--only a,b] [--sizes 16:9,9:16,1:1] [--out dir] [--concurrency 3]
 
 Retargets every bit to each size, snapshots it with HyperFrames at ${SAMPLE_FRACTIONS.join(", ")} of its
-duration, and writes one contact sheet per bit (rows: sizes, columns: times) to <out>/sheets/.`);
+duration, and writes one contact sheet per bit (rows: sizes, columns: times) to <out>/sheets/ plus
+category overviews (rows: bits, columns: sizes, last sample) to <out>/overview/.
+--sheets-only rebuilds the sheets from frames already on disk.`);
   process.exit(0);
 }
 
@@ -93,6 +96,11 @@ const snapshot = async ({ dir, manifest }, size) => {
   const label = formatSize(size);
   const workDir = path.join(outDir, "work", manifest.name, label);
   const framesDir = path.join(outDir, "frames", manifest.name, label);
+  const times = sampleTimes(manifest.duration);
+  if (values["sheets-only"]) {
+    const frames = collectFrames(framesDir, times);
+    return { label, times, frames, ok: frames.every(Boolean), output: "" };
+  }
   rmSync(framesDir, { recursive: true, force: true });
   mkdirSync(workDir, { recursive: true });
   mkdirSync(framesDir, { recursive: true });
@@ -102,7 +110,6 @@ const snapshot = async ({ dir, manifest }, size) => {
     retargetBitHtml(source, size),
   );
   copyFileSync(iifeSource, path.join(workDir, "hyperbits.iife.js"));
-  const times = sampleTimes(manifest.duration);
   const result = await run("npx", [
     "--yes",
     HYPERFRAMES,
@@ -116,13 +123,7 @@ const snapshot = async ({ dir, manifest }, size) => {
     "-o",
     framesDir,
   ]);
-  const frames = times.map((_, index) => {
-    const prefix = `frame-${String(index).padStart(2, "0")}-`;
-    const match = readdirFrames(framesDir).find((name) =>
-      name.startsWith(prefix),
-    );
-    return match ? path.join(framesDir, match) : null;
-  });
+  const frames = collectFrames(framesDir, times);
   return {
     label,
     times,
@@ -132,10 +133,16 @@ const snapshot = async ({ dir, manifest }, size) => {
   };
 };
 
-const readdirFrames = (dir) =>
-  existsSync(dir)
-    ? readdirSync(dir).filter((name) => name.endsWith(".png"))
+const collectFrames = (framesDir, times) => {
+  const names = existsSync(framesDir)
+    ? readdirSync(framesDir).filter((name) => name.endsWith(".png"))
     : [];
+  return times.map((_, index) => {
+    const prefix = `frame-${String(index).padStart(2, "0")}-`;
+    const match = names.find((name) => name.startsWith(prefix));
+    return match ? path.join(framesDir, match) : null;
+  });
+};
 
 const buildSheet = async (bit, shots) => {
   const sheetsDir = path.join(outDir, "sheets");
@@ -167,6 +174,59 @@ const buildSheet = async (bit, shots) => {
   );
   const result = await run("montage", args);
   return result.code === 0 ? sheetPath : null;
+};
+
+const OVERVIEW_ROWS = 6;
+
+const buildOverviews = async (sheetBits) => {
+  const overviewDir = path.join(outDir, "overview");
+  mkdirSync(overviewDir, { recursive: true });
+  const categories = new Map();
+  for (const bit of sheetBits) {
+    const category = path.basename(path.dirname(bit.dir));
+    if (!categories.has(category)) categories.set(category, []);
+    categories.get(category).push(bit);
+  }
+  const written = [];
+  for (const [category, members] of categories) {
+    for (let start = 0; start < members.length; start += OVERVIEW_ROWS) {
+      const page = members.slice(start, start + OVERVIEW_ROWS);
+      const overviewPath = path.join(
+        overviewDir,
+        `${category}-${start / OVERVIEW_ROWS + 1}.jpg`,
+      );
+      const args = [];
+      for (const bit of page) {
+        for (const shot of bit.shots) {
+          const last = shot.frames.at(-1);
+          args.push(
+            "-label",
+            `${bit.manifest.name} ${shot.label} @ ${shot.times.at(-1)}s`,
+            last ?? "xc:#ff0000",
+          );
+        }
+      }
+      args.push(
+        "-tile",
+        `${sizes.length}x${page.length}`,
+        "-geometry",
+        "250x250+6+6",
+        "-background",
+        "#5b6b7a",
+        "-fill",
+        "#ffffff",
+        "-pointsize",
+        "13",
+        "-quality",
+        "80",
+        overviewPath,
+      );
+      const result = await run("montage", args);
+      if (result.code === 0) written.push(overviewPath);
+      else failures.push(`${category} overview`);
+    }
+  }
+  return written;
 };
 
 const queue = bits.flatMap((bit) => sizes.map((size) => ({ bit, size })));
@@ -204,10 +264,13 @@ for (const bit of bits) {
     .sort(
       (left, right) => order.indexOf(left.label) - order.indexOf(right.label),
     );
+  bit.shots = shots;
   const sheet = await buildSheet(bit, shots);
   if (sheet) sheets.push(sheet);
   else failures.push(`${bit.manifest.name} contact sheet`);
 }
+
+const overviews = await buildOverviews(bits);
 
 writeFileSync(
   path.join(outDir, "index.html"),
@@ -221,6 +284,9 @@ writeFileSync(
 
 console.log(
   `\n${sheets.length} contact sheets in ${path.relative(process.cwd(), path.join(outDir, "sheets")) || "."}`,
+);
+console.log(
+  `${overviews.length} overviews in ${path.relative(process.cwd(), path.join(outDir, "overview")) || "."}`,
 );
 console.log(`Gallery: ${path.join(outDir, "index.html")}`);
 if (failures.length > 0) {
