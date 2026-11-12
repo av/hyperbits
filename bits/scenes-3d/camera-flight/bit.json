@@ -1,0 +1,55 @@
+{
+  "name": "camera-flight",
+  "title": "Camera Flight",
+  "description": "A look-at camera opens on a telephoto dolly zoom, banks through a curving corridor of keyframe panels that light up as it passes, then whips around to land on a hero title, driven by createCamera keys with lens and roll",
+  "tags": [
+    "3d",
+    "camera",
+    "flythrough",
+    "look-at",
+    "dolly-zoom",
+    "hero"
+  ],
+  "duration": 10,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "scene3d",
+    "stagger",
+    "text",
+    "random",
+    "color",
+    "interpolate",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://hyperbits.dev/vendor/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "camera-flight",
+    "type": "hyperframes:block",
+    "title": "Camera Flight",
+    "description": "A look-at camera opens on a telephoto dolly zoom, banks through a curving corridor of keyframe panels that light up as it passes, then whips around to land on a hero title, driven by createCamera keys with lens and roll",
+    "tags": [
+      "3d",
+      "camera",
+      "flythrough",
+      "look-at",
+      "dolly-zoom",
+      "hero"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 10,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/camera-flight.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}
