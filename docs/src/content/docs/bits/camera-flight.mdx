@@ -8,3 +8,28 @@ import { BitPlayground } from '@components/BitPlayground';
 A look-at camera opens on a telephoto dolly zoom, banks through a curving corridor of keyframe panels that light up as it passes, then whips around to land on a hero title, driven by createCamera keys with lens and roll.
 
 <BitPlayground client:only="react" bitName="camera-flight" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `title` | string | `"Direct the camera"` | Hero title |
+| `subtitle` | string | `"look-at · lens · roll · slerp"` | Subtitle |
+| `label` | string | `"KEY"` | Panel label prefix |
+| `seed` | number | `7` | Layout seed |
+| `background` | color | `#100f0f` | Background |
+| `surface` | color | `#1c1b1a` | Panel surface |
+| `edge` | color | `#343331` | Panel edge |
+| `foreground` | color | `#f2f0e5` | Title ink |
+| `accent` | color | `#ec8b49` | Accent |
+| `highlight` | color | `#fcc192` | Highlight |
+
+```html
+<div data-composition-src="compositions/camera-flight.html" data-variable-values='{"title":"Direct the camera","subtitle":"look-at · lens · roll · slerp","label":"KEY","seed":7,"background":"#100f0f","surface":"#1c1b1a","edge":"#343331","foreground":"#f2f0e5","accent":"#ec8b49","highlight":"#fcc192"}'></div>
+```
+
+```bash
+npx @av/hyperbits add camera-flight --into compositions/ --set "background=#0b1020"
+```

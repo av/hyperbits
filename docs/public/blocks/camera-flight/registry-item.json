@@ -29,5 +29,67 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "title",
+      "type": "string",
+      "label": "Hero title",
+      "default": "Direct the camera"
+    },
+    {
+      "id": "subtitle",
+      "type": "string",
+      "label": "Subtitle",
+      "default": "look-at · lens · roll · slerp"
+    },
+    {
+      "id": "label",
+      "type": "string",
+      "label": "Panel label prefix",
+      "default": "KEY"
+    },
+    {
+      "id": "seed",
+      "type": "number",
+      "label": "Layout seed",
+      "default": 7
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#100f0f"
+    },
+    {
+      "id": "surface",
+      "type": "color",
+      "label": "Panel surface",
+      "default": "#1c1b1a"
+    },
+    {
+      "id": "edge",
+      "type": "color",
+      "label": "Panel edge",
+      "default": "#343331"
+    },
+    {
+      "id": "foreground",
+      "type": "color",
+      "label": "Title ink",
+      "default": "#f2f0e5"
+    },
+    {
+      "id": "accent",
+      "type": "color",
+      "label": "Accent",
+      "default": "#ec8b49"
+    },
+    {
+      "id": "highlight",
+      "type": "color",
+      "label": "Highlight",
+      "default": "#fcc192"
+    }
   ]
 }
