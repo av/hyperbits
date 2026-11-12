@@ -1,0 +1,46 @@
+{
+  "name": "led-marquee",
+  "title": "LED Matrix Sign",
+  "description": "A dot-matrix LED sign in a dark housing: a message scrolls across the glowing dots, then a second line wipes in column by column and pulses",
+  "tags": [
+    "text",
+    "pixel",
+    "retro",
+    "glow"
+  ],
+  "duration": 8,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "color",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://hyperbits.dev/vendor/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "led-marquee",
+    "type": "hyperframes:block",
+    "title": "LED Matrix Sign",
+    "description": "A dot-matrix LED sign in a dark housing: a message scrolls across the glowing dots, then a second line wipes in column by column and pulses",
+    "tags": [
+      "text",
+      "pixel",
+      "retro",
+      "glow"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 8,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/led-marquee.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

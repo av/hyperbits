@@ -1,0 +1,32 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "isometric-city",
+  "type": "hyperframes:block",
+  "title": "Isometric Skyline",
+  "description": "Line-art city blocks rising out of an isometric grid with hidden-line removal, a slow orbiting camera, a scan ring lighting edges and windows flickering on",
+  "tags": [
+    "3d",
+    "isometric",
+    "line-art",
+    "architecture",
+    "generative"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 10,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/isometric-city.html",
+      "type": "hyperframes:composition"
+    },
+    {
+      "path": "hyperbits.iife.js",
+      "target": "compositions/hyperbits.iife.js",
+      "type": "hyperframes:asset"
+    }
+  ]
+}

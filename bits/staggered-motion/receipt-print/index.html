@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"store","type":"string","label":"Store name","default":"HYPERBITS SUPPLY CO."},{"id":"items","type":"string","label":"Items as name:price, comma separated","default":"Dithered planet:12.00,Split-flap board:8.50,ASCII torus:6.25,Isometric city:14.00,Vector scope:9.75"},{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Paper","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#ec8b49"}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 500;
+        font-display: block;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-500-normal.woff2) format("woff2");
+      }
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 700;
+        font-display: block;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-700-normal.woff2) format("woff2");
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #100f0f;
+        --paper: #f2f0e5;
+        --ink: #1c1b1a;
+        --accent: #ec8b49;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #100f0f;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      #printer {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #1c1b1a;
+        z-index: 3;
+      }
+      #slot {
+        position: absolute;
+        left: 6%;
+        right: 6%;
+        background-color: #080707;
+      }
+      #paper-window {
+        position: absolute;
+        left: 50%;
+        overflow: hidden;
+        z-index: 2;
+      }
+      #paper {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #f2f0e5;
+        color: #1c1b1a;
+        font-family: "Geist Mono", ui-monospace, monospace;
+        font-weight: 500;
+      }
+      .row {
+        display: flex;
+        justify-content: space-between;
+        white-space: nowrap;
+      }
+      .row .leader {
+        flex: 1;
+        overflow: hidden;
+        opacity: 0.6;
+      }
+      .center {
+        text-align: center;
+        white-space: nowrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="receipt-print"
+      data-start="0"
+      data-duration="8"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="8" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <div id="paper-window" class="clip" data-start="0" data-duration="8"><div id="paper"></div></div>
+      <div id="printer" class="clip" data-start="0" data-duration="8"><div id="slot"></div></div>
+    </div>
+    <script>
+      (function () {
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+        function progressOf(time, start, length) {
+          return Math.min(Math.max((time - start) / length, 0), 1);
+        }
+
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const printer = document.getElementById("printer");
+        const slot = document.getElementById("slot");
+        const paperWindow = document.getElementById("paper-window");
+        const paper = document.getElementById("paper");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        const duration = 8;
+        const paperWidth = view.vmin * 60;
+        const printerWidth = paperWidth * 1.3;
+        const printerHeight = view.vmin * 13;
+        const printerTop = view.height - printerHeight - view.vmin * 5;
+        const fontSize = view.vmin * 2.8;
+        const lineHeight = fontSize * 1.75;
+        const padding = view.vmin * 3.2;
+        printer.style.width = printerWidth + "px";
+        printer.style.height = printerHeight + "px";
+        printer.style.top = printerTop + "px";
+        printer.style.borderRadius = view.vmin * 1.8 + "px";
+        printer.style.boxShadow = "0 " + view.vmin * 1.5 + "px " + view.vmin * 4 + "px rgba(0, 0, 0, 0.6)";
+        slot.style.height = view.vmin * 1.2 + "px";
+        slot.style.top = view.vmin * 2.2 + "px";
+        slot.style.borderRadius = view.vmin * 0.6 + "px";
+        const lamp = document.createElement("div");
+        lamp.style.position = "absolute";
+        lamp.style.width = view.vmin * 1.1 + "px";
+        lamp.style.height = view.vmin * 1.1 + "px";
+        lamp.style.borderRadius = "50%";
+        lamp.style.right = view.vmin * 3 + "px";
+        lamp.style.bottom = view.vmin * 3 + "px";
+        lamp.style.backgroundColor = vars.accent;
+        printer.append(lamp);
+        const slotLine = printerTop + view.vmin * 2.8;
+        paperWindow.style.width = paperWidth + "px";
+        paperWindow.style.marginLeft = -paperWidth / 2 + "px";
+        paperWindow.style.top = "0";
+        paperWindow.style.height = slotLine + "px";
+        paper.style.padding = padding + "px";
+        paper.style.fontSize = fontSize + "px";
+        paper.style.lineHeight = lineHeight + "px";
+        paper.style.backgroundColor = vars.foreground;
+        const items = String(vars.items)
+          .split(",")
+          .map((entry) => entry.split(":"))
+          .filter((parts) => parts[0] && parts[0].trim())
+          .slice(0, 8)
+          .map((parts) => ({ name: parts[0].trim(), price: Number(parts[1]) || 0 }));
+        const subtotal = items.reduce((sum, item) => sum + item.price, 0);
+        const tax = subtotal * 0.08;
+        const lines = [];
+        function addLine(node) {
+          paper.append(node);
+          lines.push(node);
+          return node;
+        }
+        function textLine(text, options) {
+          const node = document.createElement("div");
+          node.className = "center";
+          node.textContent = text;
+          if (options && options.bold) node.style.fontWeight = "700";
+          if (options && options.color) node.style.color = options.color;
+          if (options && options.size) node.style.fontSize = options.size + "px";
+          return addLine(node);
+        }
+        function row(left, right, bold) {
+          const node = document.createElement("div");
+          node.className = "row";
+          const name = document.createElement("span");
+          name.textContent = left;
+          const leader = document.createElement("span");
+          leader.className = "leader";
+          leader.textContent = " ".padEnd(80, ".");
+          const value = document.createElement("span");
+          value.textContent = right;
+          if (bold) node.style.fontWeight = "700";
+          node.append(name, leader, value);
+          return addLine(node);
+        }
+        textLine(String(vars.store), { bold: true, size: fontSize * 1.15 });
+        textLine("ORDER #0907  12 NOV 2026  09:41");
+        textLine("--------------------------------");
+        for (const item of items) row(item.name, item.price.toFixed(2));
+        textLine("--------------------------------");
+        row("SUBTOTAL", subtotal.toFixed(2));
+        row("TAX 8%", tax.toFixed(2));
+        const totalRow = row("TOTAL", (subtotal + tax).toFixed(2), true);
+        totalRow.style.fontSize = fontSize * 1.35 + "px";
+        totalRow.style.backgroundColor = vars.accent;
+        totalRow.style.margin = "0 " + -view.vmin * 1 + "px";
+        totalRow.style.padding = "0 " + view.vmin * 1 + "px";
+        textLine(" ");
+        const barcode = document.createElement("div");
+        barcode.style.height = lineHeight * 1.6 + "px";
+        barcode.style.display = "flex";
+        barcode.style.justifyContent = "center";
+        barcode.style.gap = "0";
+        for (let bar = 0; bar < 46; bar += 1) {
+          const stripe = document.createElement("div");
+          const widths = [1, 2, 1, 3, 1, 1, 2, 4];
+          stripe.style.width = widths[(bar * 7 + 3) % widths.length] * view.vmin * 0.18 + "px";
+          stripe.style.marginRight = widths[(bar * 5 + 1) % widths.length] * view.vmin * 0.14 + "px";
+          stripe.style.backgroundColor = "#1c1b1a";
+          barcode.append(stripe);
+        }
+        addLine(barcode);
+        textLine("* THANK YOU *", { bold: true });
+        const edge = document.createElement("div");
+        edge.style.position = "absolute";
+        edge.style.left = "0";
+        edge.style.right = "0";
+        edge.style.top = -view.vmin * 1.2 + "px";
+        edge.style.height = view.vmin * 1.2 + "px";
+        edge.style.backgroundImage = "linear-gradient(45deg, " + vars.foreground + " 50%, rgba(0, 0, 0, 0) 50%), linear-gradient(315deg, " + vars.foreground + " 50%, rgba(0, 0, 0, 0) 50%)";
+        edge.style.backgroundSize = view.vmin * 1.6 + "px " + view.vmin * 1.2 + "px";
+        edge.style.backgroundPosition = "0 0";
+        paper.append(edge);
+        paperWindow.setAttribute("aria-label", String(vars.store) + " " + String(vars.items));
+        const lineCount = lines.length;
+        const printStart = 0.6;
+        const perLine = 0.28;
+        const printEnd = printStart + lineCount * perLine;
+        const extra = view.vmin * 6;
+        const fullHeight = padding * 2 + lineCount * lineHeight + lineHeight * 0.6;
+        const proxy = { time: 0 };
+        function render() {
+          const time = proxy.time;
+          const printed = Math.max(0, Math.min(lineCount, (time - printStart) / perLine));
+          const feedTail = time > printEnd ? extra * Math.min(1, (time - printEnd) / 0.4) : 0;
+          const fed = Math.min(fullHeight, padding + printed * lineHeight + feedTail);
+          lines.forEach((line, index) => {
+            const amount = Math.max(0, Math.min(1, printed - index));
+            line.style.clipPath = "inset(0 " + (1 - amount) * 100 + "% 0 0)";
+          });
+          const tear = progressOf(time, printEnd + 0.9, 1.3);
+          const fly = tear * tear;
+          paper.style.height = fullHeight + "px";
+          paper.style.transformOrigin = "50% 100%";
+          paper.style.transform = "translateY(" + (slotLine - fed - fly * view.height * 1.1) + "px) rotate(" + -fly * 8 + "deg)";
+          paperWindow.style.overflow = tear > 0 ? "visible" : "hidden";
+          const jitter = time > printStart && time < printEnd ? Math.sin(time * 90) * view.vmin * 0.08 : 0;
+          printer.style.transform = "translateX(-50%) translateY(" + jitter + "px)";
+          lamp.style.opacity = time > printStart && time < printEnd && Math.floor(time * 6) % 2 === 0 ? "1" : "0.35";
+        }
+        paper.style.top = "0";
+        paper.style.bottom = "auto";
+        const timeline = gsap.timeline({ paused: true });
+        timeline.to(proxy, { time: duration, duration: duration, ease: "none", onUpdate: render }, 0);
+        timeline.fromTo(printer, { opacity: 0 }, { opacity: 1, duration: 0.4 }, 0);
+        render();
+        registerTimeline("receipt-print", timeline);
+      })();
+    </script>
+  </body>
+</html>

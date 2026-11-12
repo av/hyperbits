@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"label","type":"string","label":"Screen label","default":"XY MODE / CH1 + CH2"},{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Beam core","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Phosphor","default":"#ec8b49"}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 500;
+        font-display: block;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-500-normal.woff2) format("woff2");
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="./hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #100f0f;
+        --fg: #f2f0e5;
+        --accent: #ec8b49;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #100f0f;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .readout {
+        position: absolute;
+        font-family: "Geist Mono", ui-monospace, monospace;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        white-space: nowrap;
+        color: #ec8b49;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="vector-scope"
+      data-start="0"
+      data-duration="10"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <canvas id="stage" class="clip" data-start="0" data-duration="10"></canvas>
+      <div id="hud" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0"></div>
+    </div>
+    <script>
+      (function () {
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+        function channels(color) {
+          const parts = hyperbits.mixOklch(String(color), String(color), 0, "rgb(0, 0, 0)").match(/[0-9.]+/g) || [0, 0, 0];
+          return parts.slice(0, 3).map(Number);
+        }
+        function rgba(rgb, alpha) {
+          return "rgba(" + Math.round(rgb[0]) + ", " + Math.round(rgb[1]) + ", " + Math.round(rgb[2]) + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
+        }
+        function mixRgb(from, to, amount) {
+          return [from[0] + (to[0] - from[0]) * amount, from[1] + (to[1] - from[1]) * amount, from[2] + (to[2] - from[2]) * amount];
+        }
+
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const canvas = document.getElementById("stage");
+        const hud = document.getElementById("hud");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        canvas.width = view.width;
+        canvas.height = view.height;
+        const context = canvas.getContext("2d");
+        const duration = 10;
+        const back = channels(vars.background);
+        const fore = channels(vars.foreground);
+        const accent = channels(vars.accent);
+        const screenSize = view.height * 0.74;
+        const screenX = (view.width - screenSize - view.vmin * 36) / 2;
+        const screenY = (view.height - screenSize) / 2;
+        const centerX = screenX + screenSize / 2;
+        const centerY = screenY + screenSize / 2;
+        const amplitude = screenSize * 0.4;
+        const ratios = [
+          { a: 1, b: 1, label: "1:1" },
+          { a: 1, b: 2, label: "1:2" },
+          { a: 3, b: 2, label: "3:2" },
+          { a: 3, b: 4, label: "3:4" },
+          { a: 5, b: 4, label: "5:4" },
+          { a: 5, b: 6, label: "5:6" },
+        ];
+        const hold = duration / ratios.length;
+        function figureAt(time) {
+          const slot = Math.min(ratios.length - 1, Math.floor(time / hold));
+          const local = (time - slot * hold) / hold;
+          const current = ratios[slot];
+          const next = ratios[Math.min(ratios.length - 1, slot + 1)];
+          const blend = slot === ratios.length - 1 ? 0 : smoothstep(0.72, 1, local);
+          return {
+            a: current.a + (next.a - current.a) * blend,
+            b: current.b + (next.b - current.b) * blend,
+            label: blend > 0.5 ? next.label : current.label,
+            phase: time * 0.9,
+          };
+        }
+        function point(figure, parameter, wake) {
+          const wobble = 1 + 0.004 * Math.sin(parameter * 23 + wake * 2);
+          return [centerX + Math.sin(figure.a * parameter + figure.phase) * amplitude * wobble, centerY + Math.sin(figure.b * parameter) * amplitude * wobble];
+        }
+        function drawGraticule(power) {
+          const divisions = 10;
+          const cell = screenSize / divisions;
+          context.lineWidth = Math.max(1, view.vmin * 0.08);
+          context.strokeStyle = rgba(accent, 0.16 * power);
+          context.beginPath();
+          for (let index = 0; index <= divisions; index += 1) {
+            context.moveTo(screenX + index * cell, screenY);
+            context.lineTo(screenX + index * cell, screenY + screenSize);
+            context.moveTo(screenX, screenY + index * cell);
+            context.lineTo(screenX + screenSize, screenY + index * cell);
+          }
+          context.stroke();
+          context.strokeStyle = rgba(accent, 0.32 * power);
+          context.beginPath();
+          for (let tick = 0; tick <= divisions * 5; tick += 1) {
+            const offset = (tick * cell) / 5;
+            const length = view.vmin * (tick % 5 === 0 ? 0.9 : 0.45);
+            context.moveTo(screenX + offset, centerY - length / 2);
+            context.lineTo(screenX + offset, centerY + length / 2);
+            context.moveTo(centerX - length / 2, screenY + offset);
+            context.lineTo(centerX + length / 2, screenY + offset);
+          }
+          context.stroke();
+        }
+        function draw(time) {
+          if (!context || typeof context.stroke !== "function") return;
+          context.clearRect(0, 0, view.width, view.height);
+          const power = smoothstep(0.1, 0.7, time);
+          const glass = context.createRadialGradient(centerX, centerY, screenSize * 0.1, centerX, centerY, screenSize * 0.75);
+          glass.addColorStop(0, rgba(mixRgb(back, accent, 0.07 * power), 1));
+          glass.addColorStop(1, rgba(back, 1));
+          context.fillStyle = glass;
+          const radius = view.vmin * 3;
+          context.beginPath();
+          context.roundRect(screenX - view.vmin * 2, screenY - view.vmin * 2, screenSize + view.vmin * 4, screenSize + view.vmin * 4, radius);
+          context.fill();
+          context.strokeStyle = rgba(mixRgb(back, fore, 0.14), 1);
+          context.lineWidth = view.vmin * 0.25;
+          context.stroke();
+          drawGraticule(power);
+          const figure = figureAt(time);
+          const span = Math.PI * 2;
+          const samples = 900;
+          const ignite = smoothstep(0.5, 1.4, time);
+          context.lineCap = "round";
+          context.lineJoin = "round";
+          context.globalCompositeOperation = "lighter";
+          const layers = [
+            { width: 2.6, alpha: 0.07, color: accent },
+            { width: 1.2, alpha: 0.16, color: accent },
+            { width: 0.5, alpha: 0.6, color: accent },
+            { width: 0.18, alpha: 0.85, color: mixRgb(accent, fore, 0.7) },
+          ];
+          const chunks = 24;
+          const sweep = span * (0.25 + 0.75 * ignite);
+          const head = time * 5.5;
+          for (const layer of layers) {
+            context.lineWidth = view.vmin * layer.width;
+            for (let chunk = 0; chunk < chunks; chunk += 1) {
+              const age = chunk / chunks;
+              context.strokeStyle = rgba(layer.color, layer.alpha * ignite * (0.25 + 0.75 * (1 - age) ** 1.6));
+              context.beginPath();
+              const from = Math.floor((samples * chunk) / chunks);
+              const to = Math.floor((samples * (chunk + 1)) / chunks);
+              for (let index = from; index <= to; index += 1) {
+                const parameter = head - (index / samples) * sweep;
+                const [pointX, pointY] = point(figure, parameter, time);
+                if (index === from) context.moveTo(pointX, pointY);
+                else context.lineTo(pointX, pointY);
+              }
+              context.stroke();
+            }
+          }
+          const [beamX, beamY] = point(figure, head, time);
+          const bloom = context.createRadialGradient(beamX, beamY, 0, beamX, beamY, view.vmin * 3.2);
+          bloom.addColorStop(0, rgba(fore, 0.9 * ignite));
+          bloom.addColorStop(0.15, rgba(accent, 0.55 * ignite));
+          bloom.addColorStop(1, rgba(accent, 0));
+          context.fillStyle = bloom;
+          context.beginPath();
+          context.arc(beamX, beamY, view.vmin * 3.2, 0, Math.PI * 2);
+          context.fill();
+          context.globalCompositeOperation = "source-over";
+          context.fillStyle = rgba(back, 0.22);
+          for (let line = screenY; line < screenY + screenSize; line += view.vmin * 0.5) context.fillRect(screenX, line, screenSize, view.vmin * 0.16);
+          ratioValue.textContent = figure.label;
+          phaseValue.textContent = String(Math.round(((figure.phase * 180) / Math.PI) % 360)).padStart(3, "0") + "\u00b0";
+          freqValue.textContent = (figure.a * 220).toFixed(1).padStart(6, " ") + " Hz";
+          freqValueB.textContent = (figure.b * 220).toFixed(1).padStart(6, " ") + " Hz";
+        }
+        const panelX = screenX + screenSize + view.vmin * 9;
+        const fontSize = view.vmin * 2;
+        function addReadout(text, top, options) {
+          const node = document.createElement("div");
+          node.className = "readout";
+          node.textContent = text;
+          node.style.left = panelX + "px";
+          node.style.top = top + "px";
+          node.style.fontSize = (options && options.size ? options.size : fontSize) + "px";
+          node.style.color = options && options.dim ? vars.foreground : vars.accent;
+          node.style.whiteSpace = "pre";
+          if (options && options.dim) {
+            node.style.opacity = "0.5";
+            node.dataset.dim = "1";
+          }
+          hud.append(node);
+          return node;
+        }
+        const labelNode = addReadout(String(vars.label), screenY, { dim: true });
+        addReadout("RATIO", screenY + view.vmin * 7, { dim: true });
+        const ratioValue = addReadout("1:1", screenY + view.vmin * 9.5, { size: view.vmin * 9 });
+        addReadout("PHASE", screenY + view.vmin * 23, { dim: true });
+        const phaseValue = addReadout("000", screenY + view.vmin * 25.5, { size: view.vmin * 4 });
+        addReadout("CH1", screenY + view.vmin * 34, { dim: true });
+        const freqValue = addReadout("220.0 Hz", screenY + view.vmin * 36.5, { size: view.vmin * 3 });
+        addReadout("CH2", screenY + view.vmin * 43, { dim: true });
+        const freqValueB = addReadout("220.0 Hz", screenY + view.vmin * 45.5, { size: view.vmin * 3 });
+        labelNode.setAttribute("aria-label", String(vars.label));
+        const proxy = { time: 0 };
+        const timeline = gsap.timeline({ paused: true });
+        timeline.to(proxy, { time: duration, duration: duration, ease: "none", onUpdate: () => draw(proxy.time) }, 0);
+        timeline.fromTo(Array.from(hud.children), { opacity: 0, x: view.vmin * 2 }, { opacity: (index, node) => (node.dataset.dim ? 0.5 : 1), x: 0, duration: 0.6, stagger: 0.06, ease: "power3.out" }, 0.6);
+        draw(0);
+        registerTimeline("vector-scope", timeline);
+      })();
+    </script>
+  </body>
+</html>

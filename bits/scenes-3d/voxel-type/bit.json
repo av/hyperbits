@@ -1,0 +1,49 @@
+{
+  "name": "voxel-type",
+  "title": "Voxel Type",
+  "description": "Isometric voxels fly in from a scattered cloud and lock into a word built from a 5x7 pixel font, ripple with a travelling wave, then burst apart",
+  "tags": [
+    "3d",
+    "isometric",
+    "pixel",
+    "typography",
+    "logo"
+  ],
+  "duration": 8,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "color",
+    "random",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://hyperbits.dev/vendor/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "voxel-type",
+    "type": "hyperframes:block",
+    "title": "Voxel Type",
+    "description": "Isometric voxels fly in from a scattered cloud and lock into a word built from a 5x7 pixel font, ripple with a travelling wave, then burst apart",
+    "tags": [
+      "3d",
+      "isometric",
+      "pixel",
+      "typography",
+      "logo"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 8,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/voxel-type.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

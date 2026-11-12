@@ -1,0 +1,48 @@
+{
+  "name": "pixel-sort",
+  "title": "Pixel Sort",
+  "description": "A sunset title card torn apart by brightness-sorted pixel runs that drip down each column, settling into the clean frame before a sweeping band glitches it again",
+  "tags": [
+    "text",
+    "glitch",
+    "pixel",
+    "retro",
+    "title"
+  ],
+  "duration": 8,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "color",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://hyperbits.dev/vendor/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "pixel-sort",
+    "type": "hyperframes:block",
+    "title": "Pixel Sort",
+    "description": "A sunset title card torn apart by brightness-sorted pixel runs that drip down each column, settling into the clean frame before a sweeping band glitches it again",
+    "tags": [
+      "text",
+      "glitch",
+      "pixel",
+      "retro",
+      "title"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 8,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/pixel-sort.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

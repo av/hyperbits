@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"caption","type":"string","label":"Caption","default":"BLOCK 07 / ELEVATION STUDY"},{"id":"seed","type":"number","label":"Seed","default":7},{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Line ink","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#ec8b49"}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 500;
+        font-display: block;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-500-normal.woff2) format("woff2");
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="./hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #100f0f;
+        --fg: #f2f0e5;
+        --accent: #ec8b49;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #100f0f;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      #caption {
+        position: absolute;
+        font-family: "Geist Mono", ui-monospace, monospace;
+        font-weight: 500;
+        letter-spacing: 0.18em;
+        color: #f2f0e5;
+        white-space: nowrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="isometric-city"
+      data-start="0"
+      data-duration="10"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <canvas id="stage" class="clip" data-start="0" data-duration="10"></canvas>
+      <div id="caption" class="clip" data-start="0" data-duration="10"></div>
+    </div>
+    <script>
+      (function () {
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+        function channels(color) {
+          const parts = hyperbits.mixOklch(String(color), String(color), 0, "rgb(0, 0, 0)").match(/[0-9.]+/g) || [0, 0, 0];
+          return parts.slice(0, 3).map(Number);
+        }
+        function rgba(rgb, alpha) {
+          return "rgba(" + Math.round(rgb[0]) + ", " + Math.round(rgb[1]) + ", " + Math.round(rgb[2]) + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
+        }
+        function mixRgb(from, to, amount) {
+          return [from[0] + (to[0] - from[0]) * amount, from[1] + (to[1] - from[1]) * amount, from[2] + (to[2] - from[2]) * amount];
+        }
+        function progressOf(time, start, length) {
+          return Math.min(Math.max((time - start) / length, 0), 1);
+        }
+
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const canvas = document.getElementById("stage");
+        const caption = document.getElementById("caption");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        canvas.width = view.width;
+        canvas.height = view.height;
+        const context = canvas.getContext("2d");
+        const duration = 10;
+        const seed = Math.round(Number(vars.seed) || 0);
+        const back = channels(vars.background);
+        const fore = channels(vars.foreground);
+        const accent = channels(vars.accent);
+        const size = 13;
+        const half = (size - 1) / 2;
+        const buildings = [];
+        for (let gridX = 0; gridX < size; gridX += 1) {
+          for (let gridY = 0; gridY < size; gridY += 1) {
+            if (gridX % 4 === 2 || gridY % 5 === 2) continue;
+            const key = "city-" + seed + "-" + gridX + "-" + gridY;
+            const distance = Math.hypot(gridX - half, gridY - half) / half;
+            if (distance > 1.08) continue;
+            if (hyperbits.random(key + "-gap") < 0.12) continue;
+            const core = Math.max(0, 1 - distance);
+            const height = 0.35 + core * core * 5.2 * hyperbits.randomFloat(key + "-h", 0.45, 1.25) + hyperbits.randomFloat(key + "-n", 0, 0.6);
+            const inset = hyperbits.randomFloat(key + "-i", 0.08, 0.2);
+            buildings.push({
+              x: gridX - half,
+              y: gridY - half,
+              inset,
+              height,
+              floors: Math.max(1, Math.round(height * 3)),
+              delay: 0.25 + distance * 1.6 + hyperbits.randomFloat(key + "-d", 0, 0.35),
+              lit: hyperbits.random(key + "-lit"),
+              accent: hyperbits.random(key + "-accent") < 0.14,
+              key,
+            });
+          }
+        }
+        function easeOutBack(value) {
+          const overshoot = 1.4;
+          const shifted = value - 1;
+          return 1 + (overshoot + 1) * shifted * shifted * shifted + overshoot * shifted * shifted;
+        }
+        function hash(first, second) {
+          let value = Math.imul(first ^ 0x9e3779b9, 0x85ebca6b) ^ Math.imul(second + 0x632be5ab, 0xc2b2ae35);
+          value ^= value >>> 15;
+          value = Math.imul(value, 0x27d4eb2f);
+          value ^= value >>> 13;
+          return (value >>> 0) / 4294967296;
+        }
+        const lineWidth = Math.max(1, view.vmin * 0.14);
+        function draw(time) {
+          if (!context || typeof context.stroke !== "function") return;
+          context.clearRect(0, 0, view.width, view.height);
+          const azimuth = Math.PI / 4 + 0.42 - time * 0.07;
+          const elevation = 0.6155;
+          const cosA = Math.cos(azimuth);
+          const sinA = Math.sin(azimuth);
+          const cosE = Math.cos(elevation);
+          const sinE = Math.sin(elevation);
+          const zoom = 1 + 0.12 * hyperbits.Easing.easeInOutSine(progressOf(time, 0, duration));
+          const unit = (view.height / (size * 0.92)) * zoom;
+          const originX = view.width * 0.5;
+          const originY = view.height * 0.6;
+          function project(pointX, pointY, pointZ) {
+            const rotatedX = pointX * cosA - pointY * sinA;
+            const rotatedY = pointX * sinA + pointY * cosA;
+            return [originX + rotatedX * unit, originY + (rotatedY * sinE - pointZ * cosE) * unit, rotatedY * cosE + pointZ * sinE];
+          }
+          const viewX = sinA;
+          const viewY = cosA;
+          const scanRadius = (time - 3.2) * 4.2;
+          const gridFade = progressOf(time, 0, 0.8);
+          context.lineCap = "round";
+          context.lineJoin = "round";
+          context.lineWidth = lineWidth * 0.7;
+          for (let index = 0; index <= size; index += 1) {
+            const offset = index - size / 2;
+            const isStreet = (index - 0.5) % 1 === 0;
+            const reach = Math.sqrt(Math.max(0, (size / 2 + 0.6) ** 2 - offset * offset));
+            for (const flip of [false, true]) {
+              const start = flip ? project(-reach, offset, 0) : project(offset, -reach, 0);
+              const end = flip ? project(reach, offset, 0) : project(offset, reach, 0);
+              context.strokeStyle = rgba(mixRgb(back, fore, 0.16), gridFade * (isStreet ? 1 : 1));
+              context.beginPath();
+              context.moveTo(start[0], start[1]);
+              context.lineTo(end[0], end[1]);
+              context.stroke();
+            }
+          }
+          const pulses = 6;
+          for (let index = 0; index < pulses; index += 1) {
+            const lane = Math.floor(hash(index, seed) * 3) * 4 + 2 - half;
+            const reach = Math.sqrt(Math.max(0, (size / 2) ** 2 - lane * lane)) - 0.5;
+            const along = ((time * 1.6 + hash(index, 11) * 20) % (reach * 2 + 3)) - reach;
+            const fade = Math.max(0, Math.min(1, (reach - along) / 1.5, (along + reach) / 1.5));
+            if (fade <= 0) continue;
+            const vertical = index % 2 === 0;
+            const point = vertical ? project(lane, along, 0) : project(along, lane, 0);
+            const tailAlong = Math.max(-reach, along - 1.4);
+            const tail = vertical ? project(lane, tailAlong, 0) : project(tailAlong, lane, 0);
+            const gradient = context.createLinearGradient(tail[0], tail[1], point[0], point[1]);
+            gradient.addColorStop(0, rgba(accent, 0));
+            gradient.addColorStop(1, rgba(accent, 0.9 * gridFade * fade));
+            context.strokeStyle = gradient;
+            context.lineWidth = lineWidth * 2.2;
+            context.beginPath();
+            context.moveTo(tail[0], tail[1]);
+            context.lineTo(point[0], point[1]);
+            context.stroke();
+          }
+          const order = buildings
+            .map((building) => ({ building, depth: project(building.x, building.y, 0)[2] }))
+            .sort((left, right) => left.depth - right.depth);
+          for (const { building } of order) {
+            const rise = progressOf(time, building.delay, 1.1);
+            if (rise <= 0) continue;
+            const height = building.height * easeOutBack(rise);
+            const low = building.inset - 0.5;
+            const high = 0.5 - building.inset;
+            const corners = [
+              [building.x + low, building.y + low],
+              [building.x + high, building.y + low],
+              [building.x + high, building.y + high],
+              [building.x + low, building.y + high],
+            ];
+            const bottom = corners.map((corner) => project(corner[0], corner[1], 0));
+            const top = corners.map((corner) => project(corner[0], corner[1], height));
+            const ringDistance = Math.abs(Math.hypot(building.x, building.y) - scanRadius);
+            const scan = Math.max(0, 1 - ringDistance / 1.2);
+            const lineColor = building.accent ? accent : mixRgb(fore, accent, scan * 0.8);
+            const lineAlpha = 0.55 + 0.45 * Math.max(scan, building.accent ? 1 : 0);
+            const faces = [];
+            const normals = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+            for (let side = 0; side < 4; side += 1) {
+              const facing = normals[side][0] * viewX + normals[side][1] * viewY;
+              if (facing <= 0) continue;
+              faces.push({ side, facing });
+            }
+            for (const { side, facing } of faces) {
+              const next = (side + 1) % 4;
+              const shade = side % 2 === 0 ? 0.05 : 0.11;
+              context.fillStyle = rgba(mixRgb(back, fore, shade * (0.6 + facing)), 1);
+              context.beginPath();
+              context.moveTo(bottom[side][0], bottom[side][1]);
+              context.lineTo(bottom[next][0], bottom[next][1]);
+              context.lineTo(top[next][0], top[next][1]);
+              context.lineTo(top[side][0], top[side][1]);
+              context.closePath();
+              context.fill();
+              const floors = Math.max(1, Math.floor(building.floors * Math.min(1, height / building.height)));
+              for (let floor = 0; floor < floors; floor += 1) {
+                const level = ((floor + 0.5) / building.floors) * building.height;
+                if (level > height - 0.05) continue;
+                for (let bay = 0; bay < 2; bay += 1) {
+                  const glow = hash(building.key.length * 131 + floor * 17 + bay * 7 + side * 3, Math.floor(time * 2.5 + building.lit * 10));
+                  const on = progressOf(time, building.delay + 1 + floor * 0.12, 0.3) * (glow > 0.62 ? 1 : 0);
+                  if (on <= 0) continue;
+                  const startAmount = 0.2 + bay * 0.38;
+                  const endAmount = startAmount + 0.22;
+                  const fromX = bottom[side][0] + (bottom[next][0] - bottom[side][0]) * startAmount;
+                  const fromY = bottom[side][1] + (bottom[next][1] - bottom[side][1]) * startAmount;
+                  const toX = bottom[side][0] + (bottom[next][0] - bottom[side][0]) * endAmount;
+                  const toY = bottom[side][1] + (bottom[next][1] - bottom[side][1]) * endAmount;
+                  const lift = (top[side][1] - bottom[side][1]) * (level / height);
+                  context.strokeStyle = rgba(accent, on * 0.95);
+                  context.lineWidth = lineWidth * 1.6;
+                  context.beginPath();
+                  context.moveTo(fromX, fromY + lift);
+                  context.lineTo(toX, toY + lift);
+                  context.stroke();
+                }
+              }
+              context.strokeStyle = rgba(lineColor, lineAlpha);
+              context.lineWidth = lineWidth;
+              context.beginPath();
+              context.moveTo(bottom[side][0], bottom[side][1]);
+              context.lineTo(bottom[next][0], bottom[next][1]);
+              context.lineTo(top[next][0], top[next][1]);
+              context.lineTo(top[side][0], top[side][1]);
+              context.closePath();
+              context.stroke();
+            }
+            context.fillStyle = rgba(mixRgb(back, building.accent ? accent : fore, building.accent ? 0.35 : 0.17), 1);
+            context.strokeStyle = rgba(lineColor, lineAlpha);
+            context.lineWidth = lineWidth;
+            context.beginPath();
+            top.forEach((point, index) => (index === 0 ? context.moveTo(point[0], point[1]) : context.lineTo(point[0], point[1])));
+            context.closePath();
+            context.fill();
+            context.stroke();
+          }
+        }
+        caption.textContent = String(vars.caption);
+        caption.style.fontSize = view.vmin * 1.7 + "px";
+        caption.style.left = view.vmin * 5 + "px";
+        caption.style.top = view.vmin * 5 + "px";
+        caption.style.color = vars.accent;
+        const proxy = { time: 0 };
+        const timeline = gsap.timeline({ paused: true });
+        timeline.to(proxy, { time: duration, duration: duration, ease: "none", onUpdate: () => draw(proxy.time) }, 0);
+        timeline.fromTo(caption, { opacity: 0, x: -view.vmin * 2 }, { opacity: 1, x: 0, duration: 0.7, ease: "power3.out" }, 0.3);
+        draw(0);
+        registerTimeline("isometric-city", timeline);
+      })();
+    </script>
+  </body>
+</html>

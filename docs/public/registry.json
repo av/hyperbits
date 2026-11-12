@@ -4,7 +4,19 @@
   "homepage": "https://github.com/av/hyperbits",
   "items": [
     {
+      "name": "circuit-traces",
+      "type": "hyperframes:block"
+    },
+    {
       "name": "conic-gradient",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "hard-light",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "lava-dither",
       "type": "hyperframes:block"
     },
     {
@@ -12,7 +24,23 @@
       "type": "hyperframes:block"
     },
     {
+      "name": "moire-field",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "op-art-lens",
+      "type": "hyperframes:block"
+    },
+    {
       "name": "radial-gradient",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "rule-cascade",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "blueprint-draw",
       "type": "hyperframes:block"
     },
     {
@@ -88,6 +116,10 @@
       "type": "hyperframes:block"
     },
     {
+      "name": "flow-field",
+      "type": "hyperframes:block"
+    },
+    {
       "name": "particles-fountain",
       "type": "hyperframes:block"
     },
@@ -100,7 +132,19 @@
       "type": "hyperframes:block"
     },
     {
+      "name": "radar-sweep",
+      "type": "hyperframes:block"
+    },
+    {
       "name": "scrolling-columns",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "strange-attractor",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "vector-scope",
       "type": "hyperframes:block"
     },
     {
@@ -109,6 +153,10 @@
     },
     {
       "name": "3d-elements",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "ascii-torus",
       "type": "hyperframes:block"
     },
     {
@@ -124,7 +172,23 @@
       "type": "hyperframes:block"
     },
     {
+      "name": "dither-orb",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "dot-globe",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "exploded-stack",
+      "type": "hyperframes:block"
+    },
+    {
       "name": "flying-through-words",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "isometric-city",
       "type": "hyperframes:block"
     },
     {
@@ -141,6 +205,14 @@
     },
     {
       "name": "transform3d-showcase",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "voxel-type",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "wire-solids",
       "type": "hyperframes:block"
     },
     {
@@ -173,6 +245,14 @@
     },
     {
       "name": "mosaic-reframe",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "paper-fold",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "receipt-print",
       "type": "hyperframes:block"
     },
     {
@@ -216,6 +296,18 @@
       "type": "hyperframes:block"
     },
     {
+      "name": "crt-boot",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "dither-type",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "extruded-type",
+      "type": "hyperframes:block"
+    },
+    {
       "name": "fade-in",
       "type": "hyperframes:block"
     },
@@ -228,11 +320,39 @@
       "type": "hyperframes:block"
     },
     {
+      "name": "led-marquee",
+      "type": "hyperframes:block"
+    },
+    {
       "name": "matrix-rain",
       "type": "hyperframes:block"
     },
     {
+      "name": "mosaic-resolve",
+      "type": "hyperframes:block"
+    },
+    {
       "name": "multi-text-typewriter",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "odometer-roll",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "pixel-sort",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "riso-print",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "slit-scan",
+      "type": "hyperframes:block"
+    },
+    {
+      "name": "split-flap",
       "type": "hyperframes:block"
     },
     {

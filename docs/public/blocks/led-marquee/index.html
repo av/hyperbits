@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"message","type":"string","label":"Scrolling message","default":"NOW SHOWING: NEW BITS FOR HYPERFRAMES +++"},{"id":"headline","type":"string","label":"Final line","default":"HYPERBITS"},{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Hot core","default":"#f2f0e5"},{"id":"accent","type":"color","label":"LED colour","default":"#ec8b49"}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 500;
+        font-display: block;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-500-normal.woff2) format("woff2");
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="./hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #100f0f;
+        --fg: #f2f0e5;
+        --accent: #ec8b49;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #100f0f;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      #sign-label {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: "Geist Mono", ui-monospace, monospace;
+        font-weight: 500;
+        letter-spacing: 0.3em;
+        white-space: nowrap;
+        color: #f2f0e5;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="led-marquee"
+      data-start="0"
+      data-duration="8"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="8" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <canvas id="stage" class="clip" data-start="0" data-duration="8"></canvas>
+      <div id="sign-label" class="clip" data-start="0" data-duration="8"></div>
+    </div>
+    <script>
+      (function () {
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+        function channels(color) {
+          const parts = hyperbits.mixOklch(String(color), String(color), 0, "rgb(0, 0, 0)").match(/[0-9.]+/g) || [0, 0, 0];
+          return parts.slice(0, 3).map(Number);
+        }
+        function rgba(rgb, alpha) {
+          return "rgba(" + Math.round(rgb[0]) + ", " + Math.round(rgb[1]) + ", " + Math.round(rgb[2]) + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
+        }
+        function mixRgb(from, to, amount) {
+          return [from[0] + (to[0] - from[0]) * amount, from[1] + (to[1] - from[1]) * amount, from[2] + (to[2] - from[2]) * amount];
+        }
+        function progressOf(time, start, length) {
+          return Math.min(Math.max((time - start) / length, 0), 1);
+        }
+
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const canvas = document.getElementById("stage");
+        const label = document.getElementById("sign-label");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        canvas.width = view.width;
+        canvas.height = view.height;
+        const context = canvas.getContext("2d");
+        const duration = 8;
+        const back = channels(vars.background);
+        const fore = channels(vars.foreground);
+        const accent = channels(vars.accent);
+        const FONT = "A:14,17,17,31,17,17,17|B:30,17,17,30,17,17,30|C:14,17,16,16,16,17,14|D:28,18,17,17,17,18,28|E:31,16,16,30,16,16,31|F:31,16,16,30,16,16,16|G:14,17,16,23,17,17,15|H:17,17,17,31,17,17,17|I:14,4,4,4,4,4,14|J:7,2,2,2,2,18,12|K:17,18,20,24,20,18,17|L:16,16,16,16,16,16,31|M:17,27,21,21,17,17,17|N:17,17,25,21,19,17,17|O:14,17,17,17,17,17,14|P:30,17,17,30,16,16,16|Q:14,17,17,17,21,18,13|R:30,17,17,30,20,18,17|S:15,16,16,14,1,1,30|T:31,4,4,4,4,4,4|U:17,17,17,17,17,17,14|V:17,17,17,17,17,10,4|W:17,17,17,21,21,21,10|X:17,17,10,4,10,17,17|Y:17,17,17,10,4,4,4|Z:31,1,2,4,8,16,31|0:14,17,19,21,25,17,14|1:4,12,4,4,4,4,14|2:14,17,1,2,4,8,31|3:31,2,4,2,1,17,14|4:2,6,10,18,31,2,2|5:31,16,30,1,1,17,14|6:6,8,16,30,17,17,14|7:31,1,2,4,8,8,8|8:14,17,17,14,17,17,14|9:14,17,17,15,1,2,12| :0,0,0,0,0,0,0|.:0,0,0,0,0,12,12|,:0,0,0,0,12,4,8|!:4,4,4,4,4,0,4|?:14,17,1,2,4,0,4|-:0,0,0,31,0,0,0|#:10,10,31,10,31,10,10|+:0,4,4,31,4,4,0|/:1,1,2,4,8,16,16|::0,12,12,0,12,12,0";
+        const glyphs = {};
+        for (const entry of FONT.split("|")) {
+          const rows = entry.slice(2).split(",").map(Number);
+          glyphs[entry[0]] = rows;
+        }
+        function textColumns(text) {
+          const columns = [];
+          for (const character of String(text).toUpperCase()) {
+            const rows = glyphs[character] || glyphs[" "];
+            for (let bit = 4; bit >= 0; bit -= 1) columns.push(rows.map((row) => (row >> bit) & 1));
+            columns.push([0, 0, 0, 0, 0, 0, 0]);
+          }
+          if (columns.length) columns.pop();
+          return columns;
+        }
+        const columns = 96;
+        const rows = 18;
+        const pitch = Math.min((view.width * 0.88) / columns, (view.height * 0.5) / rows);
+        const panelWidth = columns * pitch;
+        const panelHeight = rows * pitch;
+        const panelX = (view.width - panelWidth) / 2;
+        const panelY = (view.height - panelHeight) / 2;
+        const scale = 2;
+        const glyphTop = Math.floor((rows - 7 * scale) / 2);
+        const message = textColumns(String(vars.message));
+        const headline = textColumns(String(vars.headline));
+        canvas.setAttribute("aria-label", String(vars.message) + " " + String(vars.headline));
+        const headlineScale = Math.max(1, Math.min(2, Math.floor(columns / Math.max(1, headline.length))));
+        const headlineTop = Math.floor((rows - 7 * headlineScale) / 2);
+        const headlineLeft = Math.floor((columns - headline.length * headlineScale) / 2);
+        const level = new Float32Array(columns * rows);
+        let glowLayer = null;
+        let glowContext = null;
+        function sample(columnsData, column, row, top, dotScale) {
+          const glyphColumn = Math.floor(column / dotScale);
+          const glyphRow = Math.floor((row - top) / dotScale);
+          if (glyphColumn < 0 || glyphColumn >= columnsData.length || glyphRow < 0 || glyphRow > 6) return 0;
+          return columnsData[glyphColumn][glyphRow];
+        }
+        function fillLevels(time) {
+          level.fill(0);
+          const scrollEnd = 4.6;
+          if (time < scrollEnd + 0.4) {
+            const travel = columns + message.length * scale;
+            const offset = columns - Math.floor(progressOf(time, 0.5, scrollEnd - 0.5) * travel);
+            const fade = 1 - progressOf(time, scrollEnd, 0.35);
+            for (let row = 0; row < rows; row += 1) {
+              for (let column = 0; column < columns; column += 1) {
+                if (sample(message, column - offset, row, glyphTop, scale)) level[row * columns + column] = fade;
+              }
+            }
+          }
+          const wipeStart = 5;
+          if (time >= wipeStart) {
+            const wipe = (time - wipeStart) / 0.9;
+            const pulse = time > 6.4 ? 0.82 + 0.18 * Math.cos((time - 6.4) * Math.PI * 4) : 1;
+            for (let row = 0; row < rows; row += 1) {
+              for (let column = 0; column < columns; column += 1) {
+                const lit = sample(headline, column - headlineLeft, row, headlineTop, headlineScale);
+                const sweep = wipe * (columns + 12) - column;
+                if (lit && sweep > 0) level[row * columns + column] = Math.min(1, sweep / 6) * pulse;
+                else if (sweep > 0 && sweep < 4) level[row * columns + column] = Math.max(level[row * columns + column], (1 - sweep / 4) * 0.55);
+              }
+            }
+          }
+        }
+        function draw(time) {
+          if (!context || typeof context.stroke !== "function") return;
+          if (!glowLayer) {
+            glowLayer = document.createElement("canvas");
+            glowLayer.width = Math.ceil(view.width / 4);
+            glowLayer.height = Math.ceil(view.height / 4);
+            glowContext = glowLayer.getContext("2d");
+          }
+          fillLevels(time);
+          context.clearRect(0, 0, view.width, view.height);
+          const housing = view.vmin * 3;
+          context.fillStyle = rgba(mixRgb(back, fore, 0.04), 1);
+          context.beginPath();
+          context.roundRect(panelX - housing, panelY - housing, panelWidth + housing * 2, panelHeight + housing * 2, view.vmin * 1.6);
+          context.fill();
+          context.strokeStyle = rgba(mixRgb(back, fore, 0.12), 1);
+          context.lineWidth = view.vmin * 0.2;
+          context.stroke();
+          context.fillStyle = rgba(mixRgb(back, fore, 0.18), 1);
+          for (const [cornerX, cornerY] of [[panelX - housing * 0.55, panelY - housing * 0.55], [panelX + panelWidth + housing * 0.55, panelY - housing * 0.55], [panelX - housing * 0.55, panelY + panelHeight + housing * 0.55], [panelX + panelWidth + housing * 0.55, panelY + panelHeight + housing * 0.55]]) {
+            context.beginPath();
+            context.arc(cornerX, cornerY, view.vmin * 0.45, 0, Math.PI * 2);
+            context.fill();
+          }
+          const radius = pitch * 0.36;
+          const off = rgba(mixRgb(back, accent, 0.1), 1);
+          context.fillStyle = off;
+          context.beginPath();
+          for (let row = 0; row < rows; row += 1) {
+            for (let column = 0; column < columns; column += 1) {
+              if (level[row * columns + column] > 0.02) continue;
+              const centerX = panelX + (column + 0.5) * pitch;
+              const centerY = panelY + (row + 0.5) * pitch;
+              context.moveTo(centerX + radius, centerY);
+              context.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            }
+          }
+          context.fill();
+          glowContext.clearRect(0, 0, glowLayer.width, glowLayer.height);
+          for (let row = 0; row < rows; row += 1) {
+            for (let column = 0; column < columns; column += 1) {
+              const value = level[row * columns + column];
+              if (value <= 0.02) continue;
+              const centerX = panelX + (column + 0.5) * pitch;
+              const centerY = panelY + (row + 0.5) * pitch;
+              context.fillStyle = rgba(mixRgb(mixRgb(back, accent, 0.1), accent, value), 1);
+              context.beginPath();
+              context.arc(centerX, centerY, radius, 0, Math.PI * 2);
+              context.fill();
+              context.fillStyle = rgba(fore, value * 0.75);
+              context.beginPath();
+              context.arc(centerX - radius * 0.2, centerY - radius * 0.2, radius * 0.38, 0, Math.PI * 2);
+              context.fill();
+              glowContext.fillStyle = rgba(accent, value);
+              glowContext.fillRect((centerX - pitch * 0.5) / 4, (centerY - pitch * 0.5) / 4, pitch / 4, pitch / 4);
+            }
+          }
+          context.save();
+          context.globalCompositeOperation = "lighter";
+          context.filter = "blur(" + pitch * 0.9 + "px)";
+          context.globalAlpha = 0.85;
+          context.drawImage(glowLayer, 0, 0, view.width, view.height);
+          context.restore();
+          const glare = context.createLinearGradient(0, panelY, 0, panelY + panelHeight);
+          glare.addColorStop(0, rgba(fore, 0.05));
+          glare.addColorStop(0.45, rgba(fore, 0));
+          glare.addColorStop(1, rgba(fore, 0));
+          context.fillStyle = glare;
+          context.fillRect(panelX, panelY, panelWidth, panelHeight);
+        }
+        label.textContent = "DOT MATRIX / " + columns + " x " + rows;
+        label.style.fontSize = view.vmin * 1.6 + "px";
+        label.style.top = panelY + panelHeight + view.vmin * 7 + "px";
+        label.style.color = vars.foreground;
+        const proxy = { time: 0 };
+        const timeline = gsap.timeline({ paused: true });
+        timeline.to(proxy, { time: duration, duration: duration, ease: "none", onUpdate: () => draw(proxy.time) }, 0);
+        timeline.fromTo(canvas, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.out" }, 0);
+        timeline.fromTo(label, { opacity: 0 }, { opacity: 0.45, duration: 0.6 }, 0.4);
+        draw(0);
+        registerTimeline("led-marquee", timeline);
+      })();
+    </script>
+  </body>
+</html>

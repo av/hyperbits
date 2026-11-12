@@ -1,0 +1,31 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "moire-field",
+  "type": "hyperframes:block",
+  "title": "Moire Interference",
+  "description": "Two sets of concentric rings combined with XOR so their interference blooms into shifting moire fringes as the centres orbit, drift apart and meet",
+  "tags": [
+    "background",
+    "op-art",
+    "pattern",
+    "generative"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 10,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/moire-field.html",
+      "type": "hyperframes:composition"
+    },
+    {
+      "path": "hyperbits.iife.js",
+      "target": "compositions/hyperbits.iife.js",
+      "type": "hyperframes:asset"
+    }
+  ]
+}

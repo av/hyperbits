@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"title","type":"string","label":"Title","default":"HYPERBITS"},{"id":"subtitle","type":"string","label":"Subtitle","default":"motion bits for hyperframes"},{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Hot phosphor","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Phosphor","default":"#ec8b49"}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 500;
+        font-display: block;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-500-normal.woff2) format("woff2");
+      }
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 700;
+        font-display: block;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-700-normal.woff2) format("woff2");
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #100f0f;
+        --fg: #f2f0e5;
+        --accent: #ec8b49;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #100f0f;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="crt-boot"
+      data-start="0"
+      data-duration="8"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="8" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <canvas id="stage" class="clip" data-start="0" data-duration="8"></canvas>
+    </div>
+    <script>
+      (function () {
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+        function channels(color) {
+          const parts = hyperbits.mixOklch(String(color), String(color), 0, "rgb(0, 0, 0)").match(/[0-9.]+/g) || [0, 0, 0];
+          return parts.slice(0, 3).map(Number);
+        }
+        function rgba(rgb, alpha) {
+          return "rgba(" + Math.round(rgb[0]) + ", " + Math.round(rgb[1]) + ", " + Math.round(rgb[2]) + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
+        }
+        function mixRgb(from, to, amount) {
+          return [from[0] + (to[0] - from[0]) * amount, from[1] + (to[1] - from[1]) * amount, from[2] + (to[2] - from[2]) * amount];
+        }
+        function progressOf(time, start, length) {
+          return Math.min(Math.max((time - start) / length, 0), 1);
+        }
+
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const canvas = document.getElementById("stage");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        canvas.width = view.width;
+        canvas.height = view.height;
+        canvas.setAttribute("aria-label", String(vars.title) + " " + String(vars.subtitle));
+        const context = canvas.getContext("2d");
+        const duration = 8;
+        const back = channels(vars.background);
+        const fore = channels(vars.foreground);
+        const accent = channels(vars.accent);
+        const title = String(vars.title).toUpperCase();
+        const subtitle = String(vars.subtitle);
+        const bootLines = [
+          { at: 1.35, text: "HB-BIOS 0.3  (C) HYPERBITS SYSTEMS" },
+          { at: 1.75, text: "CPU  : GSAP TIMELINE @ 30 FPS" },
+          { at: 2.05, text: "MEM  : 640K ........................ OK" },
+          { at: 2.4, text: "SEEK : DETERMINISTIC ............... OK" },
+          { at: 2.75, text: "LOAD : COMPOSITIONS" },
+        ];
+        let screen = null;
+        let screenContext = null;
+        let warped = null;
+        let warpedContext = null;
+        function hash(first, second) {
+          let value = Math.imul(first ^ 0x9e3779b9, 0x85ebca6b) ^ Math.imul(second + 0x632be5ab, 0xc2b2ae35);
+          value ^= value >>> 15;
+          value = Math.imul(value, 0x27d4eb2f);
+          value ^= value >>> 13;
+          return (value >>> 0) / 4294967296;
+        }
+        function paintScreen(time) {
+          const target = screenContext;
+          target.clearRect(0, 0, view.width, view.height);
+          const margin = view.vmin * 9;
+          const lineHeight = view.vmin * 4.6;
+          target.textBaseline = "top";
+          target.font = "500 " + view.vmin * 3 + "px 'Geist Mono', ui-monospace, monospace";
+          const charsPerSecond = 70;
+          const bootFade = 1 - progressOf(time, 4.1, 0.25);
+          if (bootFade > 0) {
+            bootLines.forEach((line, index) => {
+              if (time < line.at) return;
+              const count = Math.min(line.text.length, Math.floor((time - line.at) * charsPerSecond));
+              target.fillStyle = rgba(index === 0 ? fore : accent, bootFade);
+              target.fillText(line.text.slice(0, count), margin, margin + index * lineHeight);
+            });
+            const barStart = 3.05;
+            if (time > barStart) {
+              const barProgress = progressOf(time, barStart, 0.95);
+              const barY = margin + bootLines.length * lineHeight + lineHeight * 0.6;
+              const cells = 32;
+              target.fillStyle = rgba(accent, bootFade);
+              target.fillText("[", margin, barY);
+              target.fillText("]", margin + (cells + 1.2) * view.vmin * 1.8, barY);
+              for (let cell = 0; cell < Math.floor(barProgress * cells); cell += 1) target.fillRect(margin + (cell + 1) * view.vmin * 1.8, barY + view.vmin * 0.5, view.vmin * 1.35, view.vmin * 2.3);
+              target.fillText(String(Math.round(barProgress * 100)).padStart(3, " ") + "%", margin + (cells + 2.6) * view.vmin * 1.8, barY);
+            }
+            const cursorLine = bootLines.filter((line) => time >= line.at).length;
+            if (Math.floor(time * 3) % 2 === 0 && time > 1.2) {
+              const lastLine = bootLines[Math.max(0, cursorLine - 1)];
+              const typed = cursorLine ? Math.min(lastLine.text.length, Math.floor((time - lastLine.at) * charsPerSecond)) : 0;
+              const cursorX = margin + typed * view.vmin * 3 * 0.6;
+              target.fillStyle = rgba(fore, bootFade);
+              target.fillRect(cursorX, margin + Math.max(0, cursorLine - 1) * lineHeight, view.vmin * 1.7, view.vmin * 3.2);
+            }
+          }
+          const titleIn = progressOf(time, 4.3, 0.1);
+          if (titleIn > 0) {
+            const size = Math.min(view.vmin * 20, (view.width * 0.75) / Math.max(1, title.length * 0.62));
+            target.font = "700 " + size + "px 'Geist Mono', ui-monospace, monospace";
+            target.textAlign = "center";
+            target.textBaseline = "middle";
+            const flicker = time < 4.8 ? (hash(Math.floor(time * 30), 3) > 0.35 ? 1 : 0.25) : 1;
+            target.fillStyle = rgba(mixRgb(accent, fore, 0.12), flicker);
+            target.fillText(title, view.width / 2, view.height * 0.47);
+            target.font = "500 " + view.vmin * 3 + "px 'Geist Mono', ui-monospace, monospace";
+            const subtitleCount = Math.floor(Math.max(0, time - 4.9) * 40);
+            target.fillStyle = rgba(accent, 1);
+            target.fillText(subtitle.slice(0, subtitleCount) + (Math.floor(time * 3) % 2 === 0 ? "_" : " "), view.width / 2, view.height * 0.47 + size * 0.62);
+            target.textAlign = "left";
+          }
+          const roll = ((time * 0.45) % 1.4) - 0.2;
+          const band = target.createLinearGradient(0, (roll - 0.12) * view.height, 0, (roll + 0.12) * view.height);
+          band.addColorStop(0, rgba(accent, 0));
+          band.addColorStop(0.5, rgba(accent, 0.05));
+          band.addColorStop(1, rgba(accent, 0));
+          target.fillStyle = band;
+          target.fillRect(0, 0, view.width, view.height);
+        }
+        function warp(source, destination, strength) {
+          const strips = 72;
+          destination.clearRect(0, 0, view.width, view.height);
+          const stripHeight = view.height / strips;
+          for (let strip = 0; strip < strips; strip += 1) {
+            const middle = ((strip + 0.5) / strips) * 2 - 1;
+            const drawWidth = view.width * (1 - strength * middle * middle);
+            destination.drawImage(source, 0, strip * stripHeight, view.width, stripHeight + 1, (view.width - drawWidth) / 2, strip * stripHeight, drawWidth, stripHeight + 1);
+          }
+        }
+        function draw(time) {
+          if (!context || typeof context.stroke !== "function") return;
+          if (!screen) {
+            screen = document.createElement("canvas");
+            screen.width = view.width;
+            screen.height = view.height;
+            screenContext = screen.getContext("2d");
+            warped = document.createElement("canvas");
+            warped.width = view.width;
+            warped.height = view.height;
+            warpedContext = warped.getContext("2d");
+          }
+          context.clearRect(0, 0, view.width, view.height);
+          const powerOn = progressOf(time, 0.35, 0.25);
+          const openUp = progressOf(time, 0.6, 0.35);
+          const powerOff = progressOf(time, 7.25, 0.3);
+          const collapse = progressOf(time, 7.55, 0.25);
+          if (time < 0.35) return;
+          paintScreen(time);
+          warp(screen, warpedContext, 0.06);
+          const openEase = hyperbits.Easing.easeOutCubic(openUp);
+          const visibleHeight = view.height * Math.max(0.004, openEase) * (1 - hyperbits.Easing.easeInCubic(powerOff) * 0.996);
+          const visibleWidth = view.width * (0.02 + 0.98 * hyperbits.Easing.easeOutCubic(powerOn)) * (1 - hyperbits.Easing.easeInCubic(collapse) * 0.995);
+          if (powerOff >= 1 && collapse >= 1) return;
+          const flash = Math.max(0, 1 - openUp * 2.5) + powerOff * 0.8;
+          const left = (view.width - visibleWidth) / 2;
+          const top = (view.height - visibleHeight) / 2;
+          context.save();
+          const corner = view.vmin * 6 * openEase;
+          context.beginPath();
+          context.roundRect(left + view.vmin * 1.5 * openEase, top + view.vmin * 1.5 * openEase, visibleWidth - view.vmin * 3 * openEase, visibleHeight - view.vmin * 3 * openEase, corner);
+          context.clip();
+          context.fillStyle = rgba(mixRgb(back, accent, 0.05), 1);
+          context.fillRect(left, top, visibleWidth, visibleHeight);
+          context.drawImage(warped, 0, (view.height - visibleHeight) / 2, view.width, visibleHeight, left, top, visibleWidth, visibleHeight);
+          context.globalCompositeOperation = "lighter";
+          context.filter = "blur(" + view.vmin * 0.9 + "px)";
+          context.globalAlpha = 0.55;
+          context.drawImage(warped, 0, (view.height - visibleHeight) / 2, view.width, visibleHeight, left, top, visibleWidth, visibleHeight);
+          context.filter = "none";
+          context.globalAlpha = 1;
+          if (flash > 0) {
+            context.fillStyle = rgba(mixRgb(accent, fore, 0.7), Math.min(1, flash));
+            context.fillRect(left, top, visibleWidth, visibleHeight);
+          }
+          context.globalCompositeOperation = "source-over";
+          context.fillStyle = rgba(back, 0.35);
+          const scan = Math.max(2, Math.round(view.vmin * 0.42));
+          for (let line = 0; line < view.height; line += scan) context.fillRect(0, line, view.width, scan * 0.45);
+          const vignette = context.createRadialGradient(view.width / 2, view.height / 2, view.height * 0.35, view.width / 2, view.height / 2, view.width * 0.62);
+          vignette.addColorStop(0, rgba(back, 0));
+          vignette.addColorStop(1, rgba(back, 0.85));
+          context.fillStyle = vignette;
+          context.fillRect(0, 0, view.width, view.height);
+          context.restore();
+          const flicker = 0.03 * hash(Math.floor(time * 30), 9);
+          context.fillStyle = rgba(back, flicker);
+          context.fillRect(0, 0, view.width, view.height);
+        }
+        const proxy = { time: 0 };
+        const timeline = gsap.timeline({ paused: true });
+        timeline.to(proxy, { time: duration, duration: duration, ease: "none", onUpdate: () => draw(proxy.time) }, 0);
+        draw(0);
+        registerTimeline("crt-boot", timeline);
+      })();
+    </script>
+  </body>
+</html>

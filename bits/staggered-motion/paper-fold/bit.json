@@ -1,0 +1,45 @@
+{
+  "name": "paper-fold",
+  "title": "Paper Fold",
+  "description": "A folded accordion card swings in, unfolds panel by panel in real 3D with light raking across each crease to reveal a poster spread, then folds itself shut",
+  "tags": [
+    "3d",
+    "paper",
+    "reveal",
+    "card"
+  ],
+  "duration": 7,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://hyperbits.dev/vendor/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "paper-fold",
+    "type": "hyperframes:block",
+    "title": "Paper Fold",
+    "description": "A folded accordion card swings in, unfolds panel by panel in real 3D with light raking across each crease to reveal a poster spread, then folds itself shut",
+    "tags": [
+      "3d",
+      "paper",
+      "reveal",
+      "card"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 7,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/paper-fold.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

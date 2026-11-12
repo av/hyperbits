@@ -1,0 +1,45 @@
+{
+  "name": "receipt-print",
+  "title": "Receipt Printer",
+  "description": "A thermal receipt feeds up out of a printer line by line, each row burning in left to right down to a highlighted total and barcode, before the slip is torn off and flies away",
+  "tags": [
+    "list",
+    "print",
+    "paper",
+    "component"
+  ],
+  "duration": 8,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://hyperbits.dev/vendor/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "receipt-print",
+    "type": "hyperframes:block",
+    "title": "Receipt Printer",
+    "description": "A thermal receipt feeds up out of a printer line by line, each row burning in left to right down to a highlighted total and barcode, before the slip is torn off and flies away",
+    "tags": [
+      "list",
+      "print",
+      "paper",
+      "component"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 8,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/receipt-print.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}
