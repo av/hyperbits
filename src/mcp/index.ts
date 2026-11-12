@@ -24,6 +24,7 @@ import type {
   BitCatalogSummary,
   FindBitsOptions,
 } from "../catalog/contracts";
+import { parseSize, retargetBitHtml } from "../catalog/retarget";
 
 type JsonObject = Record<string, unknown>;
 
@@ -111,7 +112,20 @@ const parseFindArguments = (value: unknown): FindBitsOptions => {
   };
 };
 
-const parseFetchArguments = (value: unknown): { id: string } => {
+const parseOptionalSize = (value: unknown) => {
+  const raw = assertOptionalString(value, "size");
+  if (raw === undefined) return undefined;
+  try {
+    return parseSize(raw);
+  } catch (error) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      error instanceof Error ? error.message : String(error),
+    );
+  }
+};
+
+const parseFetchArguments = (value: unknown) => {
   if (!isRecord(value)) {
     throw new McpError(
       ErrorCode.InvalidParams,
@@ -121,6 +135,7 @@ const parseFetchArguments = (value: unknown): { id: string } => {
 
   return {
     id: assertString(value.id, "id"),
+    size: parseOptionalSize(value.size),
   };
 };
 
@@ -215,6 +230,11 @@ const toolDefinitions: Tool[] = [
           description:
             "Bit id returned by find_hyperbits, or the exact display name.",
         },
+        size: {
+          type: "string",
+          description:
+            "Optional output size: WIDTHxHEIGHT or 9:16, 1:1, 16:9. Rewrites the HTML to that size. Defaults to the bit's native size.",
+        },
       },
       required: ["id"],
     },
@@ -250,7 +270,7 @@ export const createHyperbitsMcpServer = (): Server => {
     }
 
     if (name === "fetch_hyperbit") {
-      const { id } = parseFetchArguments(input);
+      const { id, size } = parseFetchArguments(input);
       const bit = await fetchBit(id);
 
       if (!bit) {
@@ -258,6 +278,17 @@ export const createHyperbitsMcpServer = (): Server => {
         return createErrorResult(
           `No bit found for "${id}".${formatBitSuggestions(suggestions)}`,
         );
+      }
+
+      if (size) {
+        return createSuccessResult({
+          bit: {
+            ...bit,
+            width: size.width,
+            height: size.height,
+            sourceCode: retargetBitHtml(bit.sourceCode, size),
+          },
+        });
       }
 
       return createSuccessResult({ bit });

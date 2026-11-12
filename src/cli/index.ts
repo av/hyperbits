@@ -27,6 +27,7 @@ import {
   defaultVariableValues,
   variableValuesAttribute,
 } from "../catalog/variables";
+import { formatSize, parseSize, retargetBitHtml } from "../catalog/retarget";
 import { startHyperbitsMcpServer } from "../mcp/index";
 
 type Writable = {
@@ -69,7 +70,7 @@ const EXIT_NOT_FOUND = 3;
 export const usage = `Usage:
   hyperbits find [query] [--query <text>] [--tag <tag>] [--tags <tag1,tag2>] [--limit <number>] [--json]
   hyperbits fetch <id-or-name> [--id <id-or-name>] [--json]
-  hyperbits add <name...> [--into <dir>] [--set <id=value>] [--json]
+  hyperbits add <name...> [--into <dir>] [--set <id=value>] [--size <WxH|9:16|1:1|16:9>] [--json]
   hyperbits mcp
 
 Commands:
@@ -86,6 +87,9 @@ Options:
   --id, -i      Bit id or exact display name to fetch.
   --into        Destination directory for add. Defaults to compositions/.
   --set         New default for a bit variable in the installed copy, as id=value. Repeatable.
+  --size        Retarget the bit to WIDTHxHEIGHT before writing. Aliases:
+                9:16 (1080x1920), 1:1 (1080x1080), 16:9 (1920x1080).
+                Defaults to the bit's native size.
   --json, -j    Emit deterministic JSON output.
   --help, -h    Show usage.
 `;
@@ -415,6 +419,19 @@ const parseSetAssignments = (values: string[]): Map<string, string> => {
   return assignments;
 };
 
+const parseSizeOption = (value: string | undefined) => {
+  if (value === undefined) return undefined;
+  try {
+    return parseSize(value);
+  } catch (error) {
+    throw new CliError(
+      error instanceof Error ? error.message : String(error),
+      EXIT_INVALID_INPUT,
+      "invalid-size",
+    );
+  }
+};
+
 const parseAddArguments = (args: string[]) => {
   let parsed;
 
@@ -425,6 +442,7 @@ const parseAddArguments = (args: string[]) => {
       options: {
         into: { type: "string" },
         set: { type: "string", multiple: true },
+        size: { type: "string" },
         json: { type: "boolean", short: "j" },
         help: { type: "boolean", short: "h" },
       },
@@ -456,6 +474,7 @@ const parseAddArguments = (args: string[]) => {
     identifiers,
     into: parsed.values.into ?? DEFAULT_ADD_DIR,
     assignments: parseSetAssignments(parsed.values.set ?? []),
+    size: parseSizeOption(parsed.values.size),
   };
 };
 
@@ -662,7 +681,11 @@ const runAddCommand = async (args: string[], io: CliIo): Promise<number> => {
   const results = [];
   for (const plan of plans) {
     const outputPath = path.join(into, `${plan.bit.id}.html`);
-    let html = prepareInstalledHtml(plan.bit.sourceCode);
+    let html = prepareInstalledHtml(
+      options.size
+        ? retargetBitHtml(plan.bit.sourceCode, options.size)
+        : plan.bit.sourceCode,
+    );
     let variables = plan.bit.variables;
     let warnings: string[] = [];
     if (Object.keys(plan.overrides).length > 0) {
@@ -692,6 +715,7 @@ const runAddCommand = async (args: string[], io: CliIo): Promise<number> => {
       id: result.plan.bit.id,
       name: result.plan.bit.name,
       path: result.path,
+      ...(options.size ? { size: formatSize(options.size) } : {}),
       embedSnippet: result.embedSnippet,
       helperScriptTag: localHelperScriptTag,
       ...(options.assignments.size > 0
@@ -707,7 +731,9 @@ const runAddCommand = async (args: string[], io: CliIo): Promise<number> => {
 
   const lines: string[] = [];
   for (const result of results) {
-    lines.push(`Wrote ${result.path}`);
+    lines.push(
+      `Wrote ${result.path}${options.size ? ` at ${formatSize(options.size)}` : ""}`,
+    );
     for (const [id, value] of Object.entries(result.plan.overrides)) {
       lines.push(`  Set ${formatAssignment(id, value)}`);
     }
