@@ -1,0 +1,49 @@
+{
+  "name": "rule-cascade",
+  "title": "Rule Cascade",
+  "description": "Elementary cellular automata growing generation by generation and scrolling upward, switching between rules 30, 90, 110 and 45 under a lookup-table legend, the newest generation glowing",
+  "tags": [
+    "background",
+    "generative",
+    "pattern",
+    "math",
+    "pixel"
+  ],
+  "duration": 10,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "color",
+    "random",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://hyperbits.dev/vendor/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "rule-cascade",
+    "type": "hyperframes:block",
+    "title": "Rule Cascade",
+    "description": "Elementary cellular automata growing generation by generation and scrolling upward, switching between rules 30, 90, 110 and 45 under a lookup-table legend, the newest generation glowing",
+    "tags": [
+      "background",
+      "generative",
+      "pattern",
+      "math",
+      "pixel"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 10,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/rule-cascade.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

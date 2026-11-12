@@ -1,0 +1,45 @@
+{
+  "name": "blueprint-draw",
+  "title": "Blueprint Drawing",
+  "description": "A technical drawing that plots itself: centrelines, a bolted flange and its hatched section view, dimension lines with arrowheads and callouts, a title block, then an approval stamp",
+  "tags": [
+    "technical",
+    "line-art",
+    "explainer",
+    "svg"
+  ],
+  "duration": 10,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://hyperbits.dev/vendor/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "blueprint-draw",
+    "type": "hyperframes:block",
+    "title": "Blueprint Drawing",
+    "description": "A technical drawing that plots itself: centrelines, a bolted flange and its hatched section view, dimension lines with arrowheads and callouts, a title block, then an approval stamp",
+    "tags": [
+      "technical",
+      "line-art",
+      "explainer",
+      "svg"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 10,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/blueprint-draw.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

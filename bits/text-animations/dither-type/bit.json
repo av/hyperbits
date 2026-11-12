@@ -1,0 +1,48 @@
+{
+  "name": "dither-type",
+  "title": "Dither Dissolve",
+  "description": "A headline that materialises through an 8x8 Bayer threshold sweep, printed in three inks with a dithered halo and a drifting light behind it, then dissolves back into the screen",
+  "tags": [
+    "text",
+    "dither",
+    "pixel",
+    "reveal",
+    "retro"
+  ],
+  "duration": 7.5,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "color",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://hyperbits.dev/vendor/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "dither-type",
+    "type": "hyperframes:block",
+    "title": "Dither Dissolve",
+    "description": "A headline that materialises through an 8x8 Bayer threshold sweep, printed in three inks with a dithered halo and a drifting light behind it, then dissolves back into the screen",
+    "tags": [
+      "text",
+      "dither",
+      "pixel",
+      "reveal",
+      "retro"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 7.5,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/dither-type.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

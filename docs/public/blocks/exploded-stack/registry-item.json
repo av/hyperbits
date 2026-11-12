@@ -1,0 +1,32 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "exploded-stack",
+  "type": "hyperframes:block",
+  "title": "Exploded Stack",
+  "description": "An isometric line-art architecture diagram: patterned slabs lift apart along dashed guides, leader lines draw out to numbered labels and a highlight steps through each layer",
+  "tags": [
+    "3d",
+    "isometric",
+    "line-art",
+    "diagram",
+    "explainer"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 9,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/exploded-stack.html",
+      "type": "hyperframes:composition"
+    },
+    {
+      "path": "hyperbits.iife.js",
+      "target": "compositions/hyperbits.iife.js",
+      "type": "hyperframes:asset"
+    }
+  ]
+}

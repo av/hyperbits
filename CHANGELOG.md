@@ -1,3 +1,7 @@
+### v0.2.7
+
+- Bits: 30 new scenes and components in the hyperbits.dev palette (near-black field, warm paper ink, orange accent), each built on a technique the catalog did not cover yet. Dithering and pixel work: `dither-orb`, `dither-type`, `lava-dither`, `mosaic-resolve`, `pixel-sort`, `led-marquee`. Isometric and line-art 3D: `isometric-city`, `exploded-stack`, `voxel-type`, `wire-solids`, `blueprint-draw`. Text-mode, print and retro hardware: `ascii-torus`, `crt-boot`, `split-flap`, `riso-print`, `receipt-print`, `odometer-roll`, `vector-scope`, `radar-sweep`. Generative and optical: `strange-attractor`, `flow-field`, `moire-field`, `op-art-lens`, `rule-cascade`, `circuit-traces`, `hard-light`, `dot-globe`. Typography in 3D and time: `extruded-type`, `slit-scan`, `paper-fold`
+
 ### v0.2.6
 
 - Validation: pin HyperFrames lint/check to the same published 0.8.29 version as the demo. Newer unpinned CLI releases scan the bundled helper runtime as composition code and reject every bit. No lint rules are disabled.

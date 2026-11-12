@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"value","type":"number","label":"Target value","default":48213},{"id":"label","type":"string","label":"Label","default":"renders this week"},{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Digits","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#ec8b49"}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 700;
+        font-display: block;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-700-normal.woff2) format("woff2");
+      }
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 500;
+        font-display: block;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-500-normal.woff2) format("woff2");
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #100f0f;
+        --fg: #f2f0e5;
+        --accent: #ec8b49;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #100f0f;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      #counter {
+        position: absolute;
+        left: 50%;
+        top: 46%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        align-items: center;
+      }
+      .window {
+        position: relative;
+        overflow: hidden;
+        perspective: 900px;
+        background-color: #1c1b1a;
+      }
+      .drum {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        transform-style: preserve-3d;
+      }
+      .digit {
+        position: absolute;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-family: "Geist Mono", ui-monospace, monospace;
+        font-weight: 700;
+        color: #f2f0e5;
+        backface-visibility: hidden;
+        background-color: #1c1b1a;
+      }
+      .gloss {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(180deg, rgba(16, 15, 15, 0.95) 0%, rgba(16, 15, 15, 0) 32%, rgba(242, 240, 229, 0.05) 50%, rgba(16, 15, 15, 0) 68%, rgba(16, 15, 15, 0.95) 100%);
+      }
+      #caption {
+        position: absolute;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-family: "Geist Mono", ui-monospace, monospace;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="odometer-roll"
+      data-start="0"
+      data-duration="6"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="6" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <div id="counter" class="clip" data-start="0" data-duration="6"></div>
+      <div id="caption" class="clip" data-start="0" data-duration="6"></div>
+    </div>
+    <script>
+      (function () {
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+        
+
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const counter = document.getElementById("counter");
+        const caption = document.getElementById("caption");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        const duration = 6;
+        const target = Math.max(0, Math.round(Number(vars.value) || 0));
+        const wheels = Math.max(1, String(target).length);
+        const digitHeight = view.vmin * 20;
+        const digitWidth = Math.min(view.vmin * 15, (view.width * 0.8) / (wheels + Math.floor((wheels - 1) / 3) * 0.4));
+        const radius = (digitHeight * 10) / (2 * Math.PI) * 0.98;
+        counter.style.gap = view.vmin * 1 + "px";
+        counter.setAttribute("aria-label", String(target));
+        const drums = [];
+        for (let wheel = wheels - 1; wheel >= 0; wheel -= 1) {
+          const wheelWindow = document.createElement("div");
+          wheelWindow.className = "window";
+          wheelWindow.style.width = digitWidth + "px";
+          wheelWindow.style.height = digitHeight * 1.25 + "px";
+          wheelWindow.style.borderRadius = view.vmin * 1.2 + "px";
+          wheelWindow.style.boxShadow = "inset 0 0 0 " + Math.max(1, view.vmin * 0.2) + "px rgba(242, 240, 229, 0.08)";
+          const drum = document.createElement("div");
+          drum.className = "drum";
+          for (let digit = 0; digit < 10; digit += 1) {
+            const face = document.createElement("div");
+            face.className = "digit";
+            face.textContent = String(digit);
+            face.style.height = digitHeight + "px";
+            face.style.lineHeight = digitHeight + "px";
+            face.style.top = -digitHeight / 2 + "px";
+            face.style.fontSize = digitHeight * 0.78 + "px";
+            face.style.color = wheel === 0 ? vars.accent : vars.foreground;
+            face.style.transform = "rotateX(" + -digit * 36 + "deg) translateZ(" + radius + "px)";
+            drum.append(face);
+          }
+          const gloss = document.createElement("div");
+          gloss.className = "gloss";
+          wheelWindow.append(drum, gloss);
+          counter.append(wheelWindow);
+          drums.push({ wheel, drum, frame: wheelWindow });
+          if (wheel > 0 && wheel % 3 === 0) {
+            const comma = document.createElement("div");
+            comma.textContent = ",";
+            comma.style.fontFamily = "'Geist Mono', ui-monospace, monospace";
+            comma.style.fontWeight = "700";
+            comma.style.fontSize = digitHeight * 0.6 + "px";
+            comma.style.color = vars.foreground;
+            comma.style.opacity = "0.4";
+            comma.style.alignSelf = "flex-end";
+            counter.append(comma);
+          }
+        }
+        caption.textContent = String(vars.label);
+        caption.style.fontSize = view.vmin * 2.6 + "px";
+        caption.style.top = view.height * 0.46 + digitHeight * 0.75 + view.vmin * 5 + "px";
+        caption.style.color = vars.accent;
+        function positionOf(value, wheel) {
+          const scale = Math.pow(10, wheel);
+          const base = Math.floor(value / scale);
+          if (wheel === 0) return value;
+          const remainder = value - base * scale;
+          return base + Math.max(0, Math.min(1, remainder - (scale - 1)));
+        }
+        function valueAt(time) {
+          const progress = Math.min(1, Math.max(0, (time - 0.4) / 3.6));
+          return target * (1 - Math.pow(1 - progress, 4));
+        }
+        const proxy = { time: 0 };
+        function render() {
+          const value = valueAt(proxy.time);
+          const before = valueAt(Math.max(0, proxy.time - 1 / 30));
+          for (const { wheel, drum, frame } of drums) {
+            const position = positionOf(value, wheel);
+            const speed = Math.abs(position - positionOf(before, wheel));
+            drum.style.transform = "rotateX(" + position * 36 + "deg)";
+            frame.style.filter = speed > 0.3 ? "blur(" + Math.min(view.vmin * 0.9, speed * view.vmin * 0.12) + "px)" : "none";
+          }
+        }
+        const timeline = gsap.timeline({ paused: true });
+        timeline.to(proxy, { time: duration, duration: duration, ease: "none", onUpdate: render }, 0);
+        timeline.fromTo(counter, { opacity: 0, y: view.vmin * 4 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0);
+        timeline.fromTo(caption, { opacity: 0, y: view.vmin * 1.5 }, { opacity: 1, y: 0, duration: 1, ease: "power3.out" }, 3.4);
+        render();
+        registerTimeline("odometer-roll", timeline);
+      })();
+    </script>
+  </body>
+</html>

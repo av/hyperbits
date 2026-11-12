@@ -1,0 +1,49 @@
+{
+  "name": "circuit-traces",
+  "title": "Circuit Traces",
+  "description": "A chip in the centre of a dark PCB routes copper buses out to every edge with 45-degree bends and vias, then data packets race along the traces while the die glows",
+  "tags": [
+    "background",
+    "hardware",
+    "data",
+    "lines",
+    "technical"
+  ],
+  "duration": 10,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "color",
+    "random",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://hyperbits.dev/vendor/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "circuit-traces",
+    "type": "hyperframes:block",
+    "title": "Circuit Traces",
+    "description": "A chip in the centre of a dark PCB routes copper buses out to every edge with 45-degree bends and vias, then data packets race along the traces while the die glows",
+    "tags": [
+      "background",
+      "hardware",
+      "data",
+      "lines",
+      "technical"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 10,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/circuit-traces.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

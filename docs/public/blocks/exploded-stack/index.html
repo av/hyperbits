@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"layers","type":"string","label":"Layers, top to bottom, comma separated","default":"Interface,Timeline,Helpers,Renderer,Frames"},{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Line ink","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#ec8b49"}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 500;
+        font-display: block;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-500-normal.woff2) format("woff2");
+      }
+      @font-face {
+        font-family: "Geist Sans";
+        font-weight: 600;
+        font-display: block;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5/files/geist-sans-latin-600-normal.woff2) format("woff2");
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="./hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #100f0f;
+        --fg: #f2f0e5;
+        --accent: #ec8b49;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #100f0f;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .tag {
+        position: absolute;
+        white-space: nowrap;
+        transform: translateY(-50%);
+        display: flex;
+        align-items: baseline;
+      }
+      .tag .index {
+        font-family: "Geist Mono", ui-monospace, monospace;
+        font-weight: 500;
+        color: #ec8b49;
+      }
+      .tag .name {
+        font-family: "Geist Sans", ui-sans-serif, system-ui, sans-serif;
+        font-weight: 600;
+        color: #f2f0e5;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="exploded-stack"
+      data-start="0"
+      data-duration="9"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="9" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <canvas id="stage" class="clip" data-start="0" data-duration="9"></canvas>
+      <div id="tags" class="clip" data-start="0" data-duration="9" style="position:absolute;inset:0"></div>
+    </div>
+    <script>
+      (function () {
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+        function channels(color) {
+          const parts = hyperbits.mixOklch(String(color), String(color), 0, "rgb(0, 0, 0)").match(/[0-9.]+/g) || [0, 0, 0];
+          return parts.slice(0, 3).map(Number);
+        }
+        function rgba(rgb, alpha) {
+          return "rgba(" + Math.round(rgb[0]) + ", " + Math.round(rgb[1]) + ", " + Math.round(rgb[2]) + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
+        }
+        function mixRgb(from, to, amount) {
+          return [from[0] + (to[0] - from[0]) * amount, from[1] + (to[1] - from[1]) * amount, from[2] + (to[2] - from[2]) * amount];
+        }
+        function progressOf(time, start, length) {
+          return Math.min(Math.max((time - start) / length, 0), 1);
+        }
+
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const canvas = document.getElementById("stage");
+        const tagsLayer = document.getElementById("tags");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        canvas.width = view.width;
+        canvas.height = view.height;
+        const context = canvas.getContext("2d");
+        const duration = 9;
+        const back = channels(vars.background);
+        const fore = channels(vars.foreground);
+        const accent = channels(vars.accent);
+        const names = String(vars.layers).split(",").map((name) => name.trim()).filter(Boolean).slice(0, 6);
+        if (names.length === 0) names.push("Layer");
+        const count = names.length;
+        const slabSize = 4;
+        const thickness = 0.32;
+        const gapClosed = 0.06;
+        const gapOpen = 1.65;
+        const unit = Math.min(view.vmin * 8.5, (view.height * 0.78) / (count * (thickness + gapOpen) * 0.82 + slabSize * 0.6));
+        const lineWidth = Math.max(1, view.vmin * 0.15);
+        const patterns = ["grid", "chips", "stripes", "rings", "dots", "grid"];
+        const layout = { originX: view.width * 0.38, originY: view.height * 0.5 };
+        function explodeAt(time, index) {
+          const order = count - 1 - index;
+          const open = hyperbits.Easing.easeInOutCubic(progressOf(time, 0.9 + order * 0.12, 1.3));
+          const close = hyperbits.Easing.easeInOutCubic(progressOf(time, 7.6 + index * 0.06, 0.9));
+          return open * (1 - close);
+        }
+        function draw(time) {
+          if (!context || typeof context.stroke !== "function") return;
+          context.clearRect(0, 0, view.width, view.height);
+          const azimuth = Math.PI / 4 + 0.12 * Math.sin(time * 0.5);
+          const elevation = 0.6155;
+          const cosA = Math.cos(azimuth);
+          const sinA = Math.sin(azimuth);
+          const sinE = Math.sin(elevation);
+          const cosE = Math.cos(elevation);
+          const heights = [];
+          let stackHeight = 0;
+          for (let index = count - 1; index >= 0; index -= 1) {
+            heights[index] = stackHeight;
+            const spread = explodeAt(time, index);
+            stackHeight += thickness + gapClosed + (gapOpen - gapClosed) * spread;
+          }
+          const centerOffset = stackHeight / 2;
+          function project(pointX, pointY, pointZ) {
+            const rotatedX = pointX * cosA - pointY * sinA;
+            const rotatedY = pointX * sinA + pointY * cosA;
+            return [layout.originX + rotatedX * unit, layout.originY + (rotatedY * sinE - (pointZ - centerOffset) * cosE) * unit];
+          }
+          const half = slabSize / 2;
+          const footprint = [[-half, -half], [half, -half], [half, half], [-half, half]];
+          context.lineCap = "round";
+          context.lineJoin = "round";
+          const guideAlpha = Math.min(1, explodeAt(time, 0) * 2);
+          if (guideAlpha > 0) {
+            context.setLineDash([view.vmin * 0.5, view.vmin * 0.6]);
+            context.strokeStyle = rgba(mixRgb(back, fore, 0.35), guideAlpha);
+            context.lineWidth = lineWidth * 0.8;
+            for (const [cornerX, cornerY] of footprint) {
+              const low = project(cornerX, cornerY, heights[count - 1]);
+              const high = project(cornerX, cornerY, heights[0] + thickness);
+              context.beginPath();
+              context.moveTo(low[0], low[1]);
+              context.lineTo(high[0], high[1]);
+              context.stroke();
+            }
+            context.setLineDash([]);
+          }
+          const focusSlot = time < 3.2 || time > 7.4 ? -1 : Math.floor((time - 3.2) / (4.2 / count));
+          for (let index = count - 1; index >= 0; index -= 1) {
+            const base = heights[index];
+            const top = base + thickness;
+            const focus = index === focusSlot ? Math.min(1, ((time - 3.2) % (4.2 / count)) / 0.25) * Math.min(1, (4.2 / count - ((time - 3.2) % (4.2 / count))) / 0.25) : 0;
+            const lift = focus * 0.25;
+            const bottomRing = footprint.map(([pointX, pointY]) => project(pointX, pointY, base + lift));
+            const topRing = footprint.map(([pointX, pointY]) => project(pointX, pointY, top + lift));
+            const ink = mixRgb(fore, accent, focus);
+            for (let side = 0; side < 4; side += 1) {
+              const normals = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+              const facing = normals[side][0] * sinA + normals[side][1] * cosA;
+              if (facing <= 0) continue;
+              const next = (side + 1) % 4;
+              context.fillStyle = rgba(mixRgb(back, mixRgb(fore, accent, focus), 0.06 + facing * 0.08 + focus * 0.12), 1);
+              context.beginPath();
+              context.moveTo(bottomRing[side][0], bottomRing[side][1]);
+              context.lineTo(bottomRing[next][0], bottomRing[next][1]);
+              context.lineTo(topRing[next][0], topRing[next][1]);
+              context.lineTo(topRing[side][0], topRing[side][1]);
+              context.closePath();
+              context.fill();
+              context.strokeStyle = rgba(ink, 0.9);
+              context.lineWidth = lineWidth;
+              context.stroke();
+            }
+            context.fillStyle = rgba(mixRgb(back, accent, 0.04 + focus * 0.22), 1);
+            context.beginPath();
+            topRing.forEach((point, pointIndex) => (pointIndex === 0 ? context.moveTo(point[0], point[1]) : context.lineTo(point[0], point[1])));
+            context.closePath();
+            context.fill();
+            context.strokeStyle = rgba(ink, 1);
+            context.lineWidth = lineWidth * 1.2;
+            context.stroke();
+            const patternAlpha = 0.55 + focus * 0.45;
+            context.strokeStyle = rgba(mixRgb(fore, accent, Math.max(focus, index === 0 ? 0.6 : 0)), patternAlpha);
+            context.fillStyle = context.strokeStyle;
+            context.lineWidth = lineWidth * 0.8;
+            const pattern = patterns[index % patterns.length];
+            const surface = top + lift;
+            const inner = half * 0.78;
+            if (pattern === "grid") {
+              for (let step = -3; step <= 3; step += 1) {
+                const offset = (step / 3) * inner;
+                const lineA = [project(offset, -inner, surface), project(offset, inner, surface)];
+                const lineB = [project(-inner, offset, surface), project(inner, offset, surface)];
+                for (const [from, to] of [lineA, lineB]) {
+                  context.beginPath();
+                  context.moveTo(from[0], from[1]);
+                  context.lineTo(to[0], to[1]);
+                  context.stroke();
+                }
+              }
+            } else if (pattern === "chips") {
+              for (let gridX = 0; gridX < 3; gridX += 1) {
+                for (let gridY = 0; gridY < 3; gridY += 1) {
+                  const centerX = -inner + (gridX + 0.5) * ((inner * 2) / 3);
+                  const centerY = -inner + (gridY + 0.5) * ((inner * 2) / 3);
+                  const size = (gridX + gridY) % 2 === 0 ? 0.42 : 0.3;
+                  const corners = [[-size, -size], [size, -size], [size, size], [-size, size]].map(([offsetX, offsetY]) => project(centerX + offsetX, centerY + offsetY, surface));
+                  context.beginPath();
+                  corners.forEach((point, pointIndex) => (pointIndex === 0 ? context.moveTo(point[0], point[1]) : context.lineTo(point[0], point[1])));
+                  context.closePath();
+                  context.stroke();
+                }
+              }
+            } else if (pattern === "stripes") {
+              for (let step = 0; step < 9; step += 1) {
+                const offset = -inner + (step / 8) * inner * 2;
+                const from = project(offset, -inner, surface);
+                const to = project(-inner, offset, surface);
+                const fromB = project(inner, offset, surface);
+                const toB = project(offset, inner, surface);
+                context.beginPath();
+                context.moveTo(from[0], from[1]);
+                context.lineTo(to[0], to[1]);
+                context.moveTo(fromB[0], fromB[1]);
+                context.lineTo(toB[0], toB[1]);
+                context.stroke();
+              }
+            } else if (pattern === "rings") {
+              for (let ring = 1; ring <= 4; ring += 1) {
+                const radius = (ring / 4) * inner;
+                context.beginPath();
+                for (let step = 0; step <= 48; step += 1) {
+                  const angle = (step / 48) * Math.PI * 2;
+                  const point = project(Math.cos(angle) * radius, Math.sin(angle) * radius, surface);
+                  if (step === 0) context.moveTo(point[0], point[1]);
+                  else context.lineTo(point[0], point[1]);
+                }
+                context.stroke();
+              }
+            } else {
+              for (let gridX = 0; gridX < 7; gridX += 1) {
+                for (let gridY = 0; gridY < 7; gridY += 1) {
+                  const point = project(-inner + (gridX / 6) * inner * 2, -inner + (gridY / 6) * inner * 2, surface);
+                  context.beginPath();
+                  context.arc(point[0], point[1], lineWidth * 1.4, 0, Math.PI * 2);
+                  context.fill();
+                }
+              }
+            }
+            const anchor = project(half, -half, (base + top) / 2 + lift);
+            const tag = tags[index];
+            const tagX = view.width * 0.64;
+            const reveal = progressOf(time, 1.6 + (count - 1 - index) * 0.12, 0.6) * (1 - progressOf(time, 7.3, 0.4));
+            if (reveal > 0) {
+              const elbowX = anchor[0] + (tagX - anchor[0]) * 0.35;
+              const endX = anchor[0] + (tagX - view.vmin * 1.5 - anchor[0]) * reveal;
+              context.strokeStyle = rgba(mixRgb(mixRgb(back, fore, 0.45), accent, focus), 1);
+              context.lineWidth = lineWidth * 0.8;
+              context.beginPath();
+              context.moveTo(anchor[0], anchor[1]);
+              context.lineTo(Math.min(elbowX, endX), anchor[1]);
+              if (endX > elbowX) context.lineTo(endX, anchor[1]);
+              context.stroke();
+              context.fillStyle = rgba(accent, 1);
+              context.beginPath();
+              context.arc(anchor[0], anchor[1], lineWidth * 2.2, 0, Math.PI * 2);
+              context.fill();
+            }
+            tag.node.style.left = tagX + "px";
+            tag.node.style.top = anchor[1] + "px";
+            tag.node.style.opacity = String(progressOf(time, 2 + (count - 1 - index) * 0.12, 0.4) * (1 - progressOf(time, 7.3, 0.3)));
+            tag.name.style.color = rgba(mixRgb(fore, accent, focus), 1);
+            tag.node.style.transform = "translate(" + focus * view.vmin * 1.2 + "px, -50%)";
+          }
+        }
+        const tags = names.map((name, index) => {
+          const node = document.createElement("div");
+          node.className = "tag";
+          const number = document.createElement("span");
+          number.className = "index";
+          number.textContent = String(index + 1).padStart(2, "0");
+          number.style.fontSize = view.vmin * 2 + "px";
+          number.style.marginRight = view.vmin * 1.6 + "px";
+          number.style.color = vars.accent;
+          const label = document.createElement("span");
+          label.className = "name";
+          label.textContent = name;
+          label.style.fontSize = view.vmin * 3.6 + "px";
+          label.style.color = vars.foreground;
+          node.append(number, label);
+          tagsLayer.append(node);
+          return { node, name: label };
+        });
+        const proxy = { time: 0 };
+        const timeline = gsap.timeline({ paused: true });
+        timeline.to(proxy, { time: duration, duration: duration, ease: "none", onUpdate: () => draw(proxy.time) }, 0);
+        timeline.fromTo(canvas, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out" }, 0);
+        draw(0);
+        registerTimeline("exploded-stack", timeline);
+      })();
+    </script>
+  </body>
+</html>

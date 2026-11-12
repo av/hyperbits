@@ -1,0 +1,32 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "strange-attractor",
+  "type": "hyperframes:block",
+  "title": "Strange Attractor",
+  "description": "A Lorenz attractor integrated with RK4 and traced in 3D, a glowing head pulling a depth-cued ribbon of thread while the butterfly slowly turns beside its equations",
+  "tags": [
+    "3d",
+    "math",
+    "line-art",
+    "generative",
+    "science"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 10,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/strange-attractor.html",
+      "type": "hyperframes:composition"
+    },
+    {
+      "path": "hyperbits.iife.js",
+      "target": "compositions/hyperbits.iife.js",
+      "type": "hyperframes:asset"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "slit-scan",
+  "type": "hyperframes:block",
+  "title": "Slit-Scan Type",
+  "description": "A headline sliced into hundreds of vertical slits, each sampling the motion a moment later than its neighbour, so the word pours in like liquid, holds crisp, then smears away with an accent echo",
+  "tags": [
+    "text",
+    "warp",
+    "headline",
+    "experimental"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 7,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/slit-scan.html",
+      "type": "hyperframes:composition"
+    },
+    {
+      "path": "hyperbits.iife.js",
+      "target": "compositions/hyperbits.iife.js",
+      "type": "hyperframes:asset"
+    }
+  ]
+}

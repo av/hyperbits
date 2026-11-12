@@ -1,0 +1,31 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "extruded-type",
+  "type": "hyperframes:block",
+  "title": "Extruded Type",
+  "description": "A headline built as solid 3D block letters from dozens of stacked layers, each letter flipping up into place before the whole word swings slowly to show its depth",
+  "tags": [
+    "text",
+    "3d",
+    "typography",
+    "headline"
+  ],
+  "license": "MIT",
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 7,
+  "files": [
+    {
+      "path": "index.html",
+      "target": "compositions/extruded-type.html",
+      "type": "hyperframes:composition"
+    },
+    {
+      "path": "hyperbits.iife.js",
+      "target": "compositions/hyperbits.iife.js",
+      "type": "hyperframes:asset"
+    }
+  ]
+}

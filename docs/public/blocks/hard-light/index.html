@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"caption","type":"string","label":"Caption","default":"LIGHT STUDY 04"},{"id":"seed","type":"number","label":"Seed","default":6},{"id":"background","type":"color","label":"Shadow","default":"#100f0f"},{"id":"foreground","type":"color","label":"Blocks","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Light","default":"#ec8b49"}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 500;
+        font-display: block;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-500-normal.woff2) format("woff2");
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="./hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #100f0f;
+        --fg: #f2f0e5;
+        --accent: #ec8b49;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #100f0f;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      #caption {
+        position: absolute;
+        font-family: "Geist Mono", ui-monospace, monospace;
+        font-weight: 500;
+        letter-spacing: 0.22em;
+        white-space: nowrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="hard-light"
+      data-start="0"
+      data-duration="10"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <canvas id="stage" class="clip" data-start="0" data-duration="10"></canvas>
+      <div id="caption" class="clip" data-start="0" data-duration="10"></div>
+    </div>
+    <script>
+      (function () {
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+        function channels(color) {
+          const parts = hyperbits.mixOklch(String(color), String(color), 0, "rgb(0, 0, 0)").match(/[0-9.]+/g) || [0, 0, 0];
+          return parts.slice(0, 3).map(Number);
+        }
+        function rgba(rgb, alpha) {
+          return "rgba(" + Math.round(rgb[0]) + ", " + Math.round(rgb[1]) + ", " + Math.round(rgb[2]) + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
+        }
+        function mixRgb(from, to, amount) {
+          return [from[0] + (to[0] - from[0]) * amount, from[1] + (to[1] - from[1]) * amount, from[2] + (to[2] - from[2]) * amount];
+        }
+
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const canvas = document.getElementById("stage");
+        const caption = document.getElementById("caption");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        canvas.width = view.width;
+        canvas.height = view.height;
+        const context = canvas.getContext("2d");
+        const duration = 10;
+        const seed = Math.round(Number(vars.seed) || 0);
+        const back = channels(vars.background);
+        const fore = channels(vars.foreground);
+        const accent = channels(vars.accent);
+        const blocks = [];
+        const columns = 7;
+        const rows = 4;
+        for (let row = 0; row < rows; row += 1) {
+          for (let column = 0; column < columns; column += 1) {
+            const key = "block-" + seed + "-" + row + "-" + column;
+            if (hyperbits.random(key + "-skip") < 0.25) continue;
+            const sides = hyperbits.pick(key + "-sides", [3, 4, 4, 4, 6]);
+            blocks.push({
+              x: view.width * ((column + 0.5 + hyperbits.randomFloat(key + "-x", -0.25, 0.25)) / columns),
+              y: view.height * ((row + 0.5 + hyperbits.randomFloat(key + "-y", -0.2, 0.2)) / rows),
+              size: view.vmin * hyperbits.randomFloat(key + "-s", 3, 6),
+              sides,
+              spin: hyperbits.randomFloat(key + "-r", -0.4, 0.4),
+              phase: hyperbits.randomFloat(key + "-p", 0, Math.PI * 2),
+              delay: 0.2 + (column + row) * 0.06,
+            });
+          }
+        }
+        let pass = null;
+        let passContext = null;
+        function polygon(block, time) {
+          const grow = hyperbits.Easing.easeOutCubic(Math.min(1, Math.max(0, (time - block.delay) / 0.8)));
+          const angle = block.phase + time * block.spin;
+          const points = [];
+          for (let index = 0; index < block.sides; index += 1) {
+            const corner = angle + (index / block.sides) * Math.PI * 2;
+            points.push([block.x + Math.cos(corner) * block.size * grow, block.y + Math.sin(corner) * block.size * grow]);
+          }
+          return points;
+        }
+        function lightAt(time) {
+          return [view.width * (0.5 + 0.34 * Math.sin(time * 0.42 + 0.4)), view.height * (0.5 + 0.3 * Math.sin(time * 0.67 + 1.3))];
+        }
+        function castShadows(target, light, shapes) {
+          const reach = view.width * 3;
+          for (const points of shapes) {
+            for (let index = 0; index < points.length; index += 1) {
+              const from = points[index];
+              const to = points[(index + 1) % points.length];
+              const fromAngle = Math.atan2(from[1] - light[1], from[0] - light[0]);
+              const toAngle = Math.atan2(to[1] - light[1], to[0] - light[0]);
+              target.beginPath();
+              target.moveTo(from[0], from[1]);
+              target.lineTo(to[0], to[1]);
+              target.lineTo(to[0] + Math.cos(toAngle) * reach, to[1] + Math.sin(toAngle) * reach);
+              target.lineTo(from[0] + Math.cos(fromAngle) * reach, from[1] + Math.sin(fromAngle) * reach);
+              target.closePath();
+              target.fill();
+            }
+          }
+        }
+        function draw(time) {
+          if (!context || typeof context.stroke !== "function") return;
+          if (!pass) {
+            pass = document.createElement("canvas");
+            pass.width = view.width;
+            pass.height = view.height;
+            passContext = pass.getContext("2d");
+          }
+          const power = Math.min(1, time / 1);
+          const light = lightAt(time);
+          context.clearRect(0, 0, view.width, view.height);
+          const floor = context.createRadialGradient(light[0], light[1], 0, light[0], light[1], view.width * 0.65);
+          floor.addColorStop(0, rgba(mixRgb(accent, fore, 0.35), power));
+          floor.addColorStop(0.08, rgba(accent, 0.85 * power));
+          floor.addColorStop(0.45, rgba(mixRgb(back, accent, 0.28), power));
+          floor.addColorStop(1, rgba(back, 1));
+          context.fillStyle = floor;
+          context.fillRect(0, 0, view.width, view.height);
+          context.strokeStyle = rgba(mixRgb(back, fore, 0.08), power);
+          context.lineWidth = Math.max(1, view.vmin * 0.08);
+          context.beginPath();
+          for (let gridX = 0; gridX <= view.width; gridX += view.vmin * 6) {
+            context.moveTo(gridX, 0);
+            context.lineTo(gridX, view.height);
+          }
+          for (let gridY = 0; gridY <= view.height; gridY += view.vmin * 6) {
+            context.moveTo(0, gridY);
+            context.lineTo(view.width, gridY);
+          }
+          context.stroke();
+          const shapes = blocks.map((block) => polygon(block, time));
+          const softness = view.vmin * 1.1;
+          const offsets = [[0, 0], [softness, 0], [-softness * 0.5, softness * 0.86], [-softness * 0.5, -softness * 0.86]];
+          for (const [offsetX, offsetY] of offsets) {
+            passContext.clearRect(0, 0, view.width, view.height);
+            passContext.fillStyle = rgba(back, 1);
+            castShadows(passContext, [light[0] + offsetX, light[1] + offsetY], shapes);
+            context.globalAlpha = 0.27;
+            context.drawImage(pass, 0, 0);
+          }
+          context.globalAlpha = 1;
+          for (const points of shapes) {
+            context.fillStyle = rgba(mixRgb(back, fore, 0.12), 1);
+            context.beginPath();
+            points.forEach((point, index) => (index === 0 ? context.moveTo(point[0], point[1]) : context.lineTo(point[0], point[1])));
+            context.closePath();
+            context.fill();
+            for (let index = 0; index < points.length; index += 1) {
+              const from = points[index];
+              const to = points[(index + 1) % points.length];
+              const normalX = (to[1] - from[1]);
+              const normalY = -(to[0] - from[0]);
+              const middleX = (from[0] + to[0]) / 2;
+              const middleY = (from[1] + to[1]) / 2;
+              const facing = (light[0] - middleX) * normalX + (light[1] - middleY) * normalY;
+              context.strokeStyle = facing > 0 ? rgba(mixRgb(accent, fore, 0.6), power) : rgba(mixRgb(back, fore, 0.3), 1);
+              context.lineWidth = view.vmin * (facing > 0 ? 0.32 : 0.14);
+              context.beginPath();
+              context.moveTo(from[0], from[1]);
+              context.lineTo(to[0], to[1]);
+              context.stroke();
+            }
+          }
+          const halo = context.createRadialGradient(light[0], light[1], 0, light[0], light[1], view.vmin * 5);
+          halo.addColorStop(0, rgba(fore, power));
+          halo.addColorStop(0.2, rgba(mixRgb(accent, fore, 0.5), 0.8 * power));
+          halo.addColorStop(1, rgba(accent, 0));
+          context.fillStyle = halo;
+          context.beginPath();
+          context.arc(light[0], light[1], view.vmin * 5, 0, Math.PI * 2);
+          context.fill();
+        }
+        caption.textContent = String(vars.caption);
+        caption.style.fontSize = view.vmin * 1.8 + "px";
+        caption.style.left = view.vmin * 5 + "px";
+        caption.style.bottom = view.vmin * 5 + "px";
+        caption.style.color = vars.foreground;
+        const proxy = { time: 0 };
+        const timeline = gsap.timeline({ paused: true });
+        timeline.to(proxy, { time: duration, duration: duration, ease: "none", onUpdate: () => draw(proxy.time) }, 0);
+        timeline.fromTo(caption, { opacity: 0 }, { opacity: 0.75, duration: 0.8 }, 0.8);
+        draw(0);
+        registerTimeline("hard-light", timeline);
+      })();
+    </script>
+  </body>
+</html>

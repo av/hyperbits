@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"title","type":"string","label":"Panel title","default":"SECTOR 7 / LIVE CONTACTS"},{"id":"seed","type":"number","label":"Seed","default":5},{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Text","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Phosphor","default":"#ec8b49"}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 500;
+        font-display: block;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-500-normal.woff2) format("woff2");
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="./hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #100f0f;
+        --fg: #f2f0e5;
+        --accent: #ec8b49;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #100f0f;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      #table {
+        position: absolute;
+        font-family: "Geist Mono", ui-monospace, monospace;
+        font-weight: 500;
+        color: #f2f0e5;
+        white-space: pre;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="radar-sweep"
+      data-start="0"
+      data-duration="10"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <canvas id="stage" class="clip" data-start="0" data-duration="10"></canvas>
+      <div id="table" class="clip" data-start="0" data-duration="10"></div>
+    </div>
+    <script>
+      (function () {
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+        function channels(color) {
+          const parts = hyperbits.mixOklch(String(color), String(color), 0, "rgb(0, 0, 0)").match(/[0-9.]+/g) || [0, 0, 0];
+          return parts.slice(0, 3).map(Number);
+        }
+        function rgba(rgb, alpha) {
+          return "rgba(" + Math.round(rgb[0]) + ", " + Math.round(rgb[1]) + ", " + Math.round(rgb[2]) + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
+        }
+        function mixRgb(from, to, amount) {
+          return [from[0] + (to[0] - from[0]) * amount, from[1] + (to[1] - from[1]) * amount, from[2] + (to[2] - from[2]) * amount];
+        }
+
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const canvas = document.getElementById("stage");
+        const table = document.getElementById("table");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        canvas.width = view.width;
+        canvas.height = view.height;
+        const context = canvas.getContext("2d");
+        const duration = 10;
+        const seed = Math.round(Number(vars.seed) || 0);
+        const back = channels(vars.background);
+        const fore = channels(vars.foreground);
+        const accent = channels(vars.accent);
+        const radius = view.height * 0.4;
+        const centerX = view.width * 0.36;
+        const centerY = view.height * 0.5;
+        const period = 3.4;
+        const turn = Math.PI * 2;
+        const contacts = [];
+        for (let index = 0; index < 9; index += 1) {
+          const key = "radar-" + seed + "-" + index;
+          const angle = hyperbits.randomFloat(key + "-a", 0, turn);
+          const distance = hyperbits.randomFloat(key + "-r", 0.2, 0.9);
+          const heading = hyperbits.randomFloat(key + "-h", 0, turn);
+          contacts.push({
+            id: String.fromCharCode(65 + index) + String(hyperbits.randomInt(key + "-n", 10, 99)),
+            startX: Math.cos(angle) * distance,
+            startY: Math.sin(angle) * distance,
+            velocityX: Math.cos(heading) * hyperbits.randomFloat(key + "-v", 0.006, 0.02),
+            velocityY: Math.sin(heading) * hyperbits.randomFloat(key + "-v", 0.006, 0.02),
+            hostile: index % 4 === 1,
+          });
+        }
+        const clutter = [];
+        for (let index = 0; index < 260; index += 1) {
+          const key = "clutter-" + seed + "-" + index;
+          const angle = hyperbits.randomFloat(key + "-a", 0, turn);
+          const distance = Math.pow(hyperbits.random(key + "-r"), 1.8) * 0.35;
+          clutter.push({ x: Math.cos(angle) * distance, y: Math.sin(angle) * distance, size: hyperbits.randomFloat(key + "-s", 0.1, 0.3) });
+        }
+        function beamAngle(time) {
+          return (time / period) * turn - Math.PI / 2;
+        }
+        function positionAt(contact, time) {
+          let pointX = contact.startX + contact.velocityX * time;
+          let pointY = contact.startY + contact.velocityY * time;
+          const length = Math.hypot(pointX, pointY);
+          if (length > 0.95) {
+            pointX *= 0.95 / length;
+            pointY *= 0.95 / length;
+          }
+          return [pointX, pointY];
+        }
+        function sinceSwept(angle, time) {
+          const beam = beamAngle(time);
+          const behind = (((beam - angle) % turn) + turn) % turn;
+          return (behind / turn) * period;
+        }
+        function draw(time) {
+          if (!context || typeof context.stroke !== "function") return;
+          context.clearRect(0, 0, view.width, view.height);
+          const power = smoothstep(0, 0.8, time);
+          const glass = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius * 1.05);
+          glass.addColorStop(0, rgba(mixRgb(back, accent, 0.08), power));
+          glass.addColorStop(1, rgba(mixRgb(back, accent, 0.02), power));
+          context.fillStyle = glass;
+          context.beginPath();
+          context.arc(centerX, centerY, radius * 1.05, 0, turn);
+          context.fill();
+          context.lineWidth = Math.max(1, view.vmin * 0.1);
+          context.strokeStyle = rgba(accent, 0.22 * power);
+          for (let ring = 1; ring <= 4; ring += 1) {
+            context.beginPath();
+            context.arc(centerX, centerY, (radius * ring) / 4, 0, turn);
+            context.stroke();
+          }
+          context.beginPath();
+          context.moveTo(centerX - radius, centerY);
+          context.lineTo(centerX + radius, centerY);
+          context.moveTo(centerX, centerY - radius);
+          context.lineTo(centerX, centerY + radius);
+          context.stroke();
+          context.strokeStyle = rgba(accent, 0.55 * power);
+          context.beginPath();
+          for (let tick = 0; tick < 72; tick += 1) {
+            const angle = (tick / 72) * turn;
+            const inner = radius * (tick % 3 === 0 ? 1.06 : 1.08);
+            context.moveTo(centerX + Math.cos(angle) * inner, centerY + Math.sin(angle) * inner);
+            context.lineTo(centerX + Math.cos(angle) * radius * 1.11, centerY + Math.sin(angle) * radius * 1.11);
+          }
+          context.stroke();
+          context.fillStyle = rgba(fore, 0.55 * power);
+          context.font = "500 " + view.vmin * 1.5 + "px 'Geist Mono', ui-monospace, monospace";
+          context.textAlign = "center";
+          context.textBaseline = "middle";
+          for (let bearing = 0; bearing < 360; bearing += 30) {
+            const angle = (bearing / 360) * turn - Math.PI / 2;
+            context.fillText(String(bearing).padStart(3, "0"), centerX + Math.cos(angle) * radius * 1.19, centerY + Math.sin(angle) * radius * 1.19);
+          }
+          context.textAlign = "left";
+          const beam = beamAngle(time);
+          if (time > 0.6) {
+            const sweep = context.createConicGradient(beam - Math.PI * 0.6, centerX, centerY);
+            sweep.addColorStop(0, rgba(accent, 0));
+            sweep.addColorStop(0.3, rgba(accent, 0.38));
+            sweep.addColorStop(0.3001, rgba(accent, 0));
+            sweep.addColorStop(1, rgba(accent, 0));
+            context.fillStyle = sweep;
+            context.beginPath();
+            context.arc(centerX, centerY, radius, 0, turn);
+            context.fill();
+            context.strokeStyle = rgba(mixRgb(accent, fore, 0.5), 1);
+            context.lineWidth = view.vmin * 0.22;
+            context.beginPath();
+            context.moveTo(centerX, centerY);
+            context.lineTo(centerX + Math.cos(beam) * radius, centerY + Math.sin(beam) * radius);
+            context.stroke();
+          }
+          for (const speck of clutter) {
+            const angle = Math.atan2(speck.y, speck.x);
+            const since = time > 0.6 ? sinceSwept(angle, time) : period;
+            const glow = Math.exp(-since * 1.6) * (time > 0.6 + since ? 1 : 0);
+            if (glow < 0.03) continue;
+            context.fillStyle = rgba(accent, glow * 0.7);
+            context.fillRect(centerX + speck.x * radius, centerY + speck.y * radius, view.vmin * speck.size, view.vmin * speck.size);
+          }
+          const rows = [];
+          for (const contact of contacts) {
+            const [pointX, pointY] = positionAt(contact, time);
+            const angle = Math.atan2(pointY, pointX);
+            const since = sinceSwept(angle, time);
+            const swept = time - since > 0.6;
+            const glow = swept ? Math.exp(-since * 0.9) : 0;
+            const echoTime = time - since;
+            const [echoX, echoY] = positionAt(contact, echoTime);
+            const screenX = centerX + echoX * radius;
+            const screenY = centerY + echoY * radius;
+            if (glow > 0.02) {
+              for (let trail = 1; trail <= 4; trail += 1) {
+                const [trailX, trailY] = positionAt(contact, echoTime - trail * period);
+                if (echoTime - trail * period < 0.6) break;
+                context.fillStyle = rgba(accent, glow * 0.25 * (1 - trail / 5));
+                context.beginPath();
+                context.arc(centerX + trailX * radius, centerY + trailY * radius, view.vmin * 0.3, 0, turn);
+                context.fill();
+              }
+              const halo = context.createRadialGradient(screenX, screenY, 0, screenX, screenY, view.vmin * 2.4);
+              halo.addColorStop(0, rgba(contact.hostile ? fore : accent, glow * 0.6));
+              halo.addColorStop(1, rgba(accent, 0));
+              context.fillStyle = halo;
+              context.beginPath();
+              context.arc(screenX, screenY, view.vmin * 2.4, 0, turn);
+              context.fill();
+              context.fillStyle = rgba(contact.hostile ? fore : mixRgb(accent, fore, 0.4), glow);
+              context.beginPath();
+              context.arc(screenX, screenY, view.vmin * 0.55, 0, turn);
+              context.fill();
+              if (contact.hostile) {
+                context.strokeStyle = rgba(fore, glow);
+                context.lineWidth = view.vmin * 0.14;
+                const box = view.vmin * 1.6;
+                context.strokeRect(screenX - box / 2, screenY - box / 2, box, box);
+              }
+              context.fillStyle = rgba(fore, glow * 0.8);
+              context.font = "500 " + view.vmin * 1.4 + "px 'Geist Mono', ui-monospace, monospace";
+              context.fillText(contact.id, screenX + view.vmin * 1.4, screenY - view.vmin * 1.2);
+            }
+            if (swept) {
+              const bearing = Math.round(((((angle + Math.PI / 2) % turn) + turn) % turn) * (180 / Math.PI));
+              rows.push({ contact, bearing, range: Math.hypot(echoX, echoY) * 40, glow });
+            }
+          }
+          rows.sort((left, right) => left.contact.id.localeCompare(right.contact.id));
+          const lines = [String(vars.title), "", "ID    BRG    RNG     STATUS"];
+          for (const row of rows) lines.push(row.contact.id + "   " + String(row.bearing).padStart(3, "0") + "   " + row.range.toFixed(1).padStart(5, " ") + " NM  " + (row.contact.hostile ? "UNKNOWN" : "TRACKED"));
+          table.textContent = lines.join("\n");
+        }
+        table.style.left = view.width * 0.66 + "px";
+        table.style.top = view.height * 0.5 + "px";
+        table.style.transform = "translateY(-50%)";
+        table.style.fontSize = view.vmin * 2 + "px";
+        table.style.lineHeight = "1.8";
+        table.style.color = vars.foreground;
+        table.setAttribute("aria-label", String(vars.title));
+        const proxy = { time: 0 };
+        const timeline = gsap.timeline({ paused: true });
+        timeline.to(proxy, { time: duration, duration: duration, ease: "none", onUpdate: () => draw(proxy.time) }, 0);
+        timeline.fromTo(table, { opacity: 0 }, { opacity: 1, duration: 0.6 }, 0.6);
+        draw(0);
+        registerTimeline("radar-sweep", timeline);
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"headline","type":"string","label":"Headline","default":"NOW BOARDING HYPERBITS"},{"id":"status","type":"string","label":"Status line","default":"GATE 09  ON TIME"},{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Letters","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#ec8b49"}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 700;
+        font-display: block;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-700-normal.woff2) format("woff2");
+      }
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 500;
+        font-display: block;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-500-normal.woff2) format("woff2");
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #100f0f;
+        --fg: #f2f0e5;
+        --accent: #ec8b49;
+        --tile: #1c1b1a;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #100f0f;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      #board {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        display: grid;
+        transform: translate(-50%, -50%);
+      }
+      .cell {
+        position: relative;
+        perspective: 600px;
+        font-family: "Geist Mono", ui-monospace, monospace;
+        font-weight: 700;
+        color: #f2f0e5;
+      }
+      .half {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 50%;
+        overflow: hidden;
+        background-color: #1c1b1a;
+        backface-visibility: hidden;
+      }
+      .half span {
+        position: absolute;
+        left: 0;
+        right: 0;
+        text-align: center;
+      }
+      .top {
+        top: 0;
+        transform-origin: 50% 100%;
+      }
+      .bottom {
+        bottom: 0;
+        transform-origin: 50% 0%;
+      }
+      .label {
+        position: absolute;
+        font-family: "Geist Mono", ui-monospace, monospace;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        white-space: nowrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="split-flap"
+      data-start="0"
+      data-duration="7"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="7" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <div id="board" class="clip" data-start="0" data-duration="7"></div>
+    </div>
+    <script>
+      (function () {
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+        
+
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const board = document.getElementById("board");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        const duration = 7;
+        const columns = 16;
+        const alphabet = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-:/";
+        function wrap(text, width) {
+          const lines = [];
+          let line = "";
+          for (const word of String(text).toUpperCase().split(/\s+/).filter(Boolean)) {
+            const candidate = line ? line + " " + word : word;
+            if (candidate.length <= width) line = candidate;
+            else {
+              if (line) lines.push(line);
+              line = word.slice(0, width);
+            }
+          }
+          if (line) lines.push(line);
+          return lines;
+        }
+        function center(text) {
+          const clean = text.slice(0, columns);
+          const pad = Math.floor((columns - clean.length) / 2);
+          return (" ".repeat(pad) + clean).padEnd(columns, " ");
+        }
+        const headlineLines = wrap(vars.headline, columns).slice(0, 3);
+        const statusLine = String(vars.status).toUpperCase().slice(0, columns);
+        const lines = [...headlineLines.map(center), center(statusLine)];
+        const rows = lines.length;
+        board.setAttribute("aria-label", String(vars.headline) + " " + String(vars.status));
+        const tileWidth = Math.min((view.width * 0.82) / columns, (view.height * 0.62) / rows / 1.45);
+        const tileHeight = tileWidth * 1.45;
+        const gap = tileWidth * 0.1;
+        board.style.gridTemplateColumns = "repeat(" + columns + ", " + tileWidth + "px)";
+        board.style.gridAutoRows = tileHeight + "px";
+        board.style.gap = gap + "px";
+        board.style.padding = tileWidth * 0.35 + "px";
+        board.style.backgroundColor = "#141312";
+        board.style.borderRadius = tileWidth * 0.18 + "px";
+        board.style.boxShadow = "0 " + view.vmin * 2 + "px " + view.vmin * 6 + "px rgba(0, 0, 0, 0.55)";
+        function normalise(character) {
+          return alphabet.includes(character) ? character : " ";
+        }
+        const cells = [];
+        for (let row = 0; row < rows; row += 1) {
+          for (let column = 0; column < columns; column += 1) {
+            const target = normalise(lines[row][column]);
+            const cell = document.createElement("div");
+            cell.className = "cell";
+            cell.style.fontSize = tileHeight * 0.72 + "px";
+            cell.style.borderRadius = tileWidth * 0.08 + "px";
+            if (row === rows - 1) cell.style.color = vars.accent;
+            else cell.style.color = vars.foreground;
+            const parts = ["top", "bottom", "top", "bottom"].map((kind, index) => {
+              const half = document.createElement("div");
+              half.className = "half " + kind;
+              half.style.borderRadius = kind === "top" ? tileWidth * 0.08 + "px " + tileWidth * 0.08 + "px 0 0" : "0 0 " + tileWidth * 0.08 + "px " + tileWidth * 0.08 + "px";
+              half.style.backgroundColor = kind === "top" ? "#211f1e" : "#1a1918";
+              if (kind === "top") half.style.borderBottom = Math.max(1, tileHeight * 0.012) + "px solid #0a0909";
+              const glyph = document.createElement("span");
+              glyph.style.height = tileHeight + "px";
+              glyph.style.lineHeight = tileHeight + "px";
+              glyph.style.top = kind === "top" ? "0" : -tileHeight / 2 + "px";
+              half.append(glyph);
+              if (index >= 2) half.style.zIndex = "2";
+              cell.append(half);
+              return { half, glyph };
+            });
+            const targetIndex = alphabet.indexOf(target);
+            const extra = target === " " ? 0 : hyperbits.randomInt("flap-" + row + "-" + column, 4, 9);
+            const flips = target === " " ? 0 : targetIndex + extra;
+            const start = 0.5 + column * 0.045 + row * 0.16 + hyperbits.randomFloat("flap-delay-" + row + "-" + column, 0, 0.08);
+            const pace = 0.055;
+            cells.push({ parts, flips, start, pace, targetIndex, extra, row });
+            board.append(cell);
+          }
+        }
+        const light = document.createElement("div");
+        light.className = "label";
+        board.append(light);
+        light.style.left = tileWidth * 0.35 + "px";
+        light.style.bottom = -tileWidth * 0.9 + "px";
+        light.style.fontSize = view.vmin * 1.6 + "px";
+        light.style.color = vars.accent;
+        light.textContent = "DEPARTURES";
+        const clock = document.createElement("div");
+        clock.className = "label";
+        board.append(clock);
+        clock.style.right = tileWidth * 0.35 + "px";
+        clock.style.bottom = -tileWidth * 0.9 + "px";
+        clock.style.fontSize = view.vmin * 1.6 + "px";
+        clock.style.color = vars.foreground;
+        clock.style.opacity = "0.6";
+        function glyphAt(cell, step) {
+          if (step <= 0) return " ";
+          const offset = cell.targetIndex - cell.flips;
+          const index = (((offset + step) % alphabet.length) + alphabet.length) % alphabet.length;
+          return alphabet[index];
+        }
+        function render(time) {
+          for (const cell of cells) {
+            const progress = Math.max(0, (time - cell.start) / cell.pace);
+            const step = Math.min(cell.flips, Math.floor(progress));
+            const done = step >= cell.flips;
+            const fraction = done ? 0 : progress - step;
+            const current = glyphAt(cell, step);
+            const next = glyphAt(cell, Math.min(cell.flips, step + 1));
+            const [staticTop, staticBottom, flapTop, flapBottom] = cell.parts;
+            staticTop.glyph.textContent = done ? current : next;
+            staticBottom.glyph.textContent = current;
+            flapTop.glyph.textContent = current;
+            flapBottom.glyph.textContent = next;
+            if (done) {
+              flapTop.half.style.visibility = "hidden";
+              flapBottom.half.style.visibility = "hidden";
+              continue;
+            }
+            const fall = Math.min(1, fraction * 2);
+            const land = Math.max(0, fraction * 2 - 1);
+            flapTop.half.style.visibility = fall < 1 ? "visible" : "hidden";
+            flapTop.half.style.transform = "rotateX(" + -fall * 90 + "deg)";
+            flapTop.half.style.filter = "brightness(" + (1 - fall * 0.45) + ")";
+            flapBottom.half.style.visibility = fall >= 1 ? "visible" : "hidden";
+            flapBottom.half.style.transform = "rotateX(" + (1 - land) * 90 + "deg)";
+            flapBottom.half.style.filter = "brightness(" + (0.6 + land * 0.4) + ")";
+          }
+          const seconds = Math.floor(time * 10);
+          clock.textContent = "09:" + String(41 + Math.floor(seconds / 600)).padStart(2, "0") + ":" + String(Math.floor(seconds / 10) % 60).padStart(2, "0");
+        }
+        const proxy = { time: 0 };
+        const timeline = gsap.timeline({ paused: true });
+        timeline.fromTo(board, { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.6, ease: "power3.out" }, 0);
+        timeline.fromTo([light, clock], { opacity: 0 }, { opacity: (index) => (index === 0 ? 1 : 0.6), duration: 0.4, stagger: 0.1 }, 0.4);
+        timeline.to(proxy, { time: duration, duration: duration, ease: "none", onUpdate: () => render(proxy.time) }, 0);
+        render(0);
+        registerTimeline("split-flap", timeline);
+      })();
+    </script>
+  </body>
+</html>

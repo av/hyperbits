@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[{"id":"label","type":"string","label":"Counter label","default":"regions online"},{"id":"count","type":"number","label":"Counter value","default":142},{"id":"seed","type":"number","label":"Seed","default":3},{"id":"background","type":"color","label":"Background","default":"#100f0f"},{"id":"foreground","type":"color","label":"Land dots","default":"#f2f0e5"},{"id":"accent","type":"color","label":"Accent","default":"#ec8b49"}]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Geist Sans";
+        font-weight: 700;
+        font-display: block;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5/files/geist-sans-latin-700-normal.woff2) format("woff2");
+      }
+      @font-face {
+        font-family: "Geist Mono";
+        font-weight: 500;
+        font-display: block;
+        src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5/files/geist-mono-latin-500-normal.woff2) format("woff2");
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="./hyperbits.iife.js" data-hyperbits-local="../../../dist/hyperbits.iife.js"></script>
+    <style>
+      :root {
+        --bg: #100f0f;
+        --fg: #f2f0e5;
+        --accent: #ec8b49;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background-color: #100f0f;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+      #stat {
+        position: absolute;
+        color: #f2f0e5;
+      }
+      #stat .value {
+        font-family: "Geist Sans", ui-sans-serif, system-ui, sans-serif;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        line-height: 1;
+      }
+      #stat .label {
+        font-family: "Geist Mono", ui-monospace, monospace;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      class="clip"
+      data-composition-id="dot-globe"
+      data-start="0"
+      data-duration="10"
+      data-width="1920"
+      data-height="1080"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="10" style="position:absolute;inset:0;background-color:#100f0f"></div>
+      <canvas id="stage" class="clip" data-start="0" data-duration="10"></canvas>
+      <div id="stat" class="clip" data-start="0" data-duration="10"><div class="value" id="stat-value">0</div><div class="label" id="stat-label"></div></div>
+    </div>
+    <script>
+      (function () {
+        function bitVars() {
+          if (window.__hyperframes && typeof window.__hyperframes.getVariables === "function") {
+            return window.__hyperframes.getVariables();
+          }
+          const raw = document.documentElement.getAttribute("data-composition-variables") || "[]";
+          const decls = JSON.parse(raw);
+          const values = {};
+          for (const entry of decls) values[entry.id] = entry.default;
+          return values;
+        }
+        function registerTimeline(compositionId, timeline) {
+          window.__timelines = window.__timelines || {};
+          window.__timelines[compositionId] = timeline;
+          timeline.seek(0);
+        }
+        function channels(color) {
+          const parts = hyperbits.mixOklch(String(color), String(color), 0, "rgb(0, 0, 0)").match(/[0-9.]+/g) || [0, 0, 0];
+          return parts.slice(0, 3).map(Number);
+        }
+        function rgba(rgb, alpha) {
+          return "rgba(" + Math.round(rgb[0]) + ", " + Math.round(rgb[1]) + ", " + Math.round(rgb[2]) + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
+        }
+        function mixRgb(from, to, amount) {
+          return [from[0] + (to[0] - from[0]) * amount, from[1] + (to[1] - from[1]) * amount, from[2] + (to[2] - from[2]) * amount];
+        }
+        function progressOf(time, start, length) {
+          return Math.min(Math.max((time - start) / length, 0), 1);
+        }
+
+        const vars = bitVars();
+        const root = document.getElementById("root");
+        const bg = document.getElementById("bg");
+        const canvas = document.getElementById("stage");
+        const stat = document.getElementById("stat");
+        const statValue = document.getElementById("stat-value");
+        const statLabel = document.getElementById("stat-label");
+        const view = hyperbits.viewport(root);
+        bg.style.backgroundColor = vars.background;
+        canvas.width = view.width;
+        canvas.height = view.height;
+        const context = canvas.getContext("2d");
+        const duration = 10;
+        const seed = Math.round(Number(vars.seed) || 0);
+        const back = channels(vars.background);
+        const fore = channels(vars.foreground);
+        const accent = channels(vars.accent);
+        const radius = view.height * 0.36;
+        const centerX = view.width * 0.62;
+        const centerY = view.height * 0.52;
+        const tilt = 0.38;
+        function landAt(latitude, longitude) {
+          const value =
+            Math.sin(longitude * 1.7 + 0.4 + seed) * Math.cos(latitude * 2.3 - 0.3) +
+            0.6 * Math.sin(longitude * 3.1 - latitude * 1.9 + seed * 2) +
+            0.35 * Math.cos(longitude * 5.3 + latitude * 4.1) +
+            0.25 * Math.sin(latitude * 7.7 + longitude * 2.2);
+          return value - Math.abs(latitude) * 0.55 > 0.12;
+        }
+        const total = 9000;
+        const golden = Math.PI * (3 - Math.sqrt(5));
+        const land = [];
+        for (let index = 0; index < total; index += 1) {
+          const height = 1 - (index / (total - 1)) * 2;
+          const ring = Math.sqrt(1 - height * height);
+          const angle = golden * index;
+          const pointX = Math.cos(angle) * ring;
+          const pointZ = Math.sin(angle) * ring;
+          const latitude = Math.asin(height);
+          const longitude = Math.atan2(pointZ, pointX);
+          if (landAt(latitude, longitude)) land.push([pointX, height, pointZ]);
+        }
+        const cities = [];
+        for (let index = 0; cities.length < 16 && index < 400; index += 1) {
+          const candidate = land[Math.floor(hyperbits.random("city-" + seed + "-" + index) * land.length)];
+          if (cities.every((city) => Math.hypot(city[0] - candidate[0], city[1] - candidate[1], city[2] - candidate[2]) > 0.35)) cities.push(candidate);
+        }
+        const arcs = [];
+        for (let index = 0; index < 14; index += 1) {
+          const from = cities[index % cities.length];
+          const ranked = cities
+            .filter((city) => city !== from)
+            .map((city) => ({ city, distance: Math.hypot(city[0] - from[0], city[1] - from[1], city[2] - from[2]) }))
+            .sort((left, right) => left.distance - right.distance);
+          const to = ranked[Math.min(ranked.length - 1, 1 + (index % 3))].city;
+          arcs.push({ from, to, start: 0.9 + index * 0.5 + hyperbits.randomFloat("arc-" + seed + "-" + index, 0, 0.3), length: 1.5 });
+        }
+        function slerp(from, to, amount) {
+          const dot = Math.max(-1, Math.min(1, from[0] * to[0] + from[1] * to[1] + from[2] * to[2]));
+          const angle = Math.acos(dot);
+          if (angle < 1e-4) return from.slice();
+          const sine = Math.sin(angle);
+          const first = Math.sin((1 - amount) * angle) / sine;
+          const second = Math.sin(amount * angle) / sine;
+          return [from[0] * first + to[0] * second, from[1] * first + to[1] * second, from[2] * first + to[2] * second];
+        }
+        function drawGlobe(time) {
+          const spin = time * 0.22 + seed;
+          const cosSpin = Math.cos(spin);
+          const sinSpin = Math.sin(spin);
+          const cosTilt = Math.cos(tilt);
+          const sinTilt = Math.sin(tilt);
+          const grow = hyperbits.Easing.easeOutCubic(progressOf(time, 0, 1.2));
+          function project(point, lift) {
+            const scaleLift = 1 + (lift || 0);
+            const turnedX = (point[0] * cosSpin - point[2] * sinSpin) * scaleLift;
+            const turnedZ = (point[0] * sinSpin + point[2] * cosSpin) * scaleLift;
+            const pointY = point[1] * scaleLift;
+            const tiltedY = pointY * cosTilt - turnedZ * sinTilt;
+            const tiltedZ = pointY * sinTilt + turnedZ * cosTilt;
+            return [centerX + turnedX * radius * grow, centerY - tiltedY * radius * grow, tiltedZ];
+          }
+          const halo = context.createRadialGradient(centerX, centerY, radius * grow * 0.9, centerX, centerY, radius * grow * 1.35);
+          halo.addColorStop(0, rgba(accent, 0.16 * grow));
+          halo.addColorStop(1, rgba(accent, 0));
+          context.fillStyle = halo;
+          context.fillRect(0, 0, view.width, view.height);
+          context.fillStyle = rgba(mixRgb(back, fore, 0.035), 1);
+          context.beginPath();
+          context.arc(centerX, centerY, radius * grow, 0, Math.PI * 2);
+          context.fill();
+          context.lineWidth = Math.max(1, view.vmin * 0.08);
+          for (let line = -2; line <= 2; line += 1) {
+            const latitude = (line / 3) * (Math.PI / 2);
+            context.beginPath();
+            let open = false;
+            for (let step = 0; step <= 96; step += 1) {
+              const longitude = (step / 96) * Math.PI * 2;
+              const point = project([Math.cos(latitude) * Math.cos(longitude), Math.sin(latitude), Math.cos(latitude) * Math.sin(longitude)]);
+              if (point[2] < 0) {
+                open = false;
+                continue;
+              }
+              if (!open) context.moveTo(point[0], point[1]);
+              else context.lineTo(point[0], point[1]);
+              open = true;
+            }
+            context.strokeStyle = rgba(mixRgb(back, fore, 0.14), 1);
+            context.stroke();
+          }
+          for (let meridian = 0; meridian < 12; meridian += 1) {
+            const longitude = (meridian / 12) * Math.PI * 2;
+            context.beginPath();
+            let open = false;
+            for (let step = 0; step <= 64; step += 1) {
+              const latitude = -Math.PI / 2 + (step / 64) * Math.PI;
+              const point = project([Math.cos(latitude) * Math.cos(longitude), Math.sin(latitude), Math.cos(latitude) * Math.sin(longitude)]);
+              if (point[2] < 0) {
+                open = false;
+                continue;
+              }
+              if (!open) context.moveTo(point[0], point[1]);
+              else context.lineTo(point[0], point[1]);
+              open = true;
+            }
+            context.strokeStyle = rgba(mixRgb(back, fore, 0.1), 1);
+            context.stroke();
+          }
+          const dotRadius = view.vmin * 0.2 * grow;
+          const shades = 6;
+          for (let shade = 0; shade < shades; shade += 1) {
+            context.fillStyle = rgba(mixRgb(back, fore, 0.2 + (shade / (shades - 1)) * 0.75), 1);
+            context.beginPath();
+            for (const point of land) {
+              const projected = project(point);
+              if (projected[2] <= 0.02) continue;
+              const level = Math.min(shades - 1, Math.floor(projected[2] * shades));
+              if (level !== shade) continue;
+              const size = dotRadius * (0.55 + projected[2] * 0.45);
+              context.moveTo(projected[0] + size, projected[1]);
+              context.arc(projected[0], projected[1], size, 0, Math.PI * 2);
+            }
+            context.fill();
+          }
+          context.lineCap = "round";
+          for (const arc of arcs) {
+            const progress = (time - arc.start) / arc.length;
+            if (progress <= 0 || progress > 1.8) continue;
+            const head = Math.min(1, hyperbits.Easing.easeInOutSine(Math.min(1, progress)));
+            const tail = Math.max(0, hyperbits.Easing.easeInOutSine(Math.min(1, Math.max(0, progress - 0.55) / 1.1)));
+            const distance = Math.acos(Math.max(-1, Math.min(1, arc.from[0] * arc.to[0] + arc.from[1] * arc.to[1] + arc.from[2] * arc.to[2])));
+            const height = 0.05 + distance * 0.16;
+            const steps = 40;
+            let previous = null;
+            for (let step = 0; step <= steps; step += 1) {
+              const amount = tail + (head - tail) * (step / steps);
+              const point = project(slerp(arc.from, arc.to, amount), Math.sin(amount * Math.PI) * height);
+              const shown = point[2] > 0 || Math.hypot(point[0] - centerX, point[1] - centerY) > radius * grow;
+              if (previous && shown) {
+                const fade = step / steps;
+                context.strokeStyle = rgba(accent, 0.25 + 0.75 * fade);
+                context.lineWidth = view.vmin * (0.12 + 0.18 * fade);
+                context.beginPath();
+                context.moveTo(previous[0], previous[1]);
+                context.lineTo(point[0], point[1]);
+                context.stroke();
+              }
+              previous = point;
+            }
+            if (progress < 1) {
+              const packet = project(slerp(arc.from, arc.to, head), Math.sin(head * Math.PI) * height);
+              if (packet[2] > 0 || Math.hypot(packet[0] - centerX, packet[1] - centerY) > radius * grow) {
+                context.fillStyle = rgba(fore, 1);
+                context.beginPath();
+                context.arc(packet[0], packet[1], view.vmin * 0.45, 0, Math.PI * 2);
+                context.fill();
+              }
+            }
+            const ping = progressOf(time, arc.start + arc.length * 0.95, 0.9);
+            const target = project(arc.to);
+            if (ping > 0 && ping < 1 && target[2] > 0) {
+              context.strokeStyle = rgba(accent, 1 - ping);
+              context.lineWidth = view.vmin * 0.2;
+              context.beginPath();
+              context.ellipse(target[0], target[1], view.vmin * 3 * ping, view.vmin * 3 * ping * Math.max(0.3, target[2]), 0, 0, Math.PI * 2);
+              context.stroke();
+            }
+          }
+          for (const city of cities) {
+            const point = project(city);
+            if (point[2] <= 0.05) continue;
+            context.fillStyle = rgba(accent, Math.min(1, point[2] * 2) * grow);
+            context.beginPath();
+            context.arc(point[0], point[1], view.vmin * 0.42, 0, Math.PI * 2);
+            context.fill();
+          }
+        }
+        function draw(time) {
+          if (!context || typeof context.stroke !== "function") return;
+          context.clearRect(0, 0, view.width, view.height);
+          drawGlobe(time);
+        }
+        stat.style.left = view.vmin * 9 + "px";
+        stat.style.top = view.height * 0.5 + "px";
+        stat.style.transform = "translateY(-50%)";
+        statValue.style.fontSize = view.vmin * 16 + "px";
+        statValue.style.color = vars.foreground;
+        statLabel.textContent = String(vars.label);
+        statLabel.style.fontSize = view.vmin * 2.2 + "px";
+        statLabel.style.marginTop = view.vmin * 2 + "px";
+        statLabel.style.color = vars.accent;
+        const { proxy: counter, apply } = hyperbits.createCounter(statValue, { decimals: 0 });
+        const proxy = { time: 0 };
+        const timeline = gsap.timeline({ paused: true });
+        timeline.to(proxy, { time: duration, duration: duration, ease: "none", onUpdate: () => draw(proxy.time) }, 0);
+        timeline.fromTo(counter, { value: 0 }, { value: Number(vars.count) || 0, duration: 6, ease: "power2.out", onUpdate: apply }, 0.6);
+        timeline.fromTo(stat, { opacity: 0, x: -view.vmin * 3 }, { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" }, 0.3);
+        apply();
+        draw(0);
+        registerTimeline("dot-globe", timeline);
+      })();
+    </script>
+  </body>
+</html>

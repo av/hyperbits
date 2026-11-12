@@ -1,0 +1,48 @@
+{
+  "name": "vector-scope",
+  "title": "Vector Scope",
+  "description": "An amber-phosphor XY oscilloscope tracing Lissajous figures that morph through frequency ratios, with beam persistence, bloom, a graticule and live channel readouts",
+  "tags": [
+    "crt",
+    "hud",
+    "retro",
+    "science",
+    "glow"
+  ],
+  "duration": 10,
+  "width": 1920,
+  "height": 1080,
+  "helpers": [
+    "color",
+    "viewport"
+  ],
+  "iifeLocal": "../../../dist/hyperbits.iife.js",
+  "iifeCdn": "https://hyperbits.dev/vendor/hyperbits.iife.js",
+  "registryItem": {
+    "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+    "name": "vector-scope",
+    "type": "hyperframes:block",
+    "title": "Vector Scope",
+    "description": "An amber-phosphor XY oscilloscope tracing Lissajous figures that morph through frequency ratios, with beam persistence, bloom, a graticule and live channel readouts",
+    "tags": [
+      "crt",
+      "hud",
+      "retro",
+      "science",
+      "glow"
+    ],
+    "license": "MIT",
+    "dimensions": {
+      "width": 1920,
+      "height": 1080
+    },
+    "duration": 10,
+    "files": [
+      {
+        "path": "index.html",
+        "target": "compositions/vector-scope.html",
+        "type": "hyperframes:composition"
+      }
+    ]
+  }
+}

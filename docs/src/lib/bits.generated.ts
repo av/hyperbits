@@ -19,6 +19,31 @@ export type DocsBit = {
 
 export const docsBits: DocsBit[] = [
   {
+    "id": "circuit-traces",
+    "name": "Circuit Traces",
+    "title": "Circuit Traces",
+    "description": "A chip in the centre of a dark PCB routes copper buses out to every edge with 45-degree bends and vias, then data packets race along the traces while the die glows",
+    "category": "background-effects",
+    "categoryLabel": "Background Effects",
+    "tags": [
+      "background",
+      "hardware",
+      "data",
+      "lines",
+      "technical"
+    ],
+    "duration": 10,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "htmlPath": "/bits/circuit-traces.html",
+    "previewImage": null
+  },
+  {
     "id": "conic-gradient",
     "name": "Conic Gradient",
     "title": "Conic Gradient",
@@ -38,6 +63,54 @@ export const docsBits: DocsBit[] = [
       "gradient"
     ],
     "htmlPath": "/bits/conic-gradient.html",
+    "previewImage": null
+  },
+  {
+    "id": "hard-light",
+    "name": "Hard Light",
+    "title": "Hard Light",
+    "description": "A top-down field of turning blocks lit by a wandering point light that throws long soft-edged shadows across a glowing floor, the shadow fan swinging as the light orbits",
+    "category": "background-effects",
+    "categoryLabel": "Background Effects",
+    "tags": [
+      "background",
+      "light",
+      "shadow",
+      "geometry"
+    ],
+    "duration": 10,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "htmlPath": "/bits/hard-light.html",
+    "previewImage": null
+  },
+  {
+    "id": "lava-dither",
+    "name": "Error-Diffusion Lava",
+    "title": "Error-Diffusion Lava",
+    "description": "Slow metaball lava rendered through Floyd-Steinberg error diffusion into three inks, so the blobs crawl with living organic grain as they merge and split",
+    "category": "background-effects",
+    "categoryLabel": "Background Effects",
+    "tags": [
+      "background",
+      "dither",
+      "pixel",
+      "organic"
+    ],
+    "duration": 10,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "htmlPath": "/bits/lava-dither.html",
     "previewImage": null
   },
   {
@@ -62,6 +135,52 @@ export const docsBits: DocsBit[] = [
     "previewImage": null
   },
   {
+    "id": "moire-field",
+    "name": "Moire Interference",
+    "title": "Moire Interference",
+    "description": "Two sets of concentric rings combined with XOR so their interference blooms into shifting moire fringes as the centres orbit, drift apart and meet",
+    "category": "background-effects",
+    "categoryLabel": "Background Effects",
+    "tags": [
+      "background",
+      "op-art",
+      "pattern",
+      "generative"
+    ],
+    "duration": 10,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "htmlPath": "/bits/moire-field.html",
+    "previewImage": null
+  },
+  {
+    "id": "op-art-lens",
+    "name": "Op-Art Lens",
+    "title": "Op-Art Lens",
+    "description": "A Vasarely-style checkerboard swelling under a travelling magnifying lens and pinching under a second, with an accent band of cells sweeping diagonally through the warp",
+    "category": "background-effects",
+    "categoryLabel": "Background Effects",
+    "tags": [
+      "background",
+      "op-art",
+      "pattern",
+      "warp"
+    ],
+    "duration": 10,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "htmlPath": "/bits/op-art-lens.html",
+    "previewImage": null
+  },
+  {
     "id": "radial-gradient",
     "name": "Radial Gradient",
     "title": "Radial Gradient",
@@ -80,6 +199,53 @@ export const docsBits: DocsBit[] = [
       "gradient"
     ],
     "htmlPath": "/bits/radial-gradient.html",
+    "previewImage": null
+  },
+  {
+    "id": "rule-cascade",
+    "name": "Rule Cascade",
+    "title": "Rule Cascade",
+    "description": "Elementary cellular automata growing generation by generation and scrolling upward, switching between rules 30, 90, 110 and 45 under a lookup-table legend, the newest generation glowing",
+    "category": "background-effects",
+    "categoryLabel": "Background Effects",
+    "tags": [
+      "background",
+      "generative",
+      "pattern",
+      "math",
+      "pixel"
+    ],
+    "duration": 10,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "htmlPath": "/bits/rule-cascade.html",
+    "previewImage": null
+  },
+  {
+    "id": "blueprint-draw",
+    "name": "Blueprint Drawing",
+    "title": "Blueprint Drawing",
+    "description": "A technical drawing that plots itself: centrelines, a bolted flange and its hatched section view, dimension lines with arrowheads and callouts, a title block, then an approval stamp",
+    "category": "full-compositions",
+    "categoryLabel": "Full Compositions",
+    "tags": [
+      "technical",
+      "line-art",
+      "explainer",
+      "svg"
+    ],
+    "duration": 10,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "viewport"
+    ],
+    "htmlPath": "/bits/blueprint-draw.html",
     "previewImage": null
   },
   {
@@ -530,6 +696,30 @@ export const docsBits: DocsBit[] = [
     "previewImage": null
   },
   {
+    "id": "flow-field",
+    "name": "Ink Flow Field",
+    "title": "Ink Flow Field",
+    "description": "Hundreds of ink streamlines grow through a curl-noise current that parts around an empty circle, then keep flowing as accent dashes travel along them like a plotter drawing",
+    "category": "particles",
+    "categoryLabel": "Particles",
+    "tags": [
+      "particles",
+      "generative",
+      "lines",
+      "background"
+    ],
+    "duration": 10,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "htmlPath": "/bits/flow-field.html",
+    "previewImage": null
+  },
+  {
     "id": "particles-fountain",
     "name": "Fountain",
     "title": "Fountain",
@@ -596,6 +786,30 @@ export const docsBits: DocsBit[] = [
     "previewImage": null
   },
   {
+    "id": "radar-sweep",
+    "name": "Radar Sweep",
+    "title": "Radar Sweep",
+    "description": "A phosphor radar scope with a conic afterglow beam, moving contacts that flare and fade as the sweep passes, ground clutter, bearing ring and a live contact table",
+    "category": "particles",
+    "categoryLabel": "Particles",
+    "tags": [
+      "hud",
+      "data",
+      "ui",
+      "crt"
+    ],
+    "duration": 10,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "htmlPath": "/bits/radar-sweep.html",
+    "previewImage": null
+  },
+  {
     "id": "scrolling-columns",
     "name": "Scrolling Columns",
     "title": "Scrolling Columns",
@@ -617,6 +831,54 @@ export const docsBits: DocsBit[] = [
       "viewport"
     ],
     "htmlPath": "/bits/scrolling-columns.html",
+    "previewImage": null
+  },
+  {
+    "id": "strange-attractor",
+    "name": "Strange Attractor",
+    "title": "Strange Attractor",
+    "description": "A Lorenz attractor integrated with RK4 and traced in 3D, a glowing head pulling a depth-cued ribbon of thread while the butterfly slowly turns beside its equations",
+    "category": "particles",
+    "categoryLabel": "Particles",
+    "tags": [
+      "3d",
+      "math",
+      "line-art",
+      "generative",
+      "science"
+    ],
+    "duration": 10,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "htmlPath": "/bits/strange-attractor.html",
+    "previewImage": null
+  },
+  {
+    "id": "vector-scope",
+    "name": "Vector Scope",
+    "title": "Vector Scope",
+    "description": "An amber-phosphor XY oscilloscope tracing Lissajous figures that morph through frequency ratios, with beam persistence, bloom, a graticule and live channel readouts",
+    "category": "particles",
+    "categoryLabel": "Particles",
+    "tags": [
+      "crt",
+      "hud",
+      "retro",
+      "science",
+      "glow"
+    ],
+    "duration": 10,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "htmlPath": "/bits/vector-scope.html",
     "previewImage": null
   },
   {
@@ -665,6 +927,29 @@ export const docsBits: DocsBit[] = [
       "viewport"
     ],
     "htmlPath": "/bits/3d-elements.html",
+    "previewImage": null
+  },
+  {
+    "id": "ascii-torus",
+    "name": "ASCII Torus",
+    "title": "ASCII Torus",
+    "description": "A z-buffered torus tumbling in a grid of monospace glyphs, decoding out of noise and lit through a twelve-step character ramp",
+    "category": "scenes-3d",
+    "categoryLabel": "3D Scenes",
+    "tags": [
+      "3d",
+      "ascii",
+      "retro",
+      "generative"
+    ],
+    "duration": 8,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "htmlPath": "/bits/ascii-torus.html",
     "previewImage": null
   },
   {
@@ -740,6 +1025,81 @@ export const docsBits: DocsBit[] = [
     "previewImage": null
   },
   {
+    "id": "dither-orb",
+    "name": "Dithered Planet",
+    "title": "Dithered Planet",
+    "description": "A ringed planet raytraced per pixel and printed in three-ink Bayer dithering, its light swinging from a thin crescent to full day under a mono HUD",
+    "category": "scenes-3d",
+    "categoryLabel": "3D Scenes",
+    "tags": [
+      "3d",
+      "dither",
+      "pixel",
+      "retro",
+      "hud"
+    ],
+    "duration": 10,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "htmlPath": "/bits/dither-orb.html",
+    "previewImage": null
+  },
+  {
+    "id": "dot-globe",
+    "name": "Network Globe",
+    "title": "Network Globe",
+    "description": "A turning globe of land dots under a faint graticule, great-circle arcs launching between cities with travelling packets and landing pings, beside a live counter",
+    "category": "scenes-3d",
+    "categoryLabel": "3D Scenes",
+    "tags": [
+      "3d",
+      "data",
+      "globe",
+      "network",
+      "dots"
+    ],
+    "duration": 10,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "counter",
+      "random",
+      "viewport"
+    ],
+    "htmlPath": "/bits/dot-globe.html",
+    "previewImage": null
+  },
+  {
+    "id": "exploded-stack",
+    "name": "Exploded Stack",
+    "title": "Exploded Stack",
+    "description": "An isometric line-art architecture diagram: patterned slabs lift apart along dashed guides, leader lines draw out to numbered labels and a highlight steps through each layer",
+    "category": "scenes-3d",
+    "categoryLabel": "3D Scenes",
+    "tags": [
+      "3d",
+      "isometric",
+      "line-art",
+      "diagram",
+      "explainer"
+    ],
+    "duration": 9,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "htmlPath": "/bits/exploded-stack.html",
+    "previewImage": null
+  },
+  {
     "id": "flying-through-words",
     "name": "Flying Through Words",
     "title": "Flying Through Words",
@@ -761,6 +1121,31 @@ export const docsBits: DocsBit[] = [
       "viewport"
     ],
     "htmlPath": "/bits/flying-through-words.html",
+    "previewImage": null
+  },
+  {
+    "id": "isometric-city",
+    "name": "Isometric Skyline",
+    "title": "Isometric Skyline",
+    "description": "Line-art city blocks rising out of an isometric grid with hidden-line removal, a slow orbiting camera, a scan ring lighting edges and windows flickering on",
+    "category": "scenes-3d",
+    "categoryLabel": "3D Scenes",
+    "tags": [
+      "3d",
+      "isometric",
+      "line-art",
+      "architecture",
+      "generative"
+    ],
+    "duration": 10,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "htmlPath": "/bits/isometric-city.html",
     "previewImage": null
   },
   {
@@ -857,6 +1242,55 @@ export const docsBits: DocsBit[] = [
       "viewport"
     ],
     "htmlPath": "/bits/transform3d-showcase.html",
+    "previewImage": null
+  },
+  {
+    "id": "voxel-type",
+    "name": "Voxel Type",
+    "title": "Voxel Type",
+    "description": "Isometric voxels fly in from a scattered cloud and lock into a word built from a 5x7 pixel font, ripple with a travelling wave, then burst apart",
+    "category": "scenes-3d",
+    "categoryLabel": "3D Scenes",
+    "tags": [
+      "3d",
+      "isometric",
+      "pixel",
+      "typography",
+      "logo"
+    ],
+    "duration": 8,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "htmlPath": "/bits/voxel-type.html",
+    "previewImage": null
+  },
+  {
+    "id": "wire-solids",
+    "name": "Hidden-Line Solids",
+    "title": "Hidden-Line Solids",
+    "description": "The five Platonic solids turning in technical line art, visible edges solid and hidden edges dashed, each drawn edge by edge and named with its Schlafli symbol and V E F counts",
+    "category": "scenes-3d",
+    "categoryLabel": "3D Scenes",
+    "tags": [
+      "3d",
+      "line-art",
+      "geometry",
+      "math",
+      "technical"
+    ],
+    "duration": 10,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "htmlPath": "/bits/wire-solids.html",
     "previewImage": null
   },
   {
@@ -1047,6 +1481,50 @@ export const docsBits: DocsBit[] = [
       "viewport"
     ],
     "htmlPath": "/bits/mosaic-reframe.html",
+    "previewImage": null
+  },
+  {
+    "id": "paper-fold",
+    "name": "Paper Fold",
+    "title": "Paper Fold",
+    "description": "A folded accordion card swings in, unfolds panel by panel in real 3D with light raking across each crease to reveal a poster spread, then folds itself shut",
+    "category": "staggered-motion",
+    "categoryLabel": "Staggered Motion",
+    "tags": [
+      "3d",
+      "paper",
+      "reveal",
+      "card"
+    ],
+    "duration": 7,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "viewport"
+    ],
+    "htmlPath": "/bits/paper-fold.html",
+    "previewImage": null
+  },
+  {
+    "id": "receipt-print",
+    "name": "Receipt Printer",
+    "title": "Receipt Printer",
+    "description": "A thermal receipt feeds up out of a printer line by line, each row burning in left to right down to a highlighted total and barcode, before the slip is torn off and flies away",
+    "category": "staggered-motion",
+    "categoryLabel": "Staggered Motion",
+    "tags": [
+      "list",
+      "print",
+      "paper",
+      "component"
+    ],
+    "duration": 8,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "viewport"
+    ],
+    "htmlPath": "/bits/receipt-print.html",
     "previewImage": null
   },
   {
@@ -1281,6 +1759,77 @@ export const docsBits: DocsBit[] = [
     "previewImage": null
   },
   {
+    "id": "crt-boot",
+    "name": "CRT Power-On",
+    "title": "CRT Power-On",
+    "description": "A curved amber CRT snapping on from a single dot, booting through a typed self-test and progress bar to a glowing title, with scanlines, rolling bar and bloom, then collapsing off",
+    "category": "text-animations",
+    "categoryLabel": "Text Animations",
+    "tags": [
+      "text",
+      "crt",
+      "terminal",
+      "retro",
+      "glow"
+    ],
+    "duration": 8,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "htmlPath": "/bits/crt-boot.html",
+    "previewImage": null
+  },
+  {
+    "id": "dither-type",
+    "name": "Dither Dissolve",
+    "title": "Dither Dissolve",
+    "description": "A headline that materialises through an 8x8 Bayer threshold sweep, printed in three inks with a dithered halo and a drifting light behind it, then dissolves back into the screen",
+    "category": "text-animations",
+    "categoryLabel": "Text Animations",
+    "tags": [
+      "text",
+      "dither",
+      "pixel",
+      "reveal",
+      "retro"
+    ],
+    "duration": 7.5,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "htmlPath": "/bits/dither-type.html",
+    "previewImage": null
+  },
+  {
+    "id": "extruded-type",
+    "name": "Extruded Type",
+    "title": "Extruded Type",
+    "description": "A headline built as solid 3D block letters from dozens of stacked layers, each letter flipping up into place before the whole word swings slowly to show its depth",
+    "category": "text-animations",
+    "categoryLabel": "Text Animations",
+    "tags": [
+      "text",
+      "3d",
+      "typography",
+      "headline"
+    ],
+    "duration": 7,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "htmlPath": "/bits/extruded-type.html",
+    "previewImage": null
+  },
+  {
     "id": "fade-in",
     "name": "Fade In",
     "title": "Fade In",
@@ -1348,6 +1897,29 @@ export const docsBits: DocsBit[] = [
     "previewImage": null
   },
   {
+    "id": "led-marquee",
+    "name": "LED Matrix Sign",
+    "title": "LED Matrix Sign",
+    "description": "A dot-matrix LED sign in a dark housing: a message scrolls across the glowing dots, then a second line wipes in column by column and pulses",
+    "category": "text-animations",
+    "categoryLabel": "Text Animations",
+    "tags": [
+      "text",
+      "pixel",
+      "retro",
+      "glow"
+    ],
+    "duration": 8,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "htmlPath": "/bits/led-marquee.html",
+    "previewImage": null
+  },
+  {
     "id": "matrix-rain",
     "name": "Matrix Rain",
     "title": "Matrix Rain",
@@ -1371,6 +1943,31 @@ export const docsBits: DocsBit[] = [
     "previewImage": null
   },
   {
+    "id": "mosaic-resolve",
+    "name": "Mosaic Resolve",
+    "title": "Mosaic Resolve",
+    "description": "A title card that steps out of giant palette-quantised mosaic blocks into crisp type and a striped retro sun, holds, then shatters back into tiles that blink out",
+    "category": "text-animations",
+    "categoryLabel": "Text Animations",
+    "tags": [
+      "text",
+      "pixel",
+      "reveal",
+      "retro",
+      "title"
+    ],
+    "duration": 7,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "htmlPath": "/bits/mosaic-resolve.html",
+    "previewImage": null
+  },
+  {
     "id": "multi-text-typewriter",
     "name": "Multi-Text Typewriter",
     "title": "Multi-Text Typewriter",
@@ -1390,6 +1987,125 @@ export const docsBits: DocsBit[] = [
       "viewport"
     ],
     "htmlPath": "/bits/multi-text-typewriter.html",
+    "previewImage": null
+  },
+  {
+    "id": "odometer-roll",
+    "name": "Odometer Roll",
+    "title": "Odometer Roll",
+    "description": "A mechanical counter of real 3D number drums: the ones wheel spins into a motion blur, higher wheels click over with true carries and everything settles on the target value",
+    "category": "text-animations",
+    "categoryLabel": "Text Animations",
+    "tags": [
+      "counter",
+      "number",
+      "3d",
+      "mechanical",
+      "component"
+    ],
+    "duration": 6,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "viewport"
+    ],
+    "htmlPath": "/bits/odometer-roll.html",
+    "previewImage": null
+  },
+  {
+    "id": "pixel-sort",
+    "name": "Pixel Sort",
+    "title": "Pixel Sort",
+    "description": "A sunset title card torn apart by brightness-sorted pixel runs that drip down each column, settling into the clean frame before a sweeping band glitches it again",
+    "category": "text-animations",
+    "categoryLabel": "Text Animations",
+    "tags": [
+      "text",
+      "glitch",
+      "pixel",
+      "retro",
+      "title"
+    ],
+    "duration": 8,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "htmlPath": "/bits/pixel-sort.html",
+    "previewImage": null
+  },
+  {
+    "id": "riso-print",
+    "name": "Riso Print",
+    "title": "Riso Print",
+    "description": "A two-ink risograph poster on warm paper: a grainy halftone sun stamps down, then orange and black ink passes slide into near-registration and overprint, with crop and registration marks",
+    "category": "text-animations",
+    "categoryLabel": "Text Animations",
+    "tags": [
+      "text",
+      "print",
+      "grain",
+      "halftone",
+      "paper"
+    ],
+    "duration": 7,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "random",
+      "viewport"
+    ],
+    "htmlPath": "/bits/riso-print.html",
+    "previewImage": null
+  },
+  {
+    "id": "slit-scan",
+    "name": "Slit-Scan Type",
+    "title": "Slit-Scan Type",
+    "description": "A headline sliced into hundreds of vertical slits, each sampling the motion a moment later than its neighbour, so the word pours in like liquid, holds crisp, then smears away with an accent echo",
+    "category": "text-animations",
+    "categoryLabel": "Text Animations",
+    "tags": [
+      "text",
+      "warp",
+      "headline",
+      "experimental"
+    ],
+    "duration": 7,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "color",
+      "viewport"
+    ],
+    "htmlPath": "/bits/slit-scan.html",
+    "previewImage": null
+  },
+  {
+    "id": "split-flap",
+    "name": "Split-Flap Board",
+    "title": "Split-Flap Board",
+    "description": "A departure-board message where every tile riffles through the alphabet on hinged 3D flaps before landing on its letter, sweeping in a diagonal wave",
+    "category": "text-animations",
+    "categoryLabel": "Text Animations",
+    "tags": [
+      "text",
+      "mechanical",
+      "flip",
+      "3d",
+      "retro"
+    ],
+    "duration": 7,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "random",
+      "viewport"
+    ],
+    "htmlPath": "/bits/split-flap.html",
     "previewImage": null
   },
   {
