@@ -46,6 +46,15 @@ const lightBits = new Set([
   "floating-shapes",
   "phyllotaxis-bloom",
   "ray-burst",
+  "riso-print",
+]);
+const heavyBits = new Set([
+  "contour-drift",
+  "crt-boot",
+  "hard-light",
+  "moire-field",
+  "phyllotaxis-bloom",
+  "riso-print",
 ]);
 const structuralBits = new Set([
   "fracture-reassemble",
@@ -102,14 +111,15 @@ function themeFor(id) {
 }
 
 const DURATION = 36;
-const DIVES = ["matrix-rain", "bauhaus-tiles", "wave-stack", "pinwheel-grid"];
+const HERO = "halftone-sweep";
+const DIVES = ["split-flap", "hard-light", "flow-field", "dither-orb"];
 const DIVE_ARRIVE = 13.0;
 const DIVE_STEP = 2.15;
 const diveMediaStart = {
-  "matrix-rain": 2,
-  "bauhaus-tiles": 2,
-  "wave-stack": 3,
-  "pinwheel-grid": 3,
+  "split-flap": 1.2,
+  "hard-light": 3,
+  "flow-field": 4,
+  "dither-orb": 4.6,
 };
 const heroes = Object.fromEntries(
   DIVES.map((id, order) => {
@@ -124,13 +134,8 @@ const heroes = Object.fromEntries(
     ];
   }),
 );
+heroes[HERO] = { start: 0, end: 12, mediaStart: 0 };
 heroes.carousel = { start: 23.8, end: 34, mediaStart: 0 };
-
-const windows = [
-  { start: 0, end: 12.2, cap: 4 },
-  { start: 12.2, end: 28, cap: 2 },
-  { start: 28, end: DURATION, cap: 3 },
-];
 
 const inventory = JSON.parse(
   readFileSync(join(repoDir, "src/catalog/inventory.generated.json"), "utf8"),
@@ -160,22 +165,105 @@ const bits = inventory
       left.category - right.category || left.id.localeCompare(right.id),
   );
 
+const GRID = { columns: 12, rows: 8, pitchX: 520, pitchY: 310 };
+const AGENT_VIEW = { halfWidth: 1920, halfHeight: 1080 };
+
+function reach(column, row) {
+  return Math.hypot(
+    (column - (GRID.columns - 1) / 2) * GRID.pitchX,
+    (row - (GRID.rows - 1) / 2) * GRID.pitchY,
+  );
+}
+
+function layOut() {
+  const grid = [];
+  for (let row = 0; row < GRID.rows; row += 1)
+    for (let column = 0; column < GRID.columns; column += 1)
+      grid.push({ column, row, reach: reach(column, row) });
+  if (bits.length > grid.length) {
+    console.error(
+      `${bits.length} bits do not fit the ${GRID.columns}×${GRID.rows} grid; refit the layout and camera keys.`,
+    );
+    process.exit(1);
+  }
+  const trimmed = new Set(
+    [...grid]
+      .sort((left, right) => right.reach - left.reach)
+      .slice(0, grid.length - bits.length),
+  );
+  const slots = grid.filter((slot) => !trimmed.has(slot));
+  const nearest = Math.min(...slots.map((slot) => slot.reach));
+  const hero = bits.findIndex((bit) => bit.id === HERO);
+  const centre = slots.filter((slot) => slot.reach - nearest < 1);
+  const heroSlot =
+    centre.find(
+      (slot) => bits[slots.indexOf(slot)].category === bits[hero].category,
+    ) || centre[0];
+  const displaced = slots.indexOf(heroSlot);
+  [slots[hero], slots[displaced]] = [slots[displaced], slots[hero]];
+  bits.forEach((bit, index) => {
+    bit.column = slots[index].column;
+    bit.row = slots[index].row;
+    bit.x = (bit.column - (GRID.columns - 1) / 2) * GRID.pitchX;
+    bit.y = (bit.row - (GRID.rows - 1) / 2) * GRID.pitchY;
+  });
+}
+
 function round(value) {
   return Math.round(value * 1000) / 1000;
+}
+
+layOut();
+const diveBits = bits.filter((bit) => DIVES.includes(bit.id));
+const nearDive = (bit) =>
+  diveBits.some(
+    (dive) =>
+      Math.abs(dive.column - bit.column) <= 1 &&
+      Math.abs(dive.row - bit.row) <= 1,
+  );
+const inAgentView = (bit) =>
+  Math.abs(bit.x) <= AGENT_VIEW.halfWidth &&
+  Math.abs(bit.y) <= AGENT_VIEW.halfHeight;
+const windows = [
+  { start: 0.9, end: 2.9, cap: 1, heavyCap: 0 },
+  { start: 5.8, end: 12.6, cap: 3, heavyCap: 1, alignEnd: true },
+  { start: 12.6, end: 21, cap: 2, heavyCap: 0, live: nearDive },
+  {
+    start: 21,
+    end: 28,
+    cap: 1,
+    heavyCap: 0,
+    live: (bit) => inAgentView(bit) || nearDive(bit),
+  },
+  { start: 29.2, end: DURATION, cap: 1, heavyCap: 1 },
+];
+
+function windowSpans(bit, window) {
+  const cap = heavyBits.has(bit.id) ? window.heavyCap : window.cap;
+  const spans = [];
+  let cursor = window.alignEnd ? window.end : window.start;
+  while (spans.length < cap) {
+    const room = window.alignEnd ? cursor - window.start : window.end - cursor;
+    const length = Math.min(room, bit.segment);
+    if (length < 0.05 || (spans.length > 0 && length < bit.segment * 0.4))
+      break;
+    const start = window.alignEnd ? cursor - length : cursor;
+    spans.push({ start, end: start + length, mediaStart: bit.mediaStart });
+    cursor = window.alignEnd ? start : start + length;
+  }
+  return spans.sort((left, right) => left.start - right.start);
 }
 
 function clipsFor(bit) {
   const hero = heroes[bit.id];
   const spans = [];
   for (const window of windows) {
-    let cursor = window.start;
-    let count = 0;
-    while (cursor < window.end - 0.05 && count < window.cap) {
-      const end = Math.min(window.end, cursor + bit.segment);
-      spans.push({ start: cursor, end, mediaStart: bit.mediaStart });
-      cursor = end;
-      count += 1;
-    }
+    if (window.live && !window.live(bit)) continue;
+    const added = windowSpans(bit, window);
+    const previous = spans[spans.length - 1];
+    if (previous && added[0] && added[0].end - previous.start <= bit.segment)
+      previous.end = added.shift().end;
+    spans.push(...added);
   }
   if (!hero) return spans;
   const kept = [];
@@ -199,7 +287,7 @@ function tileMarkup(bit, index) {
   return `<div class="lv-tile" data-index="${index}" data-id="${bit.id}" data-category="${bit.category}">
           <div class="lv-card"><img class="lv-poster" src="public/posters/${bit.id}.jpg" alt="" />${hosts}<div class="lv-veil"></div><div class="lv-label">${bit.id}</div><div class="lv-sheen"></div><div class="lv-shade"></div><div class="lv-tint"></div></div>
           <div class="lv-ring"></div>
-          <div class="lv-inspect"><div class="lv-outline"></div><div class="lv-tag">compositions/${bit.id}.html</div><div class="lv-dims">1920 × 1080</div></div>
+          <div class="lv-inspect"><div class="lv-outline"></div><div class="lv-tag">compositions/${bit.id}.html</div><div class="lv-dims">${bit.width} × ${bit.height}</div></div>
         </div>`;
 }
 
@@ -221,7 +309,15 @@ const data = {
     icon,
     count: bits.filter((bit) => bit.category === index).length,
   })),
-  bits: bits.map(({ id, name, category }) => ({ id, name, category })),
+  bits: bits.map(({ id, name, category, column, row }) => ({
+    id,
+    name,
+    category,
+    column,
+    row,
+  })),
+  grid: GRID,
+  hero: HERO,
   icons: JSON.parse(readFileSync(join(launchDir, "src/icons.json"), "utf8")),
   timing: {
     duration: DURATION,
@@ -305,7 +401,7 @@ if (!skipPosters) {
   }
   const queue = [...pending];
   await Promise.all(
-    Array.from({ length: 8 }, async () => {
+    Array.from({ length: 6 }, async () => {
       while (queue.length) await poster(queue.shift());
     }),
   );

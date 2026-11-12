@@ -7,12 +7,12 @@
   const hud = document.getElementById("launch-hud");
   const DURATION = TIMING.duration;
   const PRIMARY = "#ec8b49";
-  const COLUMNS = 9;
-  const ROWS = 7;
-  const PITCH_X = 520;
-  const PITCH_Y = 310;
-  const HERO_ID = "halftone-sweep";
-  const HERO_SLOT = 31;
+  const {
+    columns: COLUMNS,
+    rows: ROWS,
+    pitchX: PITCH_X,
+    pitchY: PITCH_Y,
+  } = DATA.grid;
   const GITHUB_MARK =
     "M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.43-2.7 5.4-5.27 5.69.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z";
 
@@ -123,27 +123,20 @@
     }),
   );
   const byId = (id) => tiles.find((tile) => tile.bit.id === id);
-  const heroTile = byId(HERO_ID);
-  const slots = tiles.map((tile) => tile.index);
-  const displaced = tiles.find((tile) => tile.index === HERO_SLOT);
-  slots[heroTile.index] = HERO_SLOT;
-  slots[displaced.index] = heroTile.index;
+  const heroTile = byId(DATA.hero);
+  const heroSlot = heroTile.bit;
   tiles.forEach((tile) => {
-    const slot = slots[tile.index];
-    tile.column = slot % COLUMNS;
-    tile.row = Math.floor(slot / COLUMNS);
+    tile.column = tile.bit.column;
+    tile.row = tile.bit.row;
     tile.home = [
       (tile.column - (COLUMNS - 1) / 2) * PITCH_X,
       (tile.row - (ROWS - 1) / 2) * PITCH_Y,
       0,
     ];
-    tile.heroDistance = Math.hypot(tile.column - 4, (tile.row - 3) * 1.3);
-    tile.appear = tile === heroTile ? -1 : 0.42 + tile.heroDistance * 0.11;
-    const radial = normalize([
-      tile.column - 4 || 0.001,
-      tile.row - 3 || 0.001,
-      0,
-    ]);
+    const offset = [tile.column - heroSlot.column, tile.row - heroSlot.row];
+    tile.heroDistance = Math.hypot(offset[0], offset[1] * 1.3);
+    tile.appear = tile === heroTile ? -1 : 0.42 + tile.heroDistance * 0.1;
+    const radial = normalize([offset[0] || 0.001, offset[1] || 0.001, 0]);
     tile.flipAxis = [-radial[1], radial[0], 0];
   });
 
@@ -182,16 +175,16 @@
       },
       {
         t: 2.55,
-        pos: [-950, -620, 3350],
-        tgt: [120, 60, 0],
+        pos: [-2350, -900, 4500],
+        tgt: [-850, -60, 0],
         roll: 3,
         lens: 1150,
         ease: "sine.inOut",
       },
       {
         t: 2.85,
-        pos: [-860, -560, 3240],
-        tgt: [110, 55, 0],
+        pos: [-2230, -830, 4360],
+        tgt: [-845, -60, 0],
         roll: 2.6,
         lens: 1150,
         ease: "expo.inOut",
@@ -214,32 +207,32 @@
       },
       {
         t: 6.35,
-        pos: [1950, -1000, 2750],
-        tgt: [-650, 150, 0],
+        pos: [2700, -1150, 4250],
+        tgt: [-450, 260, 0],
         roll: 4,
         lens: 1100,
         ease: "sine.inOut",
       },
       {
         t: 9.6,
-        pos: [1450, -820, 3050],
-        tgt: [-650, 150, 0],
+        pos: [2150, -950, 4450],
+        tgt: [-450, 260, 0],
         roll: 2,
         lens: 1100,
         ease: "expo.inOut",
       },
       {
         t: 10.25,
-        pos: [1150, -40, 2000],
-        tgt: [1150, 0, 0],
+        pos: [1550, -40, 2000],
+        tgt: [1550, 0, 0],
         roll: 0,
         lens: 1200,
         ease: "sine.inOut",
       },
       {
         t: 12.3,
-        pos: [-1150, -40, 2000],
-        tgt: [-1150, 0, 0],
+        pos: [-1550, -40, 2000],
+        tgt: [-1550, 0, 0],
         roll: 0,
         lens: 1200,
         ease: "expo.inOut",
@@ -266,9 +259,10 @@
       });
       if (next) {
         const middle = mix(home, next.tile.home, 0.5);
+        const hop = length(sub(next.tile.home, home));
         keys.push({
           t: dive.leave + 0.33,
-          pos: add(middle, [0, 0, 980]),
+          pos: add(middle, [0, 0, 820 + hop * 0.22]),
           tgt: middle,
           roll: order % 2 ? -5 : 5,
           lens: 1000,
@@ -295,16 +289,16 @@
       },
       {
         t: 29.9,
-        pos: [0, -40, 3300],
-        tgt: [0, -40, 0],
+        pos: [-130, -40, 3300],
+        tgt: [-130, -40, 0],
         roll: 0,
         lens: 1200,
         ease: "sine.out",
       },
       {
         t: DURATION,
-        pos: [0, -40, 3060],
-        tgt: [0, -40, 0],
+        pos: [-130, -40, 3060],
+        tgt: [-130, -40, 0],
         roll: 0,
         lens: 1200,
         ease: "none",
@@ -357,8 +351,8 @@
   const SCAN_END = 11.9;
   const scanX = (time) =>
     lerp(
-      2700,
-      -2700,
+      3500,
+      -3500,
       progress(time, SCAN_START, SCAN_END - SCAN_START, "power1.inOut"),
     );
   tiles.forEach((tile) => {
@@ -414,7 +408,7 @@
 
   function mosaicCells(cellWidth) {
     const cellHeight = cellWidth * (270 / 480) * 1.06;
-    const margin = 0.34;
+    const margin = 0.26;
     const square = (y) =>
       y >= ICON_SQUARE.y && y <= ICON_SQUARE.y + ICON_SQUARE.size
         ? [ICON_SQUARE.x, ICON_SQUARE.x + ICON_SQUARE.size]
@@ -463,7 +457,7 @@
     if (cells.length >= tiles.length)
       mosaic = { cells: cells.slice(0, tiles.length), width };
   }
-  const LOCKUP = { unit: 64, center: [-1295, -40, 0], column: [-459, -40, 0] };
+  const LOCKUP = { unit: 72, center: [-1390, -40, 0], column: [-459, -40, 0] };
   const iconToWorld = (x, y) => [
     LOCKUP.center[0] + (x - 12) * LOCKUP.unit,
     LOCKUP.center[1] + (y - 11.8) * LOCKUP.unit,
@@ -545,6 +539,11 @@
       );
     if (lift > 0) position = add(position, [0, 0, 240 * lift]);
 
+    if (tile === carousel)
+      position = add(
+        position,
+        scale([140, -220, 520], progress(time, 23.35, 0.8, "expo.out")),
+      );
     if (tile === carousel && time >= 24.45) {
       const flight = progress(time, 24.45, 1.2, "expo.inOut");
       const arc = Math.sin(Math.PI * flight);
@@ -821,9 +820,10 @@
       node.style.transform = `translate3d(0,${((1 - enter) * 105 - exit * 105).toFixed(2)}%,0)`;
       const blur = (1 - enter) * 16 + exit * 16;
       node.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : "none";
-      if (word.gradient) {
+      if (word.gradient && !word.fitted) {
         node.style.backgroundSize = `${word.line.offsetWidth}px 100%`;
         node.style.backgroundPosition = `${-node.offsetLeft + word.line.offsetLeft}px 0`;
+        word.fitted = document.fonts.status === "loaded";
       }
     });
   }
@@ -866,8 +866,8 @@
     "stacks",
     "The catalog",
     [
-      ["62 bits.", false],
-      ["7 categories.", true],
+      [`${tiles.length} bits.`, false],
+      [`${categories.length} categories.`, true],
     ],
     128,
   );
@@ -917,7 +917,7 @@
   const footnote = element(
     "div",
     "lv-footnote",
-    "This video is a hyperbits composition: 62 live bits, one HTML page.",
+    `This video is a hyperbits composition: ${tiles.length} live bits, one HTML page.`,
     hud,
   );
 
@@ -933,7 +933,7 @@
     const spotActive = span(
       time,
       SPOT_START - 0.1,
-      SPOT_START + SPOT_STEP * 7.4,
+      SPOT_START + SPOT_STEP * (categories.length + 0.4),
       0.25,
       0.4,
     );
@@ -1192,5 +1192,4 @@
   );
   window.__timelines = window.__timelines || {};
   window.__timelines.launch = timeline;
-  render(0);
 })();
