@@ -90,15 +90,18 @@
         const bg = document.getElementById("bg");
         const title = document.getElementById("title");
         const view = hyperbits.viewport(root);
-        const unit = view.height / 1080;
+        const unit = view.vmin / 10.8;
         bg.style.backgroundColor = vars.background;
         title.style.color = vars.color;
-        title.style.fontSize = view.vw * 5 + "px";
+        title.style.fontSize = view.vmin * 8.9 + "px";
+        title.style.whiteSpace = "pre-wrap";
+        title.style.maxWidth = view.width * 0.86 + "px";
+        title.style.textAlign = "center";
         title.textContent = vars.text;
         const timeline = gsap.timeline({ paused: true });
         timeline.fromTo(
           title,
-          { opacity: 0, x: -400 * (view.width / 1920) },
+          { opacity: 0, x: -400 * unit },
           { opacity: 1, x: 0, duration: 1, ease: hyperbits.Easing.easeInOut },
           0,
         );
