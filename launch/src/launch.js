@@ -144,11 +144,12 @@
     const arrive = TIMING.diveArrive + order * TIMING.diveStep;
     return { tile: byId(id), arrive, leave: arrive + 1.25 };
   });
-  const carousel = byId("carousel");
+  const pick = byId(DATA.agentPick);
   const AGENT = {
     terminal: { position: [-472, 233, 500], rotation: yaw(4 * DEG) },
-    carousel: {
-      position: [630, -35, 700],
+    present: [400, 555, 520],
+    pick: {
+      position: [570, -35, 700],
       rotation: yaw(-8 * DEG),
       size: 1.556,
     },
@@ -469,7 +470,7 @@
   [...tiles]
     .sort(
       (a, b) =>
-        (a === carousel ? 0 : 1) - (b === carousel ? 0 : 1) ||
+        (a === pick ? 0 : 1) - (b === pick ? 0 : 1) ||
         a.column - b.column ||
         a.row - b.row,
     )
@@ -539,21 +540,22 @@
       );
     if (lift > 0) position = add(position, [0, 0, 240 * lift]);
 
-    if (tile === carousel)
-      position = add(
+    if (tile === pick)
+      position = mix(
         position,
-        scale([140, -220, 520], progress(time, 23.35, 0.8, "expo.out")),
+        AGENT.present,
+        progress(time, 23.35, 0.8, "expo.out"),
       );
-    if (tile === carousel && time >= 24.45) {
+    if (tile === pick && time >= 24.45) {
       const flight = progress(time, 24.45, 1.2, "expo.inOut");
       const arc = Math.sin(Math.PI * flight);
-      position = add(mix(position, AGENT.carousel.position, flight), [
+      position = add(mix(position, AGENT.pick.position, flight), [
         0,
         -arc * 220,
         arc * 500,
       ]);
-      rotation = quat.slerp(rotation, AGENT.carousel.rotation, flight);
-      size = lerp(size, AGENT.carousel.size, flight);
+      rotation = quat.slerp(rotation, AGENT.pick.rotation, flight);
+      size = lerp(size, AGENT.pick.size, flight);
     }
 
     if (time >= tile.finaleStart) {
@@ -659,57 +661,56 @@
       type: 0.85,
       parts: [
         ["lv-p", "➜ "],
-        ["lv-w", "add a 3D carousel to my launch video"],
+        ["lv-w", "add a cinematic camera flythrough to my launch video"],
       ],
     },
     {
       at: 22.7,
-      type: 0.4,
+      type: 0.5,
       parts: [
         ["lv-o", "● "],
         ["lv-c", "hyperbits find "],
-        ["lv-w", '"3d carousel"'],
+        ["lv-w", '"camera flythrough"'],
+        ["lv-c", ' --limit 3 | grep "^[0-9]"'],
       ],
     },
     {
       at: 23.25,
       parts: [
-        ["lv-o", "  carousel     "],
-        ["lv-g", " Rotating carousel of cards in 3D space"],
+        ["lv-g", "  1. "],
+        ["lv-o", "camera-flight"],
       ],
     },
-    {
-      at: 23.37,
-      parts: [
-        ["lv-o", "  3d-basic     "],
-        ["lv-g", " 3D camera transitions between steps"],
-      ],
-    },
-    {
-      at: 23.49,
-      parts: [
-        ["lv-o", "  3d-elements  "],
-        ["lv-g", " Arbitrary elements in 3D space"],
-      ],
-    },
+    { at: 23.37, parts: [["lv-g", "  2. 3d-basic"]] },
+    { at: 23.49, parts: [["lv-g", "  3. cursor-flyover"]] },
     {
       at: 23.85,
-      type: 0.45,
+      type: 0.4,
       parts: [
         ["lv-o", "● "],
         ["lv-c", "hyperbits add "],
-        ["lv-w", "carousel"],
-        ["lv-c", " --into compositions/"],
+        ["lv-w", "camera-flight"],
       ],
     },
-    { at: 24.45, parts: [["lv-g", "  Wrote compositions/carousel.html"]] },
-    { at: 24.55, parts: [["lv-g", "  Wrote compositions/hyperbits.iife.js"]] },
+    {
+      at: 24.45,
+      parts: [["lv-g", "  Wrote compositions/camera-flight.html"]],
+    },
+    {
+      at: 24.55,
+      parts: [
+        [
+          "lv-g",
+          "  Wrote compositions/hyperbits.iife.js (helper bundle the bit loads)",
+        ],
+      ],
+    },
     {
       at: 25.9,
       type: 0.45,
       parts: [
         ["lv-k", "✓ "],
-        ["lv-w", "Added the carousel at 0:12"],
+        ["lv-w", "Added the flythrough at 0:12"],
       ],
     },
   ];
@@ -962,7 +963,7 @@
         progress(time, spotTime(tile.category) + SPOT_STEP * 1.05, 0.4);
       dim = Math.max(dim, 0.4 * spotActive * (1 - inSpot));
       if (activeDive && activeDive.tile !== tile) dim = Math.max(dim, 0.55);
-      if (tile !== carousel) dim = Math.max(dim, 0.74 * agentDim);
+      if (tile !== pick) dim = Math.max(dim, 0.74 * agentDim);
       tile.shade.style.opacity = dim.toFixed(3);
 
       const landing =
@@ -972,7 +973,7 @@
           ? 0
           : Math.sin(Math.PI * clamp(landing * 1.4, 0, 1)) * 0.85;
       ring = Math.max(ring, 0.95 * inSpot * spotActive);
-      if (tile === carousel)
+      if (tile === pick)
         ring = Math.max(ring, span(time, 23.35, 27.6, 0.3, 0.5));
       const settled = progress(
         time,

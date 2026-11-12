@@ -52,10 +52,70 @@ const heavyBits = new Set([
   "contour-drift",
   "crt-boot",
   "hard-light",
+  "lava-dither",
   "moire-field",
   "phyllotaxis-bloom",
+  "pixel-sort",
   "riso-print",
 ]);
+const FEATURED = [
+  "op-art-lens",
+  "dither-orb",
+  "voxel-type",
+  "pixel-sort",
+  "moire-field",
+  "lava-dither",
+  "hard-light",
+  "isometric-city",
+  "riso-print",
+  "mosaic-resolve",
+  "extruded-type",
+  "ascii-torus",
+  "split-flap",
+  "camera-flight",
+  "strange-attractor",
+  "dither-type",
+  "crt-boot",
+  "circuit-traces",
+  "dot-globe",
+  "exploded-stack",
+  "slit-scan",
+  "led-marquee",
+  "radar-sweep",
+  "vector-scope",
+  "halftone-sweep",
+  "bauhaus-tiles",
+  "phyllotaxis-bloom",
+  "matrix-rain",
+  "wave-stack",
+  "pinwheel-grid",
+  "contour-drift",
+  "carousel",
+];
+const BASIC = [
+  "card-stack",
+  "list-reveal",
+  "grid-stagger",
+  "lower-third",
+  "3d-basic",
+  "step-timing-context",
+  "glitch-in",
+  "basic-counter",
+  "basic-typewriter",
+  "word-by-word",
+  "char-by-char",
+  "blur-slide-word",
+  "staggered-fade-in",
+  "radial-gradient",
+  "linear-gradient",
+  "conic-gradient",
+  "particles-snow",
+  "scrolling-columns",
+  "mosaic-reframe",
+  "ken-burns",
+  "slide-from-left",
+  "fade-in",
+];
 const structuralBits = new Set([
   "fracture-reassemble",
   "mosaic-reframe",
@@ -111,14 +171,15 @@ function themeFor(id) {
 }
 
 const DURATION = 36;
-const HERO = "halftone-sweep";
-const DIVES = ["split-flap", "hard-light", "flow-field", "dither-orb"];
+const HERO = { id: "flow-field", mediaStart: 3.5 };
+const AGENT_PICK = { id: "camera-flight", mediaStart: 3.9 };
+const DIVES = ["dither-orb", "pixel-sort", "op-art-lens", "voxel-type"];
 const DIVE_ARRIVE = 13.0;
 const DIVE_STEP = 2.15;
 const diveMediaStart = {
-  "split-flap": 1.2,
-  "hard-light": 3,
-  "flow-field": 4,
+  "pixel-sort": 0.2,
+  "op-art-lens": 2,
+  "voxel-type": 0.6,
   "dither-orb": 4.6,
 };
 const heroes = Object.fromEntries(
@@ -134,8 +195,6 @@ const heroes = Object.fromEntries(
     ];
   }),
 );
-heroes[HERO] = { start: 0, end: 12, mediaStart: 0 };
-heroes.carousel = { start: 23.8, end: 34, mediaStart: 0 };
 
 const inventory = JSON.parse(
   readFileSync(join(repoDir, "src/catalog/inventory.generated.json"), "utf8"),
@@ -165,8 +224,27 @@ const bits = inventory
       left.category - right.category || left.id.localeCompare(right.id),
   );
 
+for (const [pick, start] of [
+  [HERO, 0],
+  [AGENT_PICK, 23.8],
+]) {
+  const { duration } = bits.find((bit) => bit.id === pick.id);
+  heroes[pick.id] = {
+    start,
+    end: round(start + Math.min(12, duration - pick.mediaStart - 0.1)),
+    mediaStart: pick.mediaStart,
+  };
+}
+
 const GRID = { columns: 12, rows: 8, pitchX: 520, pitchY: 310 };
 const AGENT_VIEW = { halfWidth: 1920, halfHeight: 1080 };
+
+function prominence({ column, row }) {
+  return Math.hypot(
+    (column - GRID.columns / 2) * GRID.pitchX,
+    (row - (GRID.rows - 1) / 2) * GRID.pitchY * 1.9,
+  );
+}
 
 function reach(column, row) {
   return Math.hypot(
@@ -188,25 +266,32 @@ function layOut() {
   }
   const trimmed = new Set(
     [...grid]
-      .sort((left, right) => right.reach - left.reach)
+      .sort(
+        (left, right) =>
+          right.reach - left.reach ||
+          left.row - right.row ||
+          right.column - left.column,
+      )
       .slice(0, grid.length - bits.length),
   );
-  const slots = grid.filter((slot) => !trimmed.has(slot));
-  const nearest = Math.min(...slots.map((slot) => slot.reach));
-  const hero = bits.findIndex((bit) => bit.id === HERO);
-  const centre = slots.filter((slot) => slot.reach - nearest < 1);
-  const heroSlot =
-    centre.find(
-      (slot) => bits[slots.indexOf(slot)].category === bits[hero].category,
-    ) || centre[0];
-  const displaced = slots.indexOf(heroSlot);
-  [slots[hero], slots[displaced]] = [slots[displaced], slots[hero]];
-  bits.forEach((bit, index) => {
-    bit.column = slots[index].column;
-    bit.row = slots[index].row;
-    bit.x = (bit.column - (GRID.columns - 1) / 2) * GRID.pitchX;
-    bit.y = (bit.row - (GRID.rows - 1) / 2) * GRID.pitchY;
-  });
+  const slots = grid
+    .filter((slot) => !trimmed.has(slot))
+    .sort((left, right) => prominence(left) - prominence(right));
+  const rank = (bit) => {
+    if (bit.id === HERO.id) return -1;
+    const featured = FEATURED.indexOf(bit.id);
+    if (featured >= 0) return featured;
+    const basic = BASIC.indexOf(bit.id);
+    return basic >= 0 ? FEATURED.length + bits.length + basic : FEATURED.length;
+  };
+  [...bits]
+    .sort((left, right) => rank(left) - rank(right))
+    .forEach((bit, index) => {
+      bit.column = slots[index].column;
+      bit.row = slots[index].row;
+      bit.x = (bit.column - (GRID.columns - 1) / 2) * GRID.pitchX;
+      bit.y = (bit.row - (GRID.rows - 1) / 2) * GRID.pitchY;
+    });
 }
 
 function round(value) {
@@ -317,7 +402,8 @@ const data = {
     row,
   })),
   grid: GRID,
-  hero: HERO,
+  hero: HERO.id,
+  agentPick: AGENT_PICK.id,
   icons: JSON.parse(readFileSync(join(launchDir, "src/icons.json"), "utf8")),
   timing: {
     duration: DURATION,
