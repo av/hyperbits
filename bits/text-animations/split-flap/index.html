@@ -130,7 +130,9 @@
         const view = hyperbits.viewport(root);
         bg.style.backgroundColor = vars.background;
         const duration = 7;
-        const columns = 16;
+        const compact = view.width < view.height * 1.4;
+        const longestWord = Math.max(...(String(vars.headline) + " " + String(vars.status)).split(/\s+/).map((word) => word.length));
+        const columns = compact ? Math.min(16, Math.max(9, longestWord)) : 16;
         const alphabet = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-:/";
         function wrap(text, width) {
           const lines = [];
@@ -151,9 +153,10 @@
           const pad = Math.floor((columns - clean.length) / 2);
           return (" ".repeat(pad) + clean).padEnd(columns, " ");
         }
-        const headlineLines = wrap(vars.headline, columns).slice(0, 3);
-        const statusLine = String(vars.status).toUpperCase().slice(0, columns);
-        const lines = [...headlineLines.map(center), center(statusLine)];
+        const headlineLines = wrap(vars.headline, columns).slice(0, compact ? 4 : 3);
+        const statusText = String(vars.status).toUpperCase();
+        const statusLines = statusText.length > columns && compact ? wrap(statusText, columns).slice(0, 2) : [statusText.slice(0, columns)];
+        const lines = [...headlineLines.map(center), ...statusLines.map(center)];
         const rows = lines.length;
         board.setAttribute("aria-label", String(vars.headline) + " " + String(vars.status));
         const tileWidth = Math.min((view.width * 0.82) / columns, (view.height * 0.62) / rows / 1.45);
@@ -177,7 +180,7 @@
             cell.className = "cell";
             cell.style.fontSize = tileHeight * 0.72 + "px";
             cell.style.borderRadius = tileWidth * 0.08 + "px";
-            if (row === rows - 1) cell.style.color = vars.accent;
+            if (row >= headlineLines.length) cell.style.color = vars.accent;
             else cell.style.color = vars.foreground;
             const parts = ["top", "bottom", "top", "bottom"].map((kind, index) => {
               const half = document.createElement("div");
