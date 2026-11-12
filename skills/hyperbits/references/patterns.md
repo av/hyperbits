@@ -54,8 +54,8 @@ timeline.seek(0);
 Any frame can be rendered from any time. Drive visuals from `timeline.time()` (seconds), not from wall clocks or incremental state.
 
 - Prefer GSAP tweens on the paused root timeline, positioned with the third-argument absolute time: `timeline.to(el, vars, 1.5)`.
-- Helpers that need a redraw hook (`typewriter`, `createCounter`, `createParticles`, `createScene3D`) must read `timeline.time()` or bind through `onUpdate`.
-- `createParticles(...).stateAt(time)` and `createScene3D(...).stateAt(time)` are deterministic given a time value.
+- Helpers that need a redraw hook (`typewriter`, `createCounter`, `createParticles`, `createScene3D`, `createCamera`) must read `timeline.time()` or bind through `onUpdate`.
+- `createParticles(...).stateAt(time)`, `createScene3D(...).stateAt(time)` and `createCamera(...).stateAt(time)` are deterministic given a time value. Anything derived from camera state, such as `cameraProject` fog or highlights, must read `stateAt(timeline.time())` too.
 - Do not accumulate motion in `requestAnimationFrame`, `setInterval`, or `Date.now()`.
 
 ```js
@@ -186,7 +186,7 @@ const { proxy, apply } = hyperbits.createCounter(stat, { postfix: "%" });
 timeline.to(proxy, { value: 100, duration: 2, onUpdate: apply }, 0);
 ```
 
-**Time state `{ stateAt, bind }`** — `createParticles`, `createScene3D`. Sample from `timeline.time()` so any seek is exact:
+**Time state `{ stateAt, bind }`** — `createParticles`, `createScene3D`, `createCamera`. Sample from `timeline.time()` so any seek is exact:
 
 ```js
 const sim = hyperbits.createParticles({ spawners: [{ id: "burst", burst: 12 }] });
@@ -195,6 +195,14 @@ sim.bind(timeline, canvas, { color: "#fff", size: 4 });
 
 const scene = hyperbits.createScene3D(root, { steps: [{ id: "intro" }] });
 scene.bind(timeline);
+
+const camera = hyperbits.createCamera(stage, world, {
+  keys: [
+    { time: 0, position: [0, 0, 1800], target: [0, 0, 0], lens: 1600, ease: "power3.inOut" },
+    { time: 3, position: [500, -200, 900], target: [0, 0, 0], roll: 4, lens: 1000 },
+  ],
+});
+camera.bind(timeline);
 ```
 
 `stagger` is neither: it returns a GSAP timeline. `typewriter` / `applyTypewriter` take `time` directly.

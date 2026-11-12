@@ -173,13 +173,13 @@ Each helper is deterministic given a time value so HyperFrames frame-by-frame re
 - `text`: split into chars, words, and lines; typewriter driver
 - `counter`: numeric tween (`{ proxy, apply }`) with formatting, prefix, and postfix
 - `code`: Prism-highlighted code with line reveal and focus
-- `scene3d`: CSS 3D scene (`stateAt` + `bind`) with steps, camera moves, and `Transform3D`
+- `scene3d`: CSS 3D scene (`stateAt` + `bind`) with steps, camera moves, and `Transform3D`; `createCamera` is a keyed look-at camera with lens, roll and quaternion slerp
 
 Reference pages live on the [docs site](https://hyperbits.dev/docs/getting-started).
 
 ## Bits
 
-92 bits in 7 categories. Each is a self-contained HTML composition with `bit.json` metadata.
+93 bits in 7 categories. Each is a self-contained HTML composition with `bit.json` metadata.
 
 | Category | Count | Bits |
 | --- | ---: | --- |
@@ -188,7 +188,7 @@ Reference pages live on the [docs site](https://hyperbits.dev/docs/getting-start
 | Background Effects | 9 | `circuit-traces`, `conic-gradient`, `hard-light`, `lava-dither`, `linear-gradient`, `moire-field`, `op-art-lens`, `radial-gradient`, `rule-cascade` |
 | Motion Loops | 16 | `bauhaus-tiles`, `contour-drift`, `dot-ripple`, `dot-tunnel`, `floating-shapes`, `gyro-rings`, `halftone-sweep`, `horizon-grid`, `phyllotaxis-bloom`, `pinwheel-grid`, `pixel-rain`, `ray-burst`, `speed-streaks`, `truchet-weave`, `wave-stack`, `zoom-polygons` |
 | Particles | 9 | `fireflies`, `flow-field`, `particles-fountain`, `particles-grid`, `particles-snow`, `radar-sweep`, `scrolling-columns`, `strange-attractor`, `vector-scope` |
-| 3D Scenes | 17 | `3d-basic`, `3d-elements`, `ascii-torus`, `carousel`, `cube-navigation`, `cursor-flyover`, `dither-orb`, `dot-globe`, `exploded-stack`, `flying-through-words`, `isometric-city`, `ken-burns`, `step-timing-context`, `terminal-3d`, `transform3d-showcase`, `voxel-type`, `wire-solids` |
+| 3D Scenes | 18 | `3d-basic`, `3d-elements`, `ascii-torus`, `camera-flight`, `carousel`, `cube-navigation`, `cursor-flyover`, `dither-orb`, `dot-globe`, `exploded-stack`, `flying-through-words`, `isometric-city`, `ken-burns`, `step-timing-context`, `terminal-3d`, `transform3d-showcase`, `voxel-type`, `wire-solids` |
 | Full Compositions | 2 | `blueprint-draw`, `feature-showcase` |
 
 Browse them in the [catalog](https://hyperbits.dev/docs/bits-catalog).

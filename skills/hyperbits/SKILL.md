@@ -115,6 +115,7 @@ These match `references/patterns.md` and `AGENTS.md`. Do not invent a parallel s
 - `colorProxy` / `gradientProxy` / `createCounter`: GSAP proxy bindings `{ proxy, apply }`. Tween `proxy`, call `apply` on update.
 - `createParticles` / `bind`: time-state simulation onto a canvas (`stateAt(time)`, `sim.bind(timeline, canvas, options)`).
 - `createScene3D` / `Transform3D`: camera steps and 3D placement (`stateAt` + `scene.bind(timeline)`). Use when the request is a flythrough, multi-step walkthrough, or camera-driven showcase.
+- `createCamera`: keyed look-at camera for CSS 3D with lens, roll, per-segment easing and quaternion slerp (`stateAt` + `camera.bind(timeline)`). Pure `cameraStateAt`, `cameraToCSS` and `cameraProject` serve custom renderers. See Camera below.
 - `random` / `randomFloat` / `pick`: seeded values only.
 
 ## Common decision rules
@@ -124,7 +125,8 @@ These match `references/patterns.md` and `AGENTS.md`. Do not invent a parallel s
 - Need counting: use `createCounter`.
 - Need code on screen: use `createCodeBlock`.
 - Need ambient emitters: use particle helpers.
-- Need scene-to-scene camera motion: use `createScene3D`.
+- Need scene-to-scene camera motion between fixed poses: use `createScene3D`.
+- Need a cinematic camera that looks at targets, changes lens or rolls: use `createCamera`.
 
 ## Example-first patterns
 
@@ -134,6 +136,17 @@ These match `references/patterns.md` and `AGENTS.md`. Do not invent a parallel s
 - Background request: find a gradient or particle example, then adapt palette, density, and duration.
 - Looping backdrop request: find a `loop` bit in the right family, then pass brand colours through its palette tokens.
 - Presentation request: find a `scenes-3d` example first, then adapt step positions, titles, and card content before introducing new helpers.
+
+## Camera
+
+`hyperbits.createCamera(stage, world, { keys, lens?, ease? })` flies a look-at camera through a CSS 3D world. `camera-flight` is the reference bit.
+
+- Keys are `{ time, position, target, roll, lens, ease }`. Positions and targets are `[x, y, z]` in pixels with CSS axes: `+x` right, `+y` down, `+z` toward the viewer. `roll` is in degrees. `lens` is the stage `perspective`, so a point `lens` px away renders at scale 1. Omitted `target`, `roll` and `lens` carry over from the previous key.
+- `ease` shapes the segment that starts at that key. Orientation is slerped between the look-at quaternions of the two keys and emitted as one `matrix3d`, so a turn never flips. Slerp takes the shorter arc, so split turns of 180° or more into several keys. Equal key times cut.
+- Scale lengths and lens from `viewport(root).vmin` so the shot frames the same at any size. Dolly zoom: move toward the target while scaling `lens` with the distance.
+- `inOut` eases stop at every key. For continuous flight, sample a path into many keys with `ease: "none"` and ease the sample times.
+- Drive per-element effects from `hyperbits.cameraProject(state, point)` (`x`, `y`, `depth`, `scale`), for example fog, near-plane fades, highlights or labels pinned to 3D points. Read the state from `camera.stateAt(timeline.time())` so they stay seek-safe.
+- Children of `world` use `transform-origin: 0 0` and `translate3d(...) rotateY(...) translate(-50%, -50%)` to sit centred on a world point.
 
 ## Motion loops
 
