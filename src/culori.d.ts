@@ -24,6 +24,8 @@ declare module "culori" {
     mode?: InterpolationMode,
   ): Interpolator;
 
+  export function parse(color: string): Color | undefined;
+
   export function formatRgb(color: Color | undefined): string | undefined;
   export function formatHex(color: Color | undefined): string | undefined;
 }

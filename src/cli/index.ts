@@ -15,8 +15,18 @@ import {
   resolveBitCatalogIdentifier,
   suggestBitIdentifiers,
 } from "../catalog/runtime";
-import type { BitCatalogEntry, BitCatalogSummary } from "../catalog/contracts";
+import type {
+  BitCatalogEntry,
+  BitCatalogSummary,
+  BitVariable,
+} from "../catalog/contracts";
 import { DEFAULT_ADD_DIR } from "../catalog/contracts";
+import {
+  applyVariableDefaults,
+  coerceVariableValue,
+  defaultVariableValues,
+  variableValuesAttribute,
+} from "../catalog/variables";
 import { startHyperbitsMcpServer } from "../mcp/index";
 
 type Writable = {
@@ -59,13 +69,13 @@ const EXIT_NOT_FOUND = 3;
 export const usage = `Usage:
   hyperbits find [query] [--query <text>] [--tag <tag>] [--tags <tag1,tag2>] [--limit <number>] [--json]
   hyperbits fetch <id-or-name> [--id <id-or-name>] [--json]
-  hyperbits add <name> [--into <dir>] [--json]
+  hyperbits add <name...> [--into <dir>] [--set <id=value>] [--json]
   hyperbits mcp
 
 Commands:
   find   Search the published hyperbits catalog.
   fetch  Retrieve one published bit record, including HTML source.
-  add    Write a bit HTML file into a HyperFrames project.
+  add    Write one or more bit HTML files into a HyperFrames project.
   mcp    Start the hyperbits MCP server on stdio.
 
 Options:
@@ -75,6 +85,7 @@ Options:
   --limit, -l   Maximum number of find results.
   --id, -i      Bit id or exact display name to fetch.
   --into        Destination directory for add. Defaults to compositions/.
+  --set         New default for a bit variable in the installed copy, as id=value. Repeatable.
   --json, -j    Emit deterministic JSON output.
   --help, -h    Show usage.
 `;
@@ -131,6 +142,7 @@ const serializeSummary = (entry: BitCatalogSummary) => ({
   componentNames: [...entry.componentNames],
   registryDependencies: [...entry.registryDependencies],
   helpers: [...entry.helpers],
+  variables: entry.variables.map((variable) => ({ ...variable })),
 });
 
 const serializeEntry = (entry: BitCatalogEntry) => ({
@@ -223,11 +235,53 @@ const formatSummaryBlock = (
   ].join("\n");
 };
 
+const formatFindBlock = (entry: BitCatalogSummary, index: number): string =>
+  [
+    formatSummaryBlock(entry, index),
+    `   Variables: ${formatTags(entry.variables.map((variable) => variable.id))}`,
+  ].join("\n");
+
+const formatVariableDefault = (variable: BitVariable): string =>
+  variable.type === "string"
+    ? JSON.stringify(variable.default ?? "")
+    : String(variable.default);
+
+const formatVariablesSection = (variables: BitVariable[]): string[] => {
+  if (variables.length === 0) {
+    return ["   Variables: none"];
+  }
+
+  const rows = variables.map((variable) => [
+    variable.id,
+    variable.type,
+    formatVariableDefault(variable),
+    variable.label ?? "",
+  ]);
+  const widths = [0, 1, 2].map((column) =>
+    Math.max(...rows.map((row) => row[column].length)),
+  );
+
+  return [
+    "   Variables (id, type, default, label):",
+    ...rows.map(
+      (row) =>
+        `     ${row
+          .map((cell, column) =>
+            column < widths.length ? cell.padEnd(widths[column]) : cell,
+          )
+          .join("  ")
+          .trimEnd()}`,
+    ),
+    `   Override per instance: ${variableValuesAttribute(defaultVariableValues(variables))}`,
+  ];
+};
+
 const formatEntryBlock = (entry: BitCatalogEntry): string =>
   [
     formatSummaryBlock(entry),
     `   Embed: ${entry.embedSnippet}`,
     `   Helper script: ${entry.helperScriptTag}`,
+    ...formatVariablesSection(entry.variables),
     "   Source code:",
     entry.sourceCode,
   ].join("\n");
@@ -342,6 +396,25 @@ const parseFetchArguments = (args: string[]) => {
   };
 };
 
+const parseSetAssignments = (values: string[]): Map<string, string> => {
+  const assignments = new Map<string, string>();
+
+  for (const value of values) {
+    const separator = value.indexOf("=");
+    const id = separator > 0 ? value.slice(0, separator).trim() : "";
+    if (!id) {
+      throw new CliError(
+        `The --set value "${value}" must look like id=value, for example --set background=#000000.`,
+        EXIT_INVALID_INPUT,
+        "invalid-set",
+      );
+    }
+    assignments.set(id, value.slice(separator + 1));
+  }
+
+  return assignments;
+};
+
 const parseAddArguments = (args: string[]) => {
   let parsed;
 
@@ -351,6 +424,7 @@ const parseAddArguments = (args: string[]) => {
       allowPositionals: true,
       options: {
         into: { type: "string" },
+        set: { type: "string", multiple: true },
         json: { type: "boolean", short: "j" },
         help: { type: "boolean", short: "h" },
       },
@@ -359,9 +433,16 @@ const parseAddArguments = (args: string[]) => {
     throw toCliParseError(error);
   }
 
-  const identifier = parsed.positionals.join(" ").trim();
+  const positionals = parsed.positionals
+    .map((value) => value.trim())
+    .filter(Boolean);
+  const joined = positionals.join(" ");
+  const identifiers =
+    positionals.length > 1 && resolveBitCatalogIdentifier(joined).entry
+      ? [joined]
+      : positionals;
 
-  if (!parsed.values.help && !identifier) {
+  if (!parsed.values.help && identifiers.length === 0) {
     throw new CliError(
       "The add command requires a bit id or exact display name.",
       EXIT_INVALID_INPUT,
@@ -372,8 +453,9 @@ const parseAddArguments = (args: string[]) => {
   return {
     json: parsed.values.json ?? false,
     help: parsed.values.help ?? false,
-    identifier,
+    identifiers,
     into: parsed.values.into ?? DEFAULT_ADD_DIR,
+    assignments: parseSetAssignments(parsed.values.set ?? []),
   };
 };
 
@@ -427,7 +509,7 @@ const runFindCommand = async (args: string[], io: CliIo): Promise<number> => {
   }
 
   io.stdout.write(
-    `${results.map((entry, index) => formatSummaryBlock(entry, index)).join("\n\n")}\n`,
+    `${results.map((entry, index) => formatFindBlock(entry, index)).join("\n\n")}\n`,
   );
   return EXIT_SUCCESS;
 };
@@ -470,6 +552,91 @@ const runFetchCommand = async (args: string[], io: CliIo): Promise<number> => {
   return EXIT_SUCCESS;
 };
 
+const resolveAddIdentifier = (identifier: string): string => {
+  const resolution = resolveBitCatalogIdentifier(identifier);
+
+  if (resolution.entry) {
+    return resolution.entry.id;
+  }
+
+  if (resolution.reason === "ambiguous-name") {
+    throw new CliError(
+      `The identifier "${identifier}" matches multiple bits. Use one of: ${(resolution.matches ?? []).join(", ")}`,
+      EXIT_INVALID_INPUT,
+      "ambiguous-name",
+      { matches: resolution.matches ?? [] },
+    );
+  }
+
+  throw notFoundError(identifier);
+};
+
+type AddPlan = {
+  bit: BitCatalogEntry;
+  overrides: Record<string, unknown>;
+  skipped: string[];
+};
+
+const planVariableOverrides = (
+  bits: BitCatalogEntry[],
+  assignments: Map<string, string>,
+): AddPlan[] => {
+  const plans = bits.map((bit) => ({
+    bit,
+    overrides: {} as Record<string, unknown>,
+    skipped: [] as string[],
+  }));
+
+  for (const [id, raw] of assignments) {
+    const declaring = plans.filter((plan) =>
+      plan.bit.variables.some((variable) => variable.id === id),
+    );
+
+    if (declaring.length === 0) {
+      const declared = dedupeStrings(
+        bits.flatMap((bit) => bit.variables.map((variable) => variable.id)),
+      );
+      throw new CliError(
+        `No bit in this add declares a variable "${id}". Declared: ${formatTags(declared)}.`,
+        EXIT_INVALID_INPUT,
+        "unknown-variable",
+      );
+    }
+
+    for (const plan of plans) {
+      const variable = plan.bit.variables.find((entry) => entry.id === id);
+      if (!variable) {
+        plan.skipped.push(id);
+        continue;
+      }
+      try {
+        plan.overrides[id] = coerceVariableValue(variable, raw);
+      } catch (error) {
+        throw new CliError(
+          `Invalid --set ${id} for ${plan.bit.id}: ${error instanceof Error ? error.message : String(error)}`,
+          EXIT_INVALID_INPUT,
+          "invalid-variable-value",
+        );
+      }
+    }
+  }
+
+  return plans;
+};
+
+const formatAssignment = (id: string, value: unknown): string =>
+  `${id}=${typeof value === "string" ? value : JSON.stringify(value)}`;
+
+const withVariableValues = (
+  embedSnippet: string,
+  variables: BitVariable[],
+): string =>
+  embedSnippet.replace(
+    /><\/div>$/,
+    () =>
+      ` ${variableValuesAttribute(defaultVariableValues(variables))}></div>`,
+  );
+
 const runAddCommand = async (args: string[], io: CliIo): Promise<number> => {
   const options = parseAddArguments(args);
 
@@ -478,31 +645,41 @@ const runAddCommand = async (args: string[], io: CliIo): Promise<number> => {
     return EXIT_SUCCESS;
   }
 
-  const resolution = resolveBitCatalogIdentifier(options.identifier);
-
-  if (!resolution.entry) {
-    if (resolution.reason === "ambiguous-name") {
-      throw new CliError(
-        `The identifier "${options.identifier}" matches multiple bits. Use one of: ${(resolution.matches ?? []).join(", ")}`,
-        EXIT_INVALID_INPUT,
-        "ambiguous-name",
-        { matches: resolution.matches ?? [] },
-      );
+  const ids = dedupeStrings(options.identifiers.map(resolveAddIdentifier));
+  const bits: BitCatalogEntry[] = [];
+  for (const id of ids) {
+    const bit = await fetchBit(id);
+    if (!bit) {
+      throw notFoundError(id);
     }
-
-    throw notFoundError(options.identifier);
+    bits.push(bit);
   }
 
-  const bit = await fetchBit(options.identifier);
-
-  if (!bit) {
-    throw notFoundError(options.identifier);
-  }
-
+  const plans = planVariableOverrides(bits, options.assignments);
   const into = options.into.replace(/\/+$/, "") || DEFAULT_ADD_DIR;
-  const outputPath = path.join(into, `${bit.id}.html`);
-  await mkdir(path.dirname(outputPath), { recursive: true });
-  await writeFile(outputPath, prepareInstalledHtml(bit.sourceCode), "utf8");
+  await mkdir(into, { recursive: true });
+
+  const results = [];
+  for (const plan of plans) {
+    const outputPath = path.join(into, `${plan.bit.id}.html`);
+    let html = prepareInstalledHtml(plan.bit.sourceCode);
+    let variables = plan.bit.variables;
+    let warnings: string[] = [];
+    if (Object.keys(plan.overrides).length > 0) {
+      const applied = applyVariableDefaults(html, variables, plan.overrides);
+      html = applied.html;
+      variables = applied.variables;
+      warnings = applied.warnings;
+    }
+    await writeFile(outputPath, html, "utf8");
+    results.push({
+      plan,
+      variables,
+      warnings,
+      path: outputPath.split(path.sep).join("/"),
+      embedSnippet: compositionSrcSnippet(plan.bit.id, into),
+    });
+  }
 
   const bundleSource = findHelperBundle();
   const bundlePath = path.join(into, HELPER_BUNDLE_FILE);
@@ -510,38 +687,65 @@ const runAddCommand = async (args: string[], io: CliIo): Promise<number> => {
     await copyFile(bundleSource, bundlePath);
   }
 
-  const embedSnippet = compositionSrcSnippet(bit.id, into);
-
   if (options.json) {
+    const records = results.map((result) => ({
+      id: result.plan.bit.id,
+      name: result.plan.bit.name,
+      path: result.path,
+      embedSnippet: result.embedSnippet,
+      helperScriptTag: localHelperScriptTag,
+      ...(options.assignments.size > 0
+        ? { set: result.plan.overrides, skipped: result.plan.skipped }
+        : {}),
+      ...(result.warnings.length > 0 ? { warnings: result.warnings } : {}),
+    }));
     io.stdout.write(
-      stringifyJson({
-        added: {
-          id: bit.id,
-          name: bit.name,
-          path: outputPath.split(path.sep).join("/"),
-          embedSnippet,
-          helperScriptTag: localHelperScriptTag,
-        },
-      }),
+      stringifyJson({ added: records.length === 1 ? records[0] : records }),
     );
     return EXIT_SUCCESS;
   }
 
-  io.stdout.write(
-    [
-      `Wrote ${outputPath.split(path.sep).join("/")}`,
-      bundleSource
-        ? `Wrote ${bundlePath.split(path.sep).join("/")} (helper bundle the bit loads)`
-        : `Warning: ${HELPER_BUNDLE_FILE} was not found in this install; copy it next to the bit.`,
-      "",
-      "Embed with:",
-      embedSnippet,
-      "",
-      "Helper script (already referenced by the bit):",
-      localHelperScriptTag,
-      "",
-    ].join("\n"),
+  const lines: string[] = [];
+  for (const result of results) {
+    lines.push(`Wrote ${result.path}`);
+    for (const [id, value] of Object.entries(result.plan.overrides)) {
+      lines.push(`  Set ${formatAssignment(id, value)}`);
+    }
+    for (const id of result.plan.skipped) {
+      lines.push(`  Skipped --set ${id}: ${result.plan.bit.id} has no "${id}" variable`);
+    }
+    for (const warning of result.warnings) {
+      lines.push(`  Warning: ${warning}`);
+    }
+  }
+  lines.push(
+    bundleSource
+      ? `Wrote ${bundlePath.split(path.sep).join("/")} (helper bundle the ${results.length === 1 ? "bit loads" : "bits load"})`
+      : `Warning: ${HELPER_BUNDLE_FILE} was not found in this install; copy it next to the bit.`,
   );
+
+  for (const result of results) {
+    lines.push(
+      "",
+      results.length === 1 ? "Embed with:" : `Embed ${result.plan.bit.id} with:`,
+      result.embedSnippet,
+    );
+    if (result.variables.length > 0) {
+      lines.push(
+        "",
+        "Override variables per instance (edit the values):",
+        withVariableValues(result.embedSnippet, result.variables),
+      );
+    }
+  }
+
+  lines.push(
+    "",
+    "Helper script (already referenced by the bit):",
+    localHelperScriptTag,
+    "",
+  );
+  io.stdout.write(lines.join("\n"));
   return EXIT_SUCCESS;
 };
 
