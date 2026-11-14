@@ -98,8 +98,13 @@
         const centerY = view.height * 1.35;
         const squash = 0.62;
         const tilt = -0.18;
+        function reach(pointX, pointY) {
+          const offsetX = pointX - centerX;
+          const offsetY = pointY - centerY;
+          return Math.hypot(offsetX * Math.cos(tilt) + offsetY * Math.sin(tilt), (offsetY * Math.cos(tilt) - offsetX * Math.sin(tilt)) / squash);
+        }
         const innerRadius = Math.hypot(centerX, centerY - view.height) * 0.9;
-        const outerRadius = Math.hypot(view.width - centerX, centerY) * 1.02;
+        const outerRadius = Math.max(Math.hypot(view.width - centerX, centerY), reach(0, 0)) * 1.02;
         const orbits = [...Array(count).keys()].map((index) => {
           const key = "arc-" + seed + "-" + index;
           return {

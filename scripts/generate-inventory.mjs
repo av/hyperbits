@@ -9,6 +9,7 @@ import {
   kebabToPascal,
   listBitJsonFiles,
   normalizePath,
+  parseCompositionVariables,
   projectRoot,
 } from "./lib/bits.mjs";
 
@@ -99,6 +100,7 @@ const toInventoryEntry = (bitJsonPath, manifest, sourceCode) => {
     componentNames: [...helpers],
     registryDependencies: [...helpers],
     helpers,
+    variables: parseCompositionVariables(sourceCode),
     sourceCode,
     registry: manifest.registryItem,
   };

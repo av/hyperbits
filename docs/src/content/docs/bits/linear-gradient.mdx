@@ -8,3 +8,22 @@ import { BitPlayground } from '@components/BitPlayground';
 Smooth transition between linear gradients.
 
 <BitPlayground client:only="react" bitName="linear-gradient" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `color1Start` | color | `#051226` | Gradient 1 Start |
+| `color1End` | color | `#1e0541` | Gradient 1 End |
+| `color2Start` | color | `#a5d4dd` | Gradient 2 Start |
+| `color2End` | color | `#5674b1` | Gradient 2 End |
+
+```html
+<div data-composition-src="compositions/linear-gradient.html" data-variable-values='{"color1Start":"#051226","color1End":"#1e0541","color2Start":"#a5d4dd","color2End":"#5674b1"}'></div>
+```
+
+```bash
+npx @av/hyperbits add linear-gradient --into compositions/ --set "color1Start=#5b7cfa"
+```

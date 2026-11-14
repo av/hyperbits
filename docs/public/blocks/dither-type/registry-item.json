@@ -28,5 +28,37 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "headline",
+      "type": "string",
+      "label": "Headline",
+      "default": "Ship the frame"
+    },
+    {
+      "id": "subline",
+      "type": "string",
+      "label": "Subline",
+      "default": "ORDERED DITHER / 3 INKS / 1 BIT PER INK"
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#100f0f"
+    },
+    {
+      "id": "foreground",
+      "type": "color",
+      "label": "Highlight ink",
+      "default": "#f2f0e5"
+    },
+    {
+      "id": "accent",
+      "type": "color",
+      "label": "Accent ink",
+      "default": "#ec8b49"
+    }
   ]
 }

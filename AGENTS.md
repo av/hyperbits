@@ -19,6 +19,7 @@ Keep going until the query is completely resolved before yielding. Do not guess 
 - `npm test` — vitest + jsdom
 - `npm run build` — compile `src/` to `dist/`
 - `npm run inventory`, `npm run skill:refs`, `npm run registry`, `npm run docs:*`
+- `npm run check:sizes` — retarget every bit to 16:9, 9:16 and 1:1, snapshot with HyperFrames and write contact sheets to `.check-sizes/` (needs `npm run build` and ImageMagick; `--only a,b` to limit)
 - Releases: `scripts/release.sh <version|patch|minor|major>` bumps, commits, tags and pushes; `.github/workflows/release.yml` runs the checks, publishes `@av/hyperbits` to GitHub Packages and creates the GitHub release. Never run `npm publish` locally.
 
 Generated output lives in `dist/`. Do not commit `dist/`, `node_modules/`, `coverage/`, or `*.tgz`. Inventory and registry generators write under `src/catalog/` and the repo root; those files are committed when they exist. Skill reference markdown under `skills/hyperbits/references/bits.md` and `helpers.md` is generated and committed.
@@ -47,14 +48,15 @@ These rules match `skills/hyperbits/references/patterns.md`. Do not add a parall
 - Timelines are created with `{ paused: true }` and registered on `window.__timelines` under the composition id. Child timelines added to that root must not be paused. Motion must be seek-safe: any frame can be rendered from any time. Drive canvas, typewriter, counter, particle, and 3D helpers from `timeline.time()`.
 - Use seeded randomness only (`hyperbits.random`, `randomFloat`, `pick`). Renders must be reproducible. No `Math.random()` or `Date.now()`.
 - Size elements fractionally from the composition dimensions via `hyperbits.viewport(root)` (`vmin`, `vmax`, `vw`, `vh`, `px()`), not with hardcoded pixel values. Hero text is 8–12 vmin, body text 3–4 vmin, UI mocks at least 60% of the frame.
+- Work at any size: every bit must look designed for 16:9, 9:16 and 1:1 (`hyperbits add --size` only rewrites the root size, meta viewport and `html, body`). Scale from the short side (`view.vmin`, or `view.vmin / 10.8` as a 1080-based unit, never `view.height / 1080` or `view.vw` for type), fit layouts to the width, and switch layout by aspect where a landscape arrangement does not fit portrait. Check with `npm run check:sizes -- --only <name>` and review `.check-sizes/sheets/<name>.jpg`.
 - Expose user-facing knobs through `data-composition-variables`. Read them with `window.__hyperframes.getVariables()`.
 - For staged in and out motion, prefer `hyperbits.stagger(...)` over hand-written per-element tweens.
-- Color, gradient, and counter helpers return `{ proxy, apply }`. Particles and scene3d use `stateAt(time)` plus `bind`.
+- Color, gradient, and counter helpers return `{ proxy, apply }`. Particles and scene3d (`createScene3D`, `createCamera`) use `stateAt(time)` plus `bind`.
 - Theme colors are literal values in a top-level `:root` block.
 - Every bit must pass `npx hyperframes lint` before it is considered done (`npm run lint:bits`).
 - No emoji as visual elements. Use inline SVG.
 - Bits meant for shader transitions follow the shader-compatible CSS rules: no `transparent` in gradients (use `rgba(..., 0)`), no `var()` on captured elements, explicit `background-color` on scenes.
-- Embed a bit in a host composition with `data-composition-src` (and optional `data-variable-values`). `npx @av/hyperbits add <name> --into compositions/` is the install path.
+- Embed a bit in a host composition with `data-composition-src` (and optional `data-variable-values`). `npx @av/hyperbits add <name...> --into compositions/ [--set id=value]` is the install path. Host CSS reaches into embedded bits, so hosts must not style the bits' generic ids (`#root`, `#bg`, `#stage`, `#title`); see "Host CSS and generic ids" in `references/patterns.md`.
 - After adding or changing a bit, run `npm run inventory` so the catalog and skill references stay in sync.
 
 ### Maintaining the skill

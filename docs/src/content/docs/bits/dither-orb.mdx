@@ -8,3 +8,22 @@ import { BitPlayground } from '@components/BitPlayground';
 A ringed planet raytraced per pixel and printed in three-ink Bayer dithering, its light swinging from a thin crescent to full day under a mono HUD.
 
 <BitPlayground client:only="react" bitName="dither-orb" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `caption` | string | `"SYSTEM 09 / OUTER RING"` | Caption |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Highlight ink |
+| `accent` | color | `#ec8b49` | Accent ink |
+
+```html
+<div data-composition-src="compositions/dither-orb.html" data-variable-values='{"caption":"SYSTEM 09 / OUTER RING","background":"#100f0f","foreground":"#f2f0e5","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add dither-orb --into compositions/ --set "background=#0b1020"
+```

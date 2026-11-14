@@ -86,6 +86,10 @@
         function mixRgb(from, to, amount) {
           return [from[0] + (to[0] - from[0]) * amount, from[1] + (to[1] - from[1]) * amount, from[2] + (to[2] - from[2]) * amount];
         }
+        function smoothstep(edge0, edge1, value) {
+          const amount = Math.min(Math.max((value - edge0) / (edge1 - edge0), 0), 1);
+          return amount * amount * (3 - 2 * amount);
+        }
         function progressOf(time, start, length) {
           return Math.min(Math.max((time - start) / length, 0), 1);
         }

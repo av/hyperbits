@@ -24,6 +24,7 @@ import type {
   BitCatalogSummary,
   FindBitsOptions,
 } from "../catalog/contracts";
+import { parseSize, retargetBitHtml } from "../catalog/retarget";
 
 type JsonObject = Record<string, unknown>;
 
@@ -111,7 +112,20 @@ const parseFindArguments = (value: unknown): FindBitsOptions => {
   };
 };
 
-const parseFetchArguments = (value: unknown): { id: string } => {
+const parseOptionalSize = (value: unknown) => {
+  const raw = assertOptionalString(value, "size");
+  if (raw === undefined) return undefined;
+  try {
+    return parseSize(raw);
+  } catch (error) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      error instanceof Error ? error.message : String(error),
+    );
+  }
+};
+
+const parseFetchArguments = (value: unknown) => {
   if (!isRecord(value)) {
     throw new McpError(
       ErrorCode.InvalidParams,
@@ -121,21 +135,32 @@ const parseFetchArguments = (value: unknown): { id: string } => {
 
   return {
     id: assertString(value.id, "id"),
+    size: parseOptionalSize(value.size),
   };
 };
 
-const toTextContent = (
-  payload: { results: BitCatalogSummary[] } | { bit: BitCatalogEntry },
-) => [
+type FindResult = Omit<BitCatalogSummary, "variables"> & {
+  variableIds: string[];
+};
+
+type ToolPayload = { results: FindResult[] } | { bit: BitCatalogEntry };
+
+const toFindResult = ({
+  variables,
+  ...summary
+}: BitCatalogSummary): FindResult => ({
+  ...summary,
+  variableIds: variables.map((variable) => variable.id),
+});
+
+const toTextContent = (payload: ToolPayload) => [
   {
     type: "text" as const,
     text: JSON.stringify(payload, null, 2),
   },
 ];
 
-const createSuccessResult = (
-  payload: { results: BitCatalogSummary[] } | { bit: BitCatalogEntry },
-): CallToolResult => ({
+const createSuccessResult = (payload: ToolPayload): CallToolResult => ({
   content: toTextContent(payload),
   structuredContent: payload,
 });
@@ -155,7 +180,7 @@ const toolDefinitions: Tool[] = [
     name: "find_hyperbits",
     title: "Find Hyperbits",
     description:
-      "Search the live hyperbits catalog by visual goal, tags, and result limit.",
+      "Search the live hyperbits catalog by visual goal, tags, and result limit. Each result lists variableIds: the knobs (for example background, foreground, accent, text) a host can theme through data-variable-values without editing the bit.",
     annotations: {
       title: "Find Hyperbits",
       readOnlyHint: true,
@@ -188,7 +213,7 @@ const toolDefinitions: Tool[] = [
     name: "fetch_hyperbit",
     title: "Fetch Hyperbit",
     description:
-      "Fetch one live hyperbit by id or exact display name, including metadata, HTML source, helpers, and the data-composition-src embed snippet.",
+      "Fetch one live hyperbit by id or exact display name, including metadata, variables (id, type, label, default), HTML source, helpers, and the data-composition-src embed snippet. Theme an embed by putting data-variable-values='{\"<id>\":<value>}' on the data-composition-src element.",
     annotations: {
       title: "Fetch Hyperbit",
       readOnlyHint: true,
@@ -204,6 +229,11 @@ const toolDefinitions: Tool[] = [
           type: "string",
           description:
             "Bit id returned by find_hyperbits, or the exact display name.",
+        },
+        size: {
+          type: "string",
+          description:
+            "Optional output size: WIDTHxHEIGHT or 9:16, 1:1, 16:9. Rewrites the HTML to that size. Defaults to the bit's native size.",
         },
       },
       required: ["id"],
@@ -222,7 +252,7 @@ export const createHyperbitsMcpServer = (): Server => {
         tools: {},
       },
       instructions:
-        "Use find_hyperbits first, then fetch_hyperbit for the best one or two matches. Embed with data-composition-src and the hyperbits helper script.",
+        "Use find_hyperbits first, then fetch_hyperbit for the best one or two matches. Embed with data-composition-src and the hyperbits helper script. Theme bits through their declared variables with data-variable-values on the embed element instead of editing the bit.",
     },
   );
 
@@ -235,12 +265,12 @@ export const createHyperbitsMcpServer = (): Server => {
 
     if (name === "find_hyperbits") {
       return createSuccessResult({
-        results: findBits(parseFindArguments(input)),
+        results: findBits(parseFindArguments(input)).map(toFindResult),
       });
     }
 
     if (name === "fetch_hyperbit") {
-      const { id } = parseFetchArguments(input);
+      const { id, size } = parseFetchArguments(input);
       const bit = await fetchBit(id);
 
       if (!bit) {
@@ -248,6 +278,17 @@ export const createHyperbitsMcpServer = (): Server => {
         return createErrorResult(
           `No bit found for "${id}".${formatBitSuggestions(suggestions)}`,
         );
+      }
+
+      if (size) {
+        return createSuccessResult({
+          bit: {
+            ...bit,
+            width: size.width,
+            height: size.height,
+            sourceCode: retargetBitHtml(bit.sourceCode, size),
+          },
+        });
       }
 
       return createSuccessResult({ bit });

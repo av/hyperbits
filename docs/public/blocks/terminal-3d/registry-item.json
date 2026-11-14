@@ -27,5 +27,25 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "command",
+      "type": "string",
+      "label": "Command",
+      "default": "git status"
+    },
+    {
+      "id": "color",
+      "type": "color",
+      "label": "Terminal text",
+      "default": "#fcc192"
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#100f0f"
+    }
   ]
 }

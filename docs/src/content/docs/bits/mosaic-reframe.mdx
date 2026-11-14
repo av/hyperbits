@@ -8,3 +8,20 @@ import { BitPlayground } from '@components/BitPlayground';
 Twelve image tiles transition from a grid to a feature mosaic, then into a diagonal cascade.
 
 <BitPlayground client:only="react" bitName="mosaic-reframe" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `color` | color | `#000000` | Tile shadow |
+| `background` | color | `#09090b` | Background |
+
+```html
+<div data-composition-src="compositions/mosaic-reframe.html" data-variable-values='{"color":"#000000","background":"#09090b"}'></div>
+```
+
+```bash
+npx @av/hyperbits add mosaic-reframe --into compositions/ --set "background=#0b1020"
+```

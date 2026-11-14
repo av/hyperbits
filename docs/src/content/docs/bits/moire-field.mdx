@@ -8,3 +8,22 @@ import { BitPlayground } from '@components/BitPlayground';
 Two sets of concentric rings combined with XOR so their interference blooms into shifting moire fringes as the centres orbit, drift apart and meet.
 
 <BitPlayground client:only="react" bitName="moire-field" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `spacing` | number | `1.6` | Ring spacing (vmin) |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Highlight |
+| `accent` | color | `#ec8b49` | Ink |
+
+```html
+<div data-composition-src="compositions/moire-field.html" data-variable-values='{"spacing":1.6,"background":"#100f0f","foreground":"#f2f0e5","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add moire-field --into compositions/ --set "background=#0b1020"
+```

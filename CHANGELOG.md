@@ -1,3 +1,13 @@
+### Unreleased
+
+- Variables: every bit's `data-composition-variables` are catalog metadata. `hyperbits fetch` prints them before the source, `find --json` and `fetch --json` return `variables`, `find_hyperbits` returns `variableIds`, `fetch_hyperbit` returns `variables`, and registry items, `references/bits.md` and the per-bit doc pages list them
+- CLI: `hyperbits add` takes several bits, prints a ready-to-edit `data-variable-values` example per bit, and `--set id=value` bakes validated defaults into the installed copies, including the literal copies of the old default in their CSS and markup. Bits that do not declare an id are reported as skipped; an unknown bit or invalid value exits non-zero and writes nothing
+- Docs: host CSS reaches into embedded bits through their generic ids (`#root`, `#bg`, `#stage`, `#title`); the getting-started page and `references/patterns.md` give the rules for host authors
+- Sizes: every bit works at 16:9, 9:16 and 1:1. `hyperbits add --size <9:16|1:1|16:9|WIDTHxHEIGHT>` and the `size` argument of `fetch_hyperbit` retarget a bit to the host's size, and bits lay themselves out for portrait and square instead of squeezing a landscape frame. `npm run check:sizes` snapshots every bit at each size into contact sheets
+- Fix: `lava-dither`, `op-art-lens`, `radar-sweep`, `vector-scope`, `voxel-type`, `dither-type` and `pixel-sort` called an undefined `smoothstep` and rendered blank in v0.2.7
+- Camera: `createCamera` in `scene3d` is a seek-safe look-at camera with keyed position, target, roll and lens, per-segment easing and quaternion slerp, plus pure `cameraStateAt`, `cameraToCSS`, `cameraProject` and `lookAtOrientation` for custom renderers. New `camera-flight` bit shows it off. `Quat.slerp` now interpolates nearly identical rotations instead of snapping to the midpoint
+- Launch: `launch/` is the source of the launch video, one HyperFrames composition with every catalog bit live in a CSS 3D scene
+
 ### v0.2.7
 
 - Bits: 30 new scenes and components in the hyperbits.dev palette (near-black field, warm paper ink, orange accent), each built on a technique the catalog did not cover yet. Dithering and pixel work: `dither-orb`, `dither-type`, `lava-dither`, `mosaic-resolve`, `pixel-sort`, `led-marquee`. Isometric and line-art 3D: `isometric-city`, `exploded-stack`, `voxel-type`, `wire-solids`, `blueprint-draw`. Text-mode, print and retro hardware: `ascii-torus`, `crt-boot`, `split-flap`, `riso-print`, `receipt-print`, `odometer-roll`, `vector-scope`, `radar-sweep`. Generative and optical: `strange-attractor`, `flow-field`, `moire-field`, `op-art-lens`, `rule-cascade`, `circuit-traces`, `hard-light`, `dot-globe`. Typography in 3D and time: `extruded-type`, `slit-scan`, `paper-fold`

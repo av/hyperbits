@@ -8,3 +8,22 @@ import { BitPlayground } from '@components/BitPlayground';
 Muted wireframe ridgelines filling the frame and rolling slowly toward a high, distant horizon.
 
 <BitPlayground client:only="react" bitName="horizon-grid" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Foreground |
+| `accent` | color | `#4fb6ec` | Accent |
+| `ridges` | number | `80` | Ridge rows |
+
+```html
+<div data-composition-src="compositions/horizon-grid.html" data-variable-values='{"background":"#100f0f","foreground":"#f2f0e5","accent":"#4fb6ec","ridges":80}'></div>
+```
+
+```bash
+npx @av/hyperbits add horizon-grid --into compositions/ --set "background=#0b1020"
+```

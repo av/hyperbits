@@ -47,7 +47,8 @@
         align-items: center;
         color: #fcc192;
         font-weight: 700;
-        font-size: 5vw;
+        font-size: 8.9vmin;
+        font-variant-numeric: tabular-nums;
         white-space: pre;
         position: relative;
         z-index: 1;
@@ -98,8 +99,10 @@
         document.getElementById("prefix").textContent = vars.prefix;
         document.getElementById("postfix").textContent = vars.postfix;
         counterEl.style.color = vars.color;
-        counterEl.style.fontSize = view.vw * 5 + "px";
-        counterEl.style.width = 300 * (view.width / 1920) + "px";
+        counterEl.style.fontSize = vmin * 8.9 + "px";
+        valueEl.style.display = "inline-block";
+        valueEl.style.minWidth = "2ch";
+        valueEl.style.textAlign = "right";
         const counter = hyperbits.createCounter(valueEl, { decimals: 0 });
         const proxy = { progress: 0 };
         const timeline = gsap.timeline({ paused: true });

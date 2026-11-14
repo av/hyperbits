@@ -130,10 +130,10 @@
         const bg = document.getElementById("bg");
         const view = hyperbits.viewport(root);
         const vmin = view.vmin;
-        const unit = view.height / 1080;
+        const unit = view.vmin / 10.8;
         bg.style.backgroundColor = vars.background;
         const panel = document.getElementById("panel");
-        const fontSize = view.width * 0.025;
+        const fontSize = vmin * 4.44;
         panel.style.fontSize = fontSize + "px";
         panel.style.padding = fontSize + "px";
         const code = "function hello() {\n  console.log(\"Hello World\");\n  return true;\n}";

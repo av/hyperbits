@@ -145,13 +145,15 @@
           { label: "Zig", value: 23 },
         ];
         const maxValue = Math.max.apply(null, data.map(function (row) { return row.value; }));
-        const chartWidth = view.vw * 60;
-        const labelWidth = view.vw * 14;
-        const barHeight = vmin * 7;
-        const gap = vmin * 3;
-        heading.style.fontSize = vmin * 4.5 + "px";
+        const portrait = view.height > view.width * 1.1;
+        const chartWidth = portrait ? view.width * 0.84 : view.vw * 60;
+        const labelWidth = portrait ? chartWidth : view.vw * 14;
+        const barHeight = vmin * (portrait ? 9 : 7);
+        const gap = vmin * (portrait ? 4 : 3);
+        heading.style.fontSize = vmin * (portrait ? 5.5 : 4.5) + "px";
         heading.style.marginBottom = gap * 1.5 + "px";
-        heading.style.marginLeft = labelWidth + "px";
+        heading.style.marginLeft = portrait ? "0px" : labelWidth + "px";
+        if (portrait) document.getElementById("heading-wrap").style.width = chartWidth + "px";
         rows.style.gap = gap + "px";
         const timeline = gsap.timeline({ paused: true });
         timeline.fromTo(heading, { opacity: 0, y: vmin * 2 }, { opacity: 1, y: 0, duration: 1, ease: hyperbits.Easing.easeOutCubic }, 0);
@@ -159,15 +161,20 @@
           const delay = (15 + index * 8) / 30;
           const line = document.createElement("div");
           line.className = "row";
-          line.style.height = barHeight + "px";
-          line.style.gap = vmin * 2 + "px";
+          line.style.height = portrait ? "auto" : barHeight + "px";
+          line.style.gap = vmin * (portrait ? 1.2 : 2) + "px";
+          if (portrait) {
+            line.style.flexDirection = "column";
+            line.style.alignItems = "flex-start";
+          }
           const labelWrap = document.createElement("div");
           labelWrap.className = "label-wrap";
           labelWrap.style.width = labelWidth + "px";
+          if (portrait) labelWrap.style.justifyContent = "flex-start";
           const label = document.createElement("span");
           label.className = "label";
           label.textContent = row.label;
-          label.style.fontSize = vmin * 3 + "px";
+          label.style.fontSize = vmin * (portrait ? 3.6 : 3) + "px";
           labelWrap.append(label);
           const track = document.createElement("div");
           track.className = "track";
@@ -182,7 +189,7 @@
           const countWrap = document.createElement("div");
           const count = document.createElement("span");
           count.className = "count";
-          count.style.fontSize = vmin * 3.2 + "px";
+          count.style.fontSize = vmin * (portrait ? 3.8 : 3.2) + "px";
           countWrap.append(count);
           const counter = hyperbits.createCounter(count, {});
           track.append(bar, countWrap);

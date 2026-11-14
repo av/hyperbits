@@ -16,6 +16,7 @@ const cloneSummary = (entry: BitCatalogSummary): BitCatalogSummary => ({
   componentNames: [...entry.componentNames],
   registryDependencies: [...entry.registryDependencies],
   helpers: [...entry.helpers],
+  variables: entry.variables.map((variable) => ({ ...variable })),
 });
 
 const normalizeTags = (tags: string[] | undefined): string[] =>
@@ -146,6 +147,7 @@ const catalogSummaries: BitCatalogSummary[] = sharedBitInventory.map(
     componentNames: [...entry.componentNames],
     registryDependencies: [...entry.registryDependencies],
     helpers: [...entry.helpers],
+    variables: entry.variables.map((variable) => ({ ...variable })),
   }),
 );
 

@@ -17,6 +17,7 @@ import {
   bitHtmlPath,
   fileExists,
   listBitJsonFiles,
+  parseCompositionVariables,
   projectRoot,
   readBitManifest,
 } from "./lib/bits.mjs";
@@ -60,7 +61,66 @@ const preparePlaygroundHtml = (html) => {
 const yamlQuote = (value) =>
   `"${value.replaceAll("\\", "\\\\").replaceAll('"', '\\"')}"`;
 
-const bitMdx = (bit) => `---
+const tableCell = (value) =>
+  escapeMdx(value)
+    .replaceAll("|", "\\|")
+    .replaceAll("{", "&#123;")
+    .replaceAll("}", "&#125;");
+
+const codeCell = (value) => `\`${value.replaceAll("|", "\\|")}\``;
+
+const attributeJson = (value) =>
+  JSON.stringify(value)
+    .replaceAll("'", "\\u0027")
+    .replaceAll("&", "\\u0026")
+    .replaceAll("<", "\\u003c");
+
+const formatDefault = (variable) =>
+  variable.type === "string"
+    ? JSON.stringify(variable.default ?? "")
+    : String(variable.default);
+
+const variablesMdx = (bit, variables) => {
+  if (variables.length === 0) {
+    return "";
+  }
+  const rows = variables.map(
+    (variable) =>
+      `| ${codeCell(variable.id)} | ${tableCell(String(variable.type))} | ${codeCell(formatDefault(variable))} | ${tableCell(variable.label ?? "")} |`,
+  );
+  const values = Object.fromEntries(
+    variables.map((variable) => [variable.id, variable.default]),
+  );
+  const sample =
+    variables.find((variable) => variable.id === "background") ??
+    variables.find((variable) => variable.type === "color") ??
+    variables[0];
+  const sampleValue =
+    sample.id === "background"
+      ? "#0b1020"
+      : sample.type === "color"
+        ? "#5b7cfa"
+        : String(sample.default ?? "");
+  return `
+## Variables
+
+Theme an embed without editing the bit: put \`data-variable-values\` on the \`data-composition-src\` element, or bake new defaults into the installed copy with \`--set\`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+${rows.join("\n")}
+
+\`\`\`html
+<div data-composition-src="compositions/${bit.id}.html" data-variable-values='${attributeJson(values)}'></div>
+\`\`\`
+
+\`\`\`bash
+npx @av/hyperbits add ${bit.id} --into compositions/ --set ${JSON.stringify(`${sample.id}=${sampleValue}`)}
+\`\`\`
+`;
+};
+
+const bitMdx = (bit, variables) => `---
 title: ${yamlQuote(bit.title)}
 category: ${yamlQuote(bit.categoryLabel)}
 description: ${yamlQuote(bit.description)}
@@ -70,7 +130,7 @@ import { BitPlayground } from '@components/BitPlayground';
 ${escapeMdx(bit.description)}.
 
 <BitPlayground client:only="react" bitName="${bit.id}" />
-`;
+${variablesMdx(bit, variables)}`;
 
 const copyVendorFiles = async () => {
   await mkdir(publicVendorDir, { recursive: true });
@@ -208,7 +268,10 @@ export const generateDocs = async () => {
     };
     bits.push(bit);
 
-    await writeFile(path.join(bitsMdxDir, `${bit.id}.mdx`), bitMdx(bit));
+    await writeFile(
+      path.join(bitsMdxDir, `${bit.id}.mdx`),
+      bitMdx(bit, parseCompositionVariables(html)),
+    );
     await writeFile(
       path.join(publicBitsDir, `${bit.id}.html`),
       preparePlaygroundHtml(html),

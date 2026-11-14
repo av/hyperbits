@@ -152,21 +152,49 @@
         }
         const projected = new Float32Array(total * 3);
         const bands = 12;
+        const pitch = 0.25;
+        const camera = 120;
+        const stacked = view.width < view.height * 1.4;
+        const margin = view.vmin * 6;
+        const panelHeight = view.vmin * 34;
+        let scale = view.height * 0.0165;
+        let centerX = view.width * 0.6;
+        let centerY = view.height * 0.5;
+        if (stacked) {
+          let minX = Infinity;
+          let maxX = -Infinity;
+          let minZ = Infinity;
+          let maxZ = -Infinity;
+          for (let sample = 0; sample <= 20; sample += 1) {
+            const yaw = -0.6 + sample * 0.5 * 0.16;
+            for (let index = 0; index < total; index += 10) {
+              const turnedX = points[index * 3] * Math.cos(yaw) - points[index * 3 + 1] * Math.sin(yaw);
+              const turnedY = points[index * 3] * Math.sin(yaw) + points[index * 3 + 1] * Math.cos(yaw);
+              const liftedY = turnedY * Math.cos(pitch) - points[index * 3 + 2] * Math.sin(pitch);
+              const liftedZ = turnedY * Math.sin(pitch) + points[index * 3 + 2] * Math.cos(pitch);
+              const perspective = camera / (camera + liftedY);
+              minX = Math.min(minX, turnedX * perspective);
+              maxX = Math.max(maxX, turnedX * perspective);
+              minZ = Math.min(minZ, liftedZ * perspective);
+              maxZ = Math.max(maxZ, liftedZ * perspective);
+            }
+          }
+          const regionTop = margin + panelHeight + view.vmin * 4;
+          const regionHeight = view.height - margin - regionTop;
+          scale = Math.min((view.width - margin * 2) / (maxX - minX), regionHeight / (maxZ - minZ));
+          centerX = view.width / 2 - ((minX + maxX) / 2) * scale;
+          centerY = regionTop + regionHeight / 2 + ((minZ + maxZ) / 2) * scale;
+        }
         function draw(time) {
           if (!context || typeof context.stroke !== "function") return;
           context.clearRect(0, 0, view.width, view.height);
           const grow = hyperbits.Easing.easeInOutCubic(progressOf(time, 0.2, 7.4));
           const count = Math.max(2, Math.floor(total * grow));
           const yaw = -0.6 + time * 0.16;
-          const pitch = 0.25;
           const cosYaw = Math.cos(yaw);
           const sinYaw = Math.sin(yaw);
           const cosPitch = Math.cos(pitch);
           const sinPitch = Math.sin(pitch);
-          const scale = view.height * 0.0165;
-          const centerX = view.width * 0.6;
-          const centerY = view.height * 0.5;
-          const camera = 120;
           for (let index = 0; index < count; index += 1) {
             const pointX = points[index * 3];
             const pointY = points[index * 3 + 1];
@@ -233,9 +261,9 @@
           const index = count - 1;
           readout.textContent = "x " + points[index * 3].toFixed(2).padStart(7, " ") + "   y " + points[index * 3 + 1].toFixed(2).padStart(7, " ") + "   z " + (points[index * 3 + 2] + 25).toFixed(2).padStart(6, " ");
         }
-        panel.style.left = view.vmin * 7 + "px";
-        panel.style.top = view.height * 0.5 + "px";
-        panel.style.transform = "translateY(-50%)";
+        panel.style.left = (stacked ? margin : view.vmin * 7) + "px";
+        panel.style.top = (stacked ? margin : view.height * 0.5) + "px";
+        if (!stacked) panel.style.transform = "translateY(-50%)";
         const titleNode = document.createElement("div");
         titleNode.className = "title";
         titleNode.textContent = String(vars.title);

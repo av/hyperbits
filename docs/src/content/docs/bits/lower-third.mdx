@@ -8,3 +8,22 @@ import { BitPlayground } from '@components/BitPlayground';
 Broadcast-style name and title card that slides in, holds, and slides out..
 
 <BitPlayground client:only="react" bitName="lower-third" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `name` | string | `"Ada Lovelace"` | Name |
+| `title` | string | `"Analytical Engine Programmer"` | Title |
+| `color` | color | `#ec8b49` | Accent |
+| `background` | color | `#1c1b1a` | Background |
+
+```html
+<div data-composition-src="compositions/lower-third.html" data-variable-values='{"name":"Ada Lovelace","title":"Analytical Engine Programmer","color":"#ec8b49","background":"#1c1b1a"}'></div>
+```
+
+```bash
+npx @av/hyperbits add lower-third --into compositions/ --set "background=#0b1020"
+```

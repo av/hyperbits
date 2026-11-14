@@ -27,5 +27,37 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "hole",
+      "type": "number",
+      "label": "Clear circle radius (vmin)",
+      "default": 18
+    },
+    {
+      "id": "seed",
+      "type": "number",
+      "label": "Seed",
+      "default": 4
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#100f0f"
+    },
+    {
+      "id": "foreground",
+      "type": "color",
+      "label": "Ink",
+      "default": "#f2f0e5"
+    },
+    {
+      "id": "accent",
+      "type": "color",
+      "label": "Accent ink",
+      "default": "#ec8b49"
+    }
   ]
 }

@@ -16,8 +16,8 @@ Use this skill to build HyperFrames compositions from live hyperbits examples fi
 ## Default workflow
 
 1. Start with `find_hyperbits` using the visual goal, motion style, or scene description.
-2. Fetch the best one or two matches with `fetch_hyperbit`.
-3. Adapt the closest bit before composing from helpers.
+2. Fetch the best one or two matches with `fetch_hyperbit`. Its `variables` list (`id`, `type`, `label`, `default`) is what you can theme without editing the bit; `find_hyperbits` results carry the same ids as `variableIds`.
+3. Theme through variables first, then adapt the closest bit, before composing from helpers.
 4. If multiple bits match, prefer the simplest one that satisfies the request.
 5. If the request is multi-step, camera-driven, or presentation-like, bias toward `scenes-3d` bits.
 6. When adapting a bit, keep fractional `viewport()` sizing, paused timelines on `window.__timelines`, and `data-composition-variables` knobs.
@@ -29,7 +29,7 @@ Treat the catalog bits as the primary library of working patterns. Reach for hel
 1. MCP first.
    Use `find_hyperbits` for discovery and `fetch_hyperbit` for the full HTML source.
 2. CLI second.
-   Use `npx @av/hyperbits find "hero intro" --tag text --json` and `npx @av/hyperbits fetch fade-in --json`. Install with `npx @av/hyperbits add fade-in --into compositions/`.
+   Use `npx @av/hyperbits find "hero intro" --tag text --json` and `npx @av/hyperbits fetch fade-in --json` (both include `variables`). Install with `npx @av/hyperbits add fade-in glitch-in --into compositions/ --set background=#0b1020`.
 3. Direct file inspection last.
    Inspect `bits/<category>/<name>/index.html` and `bit.json`, then adapt the nearest example.
 
@@ -43,7 +43,11 @@ Use the published package when you do not want a repo-local workflow:
 npx @av/hyperbits find 3d cards
 npx @av/hyperbits fetch fade-in --json
 npx @av/hyperbits add fade-in --into compositions/
+npx @av/hyperbits add fade-in glitch-in --into compositions/ --set background=#0b1020 --set color=#e8ecff
+npx @av/hyperbits add fade-in --into compositions/ --size 9:16
 ```
+
+Every bit works at 16:9, 9:16 and 1:1. Match the host composition: `add --size` takes `9:16` (1080x1920), `1:1` (1080x1080), `16:9` (1920x1080) or `WIDTHxHEIGHT`, and `fetch_hyperbit` takes the same value as `size`. Without it the bit keeps its native size. Do not hand-edit `data-width`/`data-height` to resize a bit; retarget it.
 
 Start the MCP server from the published package:
 
@@ -76,7 +80,7 @@ node dist/cli/index.js add fade-in --into compositions/
 node dist/cli/index.js mcp
 ```
 
-`add` writes the bit HTML into a HyperFrames project (default `compositions/`) and prints a `data-composition-src` snippet. `npx hyperframes add` does not take a registry URL; `hyperbits add` is the guaranteed install path.
+`add` writes one or more bits into a HyperFrames project (default `compositions/`) and prints a `data-composition-src` snippet plus a ready-to-edit `data-variable-values` example per bit. `--set id=value` (repeatable) writes validated new defaults into the installed copies, rewrites literal copies of the old default in their CSS and markup, and reports which bits do not declare the id. `npx hyperframes add` does not take a registry URL; `hyperbits add` is the guaranteed install path.
 
 ## How to search well
 
@@ -89,7 +93,12 @@ node dist/cli/index.js mcp
 
 These match `references/patterns.md` and `AGENTS.md`. Do not invent a parallel set.
 
+- Theme before you edit. Map the user's palette and copy onto the bit's declared variables: `background`, `foreground`, `accent` or `color` for colors, `text`, `title`, `headline`, `label` or `caption` for copy. Pass them per embed with `data-variable-values='{"background":"#0b1020"}'` on the `data-composition-src` element, or bake them into the installed file with `hyperbits add <bit> --set id=value`. Prefer `--set` for background colors: a bit's `html, body` background shows on its mount after the bit's clips end, and only `--set` rewrites it.
+- Edit bit source only for what no variable covers, and keep the edited knob declared in `data-composition-variables`.
+- In the host composition, never style the bits' generic ids (`#root`, `#bg`, `#stage`, `#scene`, `#title`) or bare element selectors. Host CSS is global and reaches into every embedded bit. Use prefixed host ids or classes, and size or position a bit through a class on its `data-composition-src` element.
+
 - Keep `viewport(root)` sizing. Prefer `view.vmin`, `view.vmax`, `view.vw`, `view.vh`, and `view.px()` over hardcoded pixels. Hero text 8–12 vmin, body 3–4 vmin, UI mocks ≥ 60% of the frame.
+- Work at any size. A bit must look designed for 16:9, 9:16 and 1:1: size from the short side (`vmin`), fit layouts to the width, and switch layout by aspect where a landscape arrangement does not fit portrait. Check with `npm run check:sizes`.
 - Never paint on the composition root. First child is a full-bleed `#bg` layer with a literal background colour. Animate gradients on that layer.
 - Keep theme colors as literal values in a top-level `:root` block. Do not swap in an arbitrary palette unless the user asked for one.
 - Expose user-facing knobs through `data-composition-variables`. Read them with `window.__hyperframes.getVariables()`.
@@ -110,6 +119,7 @@ These match `references/patterns.md` and `AGENTS.md`. Do not invent a parallel s
 - `colorProxy` / `gradientProxy` / `createCounter`: GSAP proxy bindings `{ proxy, apply }`. Tween `proxy`, call `apply` on update.
 - `createParticles` / `bind`: time-state simulation onto a canvas (`stateAt(time)`, `sim.bind(timeline, canvas, options)`).
 - `createScene3D` / `Transform3D`: camera steps and 3D placement (`stateAt` + `scene.bind(timeline)`). Use when the request is a flythrough, multi-step walkthrough, or camera-driven showcase.
+- `createCamera`: keyed look-at camera for CSS 3D with lens, roll, per-segment easing and quaternion slerp (`stateAt` + `camera.bind(timeline)`). Pure `cameraStateAt`, `cameraToCSS` and `cameraProject` serve custom renderers. See Camera below.
 - `random` / `randomFloat` / `pick`: seeded values only.
 
 ## Common decision rules
@@ -119,7 +129,8 @@ These match `references/patterns.md` and `AGENTS.md`. Do not invent a parallel s
 - Need counting: use `createCounter`.
 - Need code on screen: use `createCodeBlock`.
 - Need ambient emitters: use particle helpers.
-- Need scene-to-scene camera motion: use `createScene3D`.
+- Need scene-to-scene camera motion between fixed poses: use `createScene3D`.
+- Need a cinematic camera that looks at targets, changes lens or rolls: use `createCamera`.
 
 ## Example-first patterns
 
@@ -129,6 +140,17 @@ These match `references/patterns.md` and `AGENTS.md`. Do not invent a parallel s
 - Background request: find a gradient or particle example, then adapt palette, density, and duration.
 - Looping backdrop request: find a `loop` bit in the right family, then pass brand colours through its palette tokens.
 - Presentation request: find a `scenes-3d` example first, then adapt step positions, titles, and card content before introducing new helpers.
+
+## Camera
+
+`hyperbits.createCamera(stage, world, { keys, lens?, ease? })` flies a look-at camera through a CSS 3D world. `camera-flight` is the reference bit.
+
+- Keys are `{ time, position, target, roll, lens, ease }`. Positions and targets are `[x, y, z]` in pixels with CSS axes: `+x` right, `+y` down, `+z` toward the viewer. `roll` is in degrees. `lens` is the stage `perspective`, so a point `lens` px away renders at scale 1. Omitted `target`, `roll` and `lens` carry over from the previous key.
+- `ease` shapes the segment that starts at that key. Orientation is slerped between the look-at quaternions of the two keys and emitted as one `matrix3d`, so a turn never flips. Slerp takes the shorter arc, so split turns of 180° or more into several keys. Equal key times cut.
+- Scale lengths and lens from `viewport(root).vmin` so the shot frames the same at any size. Dolly zoom: move toward the target while scaling `lens` with the distance.
+- `inOut` eases stop at every key. For continuous flight, sample a path into many keys with `ease: "none"` and ease the sample times.
+- Drive per-element effects from `hyperbits.cameraProject(state, point)` (`x`, `y`, `depth`, `scale`), for example fog, near-plane fades, highlights or labels pinned to 3D points. Read the state from `camera.stateAt(timeline.time())` so they stay seek-safe.
+- Children of `world` use `transform-origin: 0 0` and `translate3d(...) rotateY(...) translate(-50%, -50%)` to sit centred on a world point.
 
 ## Motion loops
 
@@ -144,11 +166,13 @@ These match `references/patterns.md` and `AGENTS.md`. Do not invent a parallel s
 # MCP
 find_hyperbits {"query":"camera flythrough product showcase","tags":["scene-3d"],"limit":2}
 fetch_hyperbit {"id":"carousel"}
+fetch_hyperbit {"id":"carousel","size":"9:16"}
 
 # CLI
 npx @av/hyperbits find "camera flythrough product showcase" --tag scene-3d --limit 2 --json
 npx @av/hyperbits fetch carousel --json
 npx @av/hyperbits add carousel --into compositions/
+npx @av/hyperbits add carousel --into compositions/ --size 9:16
 ```
 
 ## References

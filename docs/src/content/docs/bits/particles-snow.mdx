@@ -8,3 +8,20 @@ import { BitPlayground } from '@components/BitPlayground';
 Falling snow particles effect.
 
 <BitPlayground client:only="react" bitName="particles-snow" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `color` | color | `#ffffff` | Flake color |
+| `background` | color | `#01050e` | Background |
+
+```html
+<div data-composition-src="compositions/particles-snow.html" data-variable-values='{"color":"#ffffff","background":"#01050e"}'></div>
+```
+
+```bash
+npx @av/hyperbits add particles-snow --into compositions/ --set "background=#0b1020"
+```

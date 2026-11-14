@@ -8,3 +8,21 @@ import { BitPlayground } from '@components/BitPlayground';
 Text that appears character by character with staggered timing.
 
 <BitPlayground client:only="react" bitName="char-by-char" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `text` | string | `"Character Animation"` | Text |
+| `color` | color | `#fcc192` | Text color |
+| `background` | color | `#100f0f` | Background |
+
+```html
+<div data-composition-src="compositions/char-by-char.html" data-variable-values='{"text":"Character Animation","color":"#fcc192","background":"#100f0f"}'></div>
+```
+
+```bash
+npx @av/hyperbits add char-by-char --into compositions/ --set "background=#0b1020"
+```

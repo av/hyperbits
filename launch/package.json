@@ -1,0 +1,13 @@
+{
+  "name": "hyperbits-launch",
+  "version": "1.0.0",
+  "description": "hyperbits launch video, built with hyperbits",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "sync": "node scripts/build.mjs",
+    "preview": "npm run sync && npx --yes hyperframes@0.8.29 preview",
+    "lint": "npx --yes hyperframes@0.8.29 lint",
+    "render": "npm run sync && npx --yes hyperframes@0.8.29 render --fps 60 --quality high --output out/hyperbits-launch.mp4"
+  }
+}

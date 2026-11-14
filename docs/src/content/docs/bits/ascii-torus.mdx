@@ -8,3 +8,22 @@ import { BitPlayground } from '@components/BitPlayground';
 A z-buffered torus tumbling in a grid of monospace glyphs, decoding out of noise and lit through a twelve-step character ramp.
 
 <BitPlayground client:only="react" bitName="ascii-torus" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `caption` | string | `"RENDERED IN TWELVE GLYPHS"` | Caption |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Bright glyphs |
+| `accent` | color | `#ec8b49` | Accent |
+
+```html
+<div data-composition-src="compositions/ascii-torus.html" data-variable-values='{"caption":"RENDERED IN TWELVE GLYPHS","background":"#100f0f","foreground":"#f2f0e5","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add ascii-torus --into compositions/ --set "background=#0b1020"
+```

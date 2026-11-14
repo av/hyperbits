@@ -160,6 +160,10 @@
       "type": "hyperframes:block"
     },
     {
+      "name": "camera-flight",
+      "type": "hyperframes:block"
+    },
+    {
       "name": "carousel",
       "type": "hyperframes:block"
     },

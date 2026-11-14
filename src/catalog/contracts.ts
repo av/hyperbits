@@ -2,6 +2,15 @@ import type { RegistryItem } from "./bit-schema";
 
 export type { RegistryItem };
 
+export type BitVariableType = "string" | "number" | "color" | "boolean";
+
+export interface BitVariable {
+  id: string;
+  type: BitVariableType | (string & {});
+  label?: string;
+  default?: unknown;
+}
+
 export interface BitCatalogSummary {
   exportName: string;
   id: string;
@@ -15,6 +24,7 @@ export interface BitCatalogSummary {
   componentNames: string[];
   registryDependencies: string[];
   helpers: string[];
+  variables: BitVariable[];
 }
 
 export interface BitCatalogEntry extends BitCatalogSummary {

@@ -154,12 +154,14 @@
         const shadow = document.createElement("div");
         shadow.style.position = "absolute";
         shadow.style.left = "50%";
-        shadow.style.top = "72%";
-        shadow.style.width = view.width * 0.6 + "px";
+        const shadowWidth = fontSize * Math.max(1, text.length) * 0.71;
+        shadow.style.top = view.height / 2 + fontSize * 0.73 + "px";
+        shadow.style.width = shadowWidth + "px";
         shadow.style.height = view.vmin * 8 + "px";
-        shadow.style.marginLeft = -view.width * 0.3 + "px";
+        shadow.style.marginLeft = -shadowWidth / 2 + "px";
         shadow.style.borderRadius = "50%";
         shadow.style.background = "radial-gradient(closest-side, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0))";
+        document.getElementById("scene").style.perspective = view.vmin * 204 + "px";
         document.getElementById("scene").prepend(shadow);
         const proxy = { time: 0 };
         function render() {

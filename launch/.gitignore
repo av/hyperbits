@@ -1,0 +1,7 @@
+out/
+snapshots/
+renders/
+compositions/
+public/hyperbits.iife.js
+public/posters/
+index.html

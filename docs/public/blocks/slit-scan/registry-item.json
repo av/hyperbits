@@ -27,5 +27,37 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "headline",
+      "type": "string",
+      "label": "Headline",
+      "default": "Time bends"
+    },
+    {
+      "id": "label",
+      "type": "string",
+      "label": "Label",
+      "default": "SLIT-SCAN / 480 SLICES"
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#100f0f"
+    },
+    {
+      "id": "foreground",
+      "type": "color",
+      "label": "Text",
+      "default": "#f2f0e5"
+    },
+    {
+      "id": "accent",
+      "type": "color",
+      "label": "Echo",
+      "default": "#ec8b49"
+    }
   ]
 }

@@ -28,5 +28,37 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#100f0f"
+    },
+    {
+      "id": "foreground",
+      "type": "color",
+      "label": "Foreground",
+      "default": "#f2f0e5"
+    },
+    {
+      "id": "accent",
+      "type": "color",
+      "label": "Accent",
+      "default": "#4fb6ec"
+    },
+    {
+      "id": "frames",
+      "type": "number",
+      "label": "Tubes",
+      "default": 5
+    },
+    {
+      "id": "dots",
+      "type": "number",
+      "label": "Dots per ring",
+      "default": 12
+    }
   ]
 }

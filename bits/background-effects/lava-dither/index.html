@@ -72,6 +72,10 @@
           const parts = hyperbits.mixOklch(String(color), String(color), 0, "rgb(0, 0, 0)").match(/[0-9.]+/g) || [0, 0, 0];
           return parts.slice(0, 3).map(Number);
         }
+        function smoothstep(edge0, edge1, value) {
+          const amount = Math.min(Math.max((value - edge0) / (edge1 - edge0), 0), 1);
+          return amount * amount * (3 - 2 * amount);
+        }
 
         const vars = bitVars();
         const root = document.getElementById("root");
@@ -132,7 +136,7 @@
           const centers = blobs.map((blob) => ({
             x: (blob.homeX + Math.sin(time * blob.speedX + blob.phase) * blob.swingX) * bufferWidth,
             y: (blob.homeY + Math.sin(time * blob.speedY + blob.phase * 1.7) * blob.swingY) * bufferHeight,
-            radius: blob.radius * bufferHeight * (0.4 + 0.6 * intro),
+            radius: blob.radius * Math.sqrt(bufferWidth * bufferHeight) * 0.75 * (0.4 + 0.6 * intro),
           }));
           for (let row = 0; row < bufferHeight; row += 1) {
             const heat = Math.max(0, row / bufferHeight - 0.45) * 0.26;

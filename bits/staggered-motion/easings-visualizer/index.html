@@ -112,7 +112,7 @@
         const bg = document.getElementById("bg");
         const view = hyperbits.viewport(root);
         const vmin = view.vmin;
-        const unit = view.height / 1080;
+        const unit = view.vmin / 10.8;
         bg.style.backgroundColor = vars.background;
         const board = document.getElementById("board");
         const caption = document.getElementById("caption");
@@ -127,16 +127,18 @@
           { label: "spring", value: hyperbits.Easing.spring },
           { label: "steps(5)", value: hyperbits.steps(5) },
         ];
-        const labelWidth = Math.max(view.width * 0.2, 120 * unit);
-        const trackWidth = view.width - labelWidth - 40 * unit;
-        const verticalPadding = 40 * unit;
+        const labelFont = vmin * 3;
+        const labelWidth = Math.max(view.width * 0.2, labelFont * 9.5);
+        const sidePadding = vmin * 5;
+        const trackWidth = view.width - labelWidth - sidePadding * 2;
+        const verticalPadding = vmin * 6;
         const itemHeight = (view.height - verticalPadding * 2) / easings.length;
         const squareSize = Math.min(itemHeight * 0.6, 40 * unit);
-        const travel = trackWidth - squareSize;
-        board.style.padding = verticalPadding + "px " + 20 * unit + "px";
-        caption.style.bottom = 10 * unit + "px";
-        caption.style.right = 20 * unit + "px";
-        caption.style.fontSize = 12 * unit + "px";
+        const travel = (trackWidth - squareSize) / 1.17;
+        board.style.padding = verticalPadding + "px " + sidePadding + "px";
+        caption.style.bottom = vmin * 1.5 + "px";
+        caption.style.right = sidePadding + "px";
+        caption.style.fontSize = vmin * 2.2 + "px";
         const timeline = gsap.timeline({ paused: true });
         easings.forEach(function (item, index) {
           const row = document.createElement("div");
@@ -148,7 +150,7 @@
           label.textContent = item.label;
           label.style.width = labelWidth + "px";
           label.style.paddingRight = 10 * unit + "px";
-          label.style.fontSize = Math.min(itemHeight * 0.4, 16 * unit) + "px";
+          label.style.fontSize = Math.min(itemHeight * 0.4, labelFont) + "px";
           const track = document.createElement("div");
           track.className = "track";
           const dot = document.createElement("div");

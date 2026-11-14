@@ -8,3 +8,22 @@ import { BitPlayground } from '@components/BitPlayground';
 A headline built as solid 3D block letters from dozens of stacked layers, each letter flipping up into place before the whole word swings slowly to show its depth.
 
 <BitPlayground client:only="react" bitName="extruded-type" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `headline` | string | `"DEPTH"` | Headline |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Face |
+| `accent` | color | `#ec8b49` | Extrusion |
+
+```html
+<div data-composition-src="compositions/extruded-type.html" data-variable-values='{"headline":"DEPTH","background":"#100f0f","foreground":"#f2f0e5","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add extruded-type --into compositions/ --set "background=#0b1020"
+```

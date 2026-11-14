@@ -8,3 +8,23 @@ import { BitPlayground } from '@components/BitPlayground';
 Wide orbital arcs around a sun far beyond the frame, small planets gliding along them in whole-number periods.
 
 <BitPlayground client:only="react" bitName="gyro-rings" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Foreground |
+| `accent` | color | `#4fb6ec` | Accent |
+| `rings` | number | `16` | Orbits |
+| `seed` | number | `3` | Seed |
+
+```html
+<div data-composition-src="compositions/gyro-rings.html" data-variable-values='{"background":"#100f0f","foreground":"#f2f0e5","accent":"#4fb6ec","rings":16,"seed":3}'></div>
+```
+
+```bash
+npx @av/hyperbits add gyro-rings --into compositions/ --set "background=#0b1020"
+```

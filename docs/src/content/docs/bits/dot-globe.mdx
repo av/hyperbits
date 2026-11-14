@@ -8,3 +8,24 @@ import { BitPlayground } from '@components/BitPlayground';
 A turning globe of land dots under a faint graticule, great-circle arcs launching between cities with travelling packets and landing pings, beside a live counter.
 
 <BitPlayground client:only="react" bitName="dot-globe" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `label` | string | `"regions online"` | Counter label |
+| `count` | number | `142` | Counter value |
+| `seed` | number | `3` | Seed |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Land dots |
+| `accent` | color | `#ec8b49` | Accent |
+
+```html
+<div data-composition-src="compositions/dot-globe.html" data-variable-values='{"label":"regions online","count":142,"seed":3,"background":"#100f0f","foreground":"#f2f0e5","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add dot-globe --into compositions/ --set "background=#0b1020"
+```

@@ -8,3 +8,22 @@ import { BitPlayground } from '@components/BitPlayground';
 Garlands of soft paper cutouts hanging from the top edge across the whole width, swaying gently on their threads.
 
 <BitPlayground client:only="react" bitName="floating-shapes" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `background` | color | `#f2f0e5` | Background |
+| `foreground` | color | `#100f0f` | Foreground |
+| `accent` | color | `#9d8af0` | Accent |
+| `sway` | number | `4` | Sway (degrees) |
+
+```html
+<div data-composition-src="compositions/floating-shapes.html" data-variable-values='{"background":"#f2f0e5","foreground":"#100f0f","accent":"#9d8af0","sway":4}'></div>
+```
+
+```bash
+npx @av/hyperbits add floating-shapes --into compositions/ --set "background=#0b1020"
+```

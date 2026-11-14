@@ -8,3 +8,21 @@ import { BitPlayground } from '@components/BitPlayground';
 Text that slides in from the left with fade-in effect.
 
 <BitPlayground client:only="react" bitName="slide-from-left" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `text` | string | `"Sliding Text"` | Text |
+| `color` | color | `#fcc192` | Text color |
+| `background` | color | `#100f0f` | Background |
+
+```html
+<div data-composition-src="compositions/slide-from-left.html" data-variable-values='{"text":"Sliding Text","color":"#fcc192","background":"#100f0f"}'></div>
+```
+
+```bash
+npx @av/hyperbits add slide-from-left --into compositions/ --set "background=#0b1020"
+```

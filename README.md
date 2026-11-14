@@ -12,7 +12,7 @@ Ready-made animation bits for [HyperFrames](https://github.com/heygen-com/hyperf
 
 ## Status
 
-0.2.0: helpers, 92 bits including 16 seamless motion loops, CLI, MCP server, docs site, demo reel and agent skill.
+0.3.0: helpers including a look-at 3D camera, 93 bits including 16 seamless motion loops, every bit at 16:9, 9:16 and 1:1, CLI with theming and resizing on install, MCP server, docs site, demo reel, launch video and agent skill.
 
 ## Single-step usage
 
@@ -38,6 +38,7 @@ npm exec --package ./av-hyperbits-*.tgz -- hyperbits find "fade in"
 npx @av/hyperbits find 3d cards
 npx @av/hyperbits fetch fade-in --json
 npx @av/hyperbits add fade-in --into compositions/
+npx @av/hyperbits add fade-in glitch-in --into compositions/ --set background=#0b1020 --set color=#e8ecff
 ```
 
 Or install the bin globally:
@@ -48,7 +49,28 @@ hyperbits find 3d cards
 hyperbits add fade-in --into compositions/
 ```
 
-`add` writes the bit HTML into a HyperFrames project (default `compositions/`), copies the helper bundle `hyperbits.iife.js` next to it, and prints a `data-composition-src` snippet.
+`add` writes one or more bits into a HyperFrames project (default `compositions/`), copies the helper bundle `hyperbits.iife.js` next to them, and prints a `data-composition-src` snippet for each.
+
+Every bit declares its knobs in `data-composition-variables`. `fetch` lists them (id, type, default, label) before the source, `find --json` and `fetch --json` return them as `variables`, and `add` prints a ready-to-edit override after each snippet:
+
+```html
+<div data-composition-src="compositions/fade-in.html" data-variable-values='{"text":"Hello World","color":"#fcc192","background":"#100f0f"}'></div>
+```
+
+`--set id=value` (repeatable) bakes new defaults into the installed copies instead. Values are validated against the variable type (colors must be CSS colors), literal copies of the old default in the bit's CSS and markup are rewritten too, and bits that do not declare an id are reported as skipped. An unknown bit or invalid value exits non-zero and writes nothing.
+
+Host CSS is global inside a HyperFrames composition: a host rule for `#root`, `#bg`, `#stage` or `#title` also styles every embedded bit. Use prefixed ids or classes for host elements. See [Host CSS](https://hyperbits.dev/docs/getting-started#host-css).
+
+Every bit works at 16:9, 9:16 and 1:1. `--size` writes the bit at your composition's size; the default is the bit's native size:
+
+```bash
+npx @av/hyperbits add fade-in --into compositions/ --size 9:16    # 1080x1920
+npx @av/hyperbits add carousel --into compositions/ --size 1:1    # 1080x1080
+npx @av/hyperbits add card-stack --into compositions/ --size 16:9 # 1920x1080
+npx @av/hyperbits add dot-globe --into compositions/ --size 1080x1350
+```
+
+MCP `fetch_hyperbit` accepts the same value as an optional `size` argument.
 
 ### MCP
 
@@ -76,8 +98,8 @@ If you installed the package globally:
 
 The server exposes two tools:
 
-- `find_hyperbits`
-- `fetch_hyperbit`
+- `find_hyperbits`: results carry `variableIds`, the knobs each bit exposes
+- `fetch_hyperbit`: returns the bit with `variables` (`id`, `type`, `label`, `default`), source and embed snippet
 
 ### Add into a HyperFrames project
 
@@ -162,13 +184,13 @@ Each helper is deterministic given a time value so HyperFrames frame-by-frame re
 - `text`: split into chars, words, and lines; typewriter driver
 - `counter`: numeric tween (`{ proxy, apply }`) with formatting, prefix, and postfix
 - `code`: Prism-highlighted code with line reveal and focus
-- `scene3d`: CSS 3D scene (`stateAt` + `bind`) with steps, camera moves, and `Transform3D`
+- `scene3d`: CSS 3D scene (`stateAt` + `bind`) with steps, camera moves, and `Transform3D`; `createCamera` is a keyed look-at camera with lens, roll and quaternion slerp
 
 Reference pages live on the [docs site](https://hyperbits.dev/docs/getting-started).
 
 ## Bits
 
-92 bits in 7 categories. Each is a self-contained HTML composition with `bit.json` metadata.
+93 bits in 7 categories. Each is a self-contained HTML composition with `bit.json` metadata.
 
 | Category | Count | Bits |
 | --- | ---: | --- |
@@ -177,7 +199,7 @@ Reference pages live on the [docs site](https://hyperbits.dev/docs/getting-start
 | Background Effects | 9 | `circuit-traces`, `conic-gradient`, `hard-light`, `lava-dither`, `linear-gradient`, `moire-field`, `op-art-lens`, `radial-gradient`, `rule-cascade` |
 | Motion Loops | 16 | `bauhaus-tiles`, `contour-drift`, `dot-ripple`, `dot-tunnel`, `floating-shapes`, `gyro-rings`, `halftone-sweep`, `horizon-grid`, `phyllotaxis-bloom`, `pinwheel-grid`, `pixel-rain`, `ray-burst`, `speed-streaks`, `truchet-weave`, `wave-stack`, `zoom-polygons` |
 | Particles | 9 | `fireflies`, `flow-field`, `particles-fountain`, `particles-grid`, `particles-snow`, `radar-sweep`, `scrolling-columns`, `strange-attractor`, `vector-scope` |
-| 3D Scenes | 17 | `3d-basic`, `3d-elements`, `ascii-torus`, `carousel`, `cube-navigation`, `cursor-flyover`, `dither-orb`, `dot-globe`, `exploded-stack`, `flying-through-words`, `isometric-city`, `ken-burns`, `step-timing-context`, `terminal-3d`, `transform3d-showcase`, `voxel-type`, `wire-solids` |
+| 3D Scenes | 18 | `3d-basic`, `3d-elements`, `ascii-torus`, `camera-flight`, `carousel`, `cube-navigation`, `cursor-flyover`, `dither-orb`, `dot-globe`, `exploded-stack`, `flying-through-words`, `isometric-city`, `ken-burns`, `step-timing-context`, `terminal-3d`, `transform3d-showcase`, `voxel-type`, `wire-solids` |
 | Full Compositions | 2 | `blueprint-draw`, `feature-showcase` |
 
 Browse them in the [catalog](https://hyperbits.dev/docs/bits-catalog).
@@ -229,6 +251,7 @@ npm install
 | `npm run typecheck` | Inventory plus `tsc --noEmit` |
 | `npm run lint` | oxlint, then `lint:bits` |
 | `npm run lint:bits` | `npx hyperframes lint` on every bit |
+| `npm run check:sizes` | Retarget every bit to 16:9, 9:16 and 1:1, snapshot it, and write contact sheets to `.check-sizes/` |
 | `npm test` | vitest (excludes the packed-package gate) |
 | `npm run test:package` | Packs the tarball and runs the published CLI through it |
 | `npm run docs:dev` / `docs:build` | Docs site |

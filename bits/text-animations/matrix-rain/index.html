@@ -101,7 +101,7 @@
         } catch (err) {
           context = null;
         }
-        const fontSize = (Number(vars.fontSize) || 30) * (view.height / 1080);
+        const fontSize = (Number(vars.fontSize) || 30) * (view.vmin / 10.8);
         const color = String(vars.color);
         const speed = Number(vars.speed) || 1;
         const density = Math.min(Math.max(Number(vars.density) || 0, 0), 1);
@@ -140,7 +140,7 @@
               context.globalAlpha = isHead ? 1 : 1 - distInChars / streamLength;
               context.fillStyle = isHead ? "#FFFFFF" : color;
               context.font = (isHead ? "bold " : "") + fontSize + "px " + fontFamily;
-              context.shadowBlur = isHead ? 8 * (view.height / 1080) : 0;
+              context.shadowBlur = isHead ? 8 * (view.vmin / 10.8) : 0;
               context.shadowColor = isHead ? "#FFFFFF" : "rgba(0, 0, 0, 0)";
               context.fillText(glyph, colIndex * fontSize, y);
             }

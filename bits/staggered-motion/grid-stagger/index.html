@@ -100,11 +100,11 @@
         const bg = document.getElementById("bg");
         const view = hyperbits.viewport(root);
         const vmin = view.vmin;
-        const unit = view.height / 1080;
+        const unit = view.vmin / 10.8;
         bg.style.backgroundColor = vars.background;
         const grid = document.getElementById("grid");
-        const cols = 4;
-        const rows = 4;
+        const cols = Math.max(4, Math.round(4 * view.width / view.height));
+        const rows = Math.max(4, Math.round(4 * view.height / view.width));
         const gap = 20 * unit;
         const padding = 60 * unit;
         const availableWidth = view.width - padding * 2 - gap * (cols - 1);

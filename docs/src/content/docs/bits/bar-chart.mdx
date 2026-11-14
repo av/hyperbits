@@ -8,3 +8,21 @@ import { BitPlayground } from '@components/BitPlayground';
 Horizontal bar chart growing in with staggered bars and counting values..
 
 <BitPlayground client:only="react" bitName="bar-chart" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `title` | string | `"Weekly commits by language"` | Title |
+| `color` | color | `#ec8b49` | Bar color |
+| `background` | color | `#100f0f` | Background |
+
+```html
+<div data-composition-src="compositions/bar-chart.html" data-variable-values='{"title":"Weekly commits by language","color":"#ec8b49","background":"#100f0f"}'></div>
+```
+
+```bash
+npx @av/hyperbits add bar-chart --into compositions/ --set "background=#0b1020"
+```

@@ -8,3 +8,21 @@ import { BitPlayground } from '@components/BitPlayground';
 A 3D scene with multiple terminal windows executing commands..
 
 <BitPlayground client:only="react" bitName="terminal-3d" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `command` | string | `"git status"` | Command |
+| `color` | color | `#fcc192` | Terminal text |
+| `background` | color | `#100f0f` | Background |
+
+```html
+<div data-composition-src="compositions/terminal-3d.html" data-variable-values='{"command":"git status","color":"#fcc192","background":"#100f0f"}'></div>
+```
+
+```bash
+npx @av/hyperbits add terminal-3d --into compositions/ --set "background=#0b1020"
+```

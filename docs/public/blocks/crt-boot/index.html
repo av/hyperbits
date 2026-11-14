@@ -248,7 +248,7 @@
           context.fillStyle = rgba(back, 0.35);
           const scan = Math.max(2, Math.round(view.vmin * 0.42));
           for (let line = 0; line < view.height; line += scan) context.fillRect(0, line, view.width, scan * 0.45);
-          const vignette = context.createRadialGradient(view.width / 2, view.height / 2, view.height * 0.35, view.width / 2, view.height / 2, view.width * 0.62);
+          const vignette = context.createRadialGradient(view.width / 2, view.height / 2, view.vmin * 35, view.width / 2, view.height / 2, view.vmax * 62);
           vignette.addColorStop(0, rgba(back, 0));
           vignette.addColorStop(1, rgba(back, 0.85));
           context.fillStyle = vignette;

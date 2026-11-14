@@ -131,13 +131,13 @@
         const bg = document.getElementById("bg");
         const view = hyperbits.viewport(root);
         const vmin = view.vmin;
-        const unit = view.height / 1080;
+        const unit = view.vmin / 10.8;
         bg.style.backgroundColor = vars.background;
         const panel = document.getElementById("panel");
-        const fontSize = view.width * 0.02;
+        const fontSize = Math.min(view.vmin * 3.56, Math.max(view.vmin * 3.3, (view.width * 0.9) / 37));
         panel.style.fontSize = fontSize + "px";
         panel.style.padding = fontSize + "px";
-        panel.style.width = view.width * 0.8 + "px";
+        panel.style.width = Math.max(view.width * 0.8, Math.min(view.width * 0.9, fontSize * 37)) + "px";
         const tokenStyle = document.createElement("style");
         tokenStyle.textContent = "#panel .token.function { color: " + vars.color + "; }";
         panel.append(tokenStyle);
@@ -165,6 +165,11 @@
             const content = line.querySelector(".hyperbits-code-content");
             content.style.display = "block";
             content.style.width = "100%";
+            content.style.minWidth = "0";
+            const indent = (content.textContent.match(/^ */) || [""])[0].length;
+            content.style.whiteSpace = "pre-wrap";
+            content.style.paddingLeft = indent + "ch";
+            content.style.textIndent = -indent + "ch";
           });
         }
         const timeline = gsap.timeline({ paused: true });

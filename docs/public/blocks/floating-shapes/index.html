@@ -102,7 +102,7 @@
         const kinds = ["circle", "triangle", "square", "ring", "diamond", "half"];
         const strands = [...Array(11).keys()].map((index) => {
           const key = "garland-" + index;
-          const pieces = hyperbits.randomInt(key + "-n", 3, 6);
+          const pieces = Math.round((hyperbits.randomInt(key + "-n", 3, 6) * view.height) / (view.vmin * 100));
           return {
             anchorX: view.width * ((index + 0.5) / 11 + hyperbits.randomFloat(key + "-x", -0.015, 0.015)),
             rate: hyperbits.pick(key + "-r", [1, 1, 2]),

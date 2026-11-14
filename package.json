@@ -132,6 +132,7 @@
     "lint:fix": "oxlint -c .oxlintrc.json . --fix",
     "lint:bits": "node scripts/lint-bits.mjs",
     "check:bits": "node scripts/lint-bits.mjs --check",
+    "check:sizes": "node scripts/check-sizes.mjs",
     "ci": "npm run typecheck && npm run lint && npm test && npm run check:generated",
     "check:generated": "node scripts/check-generated.mjs",
     "format": "oxfmt -c .oxfmtrc.json .",

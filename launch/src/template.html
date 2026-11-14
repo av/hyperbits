@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Hyperbits — launch</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="public/hyperbits.iife.js"></script>
+    <style>
+      @font-face { font-family: "Geist"; font-weight: 400; src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5.3.0/files/geist-sans-latin-400-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Geist"; font-weight: 500; src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5.3.0/files/geist-sans-latin-500-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Geist"; font-weight: 600; src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5.3.0/files/geist-sans-latin-600-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Geist"; font-weight: 700; src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5.3.0/files/geist-sans-latin-700-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Geist Mono"; font-weight: 400; src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5.3.0/files/geist-mono-latin-400-normal.woff2) format("woff2"); }
+      @font-face { font-family: "Geist Mono"; font-weight: 500; src: url(https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5.3.0/files/geist-mono-latin-500-normal.woff2) format("woff2"); }
+      :root {
+        --background-dark: #100f0f;
+        --surface-dark: #1c1b1a;
+        --surface-light: #343331;
+        --primary: #ec8b49;
+        --primary-hover: #fcc192;
+        --paper: #fffcf0;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background-color: #100f0f; }
+      #launch-root { position: relative; width: 1920px; height: 1080px; overflow: hidden; font-family: "Geist", sans-serif; color: #ffffff; -webkit-font-smoothing: antialiased; }
+      #launch-bg { position: absolute; inset: 0; background-color: #100f0f; }
+      #launch-stage { position: absolute; inset: 0; perspective-origin: 50% 50%; overflow: hidden; }
+      #launch-world { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d; }
+      #launch-world > * { position: absolute; transform-style: preserve-3d; }
+
+      .lv-tile { left: -240px; top: -135px; width: 480px; height: 270px; }
+      .lv-card { position: absolute; inset: 0; overflow: hidden; border-radius: 16px; border: 2px solid rgba(255, 255, 255, 0.1); background-color: #1c1b1a; box-shadow: 0 34px 70px -18px rgba(0, 0, 0, 0.75); }
+      .lv-poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+      .lv-host { position: absolute; left: -2px; top: -2px; transform-origin: 0 0; }
+      .lv-veil { position: absolute; inset: 0; background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 45%); opacity: 0.6; }
+      .lv-label { position: absolute; left: 18px; bottom: 14px; font: 500 20px/1 "Geist Mono", monospace; color: rgba(255, 255, 255, 0.72); white-space: nowrap; }
+      .lv-sheen { position: absolute; inset: -40%; background-image: linear-gradient(115deg, rgba(255, 255, 255, 0) 38%, rgba(255, 255, 255, 0.16) 48%, rgba(255, 255, 255, 0) 58%); opacity: 0; }
+      .lv-shade { position: absolute; inset: 0; background-color: #100f0f; opacity: 0; }
+      .lv-tint { position: absolute; inset: 0; background-color: #ec8b49; mix-blend-mode: screen; opacity: 0; }
+      .lv-ring { position: absolute; inset: -6px; border-radius: 22px; border: 3px solid #ec8b49; box-shadow: 0 0 46px 6px rgba(236, 139, 73, 0.42), inset 0 0 30px rgba(236, 139, 73, 0.25); opacity: 0; }
+      .lv-inspect { position: absolute; inset: -14px; opacity: 0; }
+      .lv-outline { position: absolute; inset: 0; border-radius: 24px; border: 3px solid #ec8b49; background-color: rgba(236, 139, 73, 0.06); }
+      .lv-tag { position: absolute; left: 0; bottom: 100%; margin-bottom: 12px; padding: 9px 16px; border-radius: 999px; background-color: #1f1712; border: 2px solid rgba(236, 139, 73, 0.35); color: #ec8b49; font: 500 24px/1 "Geist Mono", monospace; white-space: nowrap; }
+      .lv-dims { position: absolute; right: 0; top: 100%; margin-top: 12px; padding: 7px 14px; border-radius: 999px; background-color: #1c1b1a; border: 2px solid rgba(255, 255, 255, 0.1); color: #9ca3af; font: 400 20px/1 "Geist Mono", monospace; white-space: nowrap; }
+
+      .lv-scan { left: -3px; top: -1400px; width: 6px; height: 2800px; border-radius: 3px; background-color: #ec8b49; box-shadow: 0 0 60px 22px rgba(236, 139, 73, 0.45); }
+      .lv-icon { left: -120px; top: -120px; width: 240px; height: 240px; overflow: visible; }
+      .lv-column { left: 0; top: 0; width: 2600px; height: 0; transform-origin: 0 0; }
+      .lv-column-inner { position: absolute; left: 0; top: 0; transform: translateY(-50%); }
+      .lv-wordrow { display: flex; white-space: pre; font-weight: 700; font-size: 470px; letter-spacing: -0.05em; line-height: 0.92; padding-bottom: 0.06em; }
+      .lv-wordrow span { display: inline-block; color: #ffffff; }
+      .lv-subline { margin-top: 40px; padding-left: 16px; font-weight: 600; font-size: 140px; letter-spacing: -0.035em; line-height: 1.1; white-space: nowrap; }
+      .lv-cta { margin-top: 90px; padding-left: 16px; display: flex; gap: 48px; align-items: center; }
+      .lv-button { display: flex; align-items: center; gap: 36px; height: 230px; padding: 0 90px; border-radius: 38px; font: 600 92px/1 "Geist", sans-serif; letter-spacing: -0.01em; white-space: nowrap; }
+      .lv-button.lv-light { background-color: #ffffff; color: #000000; }
+      .lv-button.lv-dark { background-color: rgba(255, 255, 255, 0.05); border: 4px solid rgba(255, 255, 255, 0.2); color: #ffffff; }
+      .lv-terminal { left: -650px; top: -400px; width: 1300px; height: 800px; border-radius: 28px; background-color: #1c1b1a; border: 2px solid rgba(255, 255, 255, 0.1); box-shadow: 0 60px 140px -20px rgba(0, 0, 0, 0.85), 0 0 120px rgba(236, 139, 73, 0.1); overflow: hidden; }
+      .lv-terminal .lv-bar { height: 74px; display: flex; align-items: center; gap: 14px; padding: 0 30px; border-bottom: 2px solid rgba(255, 255, 255, 0.06); font: 500 24px/1 "Geist Mono", monospace; color: #6b7280; }
+      .lv-terminal .lv-dot { width: 18px; height: 18px; border-radius: 50%; background-color: #343331; }
+      .lv-terminal .lv-title { margin-left: 16px; }
+      .lv-terminal .lv-body { padding: 40px 44px; font: 400 29px/1.55 "Geist Mono", monospace; color: #d1d5db; white-space: pre; }
+      .lv-terminal .lv-line { height: 45px; }
+      .lv-p { color: #ec8b49; font-weight: 500; }
+      .lv-w { color: #ffffff; font-weight: 500; }
+      .lv-g { color: #6b7280; }
+      .lv-o { color: #ec8b49; }
+      .lv-c { color: #d1d5db; }
+      .lv-k { color: #879a39; }
+      .lv-cursor { display: inline-block; width: 0.58em; height: 1.08em; vertical-align: -0.2em; background-color: #ec8b49; }
+
+      #launch-hud { position: absolute; inset: 0; pointer-events: none; }
+      #launch-hud > * { position: absolute; }
+      .lv-glow { left: 50%; top: -360px; width: 1700px; height: 1000px; margin-left: -850px; border-radius: 50%; background-image: radial-gradient(closest-side, rgba(236, 139, 73, 0.2), rgba(236, 139, 73, 0.07) 55%, rgba(236, 139, 73, 0) 100%); }
+      .lv-vignette { inset: 0; background-image: radial-gradient(ellipse 75% 70% at 50% 50%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.6) 100%); }
+      .lv-scrim { inset: 0; background-image: linear-gradient(100deg, rgba(16, 15, 15, 0.92) 0%, rgba(16, 15, 15, 0.7) 32%, rgba(16, 15, 15, 0) 62%); opacity: 0; }
+      .lv-scrim-center { inset: 0; background-image: radial-gradient(ellipse 62% 48% at 50% 50%, rgba(16, 15, 15, 0.85) 0%, rgba(16, 15, 15, 0.45) 55%, rgba(16, 15, 15, 0) 100%); opacity: 0; }
+      .lv-scrim-corner { inset: 0; background-image: radial-gradient(ellipse 48% 34% at 22% 14%, rgba(16, 15, 15, 0.9) 0%, rgba(16, 15, 15, 0.6) 50%, rgba(16, 15, 15, 0) 100%); opacity: 0; }
+      .lv-flash { inset: 0; background-color: #fff3e6; opacity: 0; }
+      .lv-grain { inset: 0; width: 1920px; height: 1080px; opacity: 0.07; }
+      .lv-display { font-weight: 700; letter-spacing: -0.045em; line-height: 1.02; white-space: nowrap; text-shadow: 0 6px 50px rgba(0, 0, 0, 0.45); }
+      .lv-line { display: block; overflow: hidden; padding: 0.04em 0.08em 0.14em; margin: -0.04em -0.08em -0.14em; }
+      .lv-word { display: inline-block; margin-right: 0.24em; will-change: transform; }
+      .lv-word:last-child { margin-right: 0; }
+      .lv-accent { color: #ec8b49; }
+      .lv-grad { text-shadow: none; color: transparent; background-image: linear-gradient(90deg, #ffffff 0%, #9ca3af 55%, #4b5563 100%); background-clip: text; -webkit-background-clip: text; }
+      .lv-chip { display: inline-flex; align-items: center; gap: 14px; padding: 12px 24px; border-radius: 999px; background-color: rgba(236, 139, 73, 0.1); border: 2px solid rgba(236, 139, 73, 0.24); color: #ec8b49; font: 500 26px/1 "Geist Mono", monospace; white-space: nowrap; }
+      .lv-tile-chip { display: flex; align-items: center; justify-content: center; width: 76px; height: 76px; border-radius: 18px; background-color: rgba(236, 139, 73, 0.1); border: 2px solid rgba(236, 139, 73, 0.24); }
+      .lv-block { left: 112px; top: 96px; display: flex; flex-direction: column; align-items: flex-start; gap: 34px; }
+      .lv-hook { left: 0; right: 0; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; font-size: 168px; }
+      .lv-lower { left: 96px; bottom: 88px; display: flex; align-items: center; gap: 26px; padding: 22px 34px 22px 22px; border-radius: 26px; background-color: rgba(28, 27, 26, 0.92); border: 2px solid rgba(255, 255, 255, 0.1); box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.7); }
+      .lv-lower-text { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+      .lv-lower-name { font: 600 54px/1 "Geist", sans-serif; letter-spacing: -0.02em; color: #ffffff; }
+      .lv-category-label { display: flex; align-items: center; gap: 16px; padding: 14px 26px 14px 14px; border-radius: 22px; background-color: rgba(28, 27, 26, 0.94); border: 2px solid rgba(255, 255, 255, 0.1); box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.8); font: 600 40px/1 "Geist", sans-serif; letter-spacing: -0.02em; white-space: nowrap; }
+      .lv-category-label .lv-count { font: 500 34px/1 "Geist Mono", monospace; color: #ec8b49; margin-left: 6px; }
+      .lv-ticker { left: 112px; top: 468px; width: 900px; height: 100px; }
+      .lv-ticker .lv-category-label { position: absolute; left: 0; top: 0; opacity: 0; }
+      .lv-features { left: 0; right: 0; bottom: 88px; display: flex; justify-content: center; gap: 26px; }
+      .lv-feature { display: flex; align-items: center; gap: 18px; padding: 14px 30px 14px 14px; border-radius: 22px; background-color: rgba(28, 27, 26, 0.94); border: 2px solid rgba(255, 255, 255, 0.1); font: 600 36px/1 "Geist", sans-serif; letter-spacing: -0.015em; white-space: nowrap; }
+      .lv-feature .lv-tile-chip { width: 64px; height: 64px; border-radius: 16px; }
+      .lv-footnote { left: 0; right: 0; bottom: 56px; text-align: center; font: 500 26px/1 "Geist", sans-serif; color: #6b7280; }
+    </style>
+  </head>
+  <body>
+    <div id="launch-root" data-composition-id="launch" data-start="0" data-duration="36" data-width="1920" data-height="1080" data-fps="60">
+      <div id="launch-bg" class="clip" data-start="0" data-duration="36"></div>
+      <div id="launch-stage" class="clip" data-start="0" data-duration="36">
+        <div id="launch-world">
+        <!--TILES-->
+        </div>
+      </div>
+      <div id="launch-hud" class="clip" data-start="0" data-duration="36"></div>
+    </div>
+    <script>
+      /*LAUNCH_DATA*/
+    </script>
+    <script>
+/*LAUNCH_SCRIPT*/
+    </script>
+  </body>
+</html>

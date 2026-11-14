@@ -96,7 +96,7 @@
         const sceneEl = document.getElementById("scene");
         const view = hyperbits.viewport(root);
         const vmin = view.vmin;
-        const unit = view.height / 1080;
+        const unit = view.vmin / 10.8;
         bg.style.backgroundColor = vars.background;
         const fontSize = vmin * 8;
         const words = ["Fly", "Your", "Camera", "Through", "Space"];
@@ -106,8 +106,8 @@
         const cellSize = vmin * 2;
         const shapesList = ["circle", "triangle", "diamond"];
         for (let index = 0; index < 20; index += 1) {
-          const x = Math.round(hyperbits.randomFloat("element3d-x-" + index, -50 * view.vw, 200 * view.vw) / cellSize) * cellSize;
-          const y = Math.round(hyperbits.randomFloat("element3d-y-" + index, -100 * view.vh, 20 * view.vh) / cellSize) * cellSize;
+          const x = Math.round(hyperbits.randomFloat("element3d-x-" + index, -50 * view.vmax, 200 * view.vmax) / cellSize) * cellSize;
+          const y = Math.round(hyperbits.randomFloat("element3d-y-" + index, -100 * vmin, 20 * vmin) / cellSize) * cellSize;
           const z = Math.round(hyperbits.randomFloat("element3d-z-" + index, -200 * vmin, 20 * vmin) / cellSize) * cellSize;
           const shape = hyperbits.pick("el3d-shape-" + index + "-0", shapesList);
           const color = "hsl(" + hyperbits.randomFloat("el3d-color-" + index + "-1", 0, 360) + ", 80%, 60%)";
@@ -136,7 +136,7 @@
         const steps = words.map(function (word, index) {
           const step = document.createElement("div");
           step.className = "word-step";
-          step.style.width = 250 * (view.width / 1920) + "px";
+          step.style.width = "max-content";
           step.setAttribute("data-layout-allow-overlap", "");
           step.setAttribute("data-layout-allow-occlusion", "");
           const inner = document.createElement("div");

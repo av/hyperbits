@@ -8,3 +8,20 @@ import { BitPlayground } from '@components/BitPlayground';
 Slow camera movement over images using Scene3D steps.
 
 <BitPlayground client:only="react" bitName="ken-burns" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `color` | color | `#000000` | Vignette tint |
+| `background` | color | `#000000` | Background |
+
+```html
+<div data-composition-src="compositions/ken-burns.html" data-variable-values='{"color":"#000000","background":"#000000"}'></div>
+```
+
+```bash
+npx @av/hyperbits add ken-burns --into compositions/ --set "background=#0b1020"
+```

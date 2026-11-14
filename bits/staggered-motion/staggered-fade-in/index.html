@@ -90,7 +90,7 @@
         const bg = document.getElementById("bg");
         const row = document.getElementById("row");
         const view = hyperbits.viewport(root);
-        const unit = view.height / 1080;
+        const unit = view.vmin / 10.8;
         bg.style.backgroundColor = vars.background;
         row.style.gap = unit * 32 + "px";
         const boxes = Array.from(row.querySelectorAll(".box"));

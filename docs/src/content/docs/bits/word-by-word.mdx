@@ -8,3 +8,21 @@ import { BitPlayground } from '@components/BitPlayground';
 Animated text that appears word by word with staggered timing.
 
 <BitPlayground client:only="react" bitName="word-by-word" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `text` | string | `"This appears word by word"` | Text |
+| `color` | color | `#fcc192` | Text color |
+| `background` | color | `#100f0f` | Background |
+
+```html
+<div data-composition-src="compositions/word-by-word.html" data-variable-values='{"text":"This appears word by word","color":"#fcc192","background":"#100f0f"}'></div>
+```
+
+```bash
+npx @av/hyperbits add word-by-word --into compositions/ --set "background=#0b1020"
+```

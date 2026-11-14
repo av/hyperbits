@@ -95,8 +95,8 @@
         const bg = document.getElementById("bg");
         const sceneEl = document.getElementById("scene");
         const view = hyperbits.viewport(root);
-        const vmin = view.vmin;
-        const unit = view.height / 1080;
+        const vmin = view.vmin * (view.height > view.width * 1.1 ? 1.45 : 1);
+        const unit = view.vmin / 10.8;
         bg.style.backgroundColor = vars.background;
         const size = vmin * 35;
         const distance = size * 0.8;
@@ -143,7 +143,7 @@
         });
         steps.push(Object.assign({ id: "end", duration: stepDuration }, isoStep));
         const scene = hyperbits.createScene3D(sceneEl, {
-          perspective: 2000,
+          perspective: vmin * 185.2,
           transitionDuration: 40 / 30,
           stepDuration: stepDuration,
           easing: "easeInOutCubic",

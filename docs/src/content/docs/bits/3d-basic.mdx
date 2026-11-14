@@ -8,3 +8,21 @@ import { BitPlayground } from '@components/BitPlayground';
 3D camera transitions between positioned steps, impress.js style.
 
 <BitPlayground client:only="react" bitName="3d-basic" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `text` | string | `"Control"` | First word |
+| `color` | color | `#fcc192` | Text color |
+| `background` | color | `#100f0f` | Background |
+
+```html
+<div data-composition-src="compositions/3d-basic.html" data-variable-values='{"text":"Control","color":"#fcc192","background":"#100f0f"}'></div>
+```
+
+```bash
+npx @av/hyperbits add 3d-basic --into compositions/ --set "background=#0b1020"
+```

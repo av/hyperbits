@@ -28,5 +28,43 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "label",
+      "type": "string",
+      "label": "Counter label",
+      "default": "regions online"
+    },
+    {
+      "id": "count",
+      "type": "number",
+      "label": "Counter value",
+      "default": 142
+    },
+    {
+      "id": "seed",
+      "type": "number",
+      "label": "Seed",
+      "default": 3
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#100f0f"
+    },
+    {
+      "id": "foreground",
+      "type": "color",
+      "label": "Land dots",
+      "default": "#f2f0e5"
+    },
+    {
+      "id": "accent",
+      "type": "color",
+      "label": "Accent",
+      "default": "#ec8b49"
+    }
   ]
 }

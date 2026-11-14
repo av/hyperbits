@@ -8,3 +8,20 @@ import { BitPlayground } from '@components/BitPlayground';
 Navigate through faces of a 3D Cube using Scene3D steps.
 
 <BitPlayground client:only="react" bitName="cube-navigation" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `color` | color | `#ec8b49` | Top and bottom faces |
+| `background` | color | `#111111` | Background |
+
+```html
+<div data-composition-src="compositions/cube-navigation.html" data-variable-values='{"color":"#ec8b49","background":"#111111"}'></div>
+```
+
+```bash
+npx @av/hyperbits add cube-navigation --into compositions/ --set "background=#0b1020"
+```

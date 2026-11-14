@@ -193,9 +193,10 @@
           solid("Icosahedron", "{3,5}", icosa, dodeca),
         ];
         const slot = duration / solids.length;
-        const radius = view.height * 0.3;
-        const centerX = view.width * 0.6;
-        const centerY = view.height * 0.5;
+        const landscape = view.width > view.height * 1.1;
+        const radius = landscape ? view.height * 0.3 : Math.min(view.width * 0.34, (view.height - view.vmin * 45) / 2.8);
+        const centerX = landscape ? view.width * 0.6 : view.width * 0.5;
+        const centerY = landscape ? view.height * 0.5 : (view.height + view.vmin * 40) / 2;
         const lineWidth = Math.max(1, view.vmin * 0.2);
         function rotate(point, time) {
           const yaw = time * 0.55;
@@ -289,8 +290,8 @@
           progressBar.style.width = (time / duration) * 100 + "%";
         }
         info.style.left = view.vmin * 9 + "px";
-        info.style.top = view.height * 0.5 + "px";
-        info.style.transform = "translateY(-50%)";
+        info.style.top = (landscape ? view.height * 0.5 : view.vmin * 9) + "px";
+        info.style.transform = landscape ? "translateY(-50%)" : "none";
         const captionNode = document.createElement("div");
         captionNode.className = "meta";
         captionNode.textContent = String(vars.caption);

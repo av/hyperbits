@@ -8,3 +8,20 @@ import { BitPlayground } from '@components/BitPlayground';
 Visualizes different easing functions with sliding squares..
 
 <BitPlayground client:only="react" bitName="easings-visualizer" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `color` | color | `#3b82f6` | Square color |
+| `background` | color | `#09090b` | Background |
+
+```html
+<div data-composition-src="compositions/easings-visualizer.html" data-variable-values='{"color":"#3b82f6","background":"#09090b"}'></div>
+```
+
+```bash
+npx @av/hyperbits add easings-visualizer --into compositions/ --set "background=#0b1020"
+```

@@ -174,7 +174,7 @@
         }
         label.textContent = String(vars.label);
         label.style.fontSize = view.vmin * 2 + "px";
-        label.style.top = view.height * 0.66 + "px";
+        label.style.top = view.height * 0.46 + view.vmin * 20 + "px";
         label.style.color = vars.accent;
         const proxy = { time: 0 };
         const timeline = gsap.timeline({ paused: true });

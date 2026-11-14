@@ -28,5 +28,37 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#100f0f"
+    },
+    {
+      "id": "foreground",
+      "type": "color",
+      "label": "Foreground",
+      "default": "#f2f0e5"
+    },
+    {
+      "id": "accent",
+      "type": "color",
+      "label": "Accent",
+      "default": "#9d8af0"
+    },
+    {
+      "id": "pinwheels",
+      "type": "number",
+      "label": "Pinwheels per row",
+      "default": 14
+    },
+    {
+      "id": "seed",
+      "type": "number",
+      "label": "Seed",
+      "default": 5
+    }
   ]
 }

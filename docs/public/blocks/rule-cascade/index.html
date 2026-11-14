@@ -106,7 +106,7 @@
         const cell = view.vmin * 1.25;
         const columns = Math.ceil(view.width / cell);
         const visibleRows = Math.ceil(view.height / cell) + 2;
-        const speed = 26;
+        const speed = (26 * visibleRows) / 82;
         const totalGenerations = Math.ceil(duration * speed) + 2;
         const switchEvery = Math.ceil(totalGenerations / rules.length);
         const history = [];

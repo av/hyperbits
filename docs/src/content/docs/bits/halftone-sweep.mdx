@@ -8,3 +8,22 @@ import { BitPlayground } from '@components/BitPlayground';
 A square halftone screen where soft clouds of larger dots drift in small slow circles across the whole frame.
 
 <BitPlayground client:only="react" bitName="halftone-sweep" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Foreground |
+| `accent` | color | `#ef5da8` | Accent |
+| `pitch` | number | `2.2` | Dot pitch (vmin) |
+
+```html
+<div data-composition-src="compositions/halftone-sweep.html" data-variable-values='{"background":"#100f0f","foreground":"#f2f0e5","accent":"#ef5da8","pitch":2.2}'></div>
+```
+
+```bash
+npx @av/hyperbits add halftone-sweep --into compositions/ --set "background=#0b1020"
+```

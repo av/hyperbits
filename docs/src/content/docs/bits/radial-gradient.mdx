@@ -8,3 +8,22 @@ import { BitPlayground } from '@components/BitPlayground';
 Smooth transition between radial gradients.
 
 <BitPlayground client:only="react" bitName="radial-gradient" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `color1Start` | color | `#FDB813` | Gradient 1 Start |
+| `color1End` | color | `#78C0E0` | Gradient 1 End |
+| `color2Start` | color | `#F5576C` | Gradient 2 Start |
+| `color2End` | color | `#2F2044` | Gradient 2 End |
+
+```html
+<div data-composition-src="compositions/radial-gradient.html" data-variable-values='{"color1Start":"#FDB813","color1End":"#78C0E0","color2Start":"#F5576C","color2End":"#2F2044"}'></div>
+```
+
+```bash
+npx @av/hyperbits add radial-gradient --into compositions/ --set "color1Start=#5b7cfa"
+```

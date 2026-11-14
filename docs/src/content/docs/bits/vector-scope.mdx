@@ -8,3 +8,22 @@ import { BitPlayground } from '@components/BitPlayground';
 An amber-phosphor XY oscilloscope tracing Lissajous figures that morph through frequency ratios, with beam persistence, bloom, a graticule and live channel readouts.
 
 <BitPlayground client:only="react" bitName="vector-scope" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `label` | string | `"XY MODE / CH1 + CH2"` | Screen label |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Beam core |
+| `accent` | color | `#ec8b49` | Phosphor |
+
+```html
+<div data-composition-src="compositions/vector-scope.html" data-variable-values='{"label":"XY MODE / CH1 + CH2","background":"#100f0f","foreground":"#f2f0e5","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add vector-scope --into compositions/ --set "background=#0b1020"
+```

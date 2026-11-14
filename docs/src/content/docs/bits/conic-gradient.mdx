@@ -8,3 +8,20 @@ import { BitPlayground } from '@components/BitPlayground';
 Colorful conic gradient rotation.
 
 <BitPlayground client:only="react" bitName="conic-gradient" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `color1` | color | `#000000` | Color 1 |
+| `color2` | color | `#009900` | Color 2 |
+
+```html
+<div data-composition-src="compositions/conic-gradient.html" data-variable-values='{"color1":"#000000","color2":"#009900"}'></div>
+```
+
+```bash
+npx @av/hyperbits add conic-gradient --into compositions/ --set "color1=#5b7cfa"
+```

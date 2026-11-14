@@ -189,9 +189,10 @@
           context.drawImage(baked, 0, 0);
           context.restore();
         }
-        const sunX = view.width * 0.68;
-        const sunY = view.height * 0.44;
-        const sunRadius = view.vmin * 30;
+        const portrait = view.height > view.width * 1.1;
+        const sunRadius = view.vmin * (portrait ? 36 : 30);
+        const sunX = portrait ? view.width * 0.5 : Math.min(view.width * 0.68, view.width - sunRadius - view.vmin * 6);
+        const sunY = view.height * (portrait ? 0.31 : 0.44);
         const left = view.vmin * 8;
         const words = headline.split(/\s+/);
         const lines = words.length > 2 ? [words.slice(0, Math.ceil(words.length / 2)).join(" "), words.slice(Math.ceil(words.length / 2)).join(" ")] : words;
@@ -201,7 +202,7 @@
           const size = Math.min(...lines.map((line) => fitFont(line, view.width * 0.84, view.vmin * 21, 900)));
           const font = "900 " + size + "px 'Geist Sans', ui-sans-serif, system-ui, sans-serif";
           const captionFont = "500 " + view.vmin * 2.2 + "px 'Geist Mono', ui-monospace, monospace";
-          const baseline = view.height * 0.5 + size * 0.2;
+          const baseline = view.height * (portrait ? 0.6 : 0.5) + size * 0.2;
           function headlinePainter(target) {
             target.font = font;
             target.textBaseline = "alphabetic";

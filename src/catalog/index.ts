@@ -12,6 +12,8 @@ export type {
   BitCatalogResolution,
   BitCatalogResolutionReason,
   BitCatalogSummary,
+  BitVariable,
+  BitVariableType,
   FindBitsOptions,
   SharedBitInventoryEntry,
 } from "./contracts";
@@ -33,3 +35,12 @@ export {
   resolveBitCatalogIdentifier,
   suggestBitIdentifiers,
 } from "./runtime";
+export {
+  applyVariableDefaults,
+  coerceVariableValue,
+  defaultVariableValues,
+  encodeAttributeJson,
+  isCssColor,
+  variableValuesAttribute,
+} from "./variables";
+export type { VariableDefaultsResult } from "./variables";

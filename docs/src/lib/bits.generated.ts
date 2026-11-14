@@ -953,6 +953,36 @@ export const docsBits: DocsBit[] = [
     "previewImage": null
   },
   {
+    "id": "camera-flight",
+    "name": "Camera Flight",
+    "title": "Camera Flight",
+    "description": "A look-at camera opens on a telephoto dolly zoom, banks through a curving corridor of keyframe panels that light up as it passes, then whips around to land on a hero title, driven by createCamera keys with lens and roll",
+    "category": "scenes-3d",
+    "categoryLabel": "3D Scenes",
+    "tags": [
+      "3d",
+      "camera",
+      "flythrough",
+      "look-at",
+      "dolly-zoom",
+      "hero"
+    ],
+    "duration": 10,
+    "width": 1920,
+    "height": 1080,
+    "helpers": [
+      "scene3d",
+      "stagger",
+      "text",
+      "random",
+      "color",
+      "interpolate",
+      "viewport"
+    ],
+    "htmlPath": "/bits/camera-flight.html",
+    "previewImage": null
+  },
+  {
     "id": "carousel",
     "name": "3D Carousel",
     "title": "3D Carousel",

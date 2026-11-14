@@ -8,3 +8,20 @@ import { BitPlayground } from '@components/BitPlayground';
 Camera flies over an app screenshot while a cursor highlights different areas.
 
 <BitPlayground client:only="react" bitName="cursor-flyover" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `color` | color | `#fcc192` | Cursor color |
+| `background` | color | `#0a0a0a` | Background |
+
+```html
+<div data-composition-src="compositions/cursor-flyover.html" data-variable-values='{"color":"#fcc192","background":"#0a0a0a"}'></div>
+```
+
+```bash
+npx @av/hyperbits add cursor-flyover --into compositions/ --set "background=#0b1020"
+```

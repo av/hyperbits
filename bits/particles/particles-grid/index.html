@@ -86,7 +86,7 @@
         canvas.setAttribute("data-color", vars.color);
         canvas.width = view.width;
         canvas.height = view.height;
-        const gridSize = Math.floor(view.width * 0.05);
+        const gridSize = Math.floor(view.vmin * 8.9);
         const jumpInterval = 30;
         const snapToGrid = function (particle, age) {
           particle.position.x = Math.floor(particle.position.x / gridSize) * gridSize;

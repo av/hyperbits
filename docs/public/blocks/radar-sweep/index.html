@@ -88,6 +88,10 @@
           const parts = hyperbits.mixOklch(String(color), String(color), 0, "rgb(0, 0, 0)").match(/[0-9.]+/g) || [0, 0, 0];
           return parts.slice(0, 3).map(Number);
         }
+        function smoothstep(edge0, edge1, value) {
+          const amount = Math.min(Math.max((value - edge0) / (edge1 - edge0), 0), 1);
+          return amount * amount * (3 - 2 * amount);
+        }
         function rgba(rgb, alpha) {
           return "rgba(" + Math.round(rgb[0]) + ", " + Math.round(rgb[1]) + ", " + Math.round(rgb[2]) + ", " + Math.min(Math.max(alpha, 0), 1) + ")";
         }
@@ -110,9 +114,16 @@
         const back = channels(vars.background);
         const fore = channels(vars.foreground);
         const accent = channels(vars.accent);
-        const radius = view.height * 0.4;
-        const centerX = view.width * 0.36;
-        const centerY = view.height * 0.5;
+        const portrait = view.height > view.width * 1.1;
+        const margin = view.vmin * 5;
+        const gap = view.vmin * 4.5;
+        const reach = 1.22;
+        const tableSize = view.vmin * (portrait ? 2.8 : 2);
+        const tableWidth = tableSize * 0.6 * 30;
+        const tableLeft = portrait ? (view.width - tableWidth) / 2 : Math.min(view.width * 0.66, view.width - margin - tableWidth);
+        const radius = portrait ? Math.min(view.width * 0.36, view.height * 0.22) : Math.min(view.height * 0.4, (tableLeft - gap - margin) / (reach * 2));
+        const centerX = portrait ? view.width * 0.5 : Math.min(view.width * 0.36, tableLeft - gap - radius * reach);
+        const centerY = portrait ? view.height * 0.32 : view.height * 0.5;
         const period = 3.4;
         const turn = Math.PI * 2;
         const contacts = [];
@@ -274,10 +285,10 @@
           for (const row of rows) lines.push(row.contact.id + "   " + String(row.bearing).padStart(3, "0") + "   " + row.range.toFixed(1).padStart(5, " ") + " NM  " + (row.contact.hostile ? "UNKNOWN" : "TRACKED"));
           table.textContent = lines.join("\n");
         }
-        table.style.left = view.width * 0.66 + "px";
-        table.style.top = view.height * 0.5 + "px";
+        table.style.left = tableLeft + "px";
+        table.style.top = view.height * (portrait ? 0.78 : 0.5) + "px";
         table.style.transform = "translateY(-50%)";
-        table.style.fontSize = view.vmin * 2 + "px";
+        table.style.fontSize = tableSize + "px";
         table.style.lineHeight = "1.8";
         table.style.color = vars.foreground;
         table.setAttribute("aria-label", String(vars.title));

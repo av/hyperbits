@@ -92,7 +92,7 @@
         const bg = document.getElementById("bg");
         const view = hyperbits.viewport(root);
         const vmin = view.vmin;
-        const unit = view.height / 1080;
+        const unit = view.vmin / 10.8;
         bg.style.backgroundColor = vars.background;
         const line = document.getElementById("line");
         const typed = document.getElementById("typed");
@@ -101,6 +101,8 @@
         line.setAttribute("aria-label", vars.lines);
         line.style.color = vars.color;
         line.style.fontSize = vmin * 7 + "px";
+        line.style.maxWidth = view.width * 0.86 + "px";
+        line.style.textAlign = "center";
         const typeSpeed = 3;
         const deleteSpeed = 1;
         const pauseAfterType = 40;

@@ -29,5 +29,25 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "title",
+      "type": "string",
+      "label": "Title",
+      "default": "Weekly commits by language"
+    },
+    {
+      "id": "color",
+      "type": "color",
+      "label": "Bar color",
+      "default": "#ec8b49"
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#100f0f"
+    }
   ]
 }

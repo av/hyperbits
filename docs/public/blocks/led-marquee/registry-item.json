@@ -27,5 +27,37 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "message",
+      "type": "string",
+      "label": "Scrolling message",
+      "default": "NOW SHOWING: NEW BITS FOR HYPERFRAMES +++"
+    },
+    {
+      "id": "headline",
+      "type": "string",
+      "label": "Final line",
+      "default": "HYPERBITS"
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#100f0f"
+    },
+    {
+      "id": "foreground",
+      "type": "color",
+      "label": "Hot core",
+      "default": "#f2f0e5"
+    },
+    {
+      "id": "accent",
+      "type": "color",
+      "label": "LED colour",
+      "default": "#ec8b49"
+    }
   ]
 }

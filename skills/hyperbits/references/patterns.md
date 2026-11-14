@@ -54,8 +54,8 @@ timeline.seek(0);
 Any frame can be rendered from any time. Drive visuals from `timeline.time()` (seconds), not from wall clocks or incremental state.
 
 - Prefer GSAP tweens on the paused root timeline, positioned with the third-argument absolute time: `timeline.to(el, vars, 1.5)`.
-- Helpers that need a redraw hook (`typewriter`, `createCounter`, `createParticles`, `createScene3D`) must read `timeline.time()` or bind through `onUpdate`.
-- `createParticles(...).stateAt(time)` and `createScene3D(...).stateAt(time)` are deterministic given a time value.
+- Helpers that need a redraw hook (`typewriter`, `createCounter`, `createParticles`, `createScene3D`, `createCamera`) must read `timeline.time()` or bind through `onUpdate`.
+- `createParticles(...).stateAt(time)`, `createScene3D(...).stateAt(time)` and `createCamera(...).stateAt(time)` are deterministic given a time value. Anything derived from camera state, such as `cameraProject` fog or highlights, must read `stateAt(timeline.time())` too.
 - Do not accumulate motion in `requestAnimationFrame`, `setInterval`, or `Date.now()`.
 
 ```js
@@ -91,6 +91,17 @@ card.style.height = `${view.px(0.2, "y")}px`;
 - `view.px(fraction, axis?)` scales a 0–1 fraction by width (`x`, default), height (`y`), min, or max.
 - Hero text is about 8–12 vmin, body text about 3–4 vmin. UI mocks fill at least 60% of the frame. Also set CSS `vmin`/`vw` fallbacks so layout survives if JS sizing is late.
 
+## Work at any size
+
+Every bit must work at 16:9 (1920x1080), 9:16 (1080x1920) and 1:1 (1080x1080), whatever its native size. `hyperbits add --size` and `fetch_hyperbit` `size` only rewrite the root `data-width`/`data-height`, the meta viewport and the `html, body` size; everything else must follow from `viewport(root)`.
+
+- Scale type, strokes, radii and motion distances from the short side: `view.vmin`, or `const unit = view.vmin / 10.8` for a 1080-based design unit. Never `view.height / 1080` or `view.vw * n` for type, which blow up or vanish in portrait.
+- Fit layouts to the width as well as the height, for example `Math.min(view.width * 0.86, view.vmin * 110)` for a panel.
+- Choose layout by aspect where a landscape arrangement does not fit portrait (`const portrait = view.height > view.width`): stack rows into columns, put side panels above or below, wrap long headlines at about 86% of the width. A vertical frame should look designed for vertical, not like a landscape frame shrunk into the middle.
+- Canvases and grids fill `view.width` x `view.height`; derive grid counts from the dimensions.
+- Pass criteria at every size: subject and text fully inside the frame with margins, nothing clipped, full-bleed background, text sizes above relative to the short side.
+- Check with `npm run check:sizes -- --only <name>` and review `.check-sizes/sheets/<name>.jpg`.
+
 ## `data-composition-variables`
 
 User-facing knobs belong on the `<html>` element as a JSON array of `{id, type, label, default}`.
@@ -123,6 +134,11 @@ Overrides, lowest to highest:
 
 Do not hide knobs as magic numbers in the script if a user is expected to change them.
 
+The catalog exposes every bit's declarations as `variables` (`fetch_hyperbit`, `hyperbits fetch --json`, `hyperbits find --json`; `find_hyperbits` lists `variableIds`), and `references/bits.md` lists them per bit. Theme a bit from the host rather than editing it:
+
+- Per embed: `data-variable-values='{"background":"#0b1020"}'` on the `data-composition-src` element.
+- Per installed file: `npx @av/hyperbits add fade-in glitch-in --into compositions/ --set background=#0b1020`. `--set` validates the value against the variable type and also rewrites literal copies of the old default in the bit's CSS and markup.
+
 ## Shader-compatible CSS
 
 Bits that may be captured for shader transitions follow html2canvas limits:
@@ -153,7 +169,22 @@ npx @av/hyperbits add fade-in --into compositions/
 ></div>
 ```
 
-`fetch_hyperbit` and `hyperbits add --json` include this snippet. The host composition still needs its own paused root timeline; nested bits register theirs under their own `data-composition-id`.
+`fetch_hyperbit` and `hyperbits add --json` include the plain snippet, and `hyperbits add` prints a `data-variable-values` example built from the bit's variables. The host composition still needs its own paused root timeline; nested bits register theirs under their own `data-composition-id`.
+
+## Host CSS and generic ids
+
+Bits use generic ids: every bit has `#root` and `#bg`, about half have `#stage`, and many have `#scene`, `#title`, `#caption`, `#cursor` or `#panel`. HyperFrames inlines each embedded bit into the host document. Checked with `hyperframes@0.8.29 snapshot` on a host that embeds `fade-in` and `glitch-in`:
+
+- Host CSS reaches bits. HyperFrames scopes a bit's own `<style>` to that bit, but host rules stay global. Host rules for `#bg` (border), `#title` (underline) and `#root` (`transform: scale(0.5)`) changed both embedded bits, and a bare `h1 { font-style: italic }` italicised their titles.
+- Bit CSS does not reach the host or other bits. Two bits that style `#title` differently (sans and mono) each kept their own look and text, a host element with `id="title"` kept the host style, and the host `body` background was unchanged. Bit scripts that call `document.getElementById("title")` found their own element.
+- A bit's `html, body` rule is applied to its mount element. The mount shows that literal background wherever the bit's `#bg` does not cover it, for example after the bit's clips end when the embed's `data-duration` is longer than the bit. `data-variable-values` does not change it (a `background` override showed `#112233` during the bit and the old `#100f0f` after it). `hyperbits add --set background=...` rewrites the literal, so the new color shows at every frame.
+
+Rules for host authors:
+
+- Do not style `#root`, `#bg`, `#stage`, `#scene`, `#title` or other bare ids and element selectors (`h1`, `canvas`, `svg`) in host CSS. Give host elements prefixed ids or classes (`#intro-root`, `.host-title`) and style those.
+- Do not use `id="root"` for the host root if the host has a `#root` rule; that rule also matches every embedded bit root.
+- Size, position and fade a bit through its mount element (a class on the `data-composition-src` element), and theme it through its variables, not through its internal ids.
+- Match the embed's `data-duration` to the bit, or set colors with `--set`, so the mount never shows a stale background.
 
 ## Helper binding conventions
 
@@ -166,7 +197,7 @@ const { proxy, apply } = hyperbits.createCounter(stat, { postfix: "%" });
 timeline.to(proxy, { value: 100, duration: 2, onUpdate: apply }, 0);
 ```
 
-**Time state `{ stateAt, bind }`** — `createParticles`, `createScene3D`. Sample from `timeline.time()` so any seek is exact:
+**Time state `{ stateAt, bind }`** — `createParticles`, `createScene3D`, `createCamera`. Sample from `timeline.time()` so any seek is exact:
 
 ```js
 const sim = hyperbits.createParticles({ spawners: [{ id: "burst", burst: 12 }] });
@@ -175,6 +206,14 @@ sim.bind(timeline, canvas, { color: "#fff", size: 4 });
 
 const scene = hyperbits.createScene3D(root, { steps: [{ id: "intro" }] });
 scene.bind(timeline);
+
+const camera = hyperbits.createCamera(stage, world, {
+  keys: [
+    { time: 0, position: [0, 0, 1800], target: [0, 0, 0], lens: 1600, ease: "power3.inOut" },
+    { time: 3, position: [500, -200, 900], target: [0, 0, 0], roll: 4, lens: 1000 },
+  ],
+});
+camera.bind(timeline);
 ```
 
 `stagger` is neither: it returns a GSAP timeline. `typewriter` / `applyTypewriter` take `time` directly.

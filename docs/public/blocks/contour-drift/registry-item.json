@@ -28,5 +28,37 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#100f0f"
+    },
+    {
+      "id": "foreground",
+      "type": "color",
+      "label": "Foreground",
+      "default": "#f2f0e5"
+    },
+    {
+      "id": "accent",
+      "type": "color",
+      "label": "Accent",
+      "default": "#f2652a"
+    },
+    {
+      "id": "levels",
+      "type": "number",
+      "label": "Terraces",
+      "default": 9
+    },
+    {
+      "id": "seed",
+      "type": "number",
+      "label": "Seed",
+      "default": 4
+    }
   ]
 }

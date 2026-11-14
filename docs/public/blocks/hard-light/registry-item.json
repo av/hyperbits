@@ -27,5 +27,37 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "caption",
+      "type": "string",
+      "label": "Caption",
+      "default": "LIGHT STUDY 04"
+    },
+    {
+      "id": "seed",
+      "type": "number",
+      "label": "Seed",
+      "default": 6
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Shadow",
+      "default": "#100f0f"
+    },
+    {
+      "id": "foreground",
+      "type": "color",
+      "label": "Blocks",
+      "default": "#f2f0e5"
+    },
+    {
+      "id": "accent",
+      "type": "color",
+      "label": "Light",
+      "default": "#ec8b49"
+    }
   ]
 }

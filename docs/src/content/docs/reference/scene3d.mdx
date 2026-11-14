@@ -1,9 +1,9 @@
 ---
 title: scene3d
-description: CSS 3D scene with camera steps and element transforms
+description: CSS 3D scene with camera steps, a look-at camera, and element transforms
 ---
 
-Build a CSS 3D world, step the camera along a path, and bind it to a GSAP timeline.
+Build a CSS 3D world, step the camera along a path or fly a keyed look-at camera through it, and bind it to a GSAP timeline.
 
 ```js
 import { createScene3D, Transform3D, Vec3 } from "@av/hyperbits/helpers";
@@ -30,6 +30,49 @@ Creates canvas/world nodes inside `root`. Returns `{ canvas, world, stateAt, app
 `stateAt(time)` is the time-state binding (seek-safe, same idea as `createParticles().stateAt`). It yields `activeStepIndex`, `activeStepId`, `transitionProgress`, `camera`, `cameraTransform`, and resolved `steps`. `bind(timeline)` applies state on `onUpdate`. Scene3D owns its DOM, so `bind` only takes the timeline; particles pass the canvas because they do not own it.
 
 Step and element fields: `x y z`, `rotateX/Y/Z`, `rotateOrder`, `scale` / `scaleX/Y/Z`. Elements also accept `fixed` and `centered`.
+
+## `createCamera(stage, world, config)`
+
+A keyed look-at camera for CSS 3D. Each key says where the camera is, what it looks at, how far it rolls and which lens it uses. The camera moves between keys with the ease of the key the segment starts from, and the orientation is slerped between look-at quaternions, so a turn never flips or spins the long way round.
+
+```js
+import { createCamera } from "@av/hyperbits/helpers/scene3d";
+
+const view = hyperbits.viewport(root);
+const unit = view.vmin;
+const camera = createCamera(stage, world, {
+  ease: "power2.inOut",
+  keys: [
+    { time: 0, position: [0, 0, 620 * unit], target: [0, 0, -160 * unit], lens: 468 * unit, ease: "power2.inOut" },
+    { time: 2.5, position: [0, 0, -20 * unit], target: [0, 0, -160 * unit], lens: 84 * unit, ease: "sine.inOut" },
+    { time: 6, position: [400 * unit, -60 * unit, -300 * unit], target: [0, 0, -400 * unit], roll: 6 },
+    { time: 9, position: [300 * unit, -40 * unit, -250 * unit], target: [0, 0, -400 * unit], roll: 0, lens: 160 * unit },
+  ],
+});
+
+camera.bind(timeline);
+```
+
+Returns `{ stage, world, stateAt, apply, bind }`. `stage` gets `perspective` and `world` gets one `matrix3d`. `createCamera` places `world` as a zero-size, `preserve-3d` box at the stage centre, so the world origin projects to the middle of the frame. Position children with `translate3d(x, y, z) rotateY(...) translate(-50%, -50%)` and `transform-origin: 0 0`. Coordinates follow CSS: `+x` right, `+y` down, `+z` toward the viewer.
+
+Key fields:
+
+- `time` in seconds. Keys are sorted by time. Two keys at the same time make a hard cut.
+- `position` and `target` as `[x, y, z]` or `{ x, y, z }` in pixels. Omitting `target` reuses the previous key's target. A first key without one looks down `-z`.
+- `roll` in degrees around the view axis. `lens` is the CSS `perspective` in pixels: a point `lens` pixels in front of the camera renders at scale 1. Both carry over from the previous key when omitted. `config.lens` (default 1000) seeds the first key.
+- `ease` shapes the segment that starts at this key. Accepts GSAP names, `Easing` names or a function. `config.ease` is the default (`power2.inOut`).
+
+`stateAt(time)` is a pure function of time and returns `{ time, segment, progress, position, target, forward, orientation, roll, lens }`. `orientation` is the camera-to-world quaternion `[x, y, z, w]`. `forward` is the actual view direction. `target` is the interpolated key target, so it can drift slightly off-centre during a slerped segment. Slerp takes the shorter arc, so split turns of 180° or more into several keys.
+
+Each segment eases from rest to rest under an `inOut` ease. For a continuous flight, sample a path into many keys with `ease: "none"` and put the easing into the key times or positions. `camera-flight` does this.
+
+## Pure camera functions
+
+- `cameraStateAt(time, config)`: the same state as `stateAt`, without DOM.
+- `cameraToCSS(state)`: `{ perspective, transform }` strings for your own stage and world.
+- `cameraProject(state, point)`: `{ x, y, depth, scale }`. `x` and `y` are pixel offsets from the stage centre. `depth` is the distance along the view axis and is negative behind the camera. Use it for fog, culling, labels that track 3D points, or highlights.
+- `lookAtOrientation(position, target, roll?)`: the look-at quaternion. Pitch is `asin(forward.y)` and yaw is `atan2(-forward.x, -forward.z)`. Looking straight up or down leaves yaw undefined, so keep targets off the vertical axis.
+- `applyCamera(stage, world, state)`: writes a state to the DOM.
 
 ## Transforms
 

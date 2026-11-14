@@ -98,6 +98,10 @@
           const parts = hyperbits.mixOklch(String(color), String(color), 0, "rgb(0, 0, 0)").match(/[0-9.]+/g) || [0, 0, 0];
           return parts.slice(0, 3).map(Number);
         }
+        function smoothstep(edge0, edge1, value) {
+          const amount = Math.min(Math.max((value - edge0) / (edge1 - edge0), 0), 1);
+          return amount * amount * (3 - 2 * amount);
+        }
 
         const vars = bitVars();
         const root = document.getElementById("root");
@@ -177,7 +181,7 @@
           const { textMask, glowMask } = masks;
           const lightX = bufferWidth * (0.5 + 0.16 * Math.cos(time * 0.55 + 2.2));
           const lightY = bufferHeight * (0.47 + 0.1 * Math.sin(time * 0.7));
-          const lightRadius = bufferHeight * 0.48;
+          const lightRadius = Math.min(bufferWidth, bufferHeight) * 0.48;
           const lightPower = 0.24 * smoothstep(0, 1.4, time) * (1 - smoothstep(6.4, 7.3, time));
           const dissolve = smoothstep(5.9, 7.1, time);
           for (let row = 0; row < bufferHeight; row += 1) {
@@ -209,7 +213,7 @@
         }
         subline.textContent = String(vars.subline);
         subline.style.fontSize = view.vmin * 2.2 + "px";
-        subline.style.top = view.height * 0.66 + "px";
+        subline.style.top = view.height * 0.46 + view.vmin * 20 + "px";
         subline.style.color = vars.foreground;
         const proxy = { time: 0 };
         const timeline = gsap.timeline({ paused: true });

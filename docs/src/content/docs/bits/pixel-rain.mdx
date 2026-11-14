@@ -8,3 +8,23 @@ import { BitPlayground } from '@components/BitPlayground';
 Slanting pixel rain that lands and splashes at different depths across the whole frame.
 
 <BitPlayground client:only="react" bitName="pixel-rain" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Foreground |
+| `accent` | color | `#ef5da8` | Accent |
+| `columns` | number | `96` | Columns |
+| `seed` | number | `2` | Seed |
+
+```html
+<div data-composition-src="compositions/pixel-rain.html" data-variable-values='{"background":"#100f0f","foreground":"#f2f0e5","accent":"#ef5da8","columns":96,"seed":2}'></div>
+```
+
+```bash
+npx @av/hyperbits add pixel-rain --into compositions/ --set "background=#0b1020"
+```

@@ -8,3 +8,20 @@ import { BitPlayground } from '@components/BitPlayground';
 Syntax highlighted code with typing effect.
 
 <BitPlayground client:only="react" bitName="typing-code-block" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `color` | color | `#dcdcaa` | Function color |
+| `background` | color | `#1e1e1e` | Background |
+
+```html
+<div data-composition-src="compositions/typing-code-block.html" data-variable-values='{"color":"#dcdcaa","background":"#1e1e1e"}'></div>
+```
+
+```bash
+npx @av/hyperbits add typing-code-block --into compositions/ --set "background=#0b1020"
+```

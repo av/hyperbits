@@ -8,3 +8,23 @@ import { BitPlayground } from '@components/BitPlayground';
 Line-art city blocks rising out of an isometric grid with hidden-line removal, a slow orbiting camera, a scan ring lighting edges and windows flickering on.
 
 <BitPlayground client:only="react" bitName="isometric-city" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `caption` | string | `"BLOCK 07 / ELEVATION STUDY"` | Caption |
+| `seed` | number | `7` | Seed |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Line ink |
+| `accent` | color | `#ec8b49` | Accent |
+
+```html
+<div data-composition-src="compositions/isometric-city.html" data-variable-values='{"caption":"BLOCK 07 / ELEVATION STUDY","seed":7,"background":"#100f0f","foreground":"#f2f0e5","accent":"#ec8b49"}'></div>
+```
+
+```bash
+npx @av/hyperbits add isometric-city --into compositions/ --set "background=#0b1020"
+```

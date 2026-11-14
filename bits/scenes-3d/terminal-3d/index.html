@@ -125,10 +125,12 @@
         const sceneEl = document.getElementById("scene");
         const view = hyperbits.viewport(root);
         const vmin = view.vmin;
-        const unit = view.height / 1080;
+        const unit = view.vmin / 10.8;
         bg.style.backgroundColor = vars.background;
-        const termWidth = view.width * 0.4;
-        const termHeight = view.height * 0.5;
+        const termWidth = Math.min(view.width * 0.84, vmin * 110);
+        const termHeight = Math.max(termWidth * 0.7, view.height * 0.5);
+        const stepX = termWidth / 2 + view.width / 2 + vmin * 5;
+        const stepY = termHeight / 2 + view.height / 2 + vmin * 5;
         function terminal(title, lead, typedText, typeSpeed, cursorEnabled) {
           const wrap = document.createElement("div");
           wrap.className = "term-wrap";
@@ -193,8 +195,8 @@
         const stepDuration = 2;
         const steps = [
           { id: "main", x: 0, y: 0, z: 0, duration: stepDuration, element: main.wrap },
-          { id: "side", x: view.width * 0.8, y: 0, z: 150 * unit, rotateY: -45, duration: stepDuration, element: side.wrap },
-          { id: "top", x: view.width * 0.8, y: -view.height * 0.8, z: 150 * unit, duration: stepDuration, element: top.wrap },
+          { id: "side", x: stepX, y: 0, z: 150 * unit, rotateY: -45, duration: stepDuration, element: side.wrap },
+          { id: "top", x: stepX, y: -stepY, z: 150 * unit, duration: stepDuration, element: top.wrap },
         ];
         const scene = hyperbits.createScene3D(sceneEl, {
           perspective: 1000,

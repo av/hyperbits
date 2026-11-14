@@ -27,5 +27,37 @@
       "target": "compositions/hyperbits.iife.js",
       "type": "hyperframes:asset"
     }
+  ],
+  "variables": [
+    {
+      "id": "store",
+      "type": "string",
+      "label": "Store name",
+      "default": "HYPERBITS SUPPLY CO."
+    },
+    {
+      "id": "items",
+      "type": "string",
+      "label": "Items as name:price, comma separated",
+      "default": "Dithered planet:12.00,Split-flap board:8.50,ASCII torus:6.25,Isometric city:14.00,Vector scope:9.75"
+    },
+    {
+      "id": "background",
+      "type": "color",
+      "label": "Background",
+      "default": "#100f0f"
+    },
+    {
+      "id": "foreground",
+      "type": "color",
+      "label": "Paper",
+      "default": "#f2f0e5"
+    },
+    {
+      "id": "accent",
+      "type": "color",
+      "label": "Accent",
+      "default": "#ec8b49"
+    }
   ]
 }

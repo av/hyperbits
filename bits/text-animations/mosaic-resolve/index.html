@@ -116,6 +116,8 @@
         const inStart = 0.35;
         const outStart = 5.3;
         const stepOut = 0.09;
+        const wide = view.width > view.height * 1.2;
+        const portrait = view.height > view.width * 1.1;
         let source = null;
         let sourceContext = null;
         let small = null;
@@ -141,9 +143,9 @@
           const target = sourceContext;
           target.fillStyle = rgba(back, 1);
           target.fillRect(0, 0, view.width, view.height);
-          const sunX = view.width * 0.72;
-          const sunY = view.height * 0.5;
-          const sunRadius = view.vmin * 30;
+          const sunX = wide ? view.width * 0.72 : portrait ? view.width * 0.5 : view.width * 0.64;
+          const sunY = wide ? view.height * 0.5 : portrait ? view.height * 0.33 : view.height * 0.34;
+          const sunRadius = view.vmin * (wide ? 30 : portrait ? 34 : 24);
           const glow = target.createRadialGradient(sunX, sunY, sunRadius * 0.6, sunX, sunY, sunRadius * 1.7);
           glow.addColorStop(0, rgba(accent, 0.22));
           glow.addColorStop(1, rgba(accent, 0));
@@ -172,7 +174,8 @@
           target.fillStyle = rgba(accent, 1);
           target.font = "500 " + view.vmin * 2.2 + "px 'Geist Mono', ui-monospace, monospace";
           target.textBaseline = "alphabetic";
-          target.fillText(String(vars.label), left, view.height * 0.3);
+          const labelY = view.height * (wide ? 0.3 : 0.6);
+          target.fillText(String(vars.label), left, labelY);
           const words = String(vars.headline).split(/\s+/);
           const lines = [];
           let line = "";
@@ -180,16 +183,18 @@
           target.font = "800 " + size + "px 'Geist Sans', ui-sans-serif, system-ui, sans-serif";
           for (const word of words) {
             const candidate = line ? line + " " + word : word;
-            if (target.measureText(candidate).width > view.width * 0.52 && line) {
+            if (target.measureText(candidate).width > (wide ? view.width * 0.52 : view.width - left * 2) && line) {
               lines.push(line);
               line = word;
             } else line = candidate;
           }
           if (line) lines.push(line);
           target.fillStyle = rgba(fore, 1);
-          lines.slice(0, 3).forEach((text, index) => target.fillText(text, left - size * 0.04, view.height * 0.3 + size * (1.15 + index * 1.02)));
+          const shown = lines.slice(0, 3);
+          shown.forEach((text, index) => target.fillText(text, left - size * 0.04, labelY + size * (1.15 + index * 1.02)));
+          const ruleY = Math.max(view.height * 0.84, labelY + size * (1.6 + (shown.length - 1) * 1.02));
           target.fillStyle = rgba(mixRgb(back, fore, 0.2), 1);
-          target.fillRect(left, view.height * 0.84, view.width - left * 2, Math.max(1, view.vmin * 0.2));
+          target.fillRect(left, ruleY, view.width - left * 2, Math.max(1, view.vmin * 0.2));
         }
         function nearest(red, green, blue) {
           let best = palette[0];

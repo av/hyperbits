@@ -8,3 +8,20 @@ import { BitPlayground } from '@components/BitPlayground';
 A stack of cards that spreads out in 3D space..
 
 <BitPlayground client:only="react" bitName="card-stack" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `color` | color | `#f6a45c` | Card color |
+| `background` | color | `#100f0f` | Background |
+
+```html
+<div data-composition-src="compositions/card-stack.html" data-variable-values='{"color":"#f6a45c","background":"#100f0f"}'></div>
+```
+
+```bash
+npx @av/hyperbits add card-stack --into compositions/ --set "background=#0b1020"
+```

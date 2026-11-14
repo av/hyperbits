@@ -8,7 +8,7 @@ The `hyperbits` binary ships with the npm package.
 ```bash
 npx @av/hyperbits find [query] [--tag <tag>] [--limit <n>] [--json]
 npx @av/hyperbits fetch <id-or-name> [--json]
-npx @av/hyperbits add <name> [--into compositions/] [--json]
+npx @av/hyperbits add <name...> [--into compositions/] [--set <id=value>] [--size <WxH|9:16|1:1|16:9>] [--json]
 npx @av/hyperbits mcp
 ```
 
@@ -22,35 +22,94 @@ npx @av/hyperbits find "text reveal" --tag text --limit 5
 npx @av/hyperbits find --tag particles --json
 ```
 
-`--tag` is repeatable. Comma-separated values are accepted. `--json` prints a stable object with a `results` array.
+`--tag` is repeatable. Comma-separated values are accepted. Each result lists its variable ids (`Variables: text, color, background`), so you can pick a bit that exposes the knobs your design system needs. `--json` prints a stable object with a `results` array; each result carries the full `variables` declarations.
 
 ## fetch
 
-Print one bit record, including HTML source, helper script tag, and the embed snippet.
+Print one bit record, including its variables, HTML source, helper script tag, and the embed snippet.
 
 ```bash
 npx @av/hyperbits fetch fade-in
 npx @av/hyperbits fetch fade-in --json
 ```
 
+The human output lists the variables before the source:
+
+```text
+   Variables (id, type, default, label):
+     text        string  "Hello World"  Text
+     color       color   #fcc192        Text color
+     background  color   #100f0f        Background
+   Override per instance: data-variable-values='{"text":"Hello World","color":"#fcc192","background":"#100f0f"}'
+```
+
+`--json` returns the same list as `bit.variables`: `{ id, type, label, default }` per entry, in declaration order.
+
 The identifier can be the bit id (`fade-in`) or the exact display name (`Fade In`). Unknown names print close matches (`Did you mean: fade-in?`).
 
 ## add
 
-Write the bit HTML into a HyperFrames project and print the snippet to embed it.
+Write one or more bits into a HyperFrames project and print the snippets to embed them.
 
 ```bash
 npx @av/hyperbits add fade-in
-npx @av/hyperbits add fade-in --into compositions/
+npx @av/hyperbits add fade-in glitch-in --into compositions/
 ```
 
-`add` rewrites the local `hyperbits.iife.js` script src to the published IIFE URL so the file runs outside this repo.
-
-Default destination is `compositions/<id>.html`. Embed with:
+`add` writes `compositions/<id>.html` per bit and copies the helper bundle `hyperbits.iife.js` next to them. After each embed snippet it prints a ready-to-edit `data-variable-values` example built from the bit's declared variables:
 
 ```html
 <div data-composition-src="compositions/fade-in.html"></div>
+<div data-composition-src="compositions/fade-in.html" data-variable-values='{"text":"Hello World","color":"#fcc192","background":"#100f0f"}'></div>
 ```
+
+Values in `data-variable-values` override the declared defaults for that one embed. Leave out the ids you do not change.
+
+### Theme on install with --set
+
+`--set id=value` writes a new default into the installed copy, so every embed of that file starts from your palette without `data-variable-values`. It is repeatable and applies to every bit in the call that declares the id:
+
+```bash
+npx @av/hyperbits add fade-in glitch-in staggered-fade-in --into compositions/ \
+  --set background=#0b1020 --set color=#e8ecff --set text="Launch day"
+```
+
+```text
+Wrote compositions/fade-in.html
+  Set background=#0b1020
+  Set color=#e8ecff
+  Set text=Launch day
+...
+Wrote compositions/staggered-fade-in.html
+  Set background=#0b1020
+  Set color=#e8ecff
+  Skipped --set text: staggered-fade-in has no "text" variable
+```
+
+- Values are checked against the variable type: `color` takes any CSS color (`#rgb`, `#rrggbb`, `rgb()`, `hsl()`, `oklch()`, named colors), `number` a finite number, `boolean` `true` or `false`, `string` anything.
+- Bits also repeat a color default as a literal in CSS and markup (`html, body`, `#bg`, `:root` tokens). The literal shows when the embed outlasts the bit's own clips, so `--set` rewrites those copies as well. If two variables of a bit share the same default (for example `color` and `background` both `#000000` in `ken-burns`), the literals are left alone and `add` prints a warning; the variable itself still applies.
+- Nothing is written when a bit is unknown (exit 3), a `--set` is malformed or invalid, or no bit in the call declares the id (exit 2).
+
+`--json` returns `{ "added": { ... } }` for one bit and `{ "added": [ ... ] }` for several. With `--set`, each record also has `set` (applied values), `skipped` (ids the bit does not declare) and, when needed, `warnings`.
+
+### Vertical and square output
+
+Every bit works at 16:9, 9:16 and 1:1. Pass `--size` to write the bit at the size of your host composition:
+
+```bash
+npx @av/hyperbits add fade-in --into compositions/ --size 9:16
+npx @av/hyperbits add card-stack --into compositions/ --size 1:1
+npx @av/hyperbits add carousel --into compositions/ --size 1080x1350
+```
+
+| Value | Size |
+| --- | --- |
+| `9:16` | 1080x1920 (TikTok, Reels, Shorts) |
+| `1:1` | 1080x1080 |
+| `16:9` | 1920x1080 |
+| `WIDTHxHEIGHT` | any size, for example `1080x1350` |
+
+`--size` rewrites the root `data-width` and `data-height`, the meta viewport and the `html, body` size. Bits size and lay themselves out from those dimensions, so a vertical bit gets a vertical layout, not a squeezed landscape frame. Without `--size` the bit keeps its native size (shown as `Dimensions` in `find` and `fetch`). The MCP tool `fetch_hyperbit` takes the same value as an optional `size` argument.
 
 ## mcp
 

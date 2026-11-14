@@ -8,3 +8,23 @@ import { BitPlayground } from '@components/BitPlayground';
 A frame-wide relief of softly lifted contour terraces, the low hills reshaping slowly as the layers breathe.
 
 <BitPlayground client:only="react" bitName="contour-drift" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `background` | color | `#100f0f` | Background |
+| `foreground` | color | `#f2f0e5` | Foreground |
+| `accent` | color | `#f2652a` | Accent |
+| `levels` | number | `9` | Terraces |
+| `seed` | number | `4` | Seed |
+
+```html
+<div data-composition-src="compositions/contour-drift.html" data-variable-values='{"background":"#100f0f","foreground":"#f2f0e5","accent":"#f2652a","levels":9,"seed":4}'></div>
+```
+
+```bash
+npx @av/hyperbits add contour-drift --into compositions/ --set "background=#0b1020"
+```

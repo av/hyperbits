@@ -8,3 +8,20 @@ import { BitPlayground } from '@components/BitPlayground';
 Elements fading in sequentially.
 
 <BitPlayground client:only="react" bitName="staggered-fade-in" />
+
+## Variables
+
+Theme an embed without editing the bit: put `data-variable-values` on the `data-composition-src` element, or bake new defaults into the installed copy with `--set`.
+
+| Id | Type | Default | Label |
+| --- | --- | --- | --- |
+| `color` | color | `#3b82f6` | Accent |
+| `background` | color | `#0f172a` | Background |
+
+```html
+<div data-composition-src="compositions/staggered-fade-in.html" data-variable-values='{"color":"#3b82f6","background":"#0f172a"}'></div>
+```
+
+```bash
+npx @av/hyperbits add staggered-fade-in --into compositions/ --set "background=#0b1020"
+```

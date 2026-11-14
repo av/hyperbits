@@ -99,7 +99,7 @@
         const pale = mix(background, accent, 0.12);
         const wedges = Math.max(4, Math.round((Number(vars.rays) || 40) / 2) * 2);
         const originX = view.width * 0.32;
-        const originY = view.height * 1.9;
+        const originY = view.height + view.vmin * 90;
         const reach = Math.hypot(view.width, view.height) * 2.2;
         function draw(phase) {
           if (!context || typeof context.stroke !== "function") return;
