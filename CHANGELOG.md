@@ -1,4 +1,4 @@
-### Unreleased
+### v0.3.0
 
 - Variables: every bit's `data-composition-variables` are catalog metadata. `hyperbits fetch` prints them before the source, `find --json` and `fetch --json` return `variables`, `find_hyperbits` returns `variableIds`, `fetch_hyperbit` returns `variables`, and registry items, `references/bits.md` and the per-bit doc pages list them
 - CLI: `hyperbits add` takes several bits, prints a ready-to-edit `data-variable-values` example per bit, and `--set id=value` bakes validated defaults into the installed copies, including the literal copies of the old default in their CSS and markup. Bits that do not declare an id are reported as skipped; an unknown bit or invalid value exits non-zero and writes nothing
